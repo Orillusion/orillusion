@@ -16,40 +16,40 @@ Beta version,  **NOT**  recommended for any commercial application.
 We recommend using front-end build tools for developing Web3D applications, such  [Vite](https://vitejs.dev/) or [Webpack](https://webpack.js.org/). 
 
 - Install dependencies:
-```bash
+```text
 npm  install  @orillusion/core  --save
 ```
 - Import on-demand:
-```bash
+```javascript
 import  {  Engine3D,  Camera3D  }  from  '@orillusion/core'
 ```
 - Import globally:
-```bash
+```javascript
 import  *  as Orillusion from  '@orillusion/core'
 ```
 
 ### CDN
 In order to use the engine more conveniently, we support to use `<script>` tag to import `Orillusion`. Three different ways to import using the official `CDN` link:
 - **Globally:**  the object `window` in the `HTML` page will be embedded a variable called `Orillusion` which could be used directly.
-```bash
+```html
 <script src="https://cdn.orillusion.com/orillusion.umd.js"></script>
 <script>  
 	const { Engine3D, Camera3D } = Orillusion  
 </script>
 ```
 -  **ESModule:** we recommend using the [ESModule](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Modules) way for development. As most browsers have supported `ES` module, we just need to import the build version of `orillusion.es.js` which follow the `ESNext` standard to do the  development.
-```bash
+```html
 <script  type="module">  
 	import { Engine3D, Camera3D } from "https://cdn.orillusion.com/orillusion.es.js" 
 </script>
 ```
 Due to the tag of `<script type="module">` ，we could use the module syntax like `import` and `export` 。With the help of  `vite` or `webpack`，we could import `CDN` in the code directly. 
-```bash
+```html
 import { Engine3D, Camera3D } from "https://cdn.orillusion.com/orillusion.es.js"
 ```
 - **Import Maps:** in order to manage the name of dependencies, we recommend using [Import Maps](https://caniuse.com/import-maps).
 
-```bash
+```html
 <!-- Define the name or address of ES Module -->  
 <script  type="importmap">  
 {  
@@ -67,7 +67,7 @@ import { Engine3D, Camera3D } from "https://cdn.orillusion.com/orillusion.es.js"
 
 At the beginning, we need to use `Engine3D.init()` and then the instance `Engine3D` will be created for further use.
 
-```bash
+```javascript
 import { Engine3D } from '@orillusion/core' 
 
 Engine3D.init().then(()=>{  
@@ -75,7 +75,7 @@ Engine3D.init().then(()=>{
 })
 ```
 As `Engine3D.init()` is asynchronous, we recommend using `async/await` in the code.
-```bash
+```javascript
 import { Engine3D } from '@orillusion/core'  
 async function demo(){  
 	await Engine3D.init();  
@@ -86,12 +86,12 @@ demo()
 ### Create canvas
 In default, `Engine3D.init()`will create a `canvas`  the same size with the window. Also, we could create a `canvas` manually using tag `<canvas>` with a `id`.
 
-```bash
+```html
 <canvas id="canvas" width="800" height="500" />
 ```
 Next, we need to get the `<canvas>` via `id` and then init engine by passing the `<canvas>` to `canvasConfig`.
 
-```bash
+```javascript
 import { Engine3D } from '@orillusion/core';  
 let canvas = document.getElementById('canvas')  
 
