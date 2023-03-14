@@ -1,10 +1,8 @@
 ![Cover Art](https://github.com/Orillusion/orillusion-webgpu-samples/blob/main/logo.png)
-# Orillusion
-
 > **Note:**
 > Currently, this repo is used to collect feedback on the NPM package of the Orillusion engine. According to all the feedback, we will carry on refining the engine core. Then, we need to set up the regulations for a long-term open source project and all the source code will be put in this repo in the near future, which indicates a brand new journey for Orillusion.
 
-
+# Orillusion
 `Orillusion`  is a pure Web3D rendering engine that are fully developed based on the WebGPU standard. It aims to achieve desktop-level rendering effects and supports 3D rendering of complex scenes in the browser.
 
 ## Need to know
@@ -99,17 +97,16 @@ await Engine3D.init({
 	canvasConfig: { canvas }  
 })
 ```
+
+## Platform
+Chrome Canary: 113
+
+> *As WebGPU is not released, please open `chrome://flags/#enable-unsafe-webgpu`, and enable the flag*
+
 ## Useful links
 - [Official Web Site](https://www.orillusion.com/)
 - [Documentation](https://www.orillusion.com/)
 - [Forum](https://forum.orillusion.com/)
-## How to enable WebGPU
-1. For Chrome Canary, please open `chrome://flags/#enable-unsafe-webgpu`, and enable the flag
-2. For Edge Canary, please open `edge://flags/#enable-unsafe-webgpu`, and enable the flag
-3. For FireFox Nightly, please open `about:config`, and change `dom.webgpu.enabled` to `true`
-
-
-
 
 ## License 
 
