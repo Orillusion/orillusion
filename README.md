@@ -7,7 +7,7 @@
   
 
 ## Orillusion
-`Orillusion`  is a pure Web3D rendering engine that are fully developed based on the `WebGPU` standard. It aims to achieve desktop-level rendering effects and supports 3D rendering of complex scenes in the browser.
+`Orillusion`  is a pure Web3D rendering engine which is fully developed based on the `WebGPU` standard. It aims to achieve desktop-level rendering effects and supports 3D rendering of complex scenes in the browser.
 
 ## Need to know
 Beta version,  **NOT**  recommended for any commercial application.
