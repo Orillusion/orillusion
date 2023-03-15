@@ -109,7 +109,7 @@ await Engine3D.init({
 
 ## Useful links
 - [Official Web Site](https://www.orillusion.com/)
-- [Documentation](https://www.orillusion.com/)
+- [Documentation](https://www.orillusion.com/guide/)
 - [Forum](https://forum.orillusion.com/)
 
 ## License 
