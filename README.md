@@ -19,7 +19,7 @@ We recommend using front-end build tools for developing Web3D applications, such
 
 - Install dependencies:
 ```text
-npm  install  @orillusion/core  --save
+npm install @orillusion/core --save
 ```
 - Import on-demand:
 ```javascript
@@ -31,32 +31,31 @@ import * as Orillusion from '@orillusion/core'
 ```
 
 ### CDN
-In order to use the engine more conveniently, we support to use `<script>` tag to import `Orillusion`. Three different ways to import using the official `CDN` link:
-- **Globally:**  the object `window` in the `HTML` page will be embedded a variable called `Orillusion` which could be used directly
+In order to use the engine more conveniently, we support to use native `<script>` tag to import `Orillusion`. Three different ways to import using the official `CDN` link:
+
+- **Global Build:** You can use `Orillusion` directly from a CDN via a script tag:
 ```html
-<script src="https://cdn.orillusion.com/orillusion.umd.js"></script>
+<script src="https://unpkg.com/@orillusion/core/dist/orillusion.umd.js"></script>
 <script>  
     const { Engine3D, Camera3D } = Orillusion  
 </script>
 ```
--  **ESModule:** we recommend using the [ESModule](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Modules) way for development. As most browsers have supported `ES` module, we just need to import the build version of `orillusion.es.js` ( following the `ESNext` standard )
+The above link loads the global build of `Orillusion`, where all top-level APIs are exposed as properties on the global `Orillusion` object.
+
+-  **ESModule Build:** We recommend using the [ESModule](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Modules) way for development. As most browsers have supported `ES` module, we just need to import the `ES` build version of `orillusion.es.js`
 ```html
-<script  type="module">  
-    import { Engine3D, Camera3D } from "https://cdn.orillusion.com/orillusion.es.js" 
+<script type="module">  
+    import { Engine3D, Camera3D } from "https://unpkg.com/@orillusion/core/dist/orillusion.es.js" 
 </script>
 ```
-&#8195;&#8195;Due to the tag of `<script type="module">`, we could use the module syntax like `import` and `export`. With the help of  `vite` or `webpack`, we could import `CDN` link in the code directly
-	
-```javascript
-import { Engine3D, Camera3D } from "https://cdn.orillusion.com/orillusion.es.js"
-```
-- **Import Maps:** in order to manage the name of dependencies, we recommend using [Import Maps](https://caniuse.com/import-maps)
+
+- **Import Maps:** In order to manage the name of dependencies, we recommend using [Import Maps](https://caniuse.com/import-maps)
 
 ```html
 <!-- Define the name or address of ES Module -->  
 <script  type="importmap">  
 {  
-    "imports": { "@orillusion/core": "https://cdn.orillusion.com/orillusion.es.js" }  
+    "imports": { "@orillusion/core": "https://unpkg.com/@orillusion/core/dist/orillusion.es.js" }  
 }  
 </script>  
 <!-- Customerized names could be imported -->  
@@ -103,9 +102,10 @@ await Engine3D.init({
 ```
 
 ## Platform
-**Chrome Canary: 113**
+**Chrome Canary: 113+**
+**Edge Canary: 113+**
 
-> *As WebGPU is not released, please open `chrome://flags/#enable-unsafe-webgpu`, and enable the flag*
+> *As WebGPU is not released, please enable `chrome://flags/#enable-unsafe-webgpu` or `edge://flags/#enable-unsafe-webgpu`*
 
 ## Useful links
 - [Official Web Site](https://www.orillusion.com/)
