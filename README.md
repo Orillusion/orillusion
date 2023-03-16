@@ -102,7 +102,7 @@ await Engine3D.init({
 ```
 
 ## Platform
-**Chrome Canary: 113+**
+**Chrome Canary: 113+**  
 **Edge Canary: 113+**
 
 > *As WebGPU is not released, please enable `chrome://flags/#enable-unsafe-webgpu` or `edge://flags/#enable-unsafe-webgpu`*
