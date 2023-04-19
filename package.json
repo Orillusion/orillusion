@@ -41,6 +41,7 @@
     },
     "optionalDependencies": {
         "electron": "npm:electron-nightly@latest",
+        "uglify-js": "^3.17.4",
         "xvfb-maybe": "^0.2.1"
     }
 }
