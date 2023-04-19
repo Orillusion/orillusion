@@ -23,7 +23,8 @@
         "build:types": "tsc --emitDeclarationOnly -p tsconfig.build.json",
         "minify:es": "uglifyjs dist/orillusion.es.js -o dist/orillusion.es.js -c -m",
         "test": "electron test/ci/main.js",
-        "test:install": "npm i electron@npm:electron-nightly@latest --no-save",
+        "test:ci": "xvfb-maybe -- electron test/ci/main.js",
+        "test:install": "pnpm i electron@npm:electron-nightly@latest xvfb-maybe -O",
         "docs": "npm run docs:core && npm run docs:physics && npm run docs:media",
         "docs:typedoc": "npx typedoc --plugin typedoc-plugin-markdown --plugin ./script/typedoc-plugin-not-exported.js --tsconfig tsconfig.build.json --gitRevision main --hideBreadcrumbs true --allReflectionsHaveOwnDocument true --readme none --excludeInternal --excludePrivate --excludeProtected --sort source-order --out",
         "docs:core": "npm run docs:typedoc docs/api src/index.ts",
@@ -32,12 +33,14 @@
         "docs:stats": "npm run docs:typedoc docs/stats src/libs/stats/index.ts"
     },
     "devDependencies": {
-        "@orillusion/core": "link:src",
-        "@orillusion/physics": "link:src/libs/physics",
         "@webgpu/types": "^0.1.30",
         "typedoc": "^0.24.4",
         "typedoc-plugin-markdown": "^3.15.1",
         "typescript": "^4.9.5",
         "vite": "^4.2.2"
+    },
+    "optionalDependencies": {
+        "electron": "npm:electron-nightly@latest",
+        "xvfb-maybe": "^0.2.1"
     }
 }

@@ -1,0 +1,34 @@
+name: CI auto test on push
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 7
+
+    - name: Setup node 16
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16
+        cache: pnpm
+        
+    - name: Install deps
+      run: pnpm install
+    
+    - name: Test Build
+      run: pnpm run build
+
+    - name: Test in Electron
+      run: pnpm run test:ci
+        
