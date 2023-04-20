@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orillusion | Test</title>
+    <style>
+        html,
+        body {
+            font-family: Avenir, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            color: #fff;
+            display: flex;
+        }
+
+        .menu {
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 150px;
+            padding: 20px;
+            overflow: overlay;
+            border-right: 1px solid #fff;
+            background: rgba(0, 0, 0, .6);
+        }
+
+        .menu>p {
+            text-align: left;
+            padding: 10px 0;
+            margin: 0;
+            border-bottom: 1px solid #fff;
+            text-transform: capitalize;
+        }
+
+        .menu>a {
+            display: block;
+            text-align: left;
+            margin: 5px 0;
+            color: #00bcd4;
+            text-decoration: none;
+            cursor: pointer;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .menu>button {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .menu>a.active {
+            color: #f44336;
+        }
+
+        .menu>a:hover {
+            text-decoration: underline;
+        }
+
+        /* width */
+        ::-webkit-scrollbar {
+            width: 0;
+        }
+
+        iframe {
+            border: none;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <script type="module" src="./index.ts"></script>
+</body>
+
+</html>

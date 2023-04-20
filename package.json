@@ -1,0 +1,47 @@
+{
+    "name": "@orillusion/core",
+    "version": "0.5.0",
+    "author": "Orillusion",
+    "description": "Orillusion WebGPU Engine",
+    "main": "./dist/orillusion.umd.js",
+    "module": "./dist/orillusion.es.js",
+    "types": "./dist/src/index.d.ts",
+    "files": [
+        "dist/src",
+        "dist/orillusion.umd.js",
+        "dist/orillusion.es.js",
+        "tsconfig.json"
+    ],
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Orillusion/orillusion.git"
+    },
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc --p tsconfig.build.json && vite build && npm run build:types && npm run minify:es",
+        "build:types": "tsc --emitDeclarationOnly -p tsconfig.build.json",
+        "minify:es": "uglifyjs dist/orillusion.es.js -o dist/orillusion.es.js -c -m",
+        "test": "electron test/ci/main.js",
+        "test:ci": "xvfb-maybe -- electron test/ci/main.js",
+        "test:install": "pnpm i electron@npm:electron-nightly@latest xvfb-maybe -O",
+        "docs": "npm run docs:core && npm run docs:physics && npm run docs:media",
+        "docs:typedoc": "npx typedoc --plugin typedoc-plugin-markdown --plugin ./script/typedoc-plugin-not-exported.js --tsconfig tsconfig.build.json --gitRevision main --hideBreadcrumbs true --allReflectionsHaveOwnDocument true --readme none --excludeInternal --excludePrivate --excludeProtected --sort source-order --out",
+        "docs:core": "npm run docs:typedoc docs/api src/index.ts",
+        "docs:physics": "npm run docs:typedoc docs/physics src/libs/physics/index.ts",
+        "docs:media": "npm run docs:typedoc docs/media-extention src/libs/media-extention/index.ts",
+        "docs:stats": "npm run docs:typedoc docs/stats src/libs/stats/index.ts"
+    },
+    "devDependencies": {
+        "@webgpu/types": "^0.1.30",
+        "typedoc": "^0.24.4",
+        "typedoc-plugin-markdown": "^3.15.1",
+        "typescript": "^5.0.4",
+        "vite": "^4.2.2"
+    },
+    "optionalDependencies": {
+        "electron": "npm:electron-nightly@latest",
+        "uglify-js": "^3.17.4",
+        "xvfb-maybe": "^0.2.1"
+    }
+}
