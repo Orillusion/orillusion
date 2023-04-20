@@ -26,9 +26,9 @@ If applicable, add screenshots to help explain your problem
 State the version you use for developement, e.g. 0.5.0
 
 ## Desktop (please complete the following information)
- - OS: [e.g. win, mac, android]
- - Browser [e.g. chrome]
- - Version [e.g. 113]
+- OS: [e.g. win, mac, android]
+- Browser [e.g. chrome]
+- Version [e.g. 113]
 
 ## Code demo link
 If applicabla, please provide a sandbox/codepen/code snippet... to demonstrate the bug
