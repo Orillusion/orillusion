@@ -4,7 +4,7 @@
         "useDefineForClassFields": true,
         "module": "ESNext",
         "lib": ["ESNext", "DOM"],
-        "moduleResolution": "Node",
+        "moduleResolution": "bundler",
         "sourceMap": true,
         "resolveJsonModule": true,
         "esModuleInterop": true,
@@ -16,7 +16,7 @@
             "@orillusion/*": ["src/libs/*"],
             "@orillusion/core": ["src"]
         },
-        "types": ["vite/client", "@webgpu/types", "@types/jest"],
+        "types": ["vite/client", "@webgpu/types"],
         // for dev
         "noUnusedLocals": true,
         "noUnusedParameters": true,
@@ -24,6 +24,6 @@
         "allowJs": true,
         "strict": true
     },  
-    "include": ["src", "test", "config"],
+    "include": ["src", "test"],
     "exclude": ["node_modules", "dist", "public"]
 }
