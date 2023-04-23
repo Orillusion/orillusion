@@ -11,9 +11,9 @@ import { webGPUContext } from '../../graphics/webGpu/Context3D';
 import { GPUContext } from '../GPUContext';
 import { PostBase } from './PostBase';
 /**
- * 屏幕空间雾化
+ * Screen space Fog effect
  * ```
- *       //配置相关参数
+ *       //Configure relevant parameters
  *       let cfg = {@link Engine3D.setting.render.postProcessing.globalFog};
  *         let view = new View3D();
         view.scene = this.scene;

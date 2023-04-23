@@ -19,7 +19,7 @@ import { GBufferFrame, RTDescriptor, RTFrame, View3D } from '../../../..';
  * Ground base Ambient Occlusion
  * 让物体与物体交叉处模仿光照被交叉遮挡的效果
  * ```
- *       //配置gtao参数
+ *       //Configure GTAO parameters
  *       let cfg = {@link Engine3D.setting.render.postProcessing.gtao};
  *         let view = new View3D();
         view.scene = this.scene;

@@ -14,10 +14,10 @@ import { PostBase } from './PostBase';
 import { Engine3D } from '../../../Engine3D';
 import { GBufferFrame, RTDescriptor, RTFrame, RTResourceConfig, View3D } from '../../../..';
 /**
- * 景深效果。
- * 模拟摄像机镜头对焦特性的一种常见的后处理效果。
+ * DepthOfFieldPost
+ * A common post-processing effect that simulates the focusing characteristics of a camera lens.
  * ```
- *       //配置景深的相关参数
+ *       //Configure parameters related to depth of field
  *       let cfg = {@link Engine3D.setting.render.postProcessing.depthOfView};
  *       cfg.near = 150;
  *       cfg.far = 300;

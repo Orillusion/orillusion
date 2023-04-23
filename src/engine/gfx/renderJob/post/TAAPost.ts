@@ -25,7 +25,7 @@ import { View3D } from '../../../..';
 /**
  * Temporal AA
  * ```
- *       //配置反走样的相关参数
+ *       //Configure relevant parameters
  *       let cfg = {@link Engine3D.setting.render.postProcessing.taa};
  *         let view = new View3D();
         view.scene = this.scene;

@@ -12,7 +12,7 @@ import { View3D } from '../../../core/View3D';
 /**
  * HDRBloom泛光效果
  * ```
- *       //配置相关参数
+ *       //Configure relevant parameters
  *       let cfg = {@link Engine3D.setting.render.postProcessing.bloom};
  *         let view = new View3D();
         view.scene = this.scene;
