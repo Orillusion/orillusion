@@ -1,6 +1,5 @@
-import { clamp, DEGREES_TO_RADIANS, RADIANS_TO_DEGREES } from './MathUtil';
+import { PI , clamp, DEGREES_TO_RADIANS, RADIANS_TO_DEGREES } from './MathUtil';
 import { Orientation3D } from './Orientation3D';
-import { kPI } from './ParticleMath';
 import { Quaternion } from './Quaternion';
 import { Vector3 } from './Vector3';
 
@@ -212,27 +211,27 @@ export class Matrix4 {
      */
     public static makePositive(euler: Vector3): void {
         let negativeFlip = -0.0001;
-        let positiveFlip = kPI * 2.0 - 0.0001;
+        let positiveFlip = PI * 2.0 - 0.0001;
 
         if (euler.x < negativeFlip) {
-            euler.x += 2.0 * kPI;
+            euler.x += 2.0 * PI;
         }
         else if (euler.x > positiveFlip) {
-            euler.x -= 2.0 * kPI;
+            euler.x -= 2.0 * PI;
         }
 
         if (euler.y < negativeFlip) {
-            euler.y += 2.0 * kPI;
+            euler.y += 2.0 * PI;
         }
         else if (euler.y > positiveFlip) {
-            euler.y -= 2.0 * kPI;
+            euler.y -= 2.0 * PI;
         }
 
         if (euler.z < negativeFlip) {
-            euler.z += 2.0 * kPI;
+            euler.z += 2.0 * PI;
         }
         else if (euler.z > positiveFlip) {
-            euler.z -= 2.0 * kPI;
+            euler.z -= 2.0 * PI;
         }
     }
 
@@ -256,7 +255,7 @@ export class Matrix4 {
                 return true;
             } else {
                 // WARNING.  Not unique.  YA - ZA = atan2(r01,r00)
-                v.x = kPI * 0.5;
+                v.x = PI * 0.5;
                 v.y = Math.atan2(matrix.get(0, 1), matrix.get(0, 0));
                 v.z = 0.0;
                 Matrix4.sanitizeEuler(v);
@@ -264,7 +263,7 @@ export class Matrix4 {
             }
         } else {
             // WARNING.  Not unique.  YA + ZA = atan2(-r01,r00)
-            v.x = -kPI * 0.5;
+            v.x = -PI * 0.5;
             v.y = Math.atan2(-matrix.get(0, 1), matrix.get(0, 0));
             v.z = 0.0;
             Matrix4.sanitizeEuler(v);
@@ -1934,7 +1933,7 @@ export class Matrix4 {
     /**
      * Returns the value of the matrix as a string
      *
-     * @returns string 字符
+     * @returns string 
      * @version Orillusion3D  0.5.1
      */
     public toString(): string {
