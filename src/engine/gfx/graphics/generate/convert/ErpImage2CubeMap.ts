@@ -80,7 +80,7 @@ export class ErpImage2CubeMap {
     private static configBuffer: GPUBuffer;
     private static quaternionBuffer: GPUBuffer;
 
-    //image为从rgbe转换为rgba的float32颜色值
+    //Convert the image which is float32 color from rgbe to rgba
     public static makeTextureCube(image: Texture, dstSize: number, dstView: GPUTextureView): void {
         const device = webGPUContext.device;
         ErpImage2CubeMap.makeFaceTexturePipeline ||= device.createComputePipeline({
