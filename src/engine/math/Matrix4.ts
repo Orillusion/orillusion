@@ -1934,7 +1934,7 @@ export class Matrix4 {
     /**
      * Returns the value of the matrix as a string
      *
-     * @returns string 字符
+     * @returns string 
      * @version Orillusion3D  0.5.1
      */
     public toString(): string {
