@@ -133,7 +133,7 @@ export class AnimationMonitor {
         if (this._currentClip.wrapMode != WrapMode.Loop && this._currentClip.wrapMode != WrapMode.Default) {
             let complete = this.speed > 0 ? this._time >= this._currentClip.totalTime : this._time <= 0;
             if (complete) {
-                this._isPlaying = false; //自动停下来
+                this._isPlaying = false;
                 this._animation['statusCall'](AnimationMonitor.Complete, lastTime, this._time);
             }
         }
