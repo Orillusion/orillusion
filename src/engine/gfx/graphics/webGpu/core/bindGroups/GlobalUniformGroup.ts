@@ -1,19 +1,4 @@
-import { ShadowLightsCollect } from '../../../../renderJob/collect/ShadowLightsCollect';
-import { Camera3D } from '../../../../../core/Camera3D';
-import { CubeCamera } from '../../../../../core/CubeCamera';
-import { PointShadowCubeCamera } from '../../../../../core/PointShadowCubeCamera';
-import { Engine3D } from '../../../../../Engine3D';
-import { Matrix4 } from '../../../../../math/Matrix4';
 
-import { UUID } from '../../../../../util/Global';
-import { Time } from '../../../../../util/Time';
-import { WebGPUDescriptorCreator } from '../../descriptor/WebGPUDescriptorCreator';
-import { webGPUContext } from '../../Context3D';
-import { StorageGPUBuffer } from '../buffer/StorageGPUBuffer';
-import { UniformGPUBuffer } from '../buffer/UniformGPUBuffer';
-import { GlobalBindGroup } from './GlobalBindGroup';
-import { GlobalBindGroupLayout } from './GlobalBindGroupLayout';
-import { MatrixBindGroup } from './MatrixBindGroup';
 
 /**
  * @internal
@@ -31,7 +16,7 @@ export class GlobalUniformGroup {
 
     /**
      * 
-     * @param matrixBindGroup 全局矩阵绑定group，通用统一
+     * @param matrixBindGroup global matrix bindgroup 
      */
     constructor(matrixBindGroup: MatrixBindGroup) {
         this.uuid = UUID();

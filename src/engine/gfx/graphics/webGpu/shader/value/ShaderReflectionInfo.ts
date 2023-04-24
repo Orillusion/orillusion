@@ -154,7 +154,7 @@ export class ShaderReflection {
 
     /**
      * 
-     * @param shaderVariant shader 变体名字
+     * @param shaderVariant shader variant name 
      * @returns 
      */
     public static poolGetReflection(shaderVariant: string): ShaderReflection {

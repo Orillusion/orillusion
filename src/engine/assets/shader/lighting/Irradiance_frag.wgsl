@@ -56,7 +56,6 @@
 
     fn getIrradiance() -> vec4<f32>{
         var irradiance = sampleIrradianceField();
-        //边缘渐渐淡出的系数
         var outerVolumeFactor:f32 = getOuterVolume(irradianceFieldSurface, ORI_VertexVarying.vWorldPos.xyz);
         irradiance *= outerVolumeFactor;
         return irradiance ;
