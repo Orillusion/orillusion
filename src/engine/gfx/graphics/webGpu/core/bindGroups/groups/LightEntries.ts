@@ -1,10 +1,4 @@
-import { LightData } from '../../../../../../components/lights/LightData';
-import { MemoryInfo } from '../../../../../../core/pool/memory/MemoryInfo';
-import { View3D } from '../../../../../../core/View3D';
-import { Engine3D } from '../../../../../../Engine3D';
-import { EntityCollect } from '../../../../../renderJob/collect/EntityCollect';
-import { DDGIIrradianceVolume } from '../../../../../renderJob/passRenderer/ddgi/DDGIIrradianceVolume';
-import { StorageGPUBuffer } from '../../buffer/StorageGPUBuffer';
+
 
 //TODO dynamic lights need fixed
 /**
