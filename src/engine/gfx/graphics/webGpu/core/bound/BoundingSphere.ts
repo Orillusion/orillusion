@@ -9,10 +9,7 @@ import { IBound } from './IBound';
  * @group Core
  */
 export class BoundingSphere implements IBound {
-    /**s
-     * @internal
-     */
-    public _center = new Vector3();
+
     public center = new Vector3();
     public extents!: Vector3; //= new Vector3();
     public max!: Vector3; //= new Vector3();
@@ -28,6 +25,11 @@ export class BoundingSphere implements IBound {
     public diffBetweenPoints = new Vector3();
     public owner: any;
     public forward: Vector3 = new Vector3(0, 0, 1);
+
+    /**
+     * @internal
+     */
+    private _center = new Vector3();
     constructor(center?: Vector3, radius?: number) {
         this.center = center || new Vector3(0, 0, 0);
         this.radius = radius === undefined ? 0.5 : radius;
