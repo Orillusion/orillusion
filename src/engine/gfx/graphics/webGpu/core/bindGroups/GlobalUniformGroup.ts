@@ -11,7 +11,7 @@ import { WebGPUDescriptorCreator } from '../../descriptor/WebGPUDescriptorCreato
 import { webGPUContext } from '../../Context3D';
 import { StorageGPUBuffer } from '../buffer/StorageGPUBuffer';
 import { UniformGPUBuffer } from '../buffer/UniformGPUBuffer';
-import { GlobalBindGroup } from './GlobalBindGroup';
+import { GlobalBindGroup } from '../../../../../graphics/webGpu/core/bindGroups/GlobalBindGroup';
 import { GlobalBindGroupLayout } from './GlobalBindGroupLayout';
 import { MatrixBindGroup } from './MatrixBindGroup';
 
