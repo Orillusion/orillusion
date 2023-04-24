@@ -84,8 +84,8 @@ export class LDRTextureCube extends TextureCube {
 
     /**
      * @private
-     * @param texture 纹理对象
-     * @returns 纹理立方体对象
+     * @param texture texture reference
+     * @returns this
      */
     private uploadErpTexture(texture: Texture): this {
         let gpuSource = this.getGpuSource(0);
@@ -95,9 +95,9 @@ export class LDRTextureCube extends TextureCube {
     }
 
     /**
-     * @priate 获取GPU纹理原始数据
-     * @param mip Mipmap级数
-     * @returns GPU纹理原始数据，包含t: GPUTexture与v: GPUTextureView
+     * @priate get GPU texture raw data
+     * @param mip mipmap level
+     * @returns GPU texture raw data, including t: GPUTexture and v: GPUTextureView
      */
     private getGpuSource(mip: number): { t: GPUTexture; v: GPUTextureView } {
         let source = this._faceTextureRef[mip];
@@ -118,8 +118,8 @@ export class LDRTextureCube extends TextureCube {
     }
 
     /**
-     * @private 生成Mipmap
-     * @param texture 纹理对象
+     * @private generateMipmap
+     * @param texture texture reference
      */
     private generateMipmap(texture: Texture) {
         let mipmap: number = 1;
@@ -130,10 +130,10 @@ export class LDRTextureCube extends TextureCube {
     }
 
     /**
-     * @private 生成指定级别的Mipmap
-     * @param mipmap Mipmap级别
-     * @param erpTexture erp纹理对象
-     * @param pow 指数系数
+     * @private Generate a specified level of Mipmap
+     * @param mipmap mipmap level
+     * @param erpTexture ERP Texture Object
+     * @param pow power
      */
     private generateMipmapAtLevel(mipmap: number, erpTexture: Texture, pow: number = 3.0): void {
         let mipFaceSize = this.width / Math.pow(2, mipmap);
