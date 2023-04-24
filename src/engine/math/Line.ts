@@ -87,11 +87,11 @@ export class Line {
     }
 
     /**
-     * 判断两个直线关系
+     * Determine the relationship between two straight lines
      * this line A = x0, y0 and B = x1, y1
      * other is A = x2, y2 and B = x3, y3
-     * @param other 另一条直线
-     * @param pIntersectPoint (out)返回两线段的交点
+     * @param other compare other line
+     * @param pIntersectPoint (out)Returns the intersection point of two line segments
      * @return
      */
     public intersection(other: Line, pIntersectPoint: Vector3 = null): LineClassification {
@@ -131,7 +131,7 @@ export class Line {
     }
 
     /**
-     * 直线方向
+     * Straight direction
      * @return
      */
     public getDirection(): Vector3 {
