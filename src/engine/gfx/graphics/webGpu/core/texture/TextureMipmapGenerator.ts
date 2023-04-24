@@ -44,14 +44,14 @@ export class TextureMipmapGenerator {
                 entries: [
                     {
                         binding: 0,
-                        //TODO : 加入shader reflection 之后需要知道 顶点用到 | 片段用到
+                        //TODO : After adding a shadow reflection, it is necessary to know that the vertex is used | the segment is used
                         visibility: texture.visibility,
                         // use GPUSamplerBindingLayout = { type:`filtering`} error
                         sampler: texture.samplerBindingLayout,
                     },
                     {
                         binding: 1,
-                        //TODO : 加入shader reflection 之后需要知道 顶点用到 | 片段用到
+                        //TODO : After adding a shadow reflection, it is necessary to know that the vertex is used | the segment is used
                         visibility: texture.visibility,
                         // use GPUTextureBindingLayout = { sampleType:`float`} error
                         texture: texture.textureBindingLayout,
