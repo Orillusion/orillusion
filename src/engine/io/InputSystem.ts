@@ -88,14 +88,14 @@ export class InputSystem extends CEventDispatcher {
 
     /**
      *
-     * 游戏手柄Stick1事件侦听函数。
+     * Game controller Stick1 event listener function.
      *
      */
     private _onGamepadStick1: Function = null;
 
     /**
      *
-     * 游戏手柄Stick2事件侦听函数。
+     * Game controller Stick2 event listener function.
      *
      */
     private _onGamepadStick2: Function = null;
@@ -186,8 +186,8 @@ export class InputSystem extends CEventDispatcher {
     /**
      * @private
      *
-     * 获取按键是否压下
-     * @param code 按键码 {@link KeyCode}
+     * Get whether the button is pressed down
+     * @param code KeyCode {@link KeyCode}
      *
      */
     private getKeyPress(code: KeyCode): boolean {
@@ -197,8 +197,8 @@ export class InputSystem extends CEventDispatcher {
     /**
      * @private
      *
-     * 获取鼠标是否压下
-     * @param code 鼠标按钮码 {@link MouseCode}
+     * Get whether the mouse is pressed down
+     * @param code mouse code {@link MouseCode}
      *
      */
     private getMousePress(code: MouseCode): boolean {
@@ -217,7 +217,7 @@ export class InputSystem extends CEventDispatcher {
 
     /**
      *
-     * 游戏手柄按钮是否按下。
+     * Get whether the game controller button is pressed.
      *
      * @param index {number}
      * @returns {boolean}
@@ -228,7 +228,7 @@ export class InputSystem extends CEventDispatcher {
 
     /**
      *
-     * 游戏手柄摇杆方向 Stick1 。
+     * Returns Game controller joystick 1 direction Stick1.
      *
      * @returns {Vector3D}
      */
@@ -238,7 +238,7 @@ export class InputSystem extends CEventDispatcher {
 
     /**
      *
-     * 游戏手柄摇杆方向 Stick2 。
+     * Returns Game controller joystick 2 direction Stick1.
      *
      * @returns {Vector3D}
      */
@@ -264,7 +264,7 @@ export class InputSystem extends CEventDispatcher {
     private touchStart(e: TouchEvent) {
         this.isMouseDown = true;
         if (e && e.changedTouches && e.changedTouches.length > 0) {
-            // x1 y1 最新的触摸点
+            // x1 y1 Latest touch points
             var newX: number = e.changedTouches[0].clientX - this.canvasX; //- Input.canvas.x + Input.canvas.offsetX;
             var newY: number = e.changedTouches[0].clientY - this.canvasY; // Input.canvas.y + Input.canvas.offsetY;
         }
@@ -631,19 +631,19 @@ export class InputSystem extends CEventDispatcher {
 
     /**
      *
-     * 根据起点和终点返回方向
-     * @param  startX {Number} 起点X坐标
-     * @param  startY {Number} 起点Y坐标
-     * @param  endX   {Number} 终点X坐标
-     * @param  endY   {Number} 终点Y坐标
-     * @returns result {number} 1：向上，2：向下，3：向左，4：向右,0：未滑动
+     * Return direction based on starting and ending points
+     * @param  startX {Number} Starting point X coordinate
+     * @param  startY {Number} Starting point Y coordinate
+     * @param  endX   {Number} End point X coordinate
+     * @param  endY   {Number} End point Y coordinate
+     * @returns result {number} 1: Up, 2: Down, 3: Left, 4: Right, 0: Not sliding
      */
     public GetSlideDirection(startX: number, startY: number, endX: number, endY: number): number {
         var dy = startY - endY;
         var dx = endX - startX;
         var result = 0;
 
-        //如果滑动距离太短
+        //If the sliding distance is too short
         if (Math.abs(dx) < 2 && Math.abs(dy) < 2) {
             return result;
         }
@@ -663,15 +663,16 @@ export class InputSystem extends CEventDispatcher {
     }
 
     private isEnlarge(op1: Vector3, op2: Vector3, np1: Vector3, np2: Vector3): boolean {
-        //函数传入上一次触摸两点的位置与本次触摸两点的位置计算出用户的手势
+        //The function is passed in to calculate the user's gesture based on the position of 
+        //  the two points touched last time and the position of the two points touched this time
         var leng1 = Math.sqrt((op1.x - op2.x) * (op1.x - op2.x) + (op1.y - op2.y) * (op1.y - op2.y));
         var leng2 = Math.sqrt((np1.x - np2.x) * (np1.x - np2.x) + (np1.y - np2.y) * (np1.y - np2.y));
 
         if (leng1 < leng2) {
-            //放大手势
+            //Zoom In gesture
             return true;
         } else {
-            //缩小手势
+            //Zoom out gesture
             return false;
         }
     }

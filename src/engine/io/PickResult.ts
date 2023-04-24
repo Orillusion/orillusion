@@ -54,7 +54,7 @@ export class PickResult {
 
     /**
      * @internal
-     * 相交面顶点2索引
+     * the vertex index of Intersecting Face
      */
     public v2: number;
 
