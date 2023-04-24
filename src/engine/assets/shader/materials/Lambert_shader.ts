@@ -1,8 +1,5 @@
 
 export class Lambert_shader { 
-    /**
-    * 片元着色器
-    */
     public static lambert_frag_wgsl = /* wgsl */ `
     #include "FragmentOutput.wgsl"
     #include "LighStruct"
@@ -67,9 +64,6 @@ export class Lambert_shader {
     }
     `;
 
-    /**
-    * 顶点着色器
-    */
     public static lambert_vert_wgsl = /* wgsl */ `
       #include "Common_vert"
 
