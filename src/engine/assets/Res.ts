@@ -342,23 +342,6 @@ export class Res {
         return cubeMap;
     }
 
-    // /**
-    //  * 加载Prefab文件
-    //  * @param url 文件路径
-    //  * @returns
-    //  */
-    // public async loadPrefab(url: string, loaderFunctions?: LoaderFunctions) {
-    //     if (this._prefabPool.has(url)) {
-    //         return this._prefabPool.get(url);
-    //     }
-    //     let loader = new FileLoader();
-    //     let parser = await loader.load(url, PrefabLoader, loaderFunctions, url);
-    //     let data = parser.data as Object3D;
-    //     this._prefabPool.set(url, data);
-    //     this._prefabLoaderPool.set(url, parser);
-    //     return data;
-    // }
-
     public async loadJSON(url: string, loaderFunctions?: LoaderFunctions) {
         return await new FileLoader()
             .loadJson(url, loaderFunctions)

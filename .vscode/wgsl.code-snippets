@@ -1,0 +1,26 @@
+{
+	"globalUniform.viewMat": {
+		"scope": "wgsl",
+		"prefix": "globalUniform.viewMat",
+		"body": [
+			"globalUniform.viewMat"
+		],
+		"description": "viewMat"
+	},
+	"globalUniform.projMat": {
+		"scope": "wgsl",
+		"prefix": "globalUniform.projMat",
+		"body": [
+			"globalUniform.projMat"
+		],
+		"description": "projMat"
+	},
+	"directShadowMaping":{
+		"scope":"wgsl",
+		"prefix": "directShadowMaping",
+		"body": [
+			"directShadowMaping($1)"
+		],
+		"description": "directShadowMaping"
+	}
+}
