@@ -1,7 +1,7 @@
 import { GPUAddressMode } from '../../WebGPUConst';
 import { Texture } from './Texture';
 /**
- * 立方体纹理
+ * Texture Cube
  * @internal
  * @group Texture
  */
