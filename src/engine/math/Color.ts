@@ -296,561 +296,145 @@ export class Color {
     public static PRIMARY = 0x3f51b5; //
     public static PRIMARYDARK = 0x303f9f; //
     public static ACCENT = 0xff4081; //
-    /**
-    * 白色十六进制值
-    */
-    public static WHITE = 0xffffff; // <!--白色 -->
-    /**
-    * 象牙色十六进制值
-    */
-    public static IVORY = 0xfffff0; // <!--象牙色 -->
-    /**
-    * 亮黄色十六进制值
-    */
-    public static LIGHTYELLOW = 0xffffe0; // <!--亮黄色 -->
-    /**
-    * 黄色十六进制值
-    */
-    public static YELLOW = 0xffff00; // <!--黄色 -->
-    /**
-    * 雪白色十六进制值
-    */
-    public static SNOW = 0xfffafa; // <!--雪白色 -->
-    /**
-    * 花白色十六进制值
-    */
-    public static FLORALWHITE = 0xfffaf0; // <!--花白色 -->
-    /**
-    * 柠檬绸十六进制值
-    */
-    public static LEMONCHIFFON = 0xfffacd; // <!--柠檬绸色 -->
-    /**
-    * 米绸色十六进制值
-    */
-    public static CORNSILK = 0xfff8dc; // <!--米绸色 -->
-    /**
-    * 海贝色十六进制值
-    */
-    public static SEASHELL = 0xfff5ee; // <!--海贝色 -->
-    /**
-    * 淡紫红十六进制值
-    */
-    public static LAVENDERBLUSH = 0xfff0f5; // <!--淡紫红 -->
-    /**
-    * 番木色十六进制值
-    */
-    public static PAPAYAWHIP = 0xffefd5; // <!--番木色 -->
-    /**
-    * 白杏色十六进制值
-    */
-    public static BLANCHEDALMOND = 0xffebcd; // <!--白杏色 -->
-    /**
-    * 浅玫瑰色十六进制值
-    */
-    public static MISTYROSE = 0xffe4e1; // <!--浅玫瑰色 -->
-    /**
-    * 桔黄色十六进制值
-    */
-    public static BISQUE = 0xffe4c4; // <!--桔黄色 -->
-    /**
-    * 鹿皮色十六进制值
-    */
-    public static MOCCASIN = 0xffe4b5; // <!--鹿皮色 -->
-    /**
-    * 纳瓦白十六进制值
-    */
-    public static NAVAJOWHITE = 0xffdead; // <!--纳瓦白 -->
-    /**
-    * 桃色十六进制值
-    */
-    public static PEACHPUFF = 0xffdab9; // <!--桃色 -->
-    /**
-    * 金色十六进制值
-    */
-    public static GOLD = 0xffd700; // <!--金色 -->
-    /**
-    * 粉红色十六进制值
-    */
-    public static PINK = 0xffc0cb; // <!--粉红色 -->
-    /**
-    * 亮粉红色十六进制值
-    */
-    public static LIGHTPINK = 0xffb6c1; // <!--亮粉红色 -->
-    /**
-    * 橙色十六进制值
-    */
-    public static ORANGE = 0xffa500; // <!--橙色 -->
-    /**
-    * 亮肉色十六进制值
-    */
-    public static LIGHTSALMON = 0xffa07a; // <!--亮肉色 -->
-    /**
-    * 暗桔黄色十六进制值
-    */
-    public static DARKORANGE = 0xff8c00; // <!--暗桔黄色 -->
-    /**
-    * 珊瑚色十六进制值
-    */
-    public static CORAL = 0xff7f50; // <!--珊瑚色 -->
-    /**
-    * 热粉红色十六进制值
-    */
-    public static HOTPINK = 0xff69b4; // <!--热粉红色 -->
-    /**
-    * 西红柿色十六进制值
-    */
-    public static TOMATO = 0xff6347; // <!--西红柿色 -->
-    /**
-    * 红橙色十六进制值
-    */
-    public static ORANGERED = 0xff4500; // <!--红橙色 -->
-    /**
-    * 深粉红色十六进制值
-    */
-    public static DEEPPINK = 0xff1493; // <!--深粉红色 -->
-    /**
-    * 紫红色十六进制值
-    */
-    public static FUCHSIA = 0xff00ff; // <!--紫红色 -->
-    /**
-    * 红紫色十六进制值
-    */
-    public static MAGENTA = 0xff00ff; // <!--红紫色 -->
-    /**
-    * 红色十六进制值
-    */
-    public static RED = 0xff0000; // <!--红色 -->
-    /**
-    * 老花色十六进制值
-    */
-    public static OLDLACE = 0xfdf5e6; // <!--老花色 -->
-    /**
-    * 亮金黄色十六进制值
-    */
-    public static LIGHTGOLDENRODYELLOW = 0xfafad2; // <!--亮金黄色 -->
-    /**
-    * 亚麻色十六进制值
-    */
-    public static LINEN = 0xfaf0e6; // <!--亚麻色 -->
-    /**
-    * 古董白十六进制值
-    */
-    public static ANTIQUEWHITE = 0xfaebd7; // <!--古董白 -->
-    /**
-    * 鲜肉色十六进制值
-    */
-    public static SALMON = 0xfa8072; // <!--鲜肉色 -->
-    /**
-    * 幽灵白十六进制值
-    */
-    public static GHOSTWHITE = 0xf8f8ff; // <!--幽灵白 -->
-    /**
-    * 薄荷色十六进制值
-    */
-    public static MINTCREAM = 0xf5fffa; // <!--薄荷色 -->
-    /**
-    * 烟白色十六进制值
-    */
-    public static WHITESMOKE = 0xf5f5f5; // <!--烟白色 -->
-    /**
-    * 米色十六进制值
-    */
-    public static BEIGE = 0xf5f5dc; // <!--米色 -->
-    /**
-    * 浅黄色十六进制值
-    */
-    public static WHEAT = 0xf5deb3; // <!--浅黄色 -->
-    /**
-    * 沙褐色十六进制值
-    */
-    public static SANDYBROWN = 0xf4a460; // <!--沙褐色 -->
-    /**
-    * 天蓝色十六进制值
-    */
-    public static AZURE = 0xf0ffff; // <!--天蓝色 -->
-    /**
-    * 蜜色十六进制值
-    */
-    public static HONEYDEW = 0xf0fff0; // <!--蜜色 -->
-    /**
-    * 艾利斯兰色十六进制值
-    */
-    public static ALICEBLUE = 0xf0f8ff; // <!--艾利斯兰 -->
-    /**
-    * 黄褐色十六进制值
-    */
-    public static KHAKI = 0xf0e68c; // <!--黄褐色 -->
-    /**
-    * 亮珊瑚色十六进制值
-    */
-    public static LIGHTCORAL = 0xf08080; // <!--亮珊瑚色 -->
-    /**
-    * 苍麒麟色十六进制值
-    */
-    public static PALEGOLDENROD = 0xeee8aa; // <!--苍麒麟色 -->
-    /**
-    * 紫罗兰色十六进制值
-    */
-    public static VIOLET = 0xee82ee; // <!--紫罗兰色 -->
-    /**
-    * 暗肉色十六进制值
-    */
-    public static DARKSALMON = 0xe9967a; // <!--暗肉色 -->
-    /**
-    * 淡紫色十六进制值
-    */
-    public static LAVENDER = 0xe6e6fa; // <!--淡紫色 -->
-    /**
-    * 亮青色十六进制值
-    */
-    public static LIGHTCYAN = 0xe0ffff; // <!--亮青色 -->
-    /**
-    * 实木色十六进制值
-    */
-    public static BURLYWOOD = 0xdeb887; // <!--实木色 -->
-    /**
-    * 洋李色十六进制值
-    */
-    public static PLUM = 0xdda0dd; // <!--洋李色 -->
-    /**
-    * 淡灰色十六进制值
-    */
-    public static GAINSBORO = 0xdcdcdc; // <!--淡灰色 -->
-    /**
-    * 暗深红色十六进制值
-    */
-    public static CRIMSON = 0xdc143c; // <!--暗深红色 -->
-    /**
-    * 苍紫罗兰色十六进制值
-    */
-    public static PALEVIOLETRED = 0xdb7093; // <!--苍紫罗兰色 -->
-    /**
-    * 金麒麟色十六进制值
-    */
-    public static GOLDENROD = 0xdaa520; // <!--金麒麟色 -->
-    /**
-    * 淡紫色十六进制值
-    */
-    public static ORCHID = 0xda70d6; // <!--淡紫色 -->
-    /**
-    * 蓟色十六进制值
-    */
-    public static THISTLE = 0xd8bfd8; // <!--蓟色 -->
-    /**
-    * 亮灰色十六进制值
-    */
-    public static LIGHTGREY = 0xd3d3d3; // <!--亮灰色 -->
-    /**
-    * 茶色十六进制值
-    */
-    public static TAN = 0xd2b48c; // <!--茶色 -->
-    /**
-    * 巧可力色十六进制值
-    */
-    public static CHOCOLATE = 0xd2691e; // <!--巧可力色 -->
-    /**
-    * 秘鲁色十六进制值
-    */
-    public static PERU = 0xcd853f; // <!--秘鲁色 -->
-    /**
-    * 印第安红十六进制值
-    */
-    public static INDIANRED = 0xcd5c5c; // <!--印第安红 -->
-    /**
-    * 中紫罗兰色十六进制值
-    */
-    public static MEDIUMVIOLETRED = 0xc71585; // <!--中紫罗兰色 -->
-    /**
-    * 银色十六进制值
-    */
-    public static SILVER = 0xc0c0c0; // <!--银色 -->
-    /**
-    * 暗黄褐色十六进制值
-    */
-    public static DARKKHAKI = 0xbdb76b; // <!--暗黄褐色-->
-    /**
-    * 褐玫瑰红十六进制值
-    */
-    public static ROSYBROWN = 0xbc8f8f; // <!--褐玫瑰红 -->
-    /**
-    * 中粉紫色十六进制值
-    */
-    public static MEDIUMORCHID = 0xba55d3; // <!--中粉紫色 -->
-    /**
-    * 暗金黄色十六进制值
-    */
-    public static DARKGOLDENROD = 0xb8860b; // <!--暗金黄色 -->
-    /**
-    * 火砖色十六进制值
-    */
-    public static FIREBRICK = 0xb22222; // <!--火砖色 -->
-    /**
-    * 粉蓝色十六进制值
-    */
-    public static POWDERBLUE = 0xb0e0e6; // <!--粉蓝色 -->
-    /**
-    * 亮钢兰色十六进制值
-    */
-    public static LIGHTSTEELBLUE = 0xb0c4de; // <!--亮钢兰色-->
-    /**
-    * 苍宝石绿十六进制值
-    */
-    public static PALETURQUOISE = 0xafeeee; // <!--苍宝石绿 -->
-    /**
-    * 黄绿色十六进制值
-    */
-    public static GREENYELLOW = 0xadff2f; // <!--黄绿色 -->
-    /**
-    * 亮蓝色十六进制值
-    */
-    public static LIGHTBLUE = 0xadd8e6; // <!--亮蓝色 -->
-    /**
-    * 暗灰色十六进制值
-    */
-    public static DARKGRAY = 0xa9a9a9; // <!--暗灰色 -->
-    /**
-    * 褐色十六进制值
-    */
-    public static BROWN = 0xa52a2a; // <!--褐色 -->
-    /**
-    * 赭色十六进制值
-    */
-    public static SIENNA = 0xa0522d; // <!--赭色 -->
-    /**
-    * 暗紫色十六进制值
-    */
-    public static DARKORCHID = 0x9932cc; // <!--暗紫色 -->
-    /**
-    * 苍绿色十六进制值
-    */
-    public static PALEGREEN = 0x98fb98; // <!--苍绿色 -->
-    /**
-    * 暗紫罗兰色十六进制值
-    */
-    public static DARKVIOLET = 0x9400d3; // <!--暗紫罗兰色 -->
-    /**
-    * 中紫色十六进制值
-    */
-    public static MEDIUMPURPLE = 0x9370db; // <!--中紫色 -->
-    /**
-    * 亮绿色十六进制值
-    */
-    public static LIGHTGREEN = 0x90ee90; // <!--亮绿色 -->
-    /**
-    * 暗海兰色十六进制值
-    */
-    public static DARKSEAGREEN = 0x8fbc8f; // <!--暗海兰色 -->
-    /**
-    * 重褐色十六进制值
-    */
-    public static SADDLEBROWN = 0x8b4513; // <!--重褐色 -->
-    /**
-    * 暗洋红十六进制值
-    */
-    public static DARKMAGENTA = 0x8b008b; // <!--暗洋红 -->
-    /**
-    * 暗红色十六进制值
-    */
-    public static DARKRED = 0x8b0000; // <!--暗红色 -->
-    /**
-    * 紫罗兰蓝色十六进制值
-    */
-    public static BLUEVIOLET = 0x8a2be2; // <!--紫罗兰蓝色 -->
-    /**
-    * 亮天蓝色十六进制值
-    */
-    public static LIGHTSKYBLUE = 0x87cefa; // <!--亮天蓝色 -->
-    /**
-    * 天蓝色十六进制值
-    */
-    public static SKYBLUE = 0x87ceeb; // <!--天蓝色 -->
-    /**
-    * 灰色十六进制值
-    */
-    public static GRAY = 0x808080; // <!--灰色 -->
-    /**
-    * 橄榄色十六进制值
-    */
-    public static OLIVE = 0x808000; // <!--橄榄色 -->
-    /**
-    * 紫色十六进制值
-    */
-    public static PURPLE = 0x800080; // <!--紫色 -->
-    /**
-    * 粟色十六进制值
-    */
-    public static MAROON = 0x800000; // <!--粟色 -->
-    /**
-    * 碧绿色十六进制值
-    */
-    public static AQUAMARINE = 0x7fffd4; // <!--碧绿色 -->
-    /**
-    * 黄绿色十六进制值
-    */
-    public static CHARTREUSE = 0x7fff00; // <!--黄绿色 -->
-    /**
-    * 草绿色十六进制值
-    */
-    public static LAWNGREEN = 0x7cfc00; // <!--草绿色 -->
-    /**
-    * 中暗蓝色十六进制值
-    */
-    public static MEDIUMSLATEBLUE = 0x7b68ee; // <!--中暗蓝色 -->
-    /**
-    * 亮蓝灰十六进制值
-    */
-    public static LIGHTSLATEGRAY = 0x778899; // <!--亮蓝灰 -->
-    /**
-    * 灰石色十六进制值
-    */
-    public static SLATEGRAY = 0x708090; // <!--灰石色 -->
-    /**
-    * 深绿褐色十六进制值
-    */
-    public static OLIVEDRAB = 0x6b8e23; // <!--深绿褐色 -->
-    /**
-    * 石蓝色十六进制值
-    */
-    public static SLATEBLUE = 0x6a5acd; // <!--石蓝色 -->
-    /**
-    * 暗灰色十六进制值
-    */
-    public static DIMGRAY = 0x696969; // <!--暗灰色 -->
-    /**
-    * 中绿色十六进制值
-    */
-    public static MEDIUMAQUAMARINE = 0x66cdaa; // <!--中绿色 -->
-    /**
-    * 菊兰色十六进制值
-    */
-    public static CORNFLOWERBLUE = 0x6495ed; // <!--菊兰色 -->
-    /**
-    * 军兰色十六进制值
-    */
-    public static CADETBLUE = 0x5f9ea0; // <!--军兰色 -->
-    /**
-    * 暗橄榄绿色十六进制值
-    */
-    public static DARKOLIVEGREEN = 0x556b2f; // <!--暗橄榄绿-->
-    /**
-    * 靛青色十六进制值
-    */
-    public static INDIGO = 0x4b0082; // <!--靛青色 -->
-    /**
-    * 中绿宝石色十六进制值
-    */
-    public static MEDIUMTURQUOISE = 0x48d1cc; // <!--中绿宝石 -->
-    /**
-    * 暗灰蓝色十六进制值
-    */
-    public static DARKSLATEBLUE = 0x483d8b; // <!--暗灰蓝色 -->
-    /**
-    * 钢兰色十六进制值
-    */
-    public static STEELBLUE = 0x4682b4; // <!--钢兰色 -->
-    /**
-    * 皇家蓝色十六进制值
-    */
-    public static ROYALBLUE = 0x4169e1; // <!--皇家蓝 -->
-    /**
-    * 青绿色十六进制值
-    */
-    public static TURQUOISE = 0x40e0d0; // <!--青绿色 -->
-    /**
-    * 中海蓝色十六进制值
-    */
-    public static MEDIUMSEAGREEN = 0x3cb371; // <!--中海蓝 -->
-    /**
-    * 橙绿色十六进制值
-    */
-    public static LIMEGREEN = 0x32cd32; // <!--橙绿色 -->
-    /**
-    * 暗瓦灰色十六进制值
-    */
-    public static DARKSLATEGRAY = 0x2f4f4f; // <!--暗瓦灰色 -->
-    /**
-    * 海绿色十六进制值
-    */
-    public static SEAGREEN = 0x2e8b57; // <!--海绿色 -->
-    /**
-    * 森林绿十六进制值
-    */
-    public static FORESTGREEN = 0x228b22; // <!--森林绿 -->
-    /**
-    * 亮海蓝色十六进制值
-    */
-    public static LIGHTSEAGREEN = 0x20b2aa; // <!--亮海蓝色 -->
-    /**
-    * 闪兰色十六进制值
-    */
-    public static DODGERBLUE = 0x1e90ff; // <!--闪兰色 -->
-    /**
-    * 中灰兰色十六进制值
-    */
-    public static MIDNIGHTBLUE = 0x191970; // <!--中灰兰色 -->
-    /**
-    * 浅绿色十六进制值
-    */
-    public static AQUA = 0x00ffff; // <!--浅绿色 -->
-    /**
-    * 青色十六进制值
-    */
-    public static CYAN = 0x00ffff; // <!--青色 -->
-    /**
-    * 春绿色十六进制值
-    */
-    public static SPRINGGREEN = 0x00ff7f; // <!--春绿色 -->
-    /**
-    * 酸橙色十六进制值
-    */
-    public static LIME = 0x00ff00; // <!--酸橙色 -->
-    /**
-    * 中春绿色十六进制值
-    */
-    public static MEDIUMSPRINGGREEN = 0x00fa9a; // <!--中春绿色 -->
-    /**
-    * 暗宝石绿色十六进制值
-    */
-    public static DARKTURQUOISE = 0x00ced1; // <!--暗宝石绿 -->
-    /**
-    * 深天蓝色十六进制值
-    */
-    public static DEEPSKYBLUE = 0x00bfff; // <!--深天蓝色 -->
-    /**
-    * 暗青色十六进制值
-    */
-    public static DARKCYAN = 0x008b8b; // <!--暗青色 -->
-    /**
-    * 水鸭色十六进制值
-    */
-    public static TEAL = 0x008080; // <!--水鸭色 -->
-    /**
-    * 绿色十六进制值
-    */
-    public static GREEN = 0x008000; // <!--绿色 -->
-    /**
-    * 暗绿色十六进制值
-    */
-    public static DARKGREEN = 0x006400; // <!--暗绿色 -->
-    /**
-    * 蓝色十六进制值
-    */
-    public static BLUE = 0x0000ff; // <!--蓝色 -->
-    /**
-    * 中兰色十六进制值
-    */
-    public static MEDIUMBLUE = 0x0000cd; // <!--中兰色 -->
-    /**
-    * 暗蓝色十六进制值
-    */
-    public static DARKBLUE = 0x00008b; // <!--暗蓝色 -->
-    /**
-    * 海军色十六进制值
-    */
-    public static NAVY = 0x000080; // <!--海军色 -->
-    /**
-    * 黑色十六进制值
-    */
-    public static BLACK = 0x000000; // <!--黑色 -->
 
+    public static WHITE = 0xffffff;
+    public static IVORY = 0xfffff0;
+    public static LIGHTYELLOW = 0xffffe0;
+    public static YELLOW = 0xffff00;
+    public static SNOW = 0xfffafa;
+    public static FLORALWHITE = 0xfffaf0;
+    public static LEMONCHIFFON = 0xfffacd;
+    public static CORNSILK = 0xfff8dc;
+    public static SEASHELL = 0xfff5ee;
+    public static LAVENDERBLUSH = 0xfff0f5;
+    public static PAPAYAWHIP = 0xffefd5;
+    public static BLANCHEDALMOND = 0xffebcd;
+    public static MISTYROSE = 0xffe4e1;
+    public static BISQUE = 0xffe4c4;
+    public static MOCCASIN = 0xffe4b5;
+    public static NAVAJOWHITE = 0xffdead;
+    public static PEACHPUFF = 0xffdab9;
+    public static GOLD = 0xffd700;
+    public static PINK = 0xffc0cb;
+    public static LIGHTPINK = 0xffb6c1;
+    public static ORANGE = 0xffa500;
+    public static LIGHTSALMON = 0xffa07a;
+    public static DARKORANGE = 0xff8c00;
+    public static CORAL = 0xff7f50;
+    public static HOTPINK = 0xff69b4;
+    public static TOMATO = 0xff6347;
+    public static ORANGERED = 0xff4500;
+    public static DEEPPINK = 0xff1493;
+    public static FUCHSIA = 0xff00ff;
+    public static MAGENTA = 0xff00ff;
+    public static RED = 0xff0000;
+    public static OLDLACE = 0xfdf5e6;
+    public static LIGHTGOLDENRODYELLOW = 0xfafad2;
+    public static LINEN = 0xfaf0e6;
+    public static ANTIQUEWHITE = 0xfaebd7;
+    public static SALMON = 0xfa8072;
+    public static GHOSTWHITE = 0xf8f8ff;
+    public static MINTCREAM = 0xf5fffa;
+    public static WHITESMOKE = 0xf5f5f5;
+    public static BEIGE = 0xf5f5dc;
+    public static WHEAT = 0xf5deb3;
+    public static SANDYBROWN = 0xf4a460;
+    public static AZURE = 0xf0ffff;
+    public static HONEYDEW = 0xf0fff0;
+    public static ALICEBLUE = 0xf0f8ff;
+    public static KHAKI = 0xf0e68c;
+    public static LIGHTCORAL = 0xf08080;
+    public static PALEGOLDENROD = 0xeee8aa;
+    public static VIOLET = 0xee82ee;
+    public static DARKSALMON = 0xe9967a;
+    public static LAVENDER = 0xe6e6fa;
+    public static LIGHTCYAN = 0xe0ffff;
+    public static BURLYWOOD = 0xdeb887;
+    public static PLUM = 0xdda0dd;
+    public static GAINSBORO = 0xdcdcdc;
+    public static CRIMSON = 0xdc143c;
+    public static PALEVIOLETRED = 0xdb7093;
+
+    public static GOLDENROD = 0xdaa520;
+    public static ORCHID = 0xda70d6;
+    public static THISTLE = 0xd8bfd8;
+    public static LIGHTGREY = 0xd3d3d3;
+    public static TAN = 0xd2b48c;
+    public static CHOCOLATE = 0xd2691e;
+    public static PERU = 0xcd853f;
+    public static INDIANRED = 0xcd5c5c;
+    public static MEDIUMVIOLETRED = 0xc71585;
+    public static SILVER = 0xc0c0c0;
+    public static DARKKHAKI = 0xbdb76b;
+    public static ROSYBROWN = 0xbc8f8f;
+    public static MEDIUMORCHID = 0xba55d3;
+    public static DARKGOLDENROD = 0xb8860b;
+    public static FIREBRICK = 0xb22222;
+    public static POWDERBLUE = 0xb0e0e6;
+    public static LIGHTSTEELBLUE = 0xb0c4de;
+    public static PALETURQUOISE = 0xafeeee;
+    public static GREENYELLOW = 0xadff2f;
+    public static LIGHTBLUE = 0xadd8e6;
+    public static DARKGRAY = 0xa9a9a9;
+    public static BROWN = 0xa52a2a;
+    public static SIENNA = 0xa0522d;
+    public static DARKORCHID = 0x9932cc;
+    public static PALEGREEN = 0x98fb98;
+    public static DARKVIOLET = 0x9400d3;
+    public static MEDIUMPURPLE = 0x9370db;
+    public static LIGHTGREEN = 0x90ee90;
+    public static DARKSEAGREEN = 0x8fbc8f;
+    public static SADDLEBROWN = 0x8b4513;
+    public static DARKMAGENTA = 0x8b008b;
+    public static DARKRED = 0x8b0000;
+    public static BLUEVIOLET = 0x8a2be2;
+    public static LIGHTSKYBLUE = 0x87cefa;
+    public static SKYBLUE = 0x87ceeb;
+    public static GRAY = 0x808080;
+    public static OLIVE = 0x808000;
+    public static PURPLE = 0x800080;
+    public static MAROON = 0x800000;
+    public static AQUAMARINE = 0x7fffd4;
+    public static CHARTREUSE = 0x7fff00;
+    public static LAWNGREEN = 0x7cfc00;
+    public static MEDIUMSLATEBLUE = 0x7b68ee;
+    public static LIGHTSLATEGRAY = 0x778899;
+    public static SLATEGRAY = 0x708090;
+    public static OLIVEDRAB = 0x6b8e23;
+    public static SLATEBLUE = 0x6a5acd;
+    public static DIMGRAY = 0x696969;
+    public static MEDIUMAQUAMARINE = 0x66cdaa;
+    public static CORNFLOWERBLUE = 0x6495ed;
+    public static CADETBLUE = 0x5f9ea0;
+    public static DARKOLIVEGREEN = 0x556b2f;
+    public static INDIGO = 0x4b0082;
+    public static MEDIUMTURQUOISE = 0x48d1cc;
+    public static DARKSLATEBLUE = 0x483d8b;
+    public static STEELBLUE = 0x4682b4;
+    public static ROYALBLUE = 0x4169e1;
+    public static TURQUOISE = 0x40e0d0;
+    public static MEDIUMSEAGREEN = 0x3cb371;
+    public static LIMEGREEN = 0x32cd32;
+    public static DARKSLATEGRAY = 0x2f4f4f;
+    public static SEAGREEN = 0x2e8b57;
+    public static FORESTGREEN = 0x228b22;
+    public static LIGHTSEAGREEN = 0x20b2aa;
+    public static DODGERBLUE = 0x1e90ff;
+    public static MIDNIGHTBLUE = 0x191970;
+    public static AQUA = 0x00ffff;
+    public static CYAN = 0x00ffff;
+    public static SPRINGGREEN = 0x00ff7f;
+    public static LIME = 0x00ff00;
+    public static MEDIUMSPRINGGREEN = 0x00fa9a;
+    public static DARKTURQUOISE = 0x00ced1;
+    public static DEEPSKYBLUE = 0x00bfff;
+    public static DARKCYAN = 0x008b8b;
+    public static TEAL = 0x008080;
+    public static GREEN = 0x008000;
+    public static DARKGREEN = 0x006400;
+    public static BLUE = 0x0000ff;
+    public static MEDIUMBLUE = 0x0000cd;
+    public static DARKBLUE = 0x00008b;
+    public static NAVY = 0x000080;
+    public static BLACK = 0x000000;
 }
