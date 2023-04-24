@@ -43,7 +43,7 @@ export class ComponentBase {
     }
 
     /**
-     * 附加到此 Object3D对象 的 Transform组件。
+     * Return the Transform component attached to the Object3D.
      */
     public get transform(): Transform {
         return this.object3D.transform;

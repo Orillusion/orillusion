@@ -364,7 +364,7 @@ export class Transform extends ComponentBase {
 
     /**
      *
-     * 更新世界空间矩阵
+     * Update the matrix4 in world space
      */
     public updateWorldMatrix(force: boolean = false) {
         if (this._localChange || force) {
