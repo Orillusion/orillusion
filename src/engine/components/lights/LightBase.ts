@@ -207,7 +207,7 @@ export class LightBase extends ComponentBase {
     }
     /**
      * set cast shadow 
-     * @param value  如果设置为true，就会产生阴影
+     * @param value is true , that can cast shadow
      *  */
     public set castShadow(value: boolean) {
         if (value) this.onChange();
