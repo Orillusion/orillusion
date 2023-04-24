@@ -16,7 +16,7 @@ export class GlobalUniformGroup {
 
     /**
      * 
-     * @param matrixBindGroup 全局矩阵绑定group，通用统一
+     * @param matrixBindGroup global matrix bindgroup 
      */
     constructor(matrixBindGroup: MatrixBindGroup) {
         this.uuid = UUID();
