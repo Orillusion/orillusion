@@ -6,8 +6,6 @@ export class MaterialPass {
 
     public renderPasses: Map<RendererType, MaterialPass[]>;
 
-    private _transparent: boolean = false;
-
     /**
      * whether the pass is enable
      */
@@ -18,6 +16,8 @@ export class MaterialPass {
     private _shaderID: string;
 
     private _sort: number = 3000;
+
+    private _transparent: boolean = false;
 
     public get sort(): number {
         return this._sort;
