@@ -88,11 +88,11 @@ export class VirtualTexture extends Texture {
     }
 
     /**
-    * 创建一个纹理对象
-    * @param width 纹理对象的宽度
-    * @param height 纹理对象的高度
-    * @param data 纹理对象数据
-    * @param useMipmap 默认使用纹理映射
+    * create rt texture
+    * @param width texture width
+    * @param height texture height
+    * @param data  texture pixel data
+    * @param useMipmap texture use mipmap switch
     * @returns
     */
     public create(width: number, height: number, useMiamp: boolean = true) {
