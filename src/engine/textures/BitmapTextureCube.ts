@@ -68,7 +68,7 @@ export class BitmapTextureCube extends TextureCube {
             mipHeight = mipHeight / 2;
             for (let faceId = 0; faceId < 6; faceId++) {
                 dstBuffer.gpuTexture = lastFaceTextures[faceId];
-                faceTextures[faceId] = BlurTexture2DBufferCreator.blurImageFromTexture(dstBuffer, mipWidth, mipHeight, false); //blur??边缘不好处理
+                faceTextures[faceId] = BlurTexture2DBufferCreator.blurImageFromTexture(dstBuffer, mipWidth, mipHeight, false);
             }
             this.uploadMipmapGPUTexture(i, mipWidth, mipHeight, faceTextures);
         }
