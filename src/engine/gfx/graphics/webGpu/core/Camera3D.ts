@@ -62,7 +62,7 @@ export class Camera3D extends ComponentBase {
     /**
    * @internal
    */
-    public _projectionMatrixInv: Matrix4 = new Matrix4();
+    private _projectionMatrixInv: Matrix4 = new Matrix4();
     private _projectionMatrix: Matrix4 = new Matrix4();
     private _viewMatrix: Matrix4 = new Matrix4();
     private _unprojection: Matrix4 = new Matrix4();
