@@ -178,7 +178,8 @@ export class RendererBase extends CEventDispatcher {
         for (let i = 0; i < nodes.length; ++i) {
             let renderNode = nodes[i];
             let matrixIndex = renderNode.transform.worldMatrix.index;
-            if (!renderNode.transform.enable) continue;
+            if (!renderNode.transform.enable)
+                continue;
             renderNode.recordRenderPass2(view, this._rendererType, this.rendererPassState, this.clusterLightingRender, encoder);
         }
     }
@@ -187,9 +188,12 @@ export class RendererBase extends CEventDispatcher {
         GPUContext.bindCamera(encoder, view.camera);
         for (let i = Engine3D.setting.render.drawOpMin; i < Math.min(nodes.length, Engine3D.setting.render.drawOpMax); ++i) {
             let renderNode = nodes[i];
-            if (!occlusionSystem.renderCommitTesting(view.camera, renderNode)) continue;
-            if (!renderNode.transform.enable) continue;
-            if (!renderNode.enable) continue;
+            if (!occlusionSystem.renderCommitTesting(view.camera, renderNode))
+                continue;
+            if (!renderNode.transform.enable)
+                continue;
+            if (!renderNode.enable)
+                continue;
             renderNode.renderPass2(view, this._rendererType, this.rendererPassState, this.clusterLightingRender, encoder);
         }
     }
