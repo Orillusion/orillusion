@@ -1,19 +1,4 @@
-import { ShadowLightsCollect } from '../../../../renderJob/collect/ShadowLightsCollect';
-import { Camera3D } from '../../../../../core/Camera3D';
-import { CubeCamera } from '../../../../../core/CubeCamera';
-import { PointShadowCubeCamera } from '../../../../../core/PointShadowCubeCamera';
-import { Engine3D } from '../../../../../Engine3D';
-import { Matrix4 } from '../../../../../math/Matrix4';
 
-import { UUID } from '../../../../../util/Global';
-import { Time } from '../../../../../util/Time';
-import { WebGPUDescriptorCreator } from '../../descriptor/WebGPUDescriptorCreator';
-import { webGPUContext } from '../../Context3D';
-import { StorageGPUBuffer } from '../buffer/StorageGPUBuffer';
-import { UniformGPUBuffer } from '../buffer/UniformGPUBuffer';
-import { GlobalBindGroup } from '../../../../../graphics/webGpu/core/bindGroups/GlobalBindGroup';
-import { GlobalBindGroupLayout } from './GlobalBindGroupLayout';
-import { MatrixBindGroup } from './MatrixBindGroup';
 
 /**
  * @internal

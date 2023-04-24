@@ -1,8 +1,7 @@
-import { Camera3D } from '../../../../../core/Camera3D';
-import { LightEntries } from './groups/LightEntries';
-import { MatrixBindGroup } from '../../../../generate/graphic/webgpu/core/bindGroups/MatrixBindGroup';
-import { GlobalUniformGroup } from '../../../../generate/graphic/webgpu/core/bindGroups/GlobalUniformGroup';
-import { Scene3D } from '../../../../../core/Scene3D';
+import { GlobalUniformGroup } from "./GlobalUniformGroup";
+import { LightEntries } from "./groups/LightEntries";
+import { MatrixBindGroup } from "./MatrixBindGroup";
+
 /**
  * @internal
  * Use Global DO Matrix ArrayBuffer Descriptor
