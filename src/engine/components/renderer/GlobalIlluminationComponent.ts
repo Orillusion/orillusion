@@ -14,9 +14,10 @@ import { ComponentType } from '../../util/SerializeDefine';
 
 /**
  *
- * 全局光照组件。
- * 使用全局光照能够实现更加逼真的光照。
- * 全局光照系统能够对光照在表面反射或折射到其它表面（间接光照）的方式进行建模，而非限定光照只能从光源照射到某个表面。
+ * Global Illumination Component
+ * Use global illumination to achieve more realistic lighting.
+ * The global illumination system can model the way light reflects or refracts on the surface to other surfaces (indirect lighting), 
+ * rather than limiting that light can only shine from the light source to a certain surface.
  * @group Components
  */
 export class GlobalIlluminationComponent extends ComponentBase {
