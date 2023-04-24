@@ -29,7 +29,19 @@ export class MaterialBase extends MaterialPass {
     public instanceID: string;
 
     /**
+<<<<<<< HEAD
      * is PassMaterial
+=======
+<<<<<<< HEAD
+     * is PassMaterial
+=======
+<<<<<<< HEAD
+     * is PassMaterial
+=======
+     * 是否为PassMaterial
+>>>>>>> 5ff4982eb64ceb81f5ec76044089f3ec647cea25
+>>>>>>> 23d5ef9f989af6b36e2d3d03f328c1fc03c06fda
+>>>>>>> 970d060c823643615dcc416da20b14aba2beb0ce
      */
     public isPassMaterial: boolean = false;
 
