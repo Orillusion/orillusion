@@ -1,8 +1,7 @@
-import { Camera3D } from '../../../../../core/Camera3D';
-import { LightEntries } from './groups/LightEntries';
-import { MatrixBindGroup } from './MatrixBindGroup';
-import { GlobalUniformGroup } from './GlobalUniformGroup';
-import { Scene3D } from '../../../../../core/Scene3D';
+import { GlobalUniformGroup } from "./GlobalUniformGroup";
+import { LightEntries } from "./groups/LightEntries";
+import { MatrixBindGroup } from "./MatrixBindGroup";
+
 /**
  * @internal
  * Use Global DO Matrix ArrayBuffer Descriptor
