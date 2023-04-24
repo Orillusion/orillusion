@@ -11,6 +11,13 @@ import { PhysicMaterial } from './PhysicMaterial';
  * @group Material
  */
 export class GlassMaterial extends PhysicMaterial {
+<<<<<<< HEAD
+=======
+    /**
+     * 实例个数
+     */
+    static count = 0;
+>>>>>>> 5ff4982eb64ceb81f5ec76044089f3ec647cea25
 
     /**
      * @constructor
@@ -76,7 +83,15 @@ export class GlassMaterial extends PhysicMaterial {
         return ret as this;
     }
 
+<<<<<<< HEAD
 
+=======
+    /**
+     * 启用GUI调试
+     */
+    debug() {
+    }
+>>>>>>> 5ff4982eb64ceb81f5ec76044089f3ec647cea25
 }
 
 registerMaterial('GlassMaterial', GlassMaterial);
