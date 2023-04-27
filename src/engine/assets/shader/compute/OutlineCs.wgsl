@@ -86,15 +86,12 @@ struct OutlineSettingData{
         for(var y:f32 = minY; y < maxY; y += 1.0){
             coordTemp_f32.x = x;
             coordTemp_f32.y = y;
-            //圆形范围内
             let distanceToOuter = length(coordTemp_f32 - coordCurrent_f32);
             if(distanceToOuter < pixelRadius){
                 var coord_i32 = vec2<i32>(coordTemp_f32);
                 tempCoordIndex = coord_i32.x + coord_i32.y * i32(texSize.x);
                 tempWeightData = weightBuffer[tempCoordIndex];
-                //递归到的像素处于选中状态
                 let outlineGap = abs(tempWeightData.slotIndex - fragOutline.slotIndex);
-                //边缘
                 if(outlineGap > 0.1){
                     if(tempWeightData.slotIndex > fragOutline.slotIndex){
                         if(abs(tempWeightData.slotIndex - fragOutline.outerSlotIndex) < 0.1){

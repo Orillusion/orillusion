@@ -48,7 +48,6 @@ var<uniform> materialUniform: MaterialUniform;
 
             let worldNormal = normalize(ORI_NORMALMATRIX * vertexNormal.xyz) ;
 
-            //外轮廓效果的关键
             vertexPosition = vertexPosition + worldNormal * materialUniform.lineWeight ;
 
             var worldPos = (ORI_MATRIX_M * vec4<f32>(vertexPosition.xyz, 1.0));

@@ -77,7 +77,7 @@ struct OutlineSettingData{
         let count:i32 = i32(slotData.count);
         for(var j:i32 = 0; j < count; j ++){
             var outlineIndex = entities[j];
-            if(abs(fragOutline.entityIndex - outlineIndex) < 0.1){ //fix 误差
+            if(abs(fragOutline.entityIndex - outlineIndex) < 0.1){ 
                 return i;
             }
         }
