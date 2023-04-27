@@ -69,7 +69,7 @@ export class Res {
 
     /**
      * get material by name
-     * @param name mateiral name
+     * @param name material name
      * @returns
      */
     public getMat(name: string) {
@@ -182,7 +182,7 @@ export class Res {
      * load texture by url
      * @param url texture path
      * @param loaderFunctions callback
-     * @param flipY use filp y or not
+     * @param flipY use flip y or not
      * @returns
      */
     public async loadTexture(url: string, loaderFunctions?: LoaderFunctions, flipY?: boolean) {

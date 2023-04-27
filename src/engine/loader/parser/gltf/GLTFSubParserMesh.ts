@@ -180,9 +180,9 @@ export class GLTFSubParserMesh {
                     });
                 }
 
-                if (hasPositions) dprimitive.defines.push(GLTFParser.getMorphtargetPositionDefine());
-                if (hasNormals) dprimitive.defines.push(GLTFParser.getMorphtargetNormalDefine());
-                if (hasTangents) dprimitive.defines.push(GLTFParser.getMorphtargetTangentDefine());
+                if (hasPositions) dprimitive.defines.push(GLTFParser.getMorphTargetPositionDefine());
+                if (hasNormals) dprimitive.defines.push(GLTFParser.getMorphTargetNormalDefine());
+                if (hasTangents) dprimitive.defines.push(GLTFParser.getMorphTargetTangentDefine());
                 dprimitive.weights = mesh.weights || new Array(targets.length).fill(0);
             }
 

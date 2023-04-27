@@ -46,7 +46,7 @@ export class GLTF_Info {
         sampler: number;
         source: number;
         name: string;
-        dtexture: any;
+        dTexture: any;
     }[];
     cameras: any;
     skins: any;
@@ -55,8 +55,8 @@ export class GLTF_Info {
         uri: string;
         name: string;
         isParsed: any;
-        dsampler: any;
-        dimage: any;
+        dSampler: any;
+        dImage: any;
         mimeType: string;
         bufferView: number;
     }[];

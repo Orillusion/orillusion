@@ -26,7 +26,7 @@ export class GLTFParser extends ParserBase {
         //await this.load_gltf_textures();
         let subParser = new GLTFSubParser();
         let nodes = await subParser.parse(this.initUrl, this._gltf, this._gltf.scene);
-        subParser.destory();
+        subParser.destroy();
         subParser = null
         if (nodes) {
             this.data = nodes.rootNode;
@@ -135,15 +135,15 @@ export class GLTFParser extends ParserBase {
         return `MORPH_TARGET_NUM ${targetNum}`;
     }
 
-    public static getMorphtargetPositionDefine() {
+    public static getMorphTargetPositionDefine() {
         return 'HAS_MORPH_POSITION';
     }
 
-    public static getMorphtargetNormalDefine() {
+    public static getMorphTargetNormalDefine() {
         return 'HAS_MORPH_NORMAL';
     }
 
-    public static getMorphtargetTangentDefine() {
+    public static getMorphTargetTangentDefine() {
         return 'HAS_MORPH_TANGENT';
     }
 

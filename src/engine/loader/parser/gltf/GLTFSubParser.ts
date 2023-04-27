@@ -93,7 +93,7 @@ export class GLTFSubParser {
         return await this.convertToNode(result);
     }
 
-    public destory() {
+    public destroy() {
         KHR_draco_mesh_compression.unload(this.gltf)
         this.gltf = null
     }
@@ -186,31 +186,31 @@ export class GLTFSubParser {
 
     public async parseTexture(index: number) {
         let textureInfo = this.gltf.textures[index];
-        if (textureInfo && !textureInfo.dtexture) {
+        if (textureInfo && !textureInfo.dTexture) {
             if (textureInfo && textureInfo.source != null) {
                 let image = this.gltf.images[textureInfo.source];
                 if (image.uri) {
                     let name = image.uri;
                     name = StringUtil.getURLName(name);
-                    textureInfo.dtexture = this.gltf.resources[name];
+                    textureInfo.dTexture = this.gltf.resources[name];
                 } else if (image.bufferView) {
                     let buffer = this.parseBufferView(image.bufferView);
                     let bitmapTexture = new BitmapTexture2D();
                     let img = new Blob([buffer], { type: image.mimeType });
                     await bitmapTexture.loadFromBlob(img);
-                    textureInfo.dtexture = bitmapTexture;
+                    textureInfo.dTexture = bitmapTexture;
                 } else {
-                    textureInfo.dtexture = this.gltf.resources[image.name];
+                    textureInfo.dTexture = this.gltf.resources[image.name];
                 }
             } else if (textureInfo.name) {
                 let name = StringUtil.getURLName(textureInfo.name);
-                textureInfo.dtexture = this.gltf.resources[name];
+                textureInfo.dTexture = this.gltf.resources[name];
             }
         }
-        if (!textureInfo.dtexture) {
+        if (!textureInfo.dTexture) {
             console.log("miss texture , please check texture!", index, textureInfo);
         }
-        return textureInfo.dtexture;
+        return textureInfo.dTexture;
     }
 
     public async parseMaterial(materialId) {
@@ -222,87 +222,6 @@ export class GLTFSubParser {
 
     private parseAnimations() {
         const result = [];
-        // const animations = this.gltf.animations;
-        // if (animations)
-        //     for (let i = 0; i < animations.length; i++) {
-        //         const animation = animations[i];
-        //         const { name, channels, samplers } = animation;
-        //         const clips = [];
-        //         if (channels && samplers)
-        //             for (let j = 0; j < channels.length; j++) {
-        //                 const channel = channels[j];
-        //                 const sampler = samplers[channel.sampler];
-        //                 if (!sampler) {
-
-        //                     this.errorMiss(`animations[${i}].channels[${j}].sampler`, channel.sampler);
-        //                     continue;
-
-        //                 }
-
-        //                 const input = this.parseAccessor(sampler.input).data;
-        //                 const outputData = this.parseAccessor(sampler.output);
-        //                 const output = outputData.data;
-        //                 const numComponents = outputData.numComponents;
-        //                 const interpolation = sampler.interpolation || 'LINEAR';
-        //                 const gltfNodeIdx = channel.target.node;
-        //                 const path = channel.target.path;
-
-        //                 if (!input || !output) continue;
-
-        //                 let combinedOutput = output;
-        //                 if (numComponents !== 1 || input.length !== output.length) {
-
-        //                     const numComp = output.length / input.length;
-        //                     combinedOutput = [];
-        //                     for (let k = 0; k < input.length; k++)
-        //                         combinedOutput.push(output.slice(numComp * k, numComp * (k + 1)));
-
-        //                 }
-
-        //                 let nodeProperty = path;
-        //                 const extras = {};
-        //                 switch (path) {
-
-        //                     case 'translation':
-        //                         nodeProperty = 'position';
-        //                         break;
-        //                     case 'rotation':
-        //                         nodeProperty = 'quaternion';
-        //                         break;
-        //                     case 'scale':
-        //                         nodeProperty = 'scale';
-        //                         break;
-        //                     case 'weights':
-        //                         nodeProperty = 'weights';
-        //                         // extras.uniformName = GLTFParser.MORPH_WEIGHT_UNIFORM;
-        //                         break;
-        //                     default:
-        //                         console.error(`unsupported animation sampler path ${path}`);
-        //                         nodeProperty = false;
-        //                 }
-
-        //                 if (!nodeProperty) continue;
-
-        //                 const clip = {
-        //                     times: input,
-        //                     values: combinedOutput,
-        //                     findFlag: GLTFParser.GLTF_NODE_INDEX_PROPERTY,
-        //                     findValue: gltfNodeIdx,
-        //                     targetProp: nodeProperty,
-        //                     method: interpolation,
-        //                     extras,
-        //                 };
-
-        //                 clips.push(clip);
-
-        //             }
-
-        //         result.push({
-        //             name: name || String(i),
-        //             clips,
-        //         });
-
-        //     }
         return result;
     }
 
@@ -327,10 +246,10 @@ export class GLTFSubParser {
         return this._skeletonParser.parseSkeletonAnimation(skeleton, animation);
     }
 
-    private async trivarse(parentNode, nodeInfos) {
+    private async traverse(parentNode, nodeInfos) {
         for (let i = 0; i < nodeInfos.length; i++) {
             const node = await this.parseObject3D(nodeInfos[i], parentNode);
-            await this.trivarse(node, nodeInfos[i].children);
+            await this.traverse(node, nodeInfos[i].children);
         }
     }
 
@@ -342,151 +261,9 @@ export class GLTFSubParser {
         const textures = [];
         const skins = [];
         const cameras = [];
-        await this.trivarse(rootNode, nodes);
+        await this.traverse(rootNode, nodes);
 
         let animas;
-        // apply skins
-        //   if ( skins.length ) {
-
-        //     const handlers = []; // help uglify use different name
-        //     for ( let i = 0; i < skins.length; i ++ ) {
-
-        //         const {
-        //             joints, skeleton, inverseBindMatrices, models,
-        //         } = skins[ i ];
-
-        //         const jointNum = joints.length;
-        //         const globalJointTransformNodes = [];
-        //         for ( let j = 0; j < jointNum; j ++ )
-        //             globalJointTransformNodes[ j ] = rootNode.findInChildren( GLTFParser.GLTF_NODE_INDEX_PROPERTY, joints[ j ] );
-
-        //         let skeletonNode;
-        //         if ( skeleton !== GLTFParser.SCENE_ROOT_SKELETON )
-        //             skeletonNode = rootNode.findInChildren( GLTFParser.GLTF_NODE_INDEX_PROPERTY, skeleton );
-        //         else
-        //             skeletonNode = rootNode;
-        //         skins[ i ].skeletonNode = skeletonNode; // do not know how to use it
-
-        //         const frag = new Array( 16 );
-        //         const fragWorld = new Array( 16 );
-        //         handlers[ i ] = function updateJointUniformFunc() {
-
-        //             for ( let k = 0; k < models.length; k ++ ) {
-
-        //                 const model = models[ k ];
-        //                 const globalTransformNode = model.node;
-        //                 let jointMats = [];
-        //                 Matrix4.invert( fragWorld, globalTransformNode.transform.getWorldMatrix() );
-
-        //                 for ( let n = 0; n < jointNum; n ++ ) {
-
-        //                     Matrix4.mult( frag, fragWorld, globalJointTransformNodes[ n ].transform.getWorldMatrix() );
-        //                     if ( inverseBindMatrices[ n ] !== GLTFParser.IDENTITY_INVERSE_BIND_MATRICES )
-        //                         Matrix4.mult( frag, frag, inverseBindMatrices[ n ] );
-        //                     jointMats = jointMats.concat( frag );
-
-        //                 }
-
-        //                 const uniformObj = {};
-        //                 uniformObj[ GLTFParser.JOINT_MATRICES_UNIFORM ] = jointMats;
-        //                 model.setUniformObj( uniformObj );
-
-        //             }
-
-        //         };
-
-        //         rootNode.afterUpdateMatrix.push( {
-        //             type: 'skin', skinName: skins[ i ].name, handler: handlers[ i ], trigerNodes: [ skeletonNode, ...globalJointTransformNodes ],
-        //         } );
-
-        //     }
-
-        //   }
-
-        // // animations
-        //   for ( let i = 0; i < animations.length; i ++ ) {
-
-        //     const { clips } = animations[ i ];
-        //     let animateMaxTime = Number.NEGATIVE_INFINITY;
-        //     let animateMinTime = Number.POSITIVE_INFINITY;
-        //     for ( let j = 0; j < clips.length; j ++ ) {
-
-        //         const {
-        //             findFlag, findValue, targetProp, times, extras, // method,
-        //         } = clips[ j ];
-
-        //         const node = rootNode.findInChildren( findFlag, findValue );
-        //         let targetNodes = [ node ];
-        //         if ( ! node.model && node.gltfPrimitives )
-        //             targetNodes = node.gltfPrimitives;
-
-        //         let setTarget;
-        //         let resetTarget;
-        //         if ( targetProp === 'weights' ) {
-
-        //             const resetObj = {};
-        //             resetObj[ GLTFParser.MORPH_WEIGHT_UNIFORM ] = targetNodes[ 0 ].model.uniformObj[ GLTFParser.MORPH_WEIGHT_UNIFORM ];
-        //             resetTarget = function () {
-
-        //                 targetNodes.forEach( ( n ) => {
-
-        //                     n.model.setUniformObj( resetObj );
-
-        //                 } );
-
-        //             };
-
-        //             setTarget = function ( v ) {
-
-        //                 const uniformobj = {};
-        //                 uniformobj[ extras.uniformName ] = v;
-
-        //                 targetNodes.forEach( ( n ) => {
-
-        //                     n.model.setUniformObj( uniformobj );
-
-        //                 } );
-
-        //             };
-
-        //         } else {
-
-        //             const defaultValues = [];
-        //             for ( let m = 0; m < targetNodes.length; m ++ )
-        //                 defaultValues[ m ] = targetNodes[ m ][ targetProp ];
-
-        //             resetTarget = function () {
-
-        //                 for ( let m = 0; m < targetNodes.length; m ++ )
-        //                     targetNodes[ m ][ targetProp ] = defaultValues[ m ];
-
-        //             };
-
-        //             setTarget = function ( v ) {
-
-        //                 targetNodes.forEach( ( n ) => {
-
-        //                     n[ targetProp ] = v; // eslint-disable-line
-
-        //                 } );
-
-        //             };
-
-        //         }
-
-        //         animateMinTime = animateMinTime < times[ 0 ] ? animateMinTime : times[ 0 ];
-        //         animateMaxTime = animateMaxTime > times[ times.length - 1 ] ? animateMaxTime : times[ times.length - 1 ];
-
-        //         Object.assign( clips[ j ], { setTarget, resetTarget } );
-
-        //     }
-
-        //     Object.assign( animations[ i ], { animateMinTime, animateMaxTime } );
-
-        //   }
-
-        //   animas = { animations, type: 'gltf' };
-
         return {
             rootNode,
             textures,
