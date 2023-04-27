@@ -36,7 +36,7 @@ export class InputSystem extends CEventDispatcher {
     public isRightMouseDown: boolean = false;
 
     /**
-     * referrence of canvas
+     * reference of canvas
      */
     public canvas: HTMLCanvasElement;
 
@@ -86,13 +86,11 @@ export class InputSystem extends CEventDispatcher {
     protected _pointerEvent3D: PointerEvent3D;
     protected _windowsEvent3d: CEvent;
 
-    private _onGamepadStick1: Function = null;
 
-    private _onGamepadStick2: Function = null;
 
     /**
      * init the input system
-     * @param canvas the referrence of canvas
+     * @param canvas the reference of canvas
      */
     public initCanvas(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
@@ -173,56 +171,12 @@ export class InputSystem extends CEventDispatcher {
         this._windowsEvent3d = new CEvent();
     }
 
-    /**
-     * @private
-     *
-     * @param code {@link KeyCode}
-     *
-     */
-    private getKeyPress(code: KeyCode): boolean {
-        return this._keyStatus[code];
-    }
 
-    /**
-     * @private
-     * @param code {@link MouseCode}
-     *
-     */
-    private getMousePress(code: MouseCode): boolean {
-        return this._mouseStatus[code];
-    }
 
     private _gp: boolean = false;
-    private ongamepaddisconnected(e: GamepadEvent) {
-        //Debug.instance.trace("Gamepad disconnected!");
-        this._gp = false;
-    }
-    private ongamepadconnected(e: GamepadEvent) {
-        //Debug.instance.trace("Gamepad connected!");
-        this._gp = true;
-    }
 
-    /**
-     * @param index {number}
-     * @returns {boolean}
-     */
-    private getGamepadButtonState(index: number): boolean {
-        return navigator.getGamepads()[0].buttons[index].pressed;
-    }
 
-    /**
-     * @returns {Vector3D}
-     */
-    private getGamepadStick1(): Vector3 {
-        return new Vector3(navigator.getGamepads()[0].axes[0], navigator.getGamepads()[0].axes[1], 0);
-    }
 
-    /**
-     * @returns {Vector3D}
-     */
-    private getGamepadStick2(): Vector3 {
-        return new Vector3(navigator.getGamepads()[0].axes[2], navigator.getGamepads()[0].axes[3], 0);
-    }
 
     private onPinch(x1: number, y1: number, x2: number, y2: number) {
         this._oldPosition1 = new Vector3(x1, y1);
@@ -239,114 +193,8 @@ export class InputSystem extends CEventDispatcher {
         this._time = new Date().getTime();
     }
 
-    private touchStart(e: TouchEvent) {
-        this.isMouseDown = true;
-        if (e && e.changedTouches && e.changedTouches.length > 0) {
-            var newX: number = e.changedTouches[0].clientX - this.canvasX; //- Input.canvas.x + Input.canvas.offsetX;
-            var newY: number = e.changedTouches[0].clientY - this.canvasY; // Input.canvas.y + Input.canvas.offsetY;
-        }
-
-        if (e.targetTouches && e.targetTouches.length == 2) {
-            var oldX: number = e.targetTouches[0].clientX - this.canvasX; // - Input.canvas.x + Input.canvas.offsetX;
-            var oldY: number = e.targetTouches[0].clientY - this.canvasY; // - Input.canvas.y + Input.canvas.offsetY;
-            this.onPinch(oldX, oldY, newX, newY);
-        } else if (e.targetTouches && e.targetTouches.length == 1) {
-            this.onSwipe(newX, newY);
-            this._mouseStatus[MouseCode.MOUSE_LEFT] = true;
-        }
-
-        this._pointerEvent3D.reset();
-        this._pointerEvent3D.targetTouches = this.GetTargetTouches(e.targetTouches);
-        this._pointerEvent3D.changedTouches = this.GetTargetTouches(e.changedTouches);
-        this._pointerEvent3D.touches = this.GetTargetTouches(e.touches);
-        // this._pointerEvent3D.target = this;
-        this.mouseX = e.targetTouches[0].clientX - this.canvasX; /*- Input.canvas.x + Input.canvas.offsetX*/
-        this.mouseY = e.targetTouches[0].clientY - this.canvasY; /*- Input.canvas.y + Input.canvas.offsetY*/
-        this._pointerEvent3D.mouseX = this.mouseX;
-        this._pointerEvent3D.mouseY = this.mouseY;
-        //            if (!this._isTouchStart) {
-        this._isTouchStart = true;
-        this._pointerEvent3D.type = PointerEvent3D.POINTER_DOWN;
-        this.dispatchEvent(this._pointerEvent3D);
-        //            }
-        this._downTime = Time.time;
-    }
-
     private _oldPosition1: Vector3 = null;
     private _oldPosition2: Vector3 = null;
-
-    private touchEnd(e: TouchEvent) {
-        this.isMouseDown = false;
-        if (e.targetTouches.length > 1) {
-            var x: number = e.targetTouches[0].clientX - this.canvasX; //- Input.canvas.x + Input.canvas.offsetX;
-            var y: number = e.targetTouches[0].clientY - this.canvasY; //- Input.canvas.y + Input.canvas.offsetY;
-            var x1: number = e.targetTouches[1].clientX - this.canvasX; //- Input.canvas.x + Input.canvas.offsetX;
-            var y1: number = e.targetTouches[1].clientY - this.canvasY; // Input.canvas.y + Input.canvas.offsetY;
-            this.onPinch(x, y, x1, y1);
-        } else if (e.targetTouches.length == 1) {
-            this.onSwipe(e.targetTouches[0].clientX - this.canvasX /*- Input.canvas.x + Input.canvas.offsetX*/, e.targetTouches[0].clientY - this.canvasY /*- Input.canvas.y + Input.canvas.offsetY*/);
-            this._mouseStatus[MouseCode.MOUSE_LEFT] = false;
-        } else {
-            this._oldPosition1 = null;
-            this._oldPosition2 = null;
-            this._time = 0;
-        }
-        this._pointerEvent3D.reset();
-        this._isTouchStart = false;
-        this._pointerEvent3D.targetTouches = this.GetTargetTouches(e.targetTouches);
-        this._pointerEvent3D.changedTouches = this.GetTargetTouches(e.changedTouches);
-        this._pointerEvent3D.touches = this.GetTargetTouches(e.touches);
-        // this._pointerEvent3D.target = this;
-        this._pointerEvent3D.type = PointerEvent3D.POINTER_UP;
-        this._pointerEvent3D.mouseX = this.mouseX;
-        this._pointerEvent3D.mouseY = this.mouseY;
-        this.dispatchEvent(this._pointerEvent3D);
-        if (Time.time - this._downTime < 200) {
-            this._pointerEvent3D.type = PointerEvent3D.POINTER_CLICK;
-            this.dispatchEvent(this._pointerEvent3D);
-        }
-    }
-
-    private touchMove(e: TouchEvent) {
-        this.mouseLastX = this.mouseX;
-        this.mouseLastY = this.mouseY;
-
-        this.mouseX = e.targetTouches[0].clientX - this.canvasX; /*- Input.canvas.x + Input.canvas.offsetX*/
-        this.mouseY = e.targetTouches[0].clientY - this.canvasY; /*- Input.canvas.y + Input.canvas.offsetY*/
-
-        this.mouseOffsetX = this.mouseX - this.mouseLastX;
-        this.mouseOffsetY = this.mouseY - this.mouseLastY;
-
-        // e.preventDefault();
-        // this.mouseClick.apply(this, e);
-        // this._touchEvent3d.reset();
-        //e.preventDefault();
-
-        if (e.targetTouches.length > 1) {
-            var newPosition1: Vector3 = new Vector3(this.mouseX, this.mouseY);
-            var newPosition2: Vector3 = new Vector3(e.targetTouches[1].clientX - this.canvasX /*- Input.canvas.x + Input.canvas.offsetX*/, e.targetTouches[1].clientY - this.canvasY /*- Input.canvas.y + Input.canvas.offsetY*/);
-
-            if (this._oldPosition1 == null) this._oldPosition1 = newPosition1;
-            if (this._oldPosition2 == null) this._oldPosition2 = newPosition2;
-
-            if (this.isEnlarge(this._oldPosition1, this._oldPosition2, newPosition1, newPosition2)) this.wheelDelta = 120;
-            else this.wheelDelta = -120;
-
-            this._oldPosition1 = newPosition1;
-            this._oldPosition2 = newPosition2;
-        } else {
-        }
-
-        this._pointerEvent3D.reset();
-        this._pointerEvent3D.targetTouches = this.GetTargetTouches(e.targetTouches);
-        this._pointerEvent3D.changedTouches = this.GetTargetTouches(e.changedTouches);
-        this._pointerEvent3D.touches = this.GetTargetTouches(e.touches);
-        this._pointerEvent3D.mouseX = this.mouseX;
-        this._pointerEvent3D.mouseY = this.mouseY;
-        // this._pointerEvent3D.target = this;
-        this._pointerEvent3D.type = PointerEvent3D.POINTER_MOVE;
-        this.dispatchEvent(this._pointerEvent3D);
-    }
 
     private GetTargetTouches(targetTouches: TouchList): Array<TouchData> {
         var array: Array<TouchData> = new Array<TouchData>();
@@ -448,10 +296,6 @@ export class InputSystem extends CEventDispatcher {
         this.dispatchEvent(this._pointerEvent3D);
     }
 
-    private isMobile(pointerType: string): boolean {
-        // return /Mobile/i.test(navigator.userAgent);
-        return "touch" == pointerType;
-    }
 
     private mouseStart(e: PointerEvent) {
         this.isMouseDown = true;
@@ -592,14 +436,6 @@ export class InputSystem extends CEventDispatcher {
         this.dispatchEvent(this._keyEvent3d);
     }
 
-    private onWindowsResize(e: UIEvent) {
-        let rect: DOMRect = this.canvas.getBoundingClientRect();
-
-        this.canvasX = rect.left; // parseInt( this.canvas.style.left.split("px")[0] );
-        this.canvasY = rect.top; //rect parseInt(this.canvas.style.top.split("px")[0]);
-        this._windowsEvent3d.type = CResizeEvent.RESIZE;
-        this.dispatchEvent(this._windowsEvent3d);
-    }
 
     private GetSlideAngle(dx: number, dy: number) {
         return (Math.atan2(dy, dx) * 180) / Math.PI;
@@ -634,16 +470,5 @@ export class InputSystem extends CEventDispatcher {
         }
 
         return result;
-    }
-
-    private isEnlarge(op1: Vector3, op2: Vector3, np1: Vector3, np2: Vector3): boolean {
-        var leng1 = Math.sqrt((op1.x - op2.x) * (op1.x - op2.x) + (op1.y - op2.y) * (op1.y - op2.y));
-        var leng2 = Math.sqrt((np1.x - np2.x) * (np1.x - np2.x) + (np1.y - np2.y) * (np1.y - np2.y));
-
-        if (leng1 < leng2) {
-            return true;
-        } else {
-            return false;
-        }
     }
 }
