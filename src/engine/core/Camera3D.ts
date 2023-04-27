@@ -11,7 +11,6 @@ import { CameraUtil } from '../util/CameraUtil';
 import { Frustum } from './bound/Frustum';
 import { CameraType } from './CameraType';
 import { CubeCamera } from './CubeCamera';
-import { ComponentType } from "../util/SerializeDefine";
 import { webGPUContext } from '../gfx/graphics/webGpu/Context3D';
 
 /**
@@ -98,7 +97,6 @@ export class Camera3D extends ComponentBase {
 
     constructor() {
         super();
-        this.componentType = ComponentType.camera3D;
     }
 
     protected init() {

@@ -1,11 +1,10 @@
 import { Engine3D } from '../Engine3D';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
+import { EntityCollect } from '../gfx/renderJob/collect/EntityCollect';
+import { defaultRes } from '../textures/DefaultRes';
+import { View3D } from './View3D';
 import { Object3D } from './entities/Object3D';
-import {
-    EntityCollect,
-    View3D,
-    defaultRes
-} from '../..';
+
 
 /**
  * It represents an independent 3D scene where 3D objects can be created and manipulated.
