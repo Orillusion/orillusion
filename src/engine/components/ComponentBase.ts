@@ -1,7 +1,5 @@
-import { View3D } from "../core/View3D";
 import { Object3D } from "../core/entities/Object3D";
 import { CEventDispatcher } from "../event/CEventDispatcher";
-import { ComponentType, SerializeTag } from "../util/SerializeDefine";
 import { Transform } from "./Transform";
 
 
@@ -20,16 +18,6 @@ export class ComponentBase {
      * @internal
      */
     public eventDispatcher: CEventDispatcher;
-
-    /**
-     * @internal
-     */
-    public componentType: ComponentType = ComponentType.none;
-
-    /**
-     * @internal
-     */
-    public serializeTag?: SerializeTag;
 
     /**
      * @internal
@@ -84,23 +72,23 @@ export class ComponentBase {
             this.onEnable();
         }
         let hasUpdate = this.onUpdate.toString().replace(/\s+/g, '').length;
-        if (hasUpdate > 10) {
+        if (hasUpdate > 16) {
             this._onUpdate(this.onUpdate.bind(this));
         }
         let hasLateUpdate = this.onLateUpdate.toString().replace(/\s+/g, '').length;
-        if (hasLateUpdate > 14) {
+        if (hasLateUpdate > 24) {
             this._onLateUpdate(this.onLateUpdate.bind(this));
         }
         let hasBeforeUpdate = this.onBeforeUpdate.toString().replace(/\s+/g, '').length;
-        if (hasBeforeUpdate > 16) {
+        if (hasBeforeUpdate > 28) {
             this._onBeforeUpdate(this.onBeforeUpdate.bind(this));
         }
         let hasCompute = this.onCompute.toString().replace(/\s+/g, '').length;
-        if (hasCompute > 11) {
+        if (hasCompute > 18) {
             this._onCompute(this.onCompute.bind(this));
         }
         let hasOnGraphic = this.onGraphic.toString().replace(/\s+/g, '').length;
-        if (hasOnGraphic > 11) {
+        if (hasOnGraphic > 18) {
             this._onGraphic(this.onGraphic.bind(this));
         }
     }
