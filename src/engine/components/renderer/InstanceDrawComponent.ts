@@ -2,12 +2,12 @@ import { GPUContext } from "../../gfx/renderJob/GPUContext";
 import { RTResourceMap } from "../../gfx/renderJob/frame/RTResourceMap";
 import { ClusterLightingRender } from "../../gfx/renderJob/passRenderer/cluster/ClusterLightingRender";
 import { RenderContext } from "../../gfx/renderJob/passRenderer/RenderContext";
-import { RendererPassState } from "../../gfx/renderJob/passRenderer/state/RendererPassState";
-import { RendererType } from "../../gfx/renderJob/passRenderer/state/RendererType";
 import { MeshRenderer } from "./MeshRenderer";
 import { RenderNode } from "./RenderNode";
 import { StorageGPUBuffer } from "../../gfx/graphics/webGpu/core/buffer/StorageGPUBuffer";
 import { View3D } from "../../core/View3D";
+import { RendererPassState } from "../../gfx/renderJob/passRenderer/state/RendererPassState";
+import { RendererType } from "../../gfx/renderJob/passRenderer/state/RendererType";
 
 export class InstanceDrawComponent extends RenderNode {
 

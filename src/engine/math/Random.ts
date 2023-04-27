@@ -486,7 +486,7 @@ export function snoise4(x, y, z, w) {
     // To find out which of the 24 possible simplices we're in, we need to
     // determine the magnitude ordering of x0, y0, z0 and w0.
     // The method below is a good way of finding the ordering of x,y,z,w and
-    // then find the correct traversal order for the simplex we抮e in.
+    // then find the correct traversal order for the simplex were in.
     // First, six pair-wise comparisons are performed between each possible pair
     // of the four coordinates, and the results are used to add up binary bits
     // for an integer index.

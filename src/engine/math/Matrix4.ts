@@ -1,4 +1,4 @@
-import { PI, clamp, DEGREES_TO_RADIANS, RADIANS_TO_DEGREES } from './MathUtil';
+import { DEGREES_TO_RADIANS, clamp, RADIANS_TO_DEGREES } from './MathUtil';
 import { Orientation3D } from './Orientation3D';
 import { Quaternion } from './Quaternion';
 import { Vector3 } from './Vector3';
@@ -211,27 +211,27 @@ export class Matrix4 {
      */
     public static makePositive(euler: Vector3): void {
         let negativeFlip = -0.0001;
-        let positiveFlip = PI * 2.0 - 0.0001;
+        let positiveFlip = Math.PI * 2.0 - 0.0001;
 
         if (euler.x < negativeFlip) {
-            euler.x += 2.0 * PI;
+            euler.x += 2.0 * Math.PI;
         }
         else if (euler.x > positiveFlip) {
-            euler.x -= 2.0 * PI;
+            euler.x -= 2.0 * Math.PI;
         }
 
         if (euler.y < negativeFlip) {
-            euler.y += 2.0 * PI;
+            euler.y += 2.0 * Math.PI;
         }
         else if (euler.y > positiveFlip) {
-            euler.y -= 2.0 * PI;
+            euler.y -= 2.0 * Math.PI;
         }
 
         if (euler.z < negativeFlip) {
-            euler.z += 2.0 * PI;
+            euler.z += 2.0 * Math.PI;
         }
         else if (euler.z > positiveFlip) {
-            euler.z -= 2.0 * PI;
+            euler.z -= 2.0 * Math.PI;
         }
     }
 
@@ -255,7 +255,7 @@ export class Matrix4 {
                 return true;
             } else {
                 // WARNING.  Not unique.  YA - ZA = atan2(r01,r00)
-                v.x = PI * 0.5;
+                v.x = Math.PI * 0.5;
                 v.y = Math.atan2(matrix.get(0, 1), matrix.get(0, 0));
                 v.z = 0.0;
                 Matrix4.sanitizeEuler(v);
@@ -263,7 +263,7 @@ export class Matrix4 {
             }
         } else {
             // WARNING.  Not unique.  YA + ZA = atan2(-r01,r00)
-            v.x = -PI * 0.5;
+            v.x = -Math.PI * 0.5;
             v.y = Math.atan2(-matrix.get(0, 1), matrix.get(0, 0));
             v.z = 0.0;
             Matrix4.sanitizeEuler(v);
@@ -588,7 +588,7 @@ export class Matrix4 {
      */
     public perspective(fov: number, aspect: number, zn: number, zf: number) {
         let data = this.rawData;
-        // let angle: number = (Math.PI - fov * DEGREES_TO_RADIANS) / 2.0;
+        // let angle: number = (Math.Math.PI - fov * DEGREES_TO_RADIANS) / 2.0;
         // let yScale: number = Math.tan(angle);
         // let xScale: number = yScale / aspect;
 
@@ -1307,7 +1307,7 @@ export class Matrix4 {
     }
 
     /**
-     * Copies the value of the current matrix to a float array.
+     * CoMath.PIes the value of the current matrix to a float array.
      * @param vector The target array.
      * @param index copy from the index of the array.
      * @param transpose Whether to transpose the current matrix.
@@ -2041,7 +2041,7 @@ export class Matrix4 {
     }
 
     /**
-     * form unity API
+     * form unity AMath.PI
      */
     public setTRInverse(pos: Vector3, q: Quaternion) {
         q = q.inverse();

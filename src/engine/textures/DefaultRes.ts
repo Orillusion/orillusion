@@ -1,7 +1,6 @@
 import { Engine3D } from '../Engine3D';
 import { BRDFLUTGenerate } from '../gfx/generate/BrdfLUTGenerate';
 import { Uint8ArrayTexture } from './Uint8ArrayTexture';
-import { GUISubTexture, GUITextureSource } from "../components/gui/core/GUISubTexture";
 import { Texture } from "../gfx/graphics/webGpu/core/texture/Texture";
 import { HDRTextureCube } from './HDRTextureCube';
 
@@ -23,12 +22,8 @@ class _DefaultRes {
     public greenTexture: Uint8ArrayTexture;
     public yellowTexture: Uint8ArrayTexture;
     public grayTexture: Uint8ArrayTexture;
-
     public defaultTextureKVMap: { [name: string]: Texture } = {};
     public defaultTextureVKMap: Map<Texture, string> = new Map<Texture, string>();
-
-    public defaultTextureSource: GUITextureSource;// = new GUITextureSource(defaultTexture.whiteTexture);
-    public defaultSubTexture: GUISubTexture;// = new GUISubTexture();
     public defaultSky: HDRTextureCube;
     /**
      * create a texture
@@ -95,10 +90,6 @@ class _DefaultRes {
         defaultRes.greenTexture = defaultRes.createTexture(32, 32, 0, 255, 0, 255, 'default-greenTexture');
         defaultRes.yellowTexture = defaultRes.createTexture(32, 32, 0, 255, 255, 255.0, 'default-yellowTexture');
         defaultRes.grayTexture = defaultRes.createTexture(32, 32, 128, 128, 128, 255.0, 'default-grayTexture');
-
-        defaultRes.defaultTextureSource = new GUITextureSource(defaultRes.whiteTexture);
-        defaultRes.defaultSubTexture = new GUISubTexture();
-        defaultRes.defaultSubTexture.trimSize.set(4, 4)
 
         let brdf = new BRDFLUTGenerate();
         let texture = brdf.generateBRDFLUTTexture();

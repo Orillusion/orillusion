@@ -1,9 +1,11 @@
-import { CameraUtil, Engine3D, UUID } from '../../../..';
+import { Engine3D } from '../../../Engine3D';
 import { DirectLight } from '../../../components/lights/DirectLight';
 import { LightBase } from '../../../components/lights/LightBase';
 import { LightType } from '../../../components/lights/LightData';
 import { Scene3D } from '../../../core/Scene3D';
 import { View3D } from '../../../core/View3D';
+import { CameraUtil } from '../../../util/CameraUtil';
+import { UUID } from '../../../util/Global';
 /**
  * @internal
  * @group Lights

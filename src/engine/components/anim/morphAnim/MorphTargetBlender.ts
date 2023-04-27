@@ -1,12 +1,12 @@
 import { MorphTargetMapper } from "./MorphTargetKey";
 import { Object3D } from "../../../core/entities/Object3D";
-import { RendererMask, RendererMaskUtil } from "../../../gfx/renderJob/passRenderer/state/RendererMask";
 import { Matrix4 } from "../../../math/Matrix4";
 import { Quaternion } from "../../../math/Quaternion";
 import { Vector3 } from "../../../math/Vector3";
 import { ComponentBase } from "../../ComponentBase";
 import { MorphTargetFrame } from "./MorphTargetFrame";
 import { MeshRenderer } from "../../renderer/MeshRenderer";
+import { RendererMask, RendererMaskUtil } from "../../../gfx/renderJob/passRenderer/state/RendererMask";
 
 export class MorphTargetBlender extends ComponentBase {
     private _targetRenderers: { [key: string]: MeshRenderer[] } = {};

@@ -6,7 +6,6 @@ import { RendererMask } from '../../gfx/renderJob/passRenderer/state/RendererMas
 import { RendererPassState } from '../../gfx/renderJob/passRenderer/state/RendererPassState';
 import { RendererType } from '../../gfx/renderJob/passRenderer/state/RendererType';
 import { MaterialBase } from '../../materials/MaterialBase';
-import { ComponentType } from '../../util/SerializeDefine';
 import { MorphTargetData } from '../anim/morphAnim/MorphTargetData';
 import { RenderNode } from './RenderNode';
 
@@ -23,7 +22,6 @@ export class MeshRenderer extends RenderNode {
 
     constructor() {
         super();
-        this.componentType = ComponentType.meshRenderer;
     }
 
     protected start(): void { }

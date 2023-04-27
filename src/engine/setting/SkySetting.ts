@@ -1,4 +1,4 @@
-import { HDRTextureCube } from "../..";
+import { HDRTextureCube } from "../textures/HDRTextureCube";
 
 /**
  * Sky setting

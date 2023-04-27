@@ -222,7 +222,6 @@ export class GLTFParser extends ParserBase {
                     let promise = new FileLoader().loadAsyncBitmapTexture(url, this.loaderFunctions).then(texture => {
                         texture.name = StringUtil.getURLName(element.uri);
                         this._gltf.resources[texture.name] = texture;
-                        texture.textureSource.setGLTFImage(this.initUrl, i, url);
                     })
                     textureArray.push(promise)
                 }

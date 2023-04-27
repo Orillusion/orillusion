@@ -8,7 +8,6 @@ import { GILighting } from './GILighting';
 import { LightData } from './LightData';
 import { ShadowLightsCollect } from '../../gfx/renderJob/collect/ShadowLightsCollect';
 import { IESProfiles } from './IESProfiles';
-import { ComponentType } from '../../util/SerializeDefine';
 
 /**
  * @internal
@@ -52,7 +51,6 @@ export class LightBase extends ComponentBase {
 
     constructor() {
         super();
-        this.componentType = ComponentType.light;
     }
 
     protected init(): void {

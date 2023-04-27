@@ -8,7 +8,6 @@ import { Orientation3D } from "../math/Orientation3D";
 import { Quaternion } from "../math/Quaternion";
 import { Vector3 } from "../math/Vector3";
 import { View3D } from "../core/View3D";
-import { ComponentType } from "../util/SerializeDefine";
 
 /**
  * The Transform component contains the position, rotation, and scaling of an object in 3D space.
@@ -161,8 +160,6 @@ export class Transform extends ComponentBase {
 
     constructor() {
         super();
-        this.componentType = ComponentType.transform;
-        // this.localMatrix = new Matrix4();
         this.worldMatrix = new Matrix4(false);
         this._localPos = new Vector3();
         this._localRot = new Vector3();
@@ -306,7 +303,7 @@ export class Transform extends ComponentBase {
 
     /**
      *
-     * 物体相对于父级变换属性，以四元数形式存储
+     * The transformation property of the object relative to the parent, stored in the form of a quaternion
      */
     public get localRotQuat(): Quaternion {
         return this._localRotQuat;

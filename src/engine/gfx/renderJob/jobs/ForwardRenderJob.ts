@@ -1,9 +1,8 @@
-import { defaultRes, GBufferFrame, View3D } from '../../../..';
-import { Scene3D } from '../../../core/Scene3D';
 import { Engine3D } from '../../../Engine3D';
+import { View3D } from '../../../core/View3D';
 import { GlobalBindGroup } from '../../graphics/webGpu/core/bindGroups/GlobalBindGroup';
-import { ColorPassRenderer } from '../passRenderer/color/ColorPassRenderer';
-import { DDGIProbeRenderer } from '../passRenderer/ddgi/DDGIProbeRenderer';
+import { ColorPassRenderer } from '../color/ColorPassRenderer';
+import { GBufferFrame } from '../frame/GBufferFrame';
 import { RendererJob } from './RendererJob';
 /**
  * Forward+
@@ -33,25 +32,25 @@ export class ForwardRenderJob extends RendererJob {
             colorPassRenderer.setRenderStates(rtFrame);
 
             if (Engine3D.setting.gi.enable) {
-                this.ddgiProbeRenderer = new DDGIProbeRenderer(GlobalBindGroup.getLightEntries(this.view.scene).irradianceVolume);
-                this.ddgiProbeRenderer.clusterLightingRender = this.clusterLightingRender;
-                this.ddgiProbeRenderer.setInputTexture([
-                    this.shadowMapPassRenderer.depth2DTextureArray,
-                    this.pointLightShadowRenderer.cubeTextureArray
-                ]);
+                // this.ddgiProbeRenderer = new DDGIProbeRenderer(GlobalBindGroup.getLightEntries(this.view.scene).irradianceVolume);
+                // this.ddgiProbeRenderer.clusterLightingRender = this.clusterLightingRender;
+                // this.ddgiProbeRenderer.setInputTexture([
+                //     this.shadowMapPassRenderer.depth2DTextureArray,
+                //     this.pointLightShadowRenderer.cubeTextureArray
+                // ]);
 
-                colorPassRenderer.setIrradiance(this.ddgiProbeRenderer.irradianceColorMap, this.ddgiProbeRenderer.irradianceDepthMap);
+                // colorPassRenderer.setIrradiance(this.ddgiProbeRenderer.irradianceColorMap, this.ddgiProbeRenderer.irradianceDepthMap);
 
-                this.rendererMap.addRenderer(this.ddgiProbeRenderer);
+                // this.rendererMap.addRenderer(this.ddgiProbeRenderer);
 
-                debugTextures.push(
-                    this.ddgiProbeRenderer.positionMap,
-                    this.ddgiProbeRenderer.normalMap,
-                    this.ddgiProbeRenderer.colorMap,
-                    this.ddgiProbeRenderer.lightingPass.lightingTexture,
-                    this.ddgiProbeRenderer.irradianceColorMap,
-                    this.ddgiProbeRenderer.irradianceDepthMap,
-                );
+                // debugTextures.push(
+                //     this.ddgiProbeRenderer.positionMap,
+                //     this.ddgiProbeRenderer.normalMap,
+                //     this.ddgiProbeRenderer.colorMap,
+                //     this.ddgiProbeRenderer.lightingPass.lightingTexture,
+                //     this.ddgiProbeRenderer.irradianceColorMap,
+                //     this.ddgiProbeRenderer.irradianceDepthMap,
+                // );
             }
 
             if (this.postRenderer) {

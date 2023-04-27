@@ -1,8 +1,8 @@
-import { GPUContext } from '../..';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
 import { TextureMipmapGenerator } from '../gfx/graphics/webGpu/core/texture/TextureMipmapGenerator';
 import { GPUTextureFormat } from '../gfx/graphics/webGpu/WebGPUConst';
 import { webGPUContext } from '../gfx/graphics/webGpu/Context3D';
+import { GPUContext } from '../gfx/renderJob/GPUContext';
 
 /**
  * create texture by number array, which format is uint8

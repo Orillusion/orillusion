@@ -1,10 +1,10 @@
-import { GPUContext } from '../../../..';
 import ErpImage2CubeMapCreateCube_compute from '../../../assets/shader/compute/ErpImage2CubeMapCreateCube_compute.wgsl?raw';
 import ErpImage2CubeMapRgbe2rgba_compute from '../../../assets/shader/compute/ErpImage2CubeMapRgbe2rgba_compute.wgsl?raw';
 import { VirtualTexture } from '../../../textures/VirtualTexture';
 import { Texture } from '../../graphics/webGpu/core/texture/Texture';
 import { webGPUContext } from '../../graphics/webGpu/Context3D';
 import { TextureCubeUtils } from './TextureCubeUtils';
+import { GPUContext } from '../../renderJob/GPUContext';
 /**
  * @internal
  * @group GFX

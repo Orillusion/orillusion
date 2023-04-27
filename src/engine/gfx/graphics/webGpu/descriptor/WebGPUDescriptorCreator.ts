@@ -2,7 +2,7 @@ import { RTFrame } from '../../../renderJob/frame/RTFrame';
 import { RTResourceConfig } from '../../../renderJob/config/RTResourceConfig';
 import { GPUTextureFormat } from '../WebGPUConst';
 import { webGPUContext } from '../Context3D';
-import { RendererPassState } from '../../../renderJob/state/RendererPassState';
+import { RendererPassState } from '../../../renderJob/passRenderer/state/RendererPassState';
 /**
  * @internal
  * @author sirxu

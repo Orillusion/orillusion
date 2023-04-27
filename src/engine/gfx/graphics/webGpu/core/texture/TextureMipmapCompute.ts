@@ -1,4 +1,4 @@
-import { GPUContext } from '../../../../../..';
+import { GPUContext } from '../../../../renderJob/GPUContext';
 import { webGPUContext } from '../../Context3D';
 import { Texture } from './Texture';
 

@@ -1,7 +1,7 @@
-import { CameraType } from '../..';
 import { Vector3 } from '../math/Vector3';
 import { CameraUtil } from '../util/CameraUtil';
 import { Camera3D } from './Camera3D';
+import { CameraType } from './CameraType';
 import { Object3D } from './entities/Object3D';
 
 /**

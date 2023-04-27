@@ -1,5 +1,14 @@
-import { Camera3D, clamp, ComponentBase, Engine3D, Object3D, PointerEvent3D, Quaternion, Time, Vector3, Vector3Ex } from "../../..";
+import { Engine3D } from "../../Engine3D";
+import { Camera3D } from "../../core/Camera3D";
+import { Object3D } from "../../core/entities/Object3D";
+import { PointerEvent3D } from "../../event/eventConst/PointerEvent3D";
+import { clamp } from "../../math/MathUtil";
+import { Quaternion } from "../../math/Quaternion";
+import { Vector3 } from "../../math/Vector3";
 import { Object3DUtil } from "../../util/Object3DUtil";
+import { Time } from "../../util/Time";
+import { Vector3Ex } from "../../util/Vector3Ex";
+import { ComponentBase } from "../ComponentBase";
 
 /**
  * Hovering camera controller
@@ -99,7 +108,6 @@ export class HoverCameraController extends ComponentBase {
      */
     constructor() {
         super();
-        this.serializeTag = 'dont-serialize';
         this._currentPos = new Object3D();
         this._targetPos = new Object3D();
     }

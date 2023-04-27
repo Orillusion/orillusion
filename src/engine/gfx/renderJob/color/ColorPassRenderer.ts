@@ -1,9 +1,14 @@
-import { Engine3D } from '../../../../Engine3D';
-import { RendererBase } from '../RendererBase';
-import { RendererType } from '../state/RendererType';
-import { OcclusionSystem } from '../../occlusion/OcclusionSystem';
-import { EntityCollect, GPUContext, RenderContext, RenderNode, RTResourceMap, View3D } from '../../../../..';
-import { ProfilerUtil } from '../../../../util/ProfilerUtil';
+import { Engine3D } from "../../../Engine3D";
+import { RenderNode } from "../../../components/renderer/RenderNode";
+import { View3D } from "../../../core/View3D";
+import { ProfilerUtil } from "../../../util/ProfilerUtil";
+import { GPUContext } from "../GPUContext";
+import { EntityCollect } from "../collect/EntityCollect";
+import { OcclusionSystem } from "../occlusion/OcclusionSystem";
+import { RenderContext } from "../passRenderer/RenderContext";
+import { RendererBase } from "../passRenderer/RendererBase";
+import { RendererType } from "../passRenderer/state/RendererType";
+
 
 /**
  *  @internal

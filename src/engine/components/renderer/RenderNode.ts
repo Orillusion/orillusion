@@ -1,23 +1,23 @@
-import { GeometryBase } from '../../core/geometry/GeometryBase';
-import { PassGenerate } from '../../gfx/generate/PassGenerate';
-import { ShaderReflection } from '../../gfx/graphics/webGpu/shader/value/ShaderReflectionInfo';
-import { EntityCollect } from '../../gfx/renderJob/collect/EntityCollect';
-import { GPUContext } from '../../gfx/renderJob/GPUContext';
-import { ClusterLightingRender } from '../../gfx/renderJob/passRenderer/cluster/ClusterLightingRender';
-import { RendererType } from '../../gfx/renderJob/passRenderer/state/RendererType';
-import { RendererMaskUtil, RendererMask } from '../../gfx/renderJob/passRenderer/state/RendererMask';
-import { RendererPassState } from '../../gfx/renderJob/passRenderer/state/RendererPassState';
-import { MaterialBase } from '../../materials/MaterialBase';
-import { ComponentBase } from '../ComponentBase';
-import { RenderContext } from '../../gfx/renderJob/passRenderer/RenderContext';
-import { Engine3D } from '../../Engine3D';
-import { View3D } from '../../core/View3D';
-import { GlobalBindGroup } from '../../gfx/graphics/webGpu/core/bindGroups/GlobalBindGroup';
-import { RenderShader } from '../../gfx/graphics/webGpu/shader/RenderShader';
-import { RTResourceMap } from '../../gfx/renderJob/frame/RTResourceMap';
-import { UUID } from '../../util/Global';
-import { ComponentType } from '../../util/SerializeDefine';
-import { IESProfiles } from '../lights/IESProfiles';
+import { Engine3D } from "../../Engine3D";
+import { View3D } from "../../core/View3D";
+import { GeometryBase } from "../../core/geometry/GeometryBase";
+import { PassGenerate } from "../../gfx/generate/PassGenerate";
+import { GlobalBindGroup } from "../../gfx/graphics/webGpu/core/bindGroups/GlobalBindGroup";
+import { RenderShader } from "../../gfx/graphics/webGpu/shader/RenderShader";
+import { ShaderReflection } from "../../gfx/graphics/webGpu/shader/value/ShaderReflectionInfo";
+import { GPUContext } from "../../gfx/renderJob/GPUContext";
+import { EntityCollect } from "../../gfx/renderJob/collect/EntityCollect";
+import { RTResourceMap } from "../../gfx/renderJob/frame/RTResourceMap";
+import { RenderContext } from "../../gfx/renderJob/passRenderer/RenderContext";
+import { ClusterLightingRender } from "../../gfx/renderJob/passRenderer/cluster/ClusterLightingRender";
+import { RendererMask, RendererMaskUtil } from "../../gfx/renderJob/passRenderer/state/RendererMask";
+import { RendererPassState } from "../../gfx/renderJob/passRenderer/state/RendererPassState";
+import { RendererType } from "../../gfx/renderJob/passRenderer/state/RendererType";
+import { MaterialBase } from "../../materials/MaterialBase";
+import { UUID } from "../../util/Global";
+import { ComponentBase } from "../ComponentBase";
+import { IESProfiles } from "../lights/IESProfiles";
+
 
 /**
  * @internal
@@ -45,7 +45,6 @@ export class RenderNode extends ComponentBase {
 
     constructor() {
         super();
-        this.componentType = ComponentType.renderNode;
         this.rendererMask = RendererMask.Default;
     }
 
@@ -425,9 +424,6 @@ export class RenderNode extends ComponentBase {
                     let lightUniformEntries = GlobalBindGroup.getLightEntries(view.scene);
                     if (lightUniformEntries) {
                         renderShader.setStorageBuffer(`lightBuffer`, lightUniformEntries.storageGPUBuffer);
-                        if (lightUniformEntries.irradianceVolume) {
-                            renderShader.setStructStorageBuffer(`irradianceData`, lightUniformEntries.irradianceVolume.irradianceVolumeBuffer);
-                        }
                     }
 
 

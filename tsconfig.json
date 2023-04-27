@@ -18,9 +18,9 @@
         },
         "types": ["vite/client", "@webgpu/types"],
         // for dev
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "noImplicitReturns": true,
+        // "noUnusedLocals": true,
+        // "noUnusedParameters": true,
+        // "noImplicitReturns": true,
         "allowJs": true,
         "strict": false
     },  

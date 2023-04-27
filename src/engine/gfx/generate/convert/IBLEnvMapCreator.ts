@@ -2,7 +2,8 @@ import { Texture } from '../../graphics/webGpu/core/texture/Texture';
 import { webGPUContext } from '../../graphics/webGpu/Context3D';
 import IBLEnvMapCreator_compute from '../../../assets/shader/compute/IBLEnvMapCreator_compute.wgsl?raw';
 import { TextureCubeUtils } from './TextureCubeUtils';
-import { GPUContext } from '../../../..';
+import { GPUContext } from '../../renderJob/GPUContext';
+
 /**
  * @internal
  * @group GFX

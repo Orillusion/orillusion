@@ -1,6 +1,9 @@
-﻿import {B3DMLoaderBase} from "./B3DMLoaderBase";
-import {B3DMParseUtil} from "../B3DMParser";
-import { Matrix4, Orientation3D, Transform, Vector3 } from "../../../..";
+﻿import { B3DMLoaderBase } from "./B3DMLoaderBase";
+import { B3DMParseUtil } from "../B3DMParser";
+import { Transform } from "../../../components/Transform";
+import { Matrix4 } from "../../../math/Matrix4";
+import { Orientation3D } from "../../../math/Orientation3D";
+import { Vector3 } from "../../../math/Vector3";
 
 
 export class B3DMLoader extends B3DMLoaderBase {
@@ -21,7 +24,7 @@ export class B3DMLoader extends B3DMLoaderBase {
 
         let model = await glbLoader.parseBinary(this.gltfBuffer);
 
-        let {batchTable, featureTable} = b3dm;
+        let { batchTable, featureTable } = b3dm;
 
         const rtcCenter = featureTable.getData('RTC_CENTER');
         if (rtcCenter) {

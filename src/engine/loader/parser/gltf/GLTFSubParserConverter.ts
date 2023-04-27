@@ -1,6 +1,28 @@
-import { BlendMode, Color, DirectLight, Engine3D, GLTFParser, GeometryBase, KHR_materials_clearcoat, KHR_materials_emissive_strength, KHR_materials_unlit, LitMaterial, MaterialBase, MeshRenderer, Object3D, PhysicMaterial, PointLight, Quaternion, RADIANS_TO_DEGREES, SkeletonAnimationComponent, SkinnedMeshRenderer, SpotLight, UUID, VertexAttributeName, defaultRes } from "../../../..";
+import { Engine3D } from "../../../Engine3D";
+import { SkeletonAnimationComponent } from "../../../components/SkeletonAnimationComponent";
+import { DirectLight } from "../../../components/lights/DirectLight";
+import { PointLight } from "../../../components/lights/PointLight";
+import { SpotLight } from "../../../components/lights/SpotLight";
+import { MeshRenderer } from "../../../components/renderer/MeshRenderer";
+import { SkinnedMeshRenderer } from "../../../components/renderer/SkinnedMeshRenderer";
+import { Object3D } from "../../../core/entities/Object3D";
+import { GeometryBase } from "../../../core/geometry/GeometryBase";
+import { VertexAttributeName } from "../../../core/geometry/VertexAttributeName";
+import { BlendMode } from "../../../materials/BlendMode";
+import { LitMaterial } from "../../../materials/LitMaterial";
+import { MaterialBase } from "../../../materials/MaterialBase";
+import { PhysicMaterial } from "../../../materials/PhysicMaterial";
+import { Color } from "../../../math/Color";
+import { RADIANS_TO_DEGREES } from "../../../math/MathUtil";
+import { Quaternion } from "../../../math/Quaternion";
+import { defaultRes } from "../../../textures/DefaultRes";
+import { UUID } from "../../../util/Global";
 import { GLTF_Info, GLTF_Node } from "./GLTFInfo";
+import { GLTFParser } from "./GLTFParser";
 import { GLTFSubParser } from "./GLTFSubParser";
+import { KHR_materials_clearcoat } from "./extends/KHR_materials_clearcoat";
+import { KHR_materials_emissive_strength } from "./extends/KHR_materials_emissive_strength";
+import { KHR_materials_unlit } from "./extends/KHR_materials_unlit";
 
 export class GLTFSubParserConverter {
     protected gltf: GLTF_Info;

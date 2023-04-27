@@ -1,4 +1,4 @@
-import { CEvent } from '../../../event/CEvent';
+import { CEvent } from '../../../../event/CEvent';
 import { PropertyAnimation } from './PropertyAnimation';
 /**
  * @internal

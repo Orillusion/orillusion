@@ -6,8 +6,8 @@ import { BoundingBox } from "../bound/BoundingBox";
 import { VertexAttributeName } from "./VertexAttributeName";
 import { GeometryVertexBuffer } from "./GeometryVertexBuffer";
 import { GeometryIndicesBuffer } from "./GeometryIndicesBuffer";
-import { VertexAttributeData } from "../../..";
 import { GeometryVertexType } from "./GeometryVertexType";
+import { VertexAttributeData } from "./VertexAttributeData";
 
 export type LodLevel = {
     indexStart: number;

@@ -1,4 +1,4 @@
-import { MeshComponent } from '../../renderer/MeshComponent';
+import { MeshComponent } from '../renderer/MeshComponent';
 import { ColliderShape, ColliderShapeType } from './ColliderShape';
 /**
  * Mesh collision body

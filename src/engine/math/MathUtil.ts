@@ -1,3 +1,4 @@
+import { Color } from './Color';
 import { Matrix4 } from './Matrix4';
 import { Quaternion } from './Quaternion';
 import { Rand } from './Rand';
@@ -23,9 +24,6 @@ export let MAX_VALUE: number = 0x7fffffff;
  * @internal
  */
 export let MIN_VALUE: number = -0x7fffffff;
-
-export let PI: number = 3.1415926;
-
 
 /**
  * value min max bound
@@ -287,6 +285,55 @@ export class MathUtil {
         result.w = m * x + n * y + o * z + p;
         return result;
     }
+
+}
+
+/**
+ * @internal
+ */
+export let lerp = function (v0: number, v1: number, t: number) {
+    //return v0 * t + v1 * (1-t) ;
+    return v0 * (1 - t) + v1 * t;
+}
+
+/**
+ * @internal
+ */
+export function lerpVector3(v0: Vector3, v1: Vector3, t: number) {
+    let newV = new Vector3();
+    let v0x: number = v0.x;
+    let v0y: number = v0.y;
+    let v0z: number = v0.z;
+    let v0w: number = v0.w;
+    let v1x: number = v1.x;
+    let v1y: number = v1.y;
+    let v1z: number = v1.z;
+    let v1w: number = v1.w;
+
+    newV.x = (v1x - v0x) * t + v0x;
+    newV.y = (v1y - v0y) * t + v0y;
+    newV.z = (v1z - v0z) * t + v0z;
+    newV.w = (v1w - v0w) * t + v0w;
+    return newV;
+}
+
+/**
+ * @internal
+ */
+export function lerpColor(c0: Color, c1: Color, t) {
+    let newColor = new Color();
+    newColor.r = (1.0 - t) * c0.r + t * c1.r;
+    newColor.g = (1.0 - t) * c0.g + t * c1.g;
+    newColor.b = (1.0 - t) * c0.b + t * c1.b;
+    newColor.a = (1.0 - t) * c0.a + t * c1.a;
+    return newColor;
+}
+
+/**
+ * @internal
+ */
+export function lerpByte(u0, u1, scale) {
+    return (u0 + (((u1 - u0) * scale) >> 8)) & 0xff;
 }
 
 /**
@@ -465,7 +512,7 @@ export function rangedRandomInt(r: Rand, min: number, max: number) {
  */
 export function randomUnitVector(rand: Rand) {
     let z = rangedRandomFloat(rand, -1.0, 1.0);
-    let a = rangedRandomFloat(rand, 0.0, 2.0 * PI);
+    let a = rangedRandomFloat(rand, 0.0, 2.0 * Math.PI);
 
     let r = Math.sqrt(1.0 - z * z);
 
@@ -479,7 +526,7 @@ export function randomUnitVector(rand: Rand) {
  * @internal
  */
 export function randomUnitVector2(rand: Rand) {
-    let a = rangedRandomFloat(rand, 0.0, 2.0 * PI);
+    let a = rangedRandomFloat(rand, 0.0, 2.0 * Math.PI);
 
     let x = Math.cos(a);
     let y = Math.sin(a);
@@ -509,7 +556,7 @@ export function randomQuaternion(rand: Rand) {
  * @internal
  */
 export function randomQuaternionUniformDistribution(rand: Rand) {
-    const two_pi = 2.0 * PI;
+    const two_pi = 2.0 * Math.PI;
 
     // Employs Hopf fibration to uniformly distribute quaternions
     let u1 = rangedRandomFloat(rand, 0.0, 1.0);
@@ -624,7 +671,7 @@ export function randomBarycentricCoord(rand: Rand) {
 export function deg2Rad(deg) {
     // TODO : should be deg * kDeg2Rad, but can't be changed,
     // because it changes the order of operations and that affects a replay in some RegressionTests
-    return (deg / 360.0) * 2.0 * PI;
+    return (deg / 360.0) * 2.0 * Math.PI;
 }
 
 /**
@@ -633,7 +680,7 @@ export function deg2Rad(deg) {
 export function rad2Deg(deg) {
     // TODO : should be deg * kDeg2Rad, but can't be changed,
     // because it changes the order of operations and that affects a replay in some RegressionTests
-    return (180 * deg) / PI;
+    return (180 * deg) / Math.PI;
 }
 
 /**

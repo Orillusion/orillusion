@@ -1,8 +1,9 @@
-import { ColliderShape, ColliderShapeType } from './ColliderShape';
-import { Matrix4 } from '../../../math/Matrix4';
-import { Ray } from '../../../math/Ray';
-import { Vector3 } from '../../../math/Vector3';
-import { BoundingSphere } from '../../../core/bound/BoundingSphere';
+import { BoundingSphere } from "../../core/bound/BoundingSphere";
+import { Matrix4 } from "../../math/Matrix4";
+import { Ray } from "../../math/Ray";
+import { Vector3 } from "../../math/Vector3";
+import { ColliderShape, ColliderShapeType } from "./ColliderShape";
+
 
 /**
  * Spherical collision body

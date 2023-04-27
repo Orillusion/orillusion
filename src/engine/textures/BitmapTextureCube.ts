@@ -1,9 +1,13 @@
-import { BitmapTexture2D, GPUContext, StringUtil, Texture, VirtualTexture } from '../..';
 import { BlurTexture2DBufferCreator } from '../gfx/generate/convert/BlurEffectCreator';
 import { TextureCube } from '../gfx/graphics/webGpu/core/texture/TextureCube';
 import { GPUTextureFormat } from '../gfx/graphics/webGpu/WebGPUConst';
 import { webGPUContext } from '../gfx/graphics/webGpu/Context3D';
 import { TextureCubeStdCreator } from "../gfx/generate/convert/TextureCubeStdCreator";
+import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
+import { GPUContext } from '../gfx/renderJob/GPUContext';
+import { StringUtil } from '../util/StringUtil';
+import { BitmapTexture2D } from './BitmapTexture2D';
+import { VirtualTexture } from './VirtualTexture';
 
 /**
  * @group Texture

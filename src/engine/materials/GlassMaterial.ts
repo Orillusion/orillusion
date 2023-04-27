@@ -1,10 +1,10 @@
-import { registerMaterial } from '../..';
 import { ShaderLib } from '../assets/shader/ShaderLib';
 import GlassShader from '../assets/shader/materials/GlassShader.wgsl?raw';
 import { Engine3D } from '../Engine3D';
 import { Vector4 } from '../math/Vector4';
 import { defaultRes } from '../textures/DefaultRes';
 import { PhysicMaterial } from './PhysicMaterial';
+import { registerMaterial } from './MaterialRegister';
 /**
  * GlassMaterial
  * an rendering material implemented by simulating glass surfaces

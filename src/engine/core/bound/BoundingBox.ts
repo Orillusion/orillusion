@@ -1,7 +1,7 @@
-import { Frustum } from '../../..';
 import { Ray } from '../../math/Ray';
 import { Vector3 } from '../../math/Vector3';
 import { Object3D } from '../entities/Object3D';
+import { Frustum } from './Frustum';
 import { IBound } from './IBound';
 
 /**

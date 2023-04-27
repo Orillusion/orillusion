@@ -1,6 +1,8 @@
-import { RTDescriptor, RTFrame, VirtualTexture } from "../../../..";
+import { VirtualTexture } from "../../../textures/VirtualTexture";
 import { GPUTextureFormat } from "../../graphics/webGpu/WebGPUConst";
+import { RTDescriptor } from "../../graphics/webGpu/descriptor/RTDescriptor";
 import { RTResourceConfig } from "../config/RTResourceConfig";
+import { RTFrame } from "./RTFrame";
 import { RTResourceMap } from "./RTResourceMap";
 
 export class ProbeGBufferFrame extends RTFrame {

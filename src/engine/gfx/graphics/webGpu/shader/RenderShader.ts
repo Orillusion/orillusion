@@ -22,8 +22,8 @@ import { ShaderStage } from "./ShaderStage";
 import { Preprocessor } from "./util/Preprocessor";
 import { ShaderReflection, ShaderReflectionVarInfo } from "./value/ShaderReflectionInfo";
 import { ShaderState } from "./value/ShaderState";
-import { RendererPassState } from "../../../renderJob/state/RendererPassState";
-import { RendererType } from "../../../renderJob/state/RendererType";
+import { RendererPassState } from "../../../renderJob/passRenderer/state/RendererPassState";
+import { RendererType } from "../../../renderJob/passRenderer/state/RendererType";
 
 export class RenderShader extends ShaderBase {
     public useRz: boolean = false;
@@ -356,9 +356,7 @@ export class RenderShader extends ShaderBase {
      */
     public applyPostDefine(shader: string, renderPassState: RendererPassState) {
         //*********************************/
-        //添加渲染输出附件******************/
-
-        //TODO  需要修改细节版本
+        //******************/
         if (Engine3D.setting.pick.mode == `pixel`) {
             this.defineValue[`USE_WORLDPOS`] = true;
         }

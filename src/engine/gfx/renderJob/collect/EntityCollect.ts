@@ -1,9 +1,9 @@
-import { Graphic3DBatchRenderer, Graphic3DFillRenderer, Graphic3DLineBatchRenderer, ReflectionProbeComponent, RendererMaskUtil, RenderLayer, RenderLayerUtil } from '../../../..';
 import { LightBase } from '../../../components/lights/LightBase';
 import { RenderNode } from '../../../components/renderer/RenderNode';
 import { SkyRenderer } from '../../../components/renderer/SkyRenderer';
 import { Scene3D } from '../../../core/Scene3D';
-import { Probe } from '../passRenderer/ddgi/Probe';
+import { RenderLayerUtil, RenderLayer } from '../config/RenderLayer';
+import { Graphic3DBatchRenderer } from '../passRenderer/graphic/Graphic3DBatchRenderer';
 import { CollectInfo } from './CollectInfo';
 import { EntityBatchCollect } from './EntityBatchCollect';
 import { RenderGroup } from './RenderGroup';
@@ -14,8 +14,6 @@ import { RenderGroup } from './RenderGroup';
 export class EntityCollect {
     // private static  _sceneRenderList: Map<Scene3D, RenderNode[]>;
     private _sceneLights: Map<Scene3D, LightBase[]>;
-    private _sceneGIProbes: Map<Scene3D, Probe[]>;
-    private _sceneReflectionProbes: Map<Scene3D, ReflectionProbeComponent[]>;
 
     private _source_opaqueRenderNodes: Map<Scene3D, RenderNode[]>;
     private _source_transparentRenderNodes: Map<Scene3D, RenderNode[]>;
@@ -49,8 +47,6 @@ export class EntityCollect {
     constructor() {
         // this._sceneRenderList = new Map<Scene3D, RenderNode[]>();
         this._sceneLights = new Map<Scene3D, LightBase[]>();
-        this._sceneGIProbes = new Map<Scene3D, Probe[]>();
-        this._sceneReflectionProbes = new Map<Scene3D, ReflectionProbeComponent[]>();
 
         this._source_opaqueRenderNodes = new Map<Scene3D, RenderNode[]>();
         this._source_transparentRenderNodes = new Map<Scene3D, RenderNode[]>();
@@ -161,59 +157,10 @@ export class EntityCollect {
             }
         }
     }
-
-    public addGIProbe(root: Scene3D, probe: Probe) {
-        if (!this._sceneGIProbes.has(root)) {
-            this._sceneGIProbes.set(root, [probe]);
-        } else {
-            this._sceneGIProbes.get(root).push(probe);
-        }
-    }
-
-    public removeGIProbe(root: Scene3D, probe: Probe) {
-        if (this._sceneGIProbes.has(root)) {
-            let list = this._sceneGIProbes.get(root);
-            let index = list.indexOf(probe);
-            if (index != -1) {
-                list.splice(index, 1);
-            }
-        }
-    }
-
-
-    public addReflectionProbe(root: Scene3D, probe: ReflectionProbeComponent) {
-        if (!this._sceneReflectionProbes.has(root)) {
-            this._sceneReflectionProbes.set(root, [probe]);
-        } else {
-            this._sceneReflectionProbes.get(root).push(probe);
-        }
-    }
-
-    public removeReflectionProbe(root: Scene3D, probe: ReflectionProbeComponent) {
-        if (this._sceneReflectionProbes.has(root)) {
-            let list = this._sceneReflectionProbes.get(root);
-            let index = list.indexOf(probe);
-            if (index != -1) {
-                list.splice(index, 1);
-            }
-        }
-    }
-
     public getLights(root: Scene3D): LightBase[] {
         let list = this._sceneLights.get(root);
         return list ? list : [];
     }
-
-    public getProbes(root: Scene3D) {
-        let list = this._sceneGIProbes.get(root);
-        return list ? list : [];
-    }
-
-    public getReflectionProbes(root: Scene3D) {
-        let list = this._sceneReflectionProbes.get(root);
-        return list ? list : [];
-    }
-
 
     public getRenderNodes(scene: Scene3D): CollectInfo {
         this._collectInfo.clean();

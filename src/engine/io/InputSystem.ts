@@ -1,8 +1,8 @@
-import { PointerEvent3D } from '../..';
 import { CEvent } from '../event/CEvent';
 import { CEventDispatcher } from '../event/CEventDispatcher';
 import { CResizeEvent } from '../event/CResizeEvent';
 import { KeyEvent } from '../event/eventConst/KeyEvent';
+import { PointerEvent3D } from '../event/eventConst/PointerEvent3D';
 import { KeyCode } from '../event/KeyCode';
 import { MouseCode } from '../event/MouseCode';
 import { Vector3 } from '../math/Vector3';
@@ -86,18 +86,8 @@ export class InputSystem extends CEventDispatcher {
     protected _pointerEvent3D: PointerEvent3D;
     protected _windowsEvent3d: CEvent;
 
-    /**
-     *
-     * 游戏手柄Stick1事件侦听函数。
-     *
-     */
     private _onGamepadStick1: Function = null;
 
-    /**
-     *
-     * 游戏手柄Stick2事件侦听函数。
-     *
-     */
     private _onGamepadStick2: Function = null;
 
     /**
@@ -186,8 +176,7 @@ export class InputSystem extends CEventDispatcher {
     /**
      * @private
      *
-     * 获取按键是否压下
-     * @param code 按键码 {@link KeyCode}
+     * @param code {@link KeyCode}
      *
      */
     private getKeyPress(code: KeyCode): boolean {
@@ -196,9 +185,7 @@ export class InputSystem extends CEventDispatcher {
 
     /**
      * @private
-     *
-     * 获取鼠标是否压下
-     * @param code 鼠标按钮码 {@link MouseCode}
+     * @param code {@link MouseCode}
      *
      */
     private getMousePress(code: MouseCode): boolean {
@@ -216,9 +203,6 @@ export class InputSystem extends CEventDispatcher {
     }
 
     /**
-     *
-     * 游戏手柄按钮是否按下。
-     *
      * @param index {number}
      * @returns {boolean}
      */
@@ -227,9 +211,6 @@ export class InputSystem extends CEventDispatcher {
     }
 
     /**
-     *
-     * 游戏手柄摇杆方向 Stick1 。
-     *
      * @returns {Vector3D}
      */
     private getGamepadStick1(): Vector3 {
@@ -237,9 +218,6 @@ export class InputSystem extends CEventDispatcher {
     }
 
     /**
-     *
-     * 游戏手柄摇杆方向 Stick2 。
-     *
      * @returns {Vector3D}
      */
     private getGamepadStick2(): Vector3 {
@@ -264,7 +242,6 @@ export class InputSystem extends CEventDispatcher {
     private touchStart(e: TouchEvent) {
         this.isMouseDown = true;
         if (e && e.changedTouches && e.changedTouches.length > 0) {
-            // x1 y1 最新的触摸点
             var newX: number = e.changedTouches[0].clientX - this.canvasX; //- Input.canvas.x + Input.canvas.offsetX;
             var newY: number = e.changedTouches[0].clientY - this.canvasY; // Input.canvas.y + Input.canvas.offsetY;
         }
@@ -624,26 +601,23 @@ export class InputSystem extends CEventDispatcher {
         this.dispatchEvent(this._windowsEvent3d);
     }
 
-    //返回角度
     private GetSlideAngle(dx: number, dy: number) {
         return (Math.atan2(dy, dx) * 180) / Math.PI;
     }
 
     /**
      *
-     * 根据起点和终点返回方向
-     * @param  startX {Number} 起点X坐标
-     * @param  startY {Number} 起点Y坐标
-     * @param  endX   {Number} 终点X坐标
-     * @param  endY   {Number} 终点Y坐标
-     * @returns result {number} 1：向上，2：向下，3：向左，4：向右,0：未滑动
+     * @param  startX {Number} 
+     * @param  startY {Number} 
+     * @param  endX   {Number} 
+     * @param  endY   {Number} 
+     * @returns result {number} 1：up，2：down，3：left，4：right,0：not move
      */
     public GetSlideDirection(startX: number, startY: number, endX: number, endY: number): number {
         var dy = startY - endY;
         var dx = endX - startX;
         var result = 0;
 
-        //如果滑动距离太短
         if (Math.abs(dx) < 2 && Math.abs(dy) < 2) {
             return result;
         }
@@ -663,15 +637,12 @@ export class InputSystem extends CEventDispatcher {
     }
 
     private isEnlarge(op1: Vector3, op2: Vector3, np1: Vector3, np2: Vector3): boolean {
-        //函数传入上一次触摸两点的位置与本次触摸两点的位置计算出用户的手势
         var leng1 = Math.sqrt((op1.x - op2.x) * (op1.x - op2.x) + (op1.y - op2.y) * (op1.y - op2.y));
         var leng2 = Math.sqrt((np1.x - np2.x) * (np1.x - np2.x) + (np1.y - np2.y) * (np1.y - np2.y));
 
         if (leng1 < leng2) {
-            //放大手势
             return true;
         } else {
-            //缩小手势
             return false;
         }
     }

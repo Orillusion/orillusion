@@ -1,4 +1,3 @@
-import { Bloom_shader, CubeSky_Shader, IrradianceVolumeData_frag, ParticleDataStructShader, Quad_shader, UnLitMaterialUniform_frag, UnLit_frag, VideoUniform_frag } from "../../..";
 import { VertexAttributes } from "./core/struct/VertexAttributes"
 import ColorPassFragmentOutput from "./core/struct/ColorPassFragmentOutput.wgsl?raw";
 import Common_frag from "./core/base/Common_frag.wgsl?raw";
@@ -31,7 +30,12 @@ import PBRLItShader from '../shader/materials/PBRLItShader.wgsl?raw'
 import ColorUtil from './utils/ColorUtil.wgsl?raw'
 import GenerayRandomDir from './utils/GenerayRandomDir.wgsl?raw'
 import IESProfiles_frag from './lighting/IESProfiles_frag.wgsl?raw'
-import { ShaderLibs } from "./ShaderLibs";
+import { UnLit_frag } from "./lighting/UnLit_frag";
+import { UnLitMaterialUniform_frag } from "./materials/uniforms/UnLitMaterialUniform_frag";
+import { VideoUniform_frag } from "./materials/uniforms/VideoUniform_frag";
+import { Bloom_shader } from "./post/Bloom_shader";
+import { Quad_shader } from "./quad/Quad_shader";
+import { CubeSky_Shader } from "./sky/CubeSky_Shader";
 
 /**
  * @internal
@@ -39,7 +43,6 @@ import { ShaderLibs } from "./ShaderLibs";
 export class ShaderLib {
 
     public static init() {
-        ShaderLibs.init();
         ShaderLib.register('MathShader', MathShader);
         ShaderLib.register('FastMathShader', FastMathShader);
 
@@ -68,7 +71,7 @@ export class ShaderLib {
         ShaderLib.register('ShadowMapping_frag', ShadowMapping_frag);
 
         ShaderLib.register('Irradiance_frag', Irradiance_frag);
-        ShaderLib.register('IrradianceVolumeData_frag', IrradianceVolumeData_frag);
+        // ShaderLib.register('IrradianceVolumeData_frag', IrradianceVolumeData_frag);
         ShaderLib.register('BrdfLut_frag', BrdfLut_frag);
         ShaderLib.register('EnvMap_frag', EnvMap_frag);
 
@@ -99,9 +102,6 @@ export class ShaderLib {
         ShaderLib.register('Bloom_Brightness_frag_wgsl', Bloom_shader.Bloom_Brightness_frag_wgsl);
         ShaderLib.register('Bloom_blur_frag_wgsl', Bloom_shader.Bloom_blur_frag_wgsl);
         ShaderLib.register('Bloom_composite_frag_wgsl', Bloom_shader.Bloom_composite_frag_wgsl);
-
-
-        ShaderLib.register('ParticleDataStruct', ParticleDataStructShader);
     }
 
     public static register(keyName: string, code: string) {

@@ -1,11 +1,16 @@
-import { Object3DType } from './gui/data/AssetsInfo';
 import { Camera3D } from '../core/Camera3D';
 import { Object3D } from '../core/entities/Object3D';
 import { Vector3 } from '../math/Vector3';
 import { ComponentBase } from './ComponentBase';
 
+export enum BillboardType {
+    Normal = 0,
+    BillboardY = 9,
+    BillboardXYZ = 10,
+}
+
 export class BillboardComponent extends ComponentBase {
-    public type: Object3DType;
+    public type: BillboardType;
     public camera: Camera3D;
     private _cameraDirection: Vector3;
 
@@ -24,9 +29,9 @@ export class BillboardComponent extends ComponentBase {
     private updateBillboardMatrix(): void {
         let camera = this.transform.view3D.camera;
         this._cameraDirection.copyFrom(camera.transform.back);
-        if (this.type == Object3DType.BillboardXYZ) {
+        if (this.type == BillboardType.BillboardXYZ) {
             this._cameraDirection.normalize().multiplyScalar(100);
-        } else if (this.type == Object3DType.BillboardY) {
+        } else if (this.type == BillboardType.BillboardY) {
             this._cameraDirection.y = 0;
             this._cameraDirection.normalize().multiplyScalar(100);
         }

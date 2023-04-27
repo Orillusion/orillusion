@@ -4,14 +4,12 @@ import { Quaternion } from '../../math/Quaternion';
 import { Vector3 } from '../../math/Vector3';
 import { Entity } from './Entity';
 import { Ctor } from "../../util/Global";
-import { SerializeTag } from '../../util/SerializeDefine';
 /**
  * The base class of most objects provides a series of properties and methods for manipulating objects in three-dimensional space.
  * @group Entity
  */
 export class Object3D extends Entity {
     protected _isScene3D: boolean;
-    public serializeTag?: SerializeTag;
     public prefabRef?: string;
 
     /**

@@ -1,7 +1,7 @@
-import { registerMaterial } from '../..';
 import { Engine3D } from '../Engine3D';
 import { Vector4 } from '../math/Vector4';
 import { defaultRes } from '../textures/DefaultRes';
+import { registerMaterial } from './MaterialRegister';
 import { PhysicMaterial } from './PhysicMaterial';
 /**
  * a type of material, based on physical lighting model

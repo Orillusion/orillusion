@@ -1,7 +1,10 @@
-import { BlendMode, Color, ColorLitShader, defaultRes, GPUCompareFunction, ShaderLib } from "../../..";
 import { MaterialPass } from "../MaterialPass";
 
 import OutlineShaderPass from "../../assets/shader/materials/OutlinePass.wgsl?raw"
+import { GPUCompareFunction } from "../../gfx/graphics/webGpu/WebGPUConst";
+import { defaultRes } from "../../textures/DefaultRes";
+import { Color } from "../../math/Color";
+import { ShaderLib } from "../../assets/shader/ShaderLib";
 
 export class OutLinePass extends MaterialPass {
     constructor(lineWeight: number = 10) {
