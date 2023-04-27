@@ -19,7 +19,6 @@ import { Vector2 } from '../../../math/Vector2';
 import { RTDescriptor } from '../../graphics/webGpu/descriptor/RTDescriptor';
 import { GBufferFrame } from '../frame/GBufferFrame';
 import { RTFrame } from '../frame/RTFrame';
-import { OutlineSetting } from '../../../setting/post/OutlineSetting';
 import { View3D } from '../../../core/View3D';
 
 export class OutlinePostSlot {
