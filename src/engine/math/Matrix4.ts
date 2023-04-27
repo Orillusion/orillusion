@@ -1,4 +1,4 @@
-import { PI , clamp, DEGREES_TO_RADIANS, RADIANS_TO_DEGREES } from './MathUtil';
+import { PI, clamp, DEGREES_TO_RADIANS, RADIANS_TO_DEGREES } from './MathUtil';
 import { Orientation3D } from './Orientation3D';
 import { Quaternion } from './Quaternion';
 import { Vector3 } from './Vector3';
@@ -1908,7 +1908,7 @@ export class Matrix4 {
     /**
      * get Component of scale
      *
-     * @returns Vector3 缩放
+     * @returns Vector3 scale
      * @version Orillusion3D  0.5.1
      */
     public get scale(): Vector3 {
