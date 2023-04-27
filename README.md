@@ -1,3 +1,5 @@
+[![Test](https://github.com/Orillusion/orillusion/actions/workflows/ci.yml/badge.svg)](https://github.com/Orillusion/orillusion/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/@orillusion/core)](https://www.npmjs.com/package/@orillusion/core)
 
 ![Cover Art](https://github.com/Orillusion/orillusion-webgpu-samples/blob/main/logo_new.png)     
        
