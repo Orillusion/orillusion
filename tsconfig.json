@@ -22,7 +22,7 @@
         "noUnusedParameters": true,
         "noImplicitReturns": true,
         "allowJs": true,
-        "strict": true
+        "strict": false
     },  
     "include": ["src", "test"],
     "exclude": ["node_modules", "dist", "public"]
