@@ -1,11 +1,12 @@
-import { Object3D } from '../../core/entities/Object3D';
-import { ClusterLightingRender } from '../../gfx/renderJob/passRenderer/cluster/ClusterLightingRender';
-import { RendererType } from '../../gfx/renderJob/passRenderer/state/RendererType';
-import { RendererPassState } from '../../gfx/renderJob/passRenderer/state/RendererPassState';
-import { SkeletonAnimationComponent } from '../SkeletonAnimationComponent';
-import { MeshRenderer } from './MeshRenderer';
-import { RendererMask } from '../../gfx/renderJob/passRenderer/state/RendererMask';
-import { StorageGPUBuffer, View3D } from '../../..';
+import { View3D } from "../../core/View3D";
+import { Object3D } from "../../core/entities/Object3D";
+import { StorageGPUBuffer } from "../../gfx/graphics/webGpu/core/buffer/StorageGPUBuffer";
+import { ClusterLightingRender } from "../../gfx/renderJob/passRenderer/cluster/ClusterLightingRender";
+import { RendererMask } from "../../gfx/renderJob/passRenderer/state/RendererMask";
+import { RendererPassState } from "../../gfx/renderJob/passRenderer/state/RendererPassState";
+import { RendererType } from "../../gfx/renderJob/passRenderer/state/RendererType";
+import { SkeletonAnimationComponent } from "../SkeletonAnimationComponent";
+import { MeshRenderer } from "./MeshRenderer";
 
 /**
  * Skin Mesh Renderer Component

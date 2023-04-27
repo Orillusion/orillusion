@@ -1,6 +1,6 @@
-import { Vector3 } from '../../..';
 import { CastShadow } from '../../assets/shader/core/pass/CastShadowPass_wgsl';
 import { ShaderLib } from '../../assets/shader/ShaderLib';
+import { Vector3 } from '../../math/Vector3';
 import { MaterialBase } from '../MaterialBase';
 import { registerMaterial } from "../MaterialRegister";
 

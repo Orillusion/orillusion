@@ -1,4 +1,4 @@
-import { AtmosphericScatteringSky_shader } from '../assets/shader/materials/sky/AtmosphericScatteringSky_shader';
+import { AtmosphericScatteringSky_shader } from '../assets/shader/sky/AtmosphericScatteringSky_shader';
 import { UniformGPUBuffer } from '../gfx/graphics/webGpu/core/buffer/UniformGPUBuffer';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
 import { ComputeShader } from '../gfx/graphics/webGpu/shader/ComputeShader';
@@ -45,7 +45,6 @@ export class AtmosphericScatteringSky extends HDRTextureCube {
         this._internalTexture = new AtmosphericTexture2D(setting.defaultTexture2DSize, setting.defaultTexture2DSize * 0.5);
         this._internalTexture.update(this.setting);
         this.createFromTexture(this._cubeSize, this._internalTexture);
-        this.textureSource.setCubeAtmosphericScattering();
 
         return this;
     }

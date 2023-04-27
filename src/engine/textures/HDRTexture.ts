@@ -1,7 +1,10 @@
-import { FileLoader, GPUContext, LoaderFunctions, RGBEParser } from '../..';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
 import { GPUTextureFormat } from '../gfx/graphics/webGpu/WebGPUConst';
 import { webGPUContext } from '../gfx/graphics/webGpu/Context3D';
+import { GPUContext } from '../gfx/renderJob/GPUContext';
+import { FileLoader } from '../loader/FileLoader';
+import { LoaderFunctions } from '../loader/LoaderFunctions';
+import { RGBEParser } from '../loader/parser/RGBEParser';
 /**
  * HDR Texture
  * @group Texture

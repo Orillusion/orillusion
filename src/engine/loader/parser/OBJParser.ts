@@ -1,14 +1,12 @@
+import { Engine3D } from '../../Engine3D';
+import { MeshRenderer } from '../../components/renderer/MeshRenderer';
+import { Object3D } from '../../core/entities/Object3D';
+import { GeometryBase } from '../../core/geometry/GeometryBase';
+import { VertexAttributeName } from '../../core/geometry/VertexAttributeName';
+import { LitMaterial } from '../../materials/LitMaterial';
 import { StringUtil } from '../../util/StringUtil';
 import { FileLoader } from '../FileLoader';
 import { ParserBase } from './ParserBase';
-import {
-  Engine3D,
-  GeometryBase,
-  LitMaterial,
-  MeshRenderer,
-  Object3D,
-  VertexAttributeName
-} from '../../..';
 
 type MatData = {
   name?: string,

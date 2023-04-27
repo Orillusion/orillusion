@@ -1,5 +1,3 @@
-import { PointerEvent3D, View3D } from '../..';
-import { ColliderComponent } from '../components/colliders/ColliderComponent';
 import { Camera3D } from '../core/Camera3D';
 import { Engine3D } from '../Engine3D';
 import { MouseCode } from '../event/MouseCode';
@@ -7,6 +5,9 @@ import { CEventDispatcher } from '../event/CEventDispatcher';
 import { Ray } from '../math/Ray';
 import { Vector3 } from '../math/Vector3';
 import { PickCompute } from './picker/PickCompute';
+import { ColliderComponent } from '../components/ColliderComponent';
+import { View3D } from '../core/View3D';
+import { PointerEvent3D } from '../event/eventConst/PointerEvent3D';
 /**
  * Management and triggering for picking 3D objects
  * @group IO

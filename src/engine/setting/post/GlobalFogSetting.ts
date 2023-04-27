@@ -1,4 +1,4 @@
-import { Color } from "../../..";
+import { Color } from "../../math/Color";
 
 /**
  * Global fog effect setting

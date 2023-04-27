@@ -1,5 +1,5 @@
-import { VertexFormat } from '../../../../../..';
 import { VertexAttributeSize } from '../../../../../core/geometry/VertexAttributeSize';
+import { VertexFormat } from '../../../../../core/geometry/VertexFormat';
 import { ComputeShader } from '../ComputeShader';
 import { RenderShader } from '../RenderShader';
 import { ShaderBase } from '../ShaderBase';

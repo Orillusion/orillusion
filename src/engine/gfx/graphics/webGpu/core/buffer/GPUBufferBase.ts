@@ -1,4 +1,13 @@
-import { Color, GPUContext, Matrix4, MemoryDO, MemoryInfo, Quaternion, Struct, Vector2, Vector3, Vector4 } from "../../../../../..";
+import { MemoryDO } from "../../../../../core/pool/memory/MemoryDO";
+import { MemoryInfo } from "../../../../../core/pool/memory/MemoryInfo";
+import { Color } from "../../../../../math/Color";
+import { Matrix4 } from "../../../../../math/Matrix4";
+import { Quaternion } from "../../../../../math/Quaternion";
+import { Vector2 } from "../../../../../math/Vector2";
+import { Vector3 } from "../../../../../math/Vector3";
+import { Vector4 } from "../../../../../math/Vector4";
+import { Struct } from "../../../../../util/struct/Struct";
+import { GPUContext } from "../../../../renderJob/GPUContext";
 import { webGPUContext } from "../../Context3D";
 
 export type ArrayBufferData = Uint8Array | Uint16Array | Uint32Array | Int8Array | Int16Array | Int32Array | Float32Array | Float64Array
@@ -16,7 +25,7 @@ export class GPUBufferBase {
     public byteSize: number;
     public usage: GPUBufferUsageFlags;
     public visibility: number = GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT | GPUShaderStage.COMPUTE;
-    
+
     private _readBuffer: GPUBuffer;
 
     constructor() {
@@ -333,7 +342,7 @@ export class GPUBufferBase {
     }
 
     private _readFlag: boolean = false;
-    private readBuffer() {
+    public readBuffer() {
         if (!this._readBuffer) {
             this._readBuffer = webGPUContext.device.createBuffer({
                 size: this.memory.shareDataBuffer.byteLength,

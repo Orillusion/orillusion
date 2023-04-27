@@ -1,6 +1,10 @@
-import { defaultRes, RTDescriptor, RTFrame, VirtualTexture } from '../../../../..';
-import { Camera3D } from '../../../../core/Camera3D';
-import { Texture } from '../../../graphics/webGpu/core/texture/Texture';
+import { Camera3D } from "../../../../core/Camera3D";
+import { defaultRes } from "../../../../textures/DefaultRes";
+import { VirtualTexture } from "../../../../textures/VirtualTexture";
+import { Texture } from "../../../graphics/webGpu/core/texture/Texture";
+import { RTDescriptor } from "../../../graphics/webGpu/descriptor/RTDescriptor";
+import { RTFrame } from "../../frame/RTFrame";
+
 /**
  * @internal
  */

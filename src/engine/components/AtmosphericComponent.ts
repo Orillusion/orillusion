@@ -1,5 +1,5 @@
-import { SkyRenderer } from "../..";
 import { AtmosphericScatteringSky, AtmosphericScatteringSkySetting } from "../textures/AtmosphericScatteringSky";
+import { SkyRenderer } from "./renderer/SkyRenderer";
 
 /**
  *

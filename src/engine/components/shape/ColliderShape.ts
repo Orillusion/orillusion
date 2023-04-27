@@ -1,6 +1,7 @@
-import { Matrix4 } from '../../../math/Matrix4';
-import { Ray } from '../../../math/Ray';
-import { Vector3 } from '../../../math/Vector3';
+import { Matrix4 } from "../../math/Matrix4";
+import { Ray } from "../../math/Ray";
+import { Vector3 } from "../../math/Vector3";
+
 
 export enum ColliderShapeType {
     None,

@@ -1,8 +1,9 @@
-import { BoundingBox } from '../../../core/bound/BoundingBox';
-import { Matrix4 } from '../../../math/Matrix4';
-import { Ray } from '../../../math/Ray';
-import { Vector3 } from '../../../math/Vector3';
-import { ColliderShape, ColliderShapeType } from './ColliderShape';
+import { BoundingBox } from "../../core/bound/BoundingBox";
+import { Matrix4 } from "../../math/Matrix4";
+import { Ray } from "../../math/Ray";
+import { Vector3 } from "../../math/Vector3";
+import { ColliderShape, ColliderShapeType } from "./ColliderShape";
+
 
 /**
  * Box shaped collision body.

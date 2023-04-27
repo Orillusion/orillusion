@@ -23,7 +23,6 @@ export class Scene3D extends Object3D {
         super();
         this.transform.scene3D = this;
         this.skyObject = new Object3D();
-        this.skyObject.serializeTag = "dont-serialize";
         this.addChild(this.skyObject);
         this._isScene3D = true;
         this.envMap ||= defaultRes.defaultSky;

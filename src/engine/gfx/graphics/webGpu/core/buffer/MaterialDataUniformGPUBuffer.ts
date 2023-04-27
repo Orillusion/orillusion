@@ -1,6 +1,3 @@
-import { ShaderReflectionStructInfo } from '../../../../../..';
-import { MemoryDO } from '../../../../../core/pool/memory/MemoryDO';
-import { webGPUContext } from '../../Context3D';
 import { UniformNode } from '../uniforms/UniformNode';
 import { GPUBufferBase } from './GPUBufferBase';
 /**

@@ -1,4 +1,11 @@
-import { clamp, ComponentBase, Engine3D, KeyCode, KeyEvent, lerp, PointerEvent3D, Time, Vector3 } from "../../..";
+import { Engine3D } from "../../Engine3D";
+import { KeyCode } from "../../event/KeyCode";
+import { KeyEvent } from "../../event/eventConst/KeyEvent";
+import { PointerEvent3D } from "../../event/eventConst/PointerEvent3D";
+import { clamp, lerp } from "../../math/MathUtil";
+import { Vector3 } from "../../math/Vector3";
+import { Time } from "../../util/Time";
+import { ComponentBase } from "../ComponentBase";
 
 /**
  * Free camera controller.
@@ -46,7 +53,6 @@ export class FlyCameraController extends ComponentBase {
 
     constructor() {
         super();
-        this.serializeTag = 'dont-serialize';
         this._lastPos = new Vector3();
         this._keyState = {
             front: false,

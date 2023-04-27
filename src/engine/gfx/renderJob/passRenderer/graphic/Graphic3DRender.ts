@@ -20,7 +20,6 @@ export class Graphic3D extends Object3D {
 
     constructor() {
         super();
-        this.serializeTag = "dont-serialize";
         this.mLineRender = this.addComponent(Graphic3DLineBatchRenderer);
         this.mFillRender = this.addComponent(Graphic3DFillRenderer);
     }

@@ -1,8 +1,8 @@
-import { PointerEvent3D } from '../..';
 import { CEvent } from '../event/CEvent';
 import { CEventDispatcher } from '../event/CEventDispatcher';
 import { CResizeEvent } from '../event/CResizeEvent';
 import { KeyEvent } from '../event/eventConst/KeyEvent';
+import { PointerEvent3D } from '../event/eventConst/PointerEvent3D';
 import { KeyCode } from '../event/KeyCode';
 import { MouseCode } from '../event/MouseCode';
 import { Vector3 } from '../math/Vector3';

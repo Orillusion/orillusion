@@ -1,13 +1,16 @@
-import { ProfilerUtil, RenderShader, View3D } from '../../..';
-import { Camera3D } from '../../core/Camera3D';
-import { GeometryBase } from '../../core/geometry/GeometryBase';
-import { ViewQuad } from '../../core/ViewQuad';
-import { GlobalBindGroup } from '../graphics/webGpu/core/bindGroups/GlobalBindGroup';
-import { Texture } from '../graphics/webGpu/core/texture/Texture';
-import { ComputeShader } from '../graphics/webGpu/shader/ComputeShader';
-import { webGPUContext } from '../graphics/webGpu/Context3D';
-import { RendererType } from './passRenderer/state/RendererType';
-import { RendererPassState } from './passRenderer/state/RendererPassState';
+import { Camera3D } from "../../core/Camera3D";
+import { View3D } from "../../core/View3D";
+import { ViewQuad } from "../../core/ViewQuad";
+import { GeometryBase } from "../../core/geometry/GeometryBase";
+import { ProfilerUtil } from "../../util/ProfilerUtil";
+import { webGPUContext } from "../graphics/webGpu/Context3D";
+import { GlobalBindGroup } from "../graphics/webGpu/core/bindGroups/GlobalBindGroup";
+import { Texture } from "../graphics/webGpu/core/texture/Texture";
+import { ComputeShader } from "../graphics/webGpu/shader/ComputeShader";
+import { RenderShader } from "../graphics/webGpu/shader/RenderShader";
+import { RendererPassState } from "./passRenderer/state/RendererPassState";
+import { RendererType } from "./passRenderer/state/RendererType";
+
 
 /**
  * WebGPU api use context

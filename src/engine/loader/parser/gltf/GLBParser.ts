@@ -94,7 +94,6 @@ export class GLBParser extends ParserBase {
                 let dtexture = new BitmapTexture2D();
                 await dtexture.loadFromBlob(imgData);
                 dtexture.name = image.name;
-                dtexture.textureSource.setGLBImage(this.initUrl, i);
                 this._gltf.resources[image.name] = dtexture;
             }
         }
@@ -125,7 +124,6 @@ export class GLBParser extends ParserBase {
                 let dataBuffer = new Uint8Array(buffer.dbuffer, bufferView.byteOffset, bufferView.byteLength);
                 let imgData = new Blob([dataBuffer], { type: image.mimeType });
                 let dtexture = new BitmapTexture2D();
-                dtexture.textureSource.setGLBImage(this.initUrl, i);
                 await dtexture.loadFromBlob(imgData);
                 dtexture.name = image.name;
                 this._gltf.resources[image.name] = dtexture;

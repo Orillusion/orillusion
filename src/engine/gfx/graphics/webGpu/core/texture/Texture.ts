@@ -1,6 +1,5 @@
 import { webGPUContext } from "../../Context3D";
 import { GPUAddressMode } from "../../WebGPUConst";
-import { SerializeTextureSource } from "./SerializeTextureSource";
 import { TextureMipmapGenerator } from "./TextureMipmapGenerator";
 
 /**
@@ -9,7 +8,6 @@ import { TextureMipmapGenerator } from "./TextureMipmapGenerator";
  */
 export class Texture implements GPUSamplerDescriptor {
 
-    public readonly textureSource: SerializeTextureSource = new SerializeTextureSource();
     /**
      * name of texture
      */

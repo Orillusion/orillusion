@@ -1,4 +1,4 @@
-import { makeMatrix44, Matrix4, multiplyMatrices4x4REF } from '../../../..';
+import { Matrix4, makeMatrix44, multiplyMatrices4x4REF } from '../../../math/Matrix4';
 import { Quaternion } from '../../../math/Quaternion';
 import { Vector3 } from '../../../math/Vector3';
 import { JointPose } from './JointPose';

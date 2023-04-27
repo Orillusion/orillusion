@@ -1,6 +1,7 @@
 import { Texture } from '../../graphics/webGpu/core/texture/Texture';
 import { webGPUContext } from '../../graphics/webGpu/Context3D';
-import { GPUContext, VirtualTexture } from '../../../..';
+import { VirtualTexture } from '../../../textures/VirtualTexture';
+import { GPUContext } from '../../renderJob/GPUContext';
 
 /**
  * @internal

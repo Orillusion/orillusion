@@ -1,4 +1,3 @@
-import { CameraUtil, PointShadowCubeCamera, RendererPassState, RenderNode, RenderShader, RTDescriptor as RTDescriptor, Vector3, WebGPUDescriptorCreator, DepthCubeArrayTexture, Time, View3D } from '../../../../..';
 import { LightBase } from '../../../../components/lights/LightBase';
 import { LightType } from '../../../../components/lights/LightData';
 import { ShadowLightsCollect } from '../../collect/ShadowLightsCollect';
@@ -14,6 +13,14 @@ import { GPUContext } from '../../GPUContext';
 import { RTFrame } from '../../frame/RTFrame';
 import { OcclusionSystem } from '../../occlusion/OcclusionSystem';
 import { RendererBase } from '../RendererBase';
+import { RenderNode } from '../../../../components/renderer/RenderNode';
+import { PointShadowCubeCamera } from '../../../../core/PointShadowCubeCamera';
+import { View3D } from '../../../../core/View3D';
+import { DepthCubeArrayTexture } from '../../../../textures/DepthCubeArrayTexture';
+import { Time } from '../../../../util/Time';
+import { RTDescriptor } from '../../../graphics/webGpu/descriptor/RTDescriptor';
+import { WebGPUDescriptorCreator } from '../../../graphics/webGpu/descriptor/WebGPUDescriptorCreator';
+import { RendererPassState } from '../state/RendererPassState';
 import { RendererType } from '../state/RendererType';
 
 type CubeShadowMapInfo = {

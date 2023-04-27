@@ -1,4 +1,5 @@
-import { AnimationCurve } from '../../../math/AnimationCurve';
+import { AnimationCurve } from "../../../../math/AnimationCurve";
+
 /**
  * @internal
  * @group Animation

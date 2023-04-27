@@ -1,4 +1,4 @@
-import { GPUPrimitiveTopology } from "../../../../..";
+import { GPUPrimitiveTopology } from "../../../graphics/webGpu/WebGPUConst";
 import { Graphic3DBatchRenderer } from "./Graphic3DBatchRenderer";
 
 /**

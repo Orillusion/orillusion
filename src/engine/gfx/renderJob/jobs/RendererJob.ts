@@ -1,29 +1,22 @@
 import { ComponentBase } from '../../../components/ComponentBase';
-import { Camera3D } from '../../../core/Camera3D';
 import { Scene3D } from '../../../core/Scene3D';
+import { View3D } from '../../../core/View3D';
 import { Engine3D } from '../../../Engine3D';
-import { VirtualTexture } from '../../../textures/VirtualTexture';
+import { PickFire } from '../../../io/PickFire';
 import { GlobalBindGroup } from '../../graphics/webGpu/core/bindGroups/GlobalBindGroup';
-import { EntityCollect } from '../collect/EntityCollect';
+import { ShadowLightsCollect } from '../collect/ShadowLightsCollect';
+import { ColorPassRenderer } from '../color/ColorPassRenderer';
+import { GBufferFrame } from '../frame/GBufferFrame';
 import { GPUContext } from '../GPUContext';
 import { OcclusionSystem } from '../occlusion/OcclusionSystem';
 import { ClusterLightingRender } from '../passRenderer/cluster/ClusterLightingRender';
-import { RendererBase } from '../passRenderer/RendererBase';
-import { PostRenderer } from '../passRenderer/post/PostRenderer';
-import { DDGIProbeRenderer } from '../passRenderer/ddgi/DDGIProbeRenderer';
+import { Graphic3D } from '../passRenderer/graphic/Graphic3DRender';
+import { PointLightShadowRenderer } from '../passRenderer/shadow/PointLightShadowRenderer';
 import { ShadowMapPassRenderer } from '../passRenderer/shadow/ShadowMapPassRenderer';
 import { PreDepthPassRenderer } from '../passRenderer/preDepth/PreDepthPassRenderer';
-import { PostBase } from '../post/PostBase';
-import { PointLightShadowRenderer } from '../passRenderer/shadow/PointLightShadowRenderer';
-import { UICanvas } from '../../../components/gui/core/UICanvas';
-import { View3D } from '../../../core/View3D';
-import { PickFire } from '../../../io/PickFire';
-import { ShadowLightsCollect } from '../collect/ShadowLightsCollect';
-import { GBufferFrame } from '../frame/GBufferFrame';
 import { RendererMap } from './RenderMap';
-import { ColorPassRenderer } from '../passRenderer/color/ColorPassRenderer';
-import { Graphic3D } from '../passRenderer/graphic/Graphic3DRender';
-import { ReflectionProbeRenderer } from '../passRenderer/probe/ReflectionProbeRenderer';
+import { PostRenderer } from '../passRenderer/post/PostRenderer';
+import { PostBase } from '../post/PostBase';
 
 /**
  * render jobs 
@@ -31,8 +24,6 @@ import { ReflectionProbeRenderer } from '../passRenderer/probe/ReflectionProbeRe
  * @group Post
  */
 export class RendererJob {
-
-    private _canvas: UICanvas;
 
     /**
      * @internal
@@ -48,11 +39,6 @@ export class RendererJob {
      * @internal
      */
     public pointLightShadowRenderer: PointLightShadowRenderer;
-
-    /**
-     * @internal
-     */
-    public ddgiProbeRenderer: DDGIProbeRenderer;
 
     /**
      * @internal
@@ -78,11 +64,6 @@ export class RendererJob {
        * @internal
        */
     public colorPassRenderer: ColorPassRenderer;
-
-    /**
-       * @internal
-       */
-    public reflectionProbeRenderer: ReflectionProbeRenderer;
 
     /**
      * @internal
@@ -125,8 +106,6 @@ export class RendererJob {
 
         this.shadowMapPassRenderer = new ShadowMapPassRenderer();
         this.pointLightShadowRenderer = new PointLightShadowRenderer();
-        this.reflectionProbeRenderer = new ReflectionProbeRenderer();
-        this.reflectionProbeRenderer.clusterLightingRender = this.clusterLightingRender;
     }
 
 
@@ -273,18 +252,6 @@ export class RendererJob {
             this.depthPassRenderer.beforeCompute(view, this.occlusionSystem);
             this.depthPassRenderer.render(view, this.occlusionSystem);
             this.depthPassRenderer.lateCompute(view, this.occlusionSystem);
-        }
-
-        if (Engine3D.setting.gi.enable && this.ddgiProbeRenderer) {
-            this.ddgiProbeRenderer.beforeCompute(view, this.occlusionSystem);
-            this.ddgiProbeRenderer.render(view, this.occlusionSystem);
-            this.ddgiProbeRenderer.lateCompute(view, this.occlusionSystem);
-        }
-
-        if (this.reflectionProbeRenderer) {
-            this.reflectionProbeRenderer.beforeCompute(view, this.occlusionSystem);
-            this.reflectionProbeRenderer.render(view, this.occlusionSystem);
-            this.reflectionProbeRenderer.lateCompute(view, this.occlusionSystem);
         }
 
         let passList = this.rendererMap.getAllPassRenderer();

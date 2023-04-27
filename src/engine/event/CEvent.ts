@@ -1,4 +1,5 @@
-import { Object3D, View3D } from '../..';
+import { View3D } from '../core/View3D';
+import { Object3D } from '../core/entities/Object3D';
 import { TouchData } from '../io/TouchData';
 import { CEventListener } from './CEventListener';
 /**

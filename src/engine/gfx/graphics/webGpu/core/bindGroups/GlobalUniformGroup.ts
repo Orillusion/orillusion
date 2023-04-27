@@ -1,3 +1,13 @@
+import { Engine3D } from "../../../../../Engine3D";
+import { Camera3D } from "../../../../../core/Camera3D";
+import { Matrix4 } from "../../../../../math/Matrix4";
+import { UUID } from "../../../../../util/Global";
+import { Time } from "../../../../../util/Time";
+import { ShadowLightsCollect } from "../../../../renderJob/collect/ShadowLightsCollect";
+import { webGPUContext } from "../../Context3D";
+import { UniformGPUBuffer } from "../buffer/UniformGPUBuffer";
+import { GlobalBindGroupLayout } from "./GlobalBindGroupLayout";
+import { MatrixBindGroup } from "./MatrixBindGroup";
 
 
 /**

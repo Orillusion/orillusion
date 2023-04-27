@@ -55,7 +55,6 @@ export class BitmapTexture2D extends Texture {
      */
     public async load(url: string, loaderFunctions?: LoaderFunctions) {
         if (url.indexOf(';base64') != -1) {
-            this.textureSource.setNetImageBase64(url);
             const img = document.createElement('img');
             let start = url.indexOf('data:image');
             let uri = url.substring(start, url.length);
@@ -71,7 +70,6 @@ export class BitmapTexture2D extends Texture {
             this.format = GPUTextureFormat.rgba8unorm;
             this.generate(imageBitmap);
         } else {
-            this.textureSource.setNetImage(url);
             const r = await fetch(url, {
                 headers: Object.assign({
                     'Accept': 'image/avif,image/webp,*/*'

@@ -3,7 +3,7 @@ import { webGPUContext } from '../gfx/graphics/webGpu/Context3D';
 import { ITexture } from '../gfx/graphics/webGpu/core/texture/ITexture';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
 import { BitmapTexture2D } from './BitmapTexture2D';
-import { GPUContext } from '../..';
+import { GPUContext } from '../gfx/renderJob/GPUContext';
 
 /**
  * Type BitmapTexture 2D Array , Use in GPU

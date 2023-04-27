@@ -1,13 +1,20 @@
 
 
 //TODO dynamic lights need fixed
+
+import { Engine3D } from "../../../../../../Engine3D";
+import { LightData } from "../../../../../../components/lights/LightData";
+import { View3D } from "../../../../../../core/View3D";
+import { MemoryInfo } from "../../../../../../core/pool/memory/MemoryInfo";
+import { EntityCollect } from "../../../../../renderJob/collect/EntityCollect";
+import { StorageGPUBuffer } from "../../buffer/StorageGPUBuffer";
+
 /**
  * @internal
  * @group GFX
  */
 export class LightEntries {
     public storageGPUBuffer: StorageGPUBuffer;
-    public irradianceVolume: DDGIIrradianceVolume;
     private _lightList: MemoryInfo[] = [];
 
     constructor() {
@@ -20,10 +27,7 @@ export class LightEntries {
             let memory = this.storageGPUBuffer.memory.allocation_node(LightData.lightSize * 4);
             this._lightList.push(memory);
         }
-
         this.storageGPUBuffer.visibility = GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT | GPUShaderStage.COMPUTE;
-        this.irradianceVolume = new DDGIIrradianceVolume();
-        this.irradianceVolume.init(Engine3D.setting.gi);
     }
 
     public update(view: View3D) {

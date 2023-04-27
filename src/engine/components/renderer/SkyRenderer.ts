@@ -1,18 +1,18 @@
 
+import { Engine3D } from '../../Engine3D';
+import { View3D } from '../../core/View3D';
 import { BoundingBox } from '../../core/bound/BoundingBox';
 import { Texture } from '../../gfx/graphics/webGpu/core/texture/Texture';
 import { EntityCollect } from '../../gfx/renderJob/collect/EntityCollect';
+import { ClusterLightingRender } from '../../gfx/renderJob/passRenderer/cluster/ClusterLightingRender';
+import { RendererMask } from '../../gfx/renderJob/passRenderer/state/RendererMask';
+import { RendererPassState } from '../../gfx/renderJob/passRenderer/state/RendererPassState';
+import { RendererType } from '../../gfx/renderJob/passRenderer/state/RendererType';
 import { SkyMaterial } from '../../materials/SkyMaterial';
 import { Vector3 } from '../../math/Vector3';
-import { MeshRenderer } from './MeshRenderer';
-import { RendererMask } from '../../gfx/renderJob/passRenderer/state/RendererMask';
-import { ClusterLightingRender } from '../../gfx/renderJob/passRenderer/cluster/ClusterLightingRender';
-import { RendererPassState } from '../../gfx/renderJob/passRenderer/state/RendererPassState';
-import { Engine3D } from '../../Engine3D';
-import { View3D } from '../../core/View3D';
-import { RendererType } from '../../gfx/renderJob/passRenderer/state/RendererType';
 import { SphereGeometry } from '../../shape/SphereGeometry';
-import { ComponentType } from '../../util/SerializeDefine';
+import { MeshRenderer } from './MeshRenderer';
+
 /**
  *
  * Sky Box Renderer Component
@@ -26,7 +26,6 @@ export class SkyRenderer extends MeshRenderer {
 
     constructor() {
         super();
-        this.componentType = ComponentType.skyRenderer;
         this.castShadow = false;
         this.castGI = true;
         this.addRendererMask(RendererMask.Sky);

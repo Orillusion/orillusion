@@ -1,10 +1,9 @@
-import { Engine3D } from '../../Engine3D';
-import { Ray } from '../../math/Ray';
-import { Vector3 } from '../../math/Vector3';
-import { ComponentType } from '../../util/SerializeDefine';
-import { ComponentBase } from '../ComponentBase';
-import { BoxColliderShape } from './shape/BoxColliderShape';
-import { ColliderShape } from './shape/ColliderShape';
+import { Engine3D } from "../Engine3D";
+import { Ray } from "../math/Ray";
+import { Vector3 } from "../math/Vector3";
+import { ComponentBase } from "./ComponentBase";
+import { BoxColliderShape } from "./shape/BoxColliderShape";
+import { ColliderShape } from "./shape/ColliderShape";
 
 /**
  * collider component
@@ -16,7 +15,6 @@ export class ColliderComponent extends ComponentBase {
     constructor() {
         super();
         this._shape = new BoxColliderShape();
-        this.componentType = ComponentType.collider;
     }
     /**
      * @internal

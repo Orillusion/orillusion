@@ -1,4 +1,5 @@
-﻿import { ParserBase } from './ParserBase';
+﻿import { Object3D } from '../../core/entities/Object3D';
+import { ParserBase } from './ParserBase';
 
 export class B3DMParser extends ParserBase {
     static format: string = 'bin';
@@ -23,7 +24,7 @@ export class B3DMParser extends ParserBase {
 }
 
 import { B3DMLoader } from './b3dm/B3DMLoader';
-import { GLBParser, Object3D } from '../../..';
+import { GLBParser } from './gltf/GLBParser';
 
 const BINARY_EXTENSION_HEADER_MAGIC = 'glTF';
 const BINARY_EXTENSION_HEADER_LENGTH = 12;

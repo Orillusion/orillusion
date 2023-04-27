@@ -1,4 +1,3 @@
-import { FileLoader, LoaderFunctions, RGBEParser } from '../..';
 import { ErpImage2CubeMap } from '../gfx/generate/convert/ErpImage2CubeMap';
 import { IBLEnvMapCreator } from '../gfx/generate/convert/IBLEnvMapCreator';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
@@ -6,6 +5,9 @@ import { TextureCube } from '../gfx/graphics/webGpu/core/texture/TextureCube';
 import { GPUTextureFormat } from '../gfx/graphics/webGpu/WebGPUConst';
 import { webGPUContext } from '../gfx/graphics/webGpu/Context3D';
 import { VirtualTexture } from './VirtualTexture';
+import { FileLoader } from '../loader/FileLoader';
+import { LoaderFunctions } from '../loader/LoaderFunctions';
+import { RGBEParser } from '../loader/parser/RGBEParser';
 
 /**
  * HDR TextureCube

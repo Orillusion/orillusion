@@ -1,10 +1,11 @@
-import { GBufferFrame, GPUTextureFormat, RTResourceConfig, View3D } from '../../..';
 import Picker_CsShader from '../../assets/shader/compute/Picker_CsShader.wgsl?raw';
 import { Camera3D } from '../../core/Camera3D';
+import { View3D } from '../../core/View3D';
 import { GlobalBindGroup } from '../../gfx/graphics/webGpu/core/bindGroups/GlobalBindGroup';
 import { ComputeGPUBuffer } from '../../gfx/graphics/webGpu/core/buffer/ComputeGPUBuffer';
 import { ComputeShader } from '../../gfx/graphics/webGpu/shader/ComputeShader';
 import { GPUContext } from '../../gfx/renderJob/GPUContext';
+import { GBufferFrame } from '../../gfx/renderJob/frame/GBufferFrame';
 import { Vector2 } from '../../math/Vector2';
 import { Vector3 } from '../../math/Vector3';
 /**

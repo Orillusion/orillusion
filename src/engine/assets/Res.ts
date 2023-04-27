@@ -12,15 +12,9 @@ import { BitmapTextureCube } from '../textures/BitmapTextureCube';
 import { HDRTextureCube } from '../textures/HDRTextureCube';
 import { B3DMParser } from '../loader/parser/B3DMParser';
 import { I3DMParser } from "../loader/parser/I3DMParser";
-import { FntParser, FontInfo } from "../loader/parser/FntParser";
-import { AtlasParser } from "../loader/parser/AtlasParser";
-import { GUIAtlasTexture } from '../components/gui/core/GUIAtlasTexture';
-import { GUISubTexture } from '../components/gui/core/GUISubTexture';
 import { GLTF_Info } from '../loader/parser/gltf/GLTFInfo';
 import { HDRTexture } from '../textures/HDRTexture';
 import { LDRTextureCube } from '../textures/LDRTextureCube';
-import { fonts } from './Fonts';
-// import { PrefabLoader } from '../plugins/serialize/unserialize/PrefabLoader';
 
 /**
  * Resource management classes for textures, materials, models, and preset bodies.
@@ -30,8 +24,6 @@ export class Res {
     private _texturePool: Map<string, Texture>;
     private _materialPool: Map<string, MaterialBase>;
     private _prefabPool: Map<string, Object3D>;
-    // private _prefabLoaderPool: Map<string, PrefabLoader>;
-    private _atlasList: Map<string, GUIAtlasTexture>;
     private _gltfPool: Map<string, GLTF_Info>;
 
     /**
@@ -41,34 +33,11 @@ export class Res {
         this._texturePool = new Map<string, Texture>();
         this._materialPool = new Map<string, MaterialBase>();
         this._prefabPool = new Map<string, Object3D>();
-        // this._prefabLoaderPool = new Map<string, PrefabLoader>;
-        this._atlasList = new Map<string, GUIAtlasTexture>();
         this._gltfPool = new Map<string, GLTF_Info>;
     }
 
     public getGltf(url: string): GLTF_Info {
         return this._gltfPool.get(url);
-    }
-
-    // public getPrefabLoader(url: string): PrefabLoader {
-    //     return this._prefabLoaderPool.get(url);
-    // }
-
-    public addAtlas(name: string, atlas: GUIAtlasTexture) {
-        atlas.name = name;
-        this._atlasList.set(name, atlas);
-    }
-
-    public getAtlas(name: string) {
-        return this._atlasList.get(name);
-    }
-
-    public getSubTexture(id: string): GUISubTexture {
-        for (let item of this._atlasList.values()) {
-            let tex = item.getTexture(id);
-            if (tex) return tex;
-        }
-        return null;
     }
 
     /**
@@ -210,32 +179,6 @@ export class Res {
     }
 
     /**
-     * load font file by url
-     * @param url font file url
-     * @param loaderFunctions callback
-     * @returns
-     */
-    public async loadFont(url: string, loaderFunctions?: LoaderFunctions, userData?: any): Promise<FontInfo> {
-        let loader = new FileLoader();
-        let parser = await loader.load(url, FntParser, loaderFunctions, userData);
-        let data = parser.data as FontInfo;
-        fonts.addFontData(data.face, data.size, data)
-        return parser.data;
-    }
-
-    /**
-     * load a atlas file by url
-     * @param url file path
-     * @param loaderFunctions callback
-     * @returns
-     */
-    public async loadAtlas(url: string, loaderFunctions?: LoaderFunctions): Promise<FontInfo> {
-        let loader = new FileLoader();
-        let parser = await loader.load(url, AtlasParser, loaderFunctions, url);
-        return parser.data;
-    }
-
-    /**
      * load texture by url
      * @param url texture path
      * @param loaderFunctions callback
@@ -247,7 +190,6 @@ export class Res {
             return this._texturePool.get(url);
         }
         let texture = new BitmapTexture2D();
-        texture.textureSource.setNetImage(url);
         texture.flipY = flipY;
         await texture.load(url, loaderFunctions);
         this._texturePool.set(url, texture);
@@ -266,7 +208,6 @@ export class Res {
         }
 
         let hdrTexture = new HDRTexture();
-        hdrTexture.textureSource.setHDRNetImage(url);
         hdrTexture = await hdrTexture.load(url, loaderFunctions);
         this._texturePool.set(url, hdrTexture);
         return hdrTexture;
@@ -285,7 +226,6 @@ export class Res {
         }
         let hdrTexture = new HDRTextureCube();
         hdrTexture = await hdrTexture.load(url, loaderFunctions);
-        hdrTexture.textureSource.setCubeHDR(url);
         this._texturePool.set(url, hdrTexture);
         return hdrTexture;
     }
@@ -302,7 +242,6 @@ export class Res {
         }
         let ldrTextureCube = new LDRTextureCube();
         ldrTextureCube = await ldrTextureCube.load(url, loaderFunctions);
-        ldrTextureCube.textureSource.setCubeLDR(url);
         this._texturePool.set(url, ldrTextureCube);
         return ldrTextureCube;
     }
@@ -321,7 +260,6 @@ export class Res {
 
         let textureCube = new BitmapTextureCube();
         await textureCube.load(urls);
-        textureCube.textureSource.setCubeFace6(urls);
         this._texturePool.set(urls[0], textureCube);
         return textureCube;
     }
@@ -338,7 +276,6 @@ export class Res {
 
         let cubeMap = new BitmapTextureCube();
         await cubeMap.loadStd(url);
-        cubeMap.textureSource.setCubeStd(url);
         return cubeMap;
     }
 

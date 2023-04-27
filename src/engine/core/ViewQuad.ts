@@ -7,7 +7,6 @@ import { WebGPUDescriptorCreator } from '../gfx/graphics/webGpu/descriptor/WebGP
 import { GPUCompareFunction } from '../gfx/graphics/webGpu/WebGPUConst';
 import { webGPUContext } from '../gfx/graphics/webGpu/Context3D';
 import { RTFrame } from '../gfx/renderJob/frame/RTFrame';
-import { RendererPassState } from '../gfx/renderJob/passRenderer/state/RendererPassState';
 import { BlendMode } from '../materials/BlendMode';
 import { MaterialBase } from '../materials/MaterialBase';
 import { Color } from '../math/Color';
@@ -15,6 +14,7 @@ import { PlaneGeometry } from '../shape/PlaneGeometry';
 import { defaultRes } from '../textures/DefaultRes';
 import { VirtualTexture } from '../textures/VirtualTexture';
 import { Object3D } from './entities/Object3D';
+import { RendererPassState } from '../gfx/renderJob/passRenderer/state/RendererPassState';
 /**
  * @internal
  * @group Entity

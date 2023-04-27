@@ -1,4 +1,9 @@
-import { Camera3D, ComponentBase, Engine3D, Object3D, PointerEvent3D, Vector3 } from "../../..";
+import { Engine3D } from "../../Engine3D";
+import { Camera3D } from "../../core/Camera3D";
+import { Object3D } from "../../core/entities/Object3D";
+import { PointerEvent3D } from "../../event/eventConst/PointerEvent3D";
+import { Vector3 } from "../../math/Vector3";
+import { ComponentBase } from "../ComponentBase";
 
 /**
  * @internal
@@ -14,7 +19,6 @@ export class ThirdPersonCameraController extends ComponentBase {
 
     constructor() {
         super();
-        this.serializeTag = 'dont-serialize';
     }
 
     protected start() {
