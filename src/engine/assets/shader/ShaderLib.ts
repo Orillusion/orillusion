@@ -35,7 +35,7 @@ import { UnLitMaterialUniform_frag } from "./materials/uniforms/UnLitMaterialUni
 import { VideoUniform_frag } from "./materials/uniforms/VideoUniform_frag";
 import { Bloom_shader } from "./post/Bloom_shader";
 import { Quad_shader } from "./quad/Quad_shader";
-import { CubeSky_Shader } from "./sky/CubeSky_Shader";
+import { CubeSky_Shader } from "./materials/sky/CubeSky_Shader";
 
 /**
  * @internal
