@@ -1,14 +1,15 @@
-[![Test](https://github.com/Orillusion/orillusion/actions/workflows/ci.yml/badge.svg)](https://github.com/Orillusion/orillusion/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/@orillusion/core)](https://www.npmjs.com/package/@orillusion/core)
-
 ![Cover Art](https://github.com/Orillusion/orillusion-webgpu-samples/blob/main/logo_new.png)     
-       
+
 > **Note:**
 > 
 > Currently, this repo is used to collect feedback on the NPM package of the Orillusion engine. According to all the feedback, we will carry on refining the engine core. Then, we need to set up the regulations for a long-term open source project and all the source code will be put in this repo in the near future, which indicates a brand new journey for Orillusion.      
   
 
 ## Orillusion
+
+[![Test](https://github.com/Orillusion/orillusion/actions/workflows/ci.yml/badge.svg)](https://github.com/Orillusion/orillusion/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/@orillusion/core)](https://www.npmjs.com/package/@orillusion/core)
+
 `Orillusion`  is a pure Web3D rendering engine which is fully developed based on the `WebGPU` standard. It aims to achieve desktop-level rendering effects and supports 3D rendering of complex scenes in the browser.
 
 ## Need to know
