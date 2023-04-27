@@ -172,15 +172,10 @@ fn getIrradianceFieldSurface() -> IrradianceField{
     fn offsetByCol(pixelCoord0:vec2<i32>, octSideSize:f32, mapHeight:u32, counts:vec3<f32>) -> vec2<i32>
     {
       var pixelCoord = pixelCoord0;
-      //没有描边，一层的像素尺寸
       let blockSize:vec2<i32> = vec2<i32>(i32(octSideSize * counts.x),  i32(octSideSize * counts.z));
-      //描边后，Y方向，每一层的像素尺寸
       let blockSizeYBorder:i32 = i32((octSideSize + 2.0) * counts.z);
-      //描边后，Y方向，可以存在最多的层数
       let blockMaxRowBorder:i32 = i32(mapHeight) / blockSizeYBorder;
-      //描边前，Y方向容纳最多层数总像素
       let pixelCountYMax:i32 = blockMaxRowBorder * i32(octSideSize * counts.z);
-      //当前像素应该在第几列，第几行
       let col:i32 = pixelCoord.y / pixelCountYMax;
 
       pixelCoord.x = col * i32(octSideSize * counts.x) + pixelCoord.x;
