@@ -1,7 +1,7 @@
 import { Engine3D } from '../../../Engine3D';
 import { View3D } from '../../../core/View3D';
 import { GlobalBindGroup } from '../../graphics/webGpu/core/bindGroups/GlobalBindGroup';
-import { ColorPassRenderer } from '../color/ColorPassRenderer';
+import { ColorPassRenderer } from '../passRenderer/color/ColorPassRenderer';
 import { GBufferFrame } from '../frame/GBufferFrame';
 import { RendererJob } from './RendererJob';
 /**

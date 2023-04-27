@@ -1,13 +1,13 @@
-import { Engine3D } from "../../../Engine3D";
-import { RenderNode } from "../../../components/renderer/RenderNode";
-import { View3D } from "../../../core/View3D";
-import { ProfilerUtil } from "../../../util/ProfilerUtil";
-import { GPUContext } from "../GPUContext";
-import { EntityCollect } from "../collect/EntityCollect";
-import { OcclusionSystem } from "../occlusion/OcclusionSystem";
-import { RenderContext } from "../passRenderer/RenderContext";
-import { RendererBase } from "../passRenderer/RendererBase";
-import { RendererType } from "../passRenderer/state/RendererType";
+import { Engine3D } from "../../../../Engine3D";
+import { RenderNode } from "../../../../components/renderer/RenderNode";
+import { View3D } from "../../../../core/View3D";
+import { ProfilerUtil } from "../../../../util/ProfilerUtil";
+import { GPUContext } from "../../GPUContext";
+import { EntityCollect } from "../../collect/EntityCollect";
+import { OcclusionSystem } from "../../occlusion/OcclusionSystem";
+import { RenderContext } from "../RenderContext";
+import { RendererBase } from "../RendererBase";
+import { RendererType } from "../state/RendererType";
 
 
 /**

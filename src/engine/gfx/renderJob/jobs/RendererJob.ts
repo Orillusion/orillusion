@@ -5,7 +5,7 @@ import { Engine3D } from '../../../Engine3D';
 import { PickFire } from '../../../io/PickFire';
 import { GlobalBindGroup } from '../../graphics/webGpu/core/bindGroups/GlobalBindGroup';
 import { ShadowLightsCollect } from '../collect/ShadowLightsCollect';
-import { ColorPassRenderer } from '../color/ColorPassRenderer';
+import { ColorPassRenderer } from '../passRenderer/color/ColorPassRenderer';
 import { GBufferFrame } from '../frame/GBufferFrame';
 import { GPUContext } from '../GPUContext';
 import { OcclusionSystem } from '../occlusion/OcclusionSystem';
