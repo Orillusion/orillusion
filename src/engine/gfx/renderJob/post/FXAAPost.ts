@@ -10,10 +10,11 @@ import { RTResourceMap } from '../frame/RTResourceMap';
 import { PostBase } from './PostBase';
 import { View3D } from '../../../core/View3D';
 /**
- * FXAA(fast approximate antialiasing)屏幕抗锯齿
- * 一种比较注重性能的形变抗锯齿方式，只需要一次 Pass 就能得到结果，FXAA 注重快速的视觉抗锯齿效果，而非追求完美的真实抗锯齿效果。
+ * FXAA(fast approximate antialiasing)
+ * A deformation anti-aliasing method that pays more attention to performance. 
+ * It only needs one pass to get the result. FXAA focuses on fast visual anti-aliasing effect, 
+ * rather than pursuing perfect real anti-aliasing effect.
  * ```
- * //配置相关参数
  * let cfg = {@link Engine3D.setting.render.postProcessing.fxaa};
  *   let view = new View3D();
         view.scene = this.scene;

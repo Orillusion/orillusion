@@ -303,7 +303,7 @@ export class Transform extends ComponentBase {
 
     /**
      *
-     * 物体相对于父级变换属性，以四元数形式存储
+     * The transformation property of the object relative to the parent, stored in the form of a quaternion
      */
     public get localRotQuat(): Quaternion {
         return this._localRotQuat;

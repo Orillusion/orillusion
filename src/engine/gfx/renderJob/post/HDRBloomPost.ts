@@ -10,9 +10,9 @@ import { RTResourceMap } from '../frame/RTResourceMap';
 import { PostBase } from './PostBase';
 import { View3D } from '../../../core/View3D';
 /**
- * HDRBloom泛光效果
+ * HDR Bloom effect
  * ```
- *       //配置相关参数
+ *       //setting
  *       let cfg = {@link Engine3D.setting.render.postProcessing.bloom};
  *         let view = new View3D();
         view.scene = this.scene;
@@ -133,7 +133,6 @@ export class HDRBloomPost extends PostBase {
     render(view: View3D, command: GPUCommandEncoder) {
         // let command = GPUContext.beginCommandEncoder();
         {
-            //获取上一个 color Texture 进行离屏幕渲染
             let colorTexture = this.getOutTexture();
             {
                 GPUContext.renderToViewQuad(view, this.brightnessView, command, colorTexture);

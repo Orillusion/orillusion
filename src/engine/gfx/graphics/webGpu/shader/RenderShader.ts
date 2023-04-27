@@ -356,9 +356,7 @@ export class RenderShader extends ShaderBase {
      */
     public applyPostDefine(shader: string, renderPassState: RendererPassState) {
         //*********************************/
-        //添加渲染输出附件******************/
-
-        //TODO  需要修改细节版本
+        //******************/
         if (Engine3D.setting.pick.mode == `pixel`) {
             this.defineValue[`USE_WORLDPOS`] = true;
         }

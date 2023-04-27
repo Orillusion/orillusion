@@ -26,7 +26,7 @@ import { View3D } from '../../../core/View3D';
 /**
  * Screen space reflection
  * ```
- *       //配置相关参数
+ *       //setting
  *       let cfg = {@link Engine3D.setting.render.postProcessing.ssr};
  *         let view = new View3D();
         view.scene = this.scene;

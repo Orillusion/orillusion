@@ -54,7 +54,6 @@ export class PickResult {
 
     /**
      * @internal
-     * 相交面顶点2索引
      */
     public v2: number;
 

@@ -12,9 +12,9 @@ import { PostBase } from './PostBase';
 import { View3D } from '../../../core/View3D';
 import { GBufferFrame } from '../frame/GBufferFrame';
 /**
- * 屏幕空间雾化
+ * screen space fog
  * ```
- *       //配置相关参数
+ *       //setting
  *       let cfg = {@link Engine3D.setting.render.postProcessing.globalFog};
  *         let view = new View3D();
         view.scene = this.scene;

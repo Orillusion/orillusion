@@ -29,8 +29,9 @@ export class OutlinePostSlot {
 }
 
 export class OutlinePostData {
-    public readonly SlotCount: number = 8; //最大支持8组不同颜色选中
-    public readonly MaxEntities: number = 16; //同一组内最多数量
+    //max to 8 groups of different colors can be selected
+    public readonly SlotCount: number = 8;
+    public readonly MaxEntities: number = 16;
     public readonly defaultColor: Color = new Color(0.2, 1, 1, 1);
     private readonly slots: OutlinePostSlot[] = [];
 
@@ -87,10 +88,10 @@ export class OutlinePostData {
 export let outlinePostData: OutlinePostData = new OutlinePostData();
 
 /**
- * 描边后期实现类。
- * 通过OutlinePostManager，填充描边的对象数据
+ * post effect out line 
+ * OutlinePostManager，
  * ```
- *       //配置描边的参数
+ *       //setting
  *       let cfg = {@link Engine3D.setting.render.postProcessing.outline};
  *         let view = new View3D();
         view.scene = this.scene;
@@ -279,7 +280,7 @@ export class OutlinePost extends PostBase {
         this.weightBuffer = new StorageGPUBuffer(this.lowTexSize.x * this.lowTexSize.y * 4, GPUBufferUsage.COPY_SRC);
         this.oldOutlineColor = new StorageGPUBuffer(this.lowTexSize.x * this.lowTexSize.y * 4, GPUBufferUsage.COPY_SRC);
 
-        this.slotsArray = new Float32Array(outlinePostData.SlotCount * 4); //预留4个写别的参数
+        this.slotsArray = new Float32Array(outlinePostData.SlotCount * 4);
         this.slotsBuffer = new StorageGPUBuffer(this.slotsArray.length);
         this.slotsBuffer.setFloat32Array('slotsArray', this.slotsArray);
         this.slotsBuffer.apply();
