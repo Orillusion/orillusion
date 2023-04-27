@@ -1,9 +1,7 @@
 import { View3D } from "../core/View3D";
 import { Object3D } from "../core/entities/Object3D";
 import { CEventDispatcher } from "../event/CEventDispatcher";
-import { ComponentType, SerializeTag } from "../util/SerializeDefine";
 import { Transform } from "./Transform";
-
 
 /**
  * Components are used to attach functionality to object3D, it has an owner object3D.
@@ -20,16 +18,6 @@ export class ComponentBase {
      * @internal
      */
     public eventDispatcher: CEventDispatcher;
-
-    /**
-     * @internal
-     */
-    public componentType: ComponentType = ComponentType.none;
-
-    /**
-     * @internal
-     */
-    public serializeTag?: SerializeTag;
 
     /**
      * @internal
@@ -72,35 +60,31 @@ export class ComponentBase {
     }
 
     private __init(param?: any) {
+
         this.init(param);
     }
 
     private __start() {
-        if (this.transform && this.transform.scene3D && this.__isStart == false) {
+        if (this.start && this.transform && this.transform.scene3D && this.__isStart == false) {
             this.start();
             this.__isStart = true;
         }
-        if (this.transform && this.transform.scene3D) {
+        if (this.onEnable && this.transform && this.transform.scene3D) {
             this.onEnable();
         }
-        let hasUpdate = this.onUpdate.toString().replace(/\s+/g, '').length;
-        if (hasUpdate > 10) {
+        if (this.onUpdate) {
             this._onUpdate(this.onUpdate.bind(this));
         }
-        let hasLateUpdate = this.onLateUpdate.toString().replace(/\s+/g, '').length;
-        if (hasLateUpdate > 14) {
+        if (this.onLateUpdate) {
             this._onLateUpdate(this.onLateUpdate.bind(this));
         }
-        let hasBeforeUpdate = this.onBeforeUpdate.toString().replace(/\s+/g, '').length;
-        if (hasBeforeUpdate > 16) {
+        if (this.onBeforeUpdate) {
             this._onBeforeUpdate(this.onBeforeUpdate.bind(this));
         }
-        let hasCompute = this.onCompute.toString().replace(/\s+/g, '').length;
-        if (hasCompute > 11) {
+        if (this.onCompute) {
             this._onCompute(this.onCompute.bind(this));
         }
-        let hasOnGraphic = this.onGraphic.toString().replace(/\s+/g, '').length;
-        if (hasOnGraphic > 11) {
+        if (this.onGraphic) {
             this._onGraphic(this.onGraphic.bind(this));
         }
     }
@@ -114,18 +98,26 @@ export class ComponentBase {
         this._onBeforeUpdate(null);
         this._onCompute(null);
         this._onGraphic(null);
+
+        this.onEnable = null;
+        this.onDisable = null;
+        this.onUpdate = null;
+        this.onLateUpdate = null;
+        this.onBeforeUpdate = null;
+        this.onCompute = null;
+        this.onGraphic = null;
     }
 
     protected init(param?: any) { }
     protected start() { }
     protected stop() { }
-    protected onEnable(view?: View3D) { }
-    protected onDisable(view?: View3D) { }
-    protected onUpdate(view?: View3D) { }
-    protected onLateUpdate(view?: View3D) { }
-    protected onBeforeUpdate(view?: View3D) { }
-    protected onCompute(view?: View3D, command?: GPUCommandEncoder) { }
-    protected onGraphic(view?: View3D) { }
+    protected onEnable?(view?: View3D);
+    protected onDisable?(view?: View3D);
+    protected onUpdate?(view?: View3D);
+    protected onLateUpdate?(view?: View3D);
+    protected onBeforeUpdate?(view?: View3D);
+    protected onCompute?(view?: View3D, command?: GPUCommandEncoder);
+    protected onGraphic?(view?: View3D);
 
     /**
      *

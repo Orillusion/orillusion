@@ -398,7 +398,7 @@ export class Matrix4 {
     public multiply(mat4: Matrix4): void {
         let a = this.rawData;
         let b = mat4.rawData;
-        let r = Matrix4.helpMatrix;
+        let r = Matrix4.helpMatrix.rawData;
 
         r[0] = a[0] * b[0] + a[1] * b[4] + a[2] * b[8] + a[3] * b[12];
         r[1] = a[0] * b[1] + a[1] * b[5] + a[2] * b[9] + a[3] * b[13];
@@ -763,9 +763,9 @@ export class Matrix4 {
             }
             /* normalize "left" */
             invLen = 1.0 / Math.sqrt(left.dotProduct(left));
-            left[0] *= invLen;
-            left[1] *= invLen;
-            left[2] *= invLen;
+            left.x *= invLen;
+            left.y *= invLen;
+            left.z *= invLen;
 
             left.crossProduct(fromDirection, up);
 
@@ -2297,7 +2297,11 @@ export class Matrix4 {
         return this;
     }
 
-    private setElements(n11, n12, n13, n14, n21, n22, n23, n24, n31, n32, n33, n34, n41, n42, n43, n44) {
+    private setElements(
+        n11: number, n12: number, n13: number, n14: number,
+        n21: number, n22: number, n23: number, n24: number,
+        n31: number, n32: number, n33: number, n34: number,
+        n41: number, n42: number, n43: number, n44: number) {
 
         const te = this.rawData;
 
@@ -2308,6 +2312,16 @@ export class Matrix4 {
 
         return this;
 
+    }
+
+    /**
+     * @internal
+     */
+    public makeMatrix44ByQuaternion(pos: Vector3, scale: Vector3, rot: Quaternion) {
+        this.identity();
+        Quaternion.quaternionToMatrix(rot, this);
+        this.appendTranslation(pos.x, pos.y, pos.z);
+        this.appendScale(scale.x, scale.y, scale.z);
     }
 }
 
@@ -2323,15 +2337,7 @@ export function multiplyMatrices4x4REF(lhs: Matrix4, rhs: Matrix4, res: Matrix4)
     }
 }
 
-/**
- * @internal
- */
-export function makeMatrix44ByQuaternion(pos: Vector3, scale: Vector3, rot: Quaternion) {
-    this.identity();
-    Quaternion.quaternionToMatrix(rot, this);
-    this.appendTranslation(pos.x, pos.y, pos.z);
-    this.appendScale(scale.x, scale.y, scale.z);
-}
+
 
 /**
  * @internal
