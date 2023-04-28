@@ -18,11 +18,11 @@ module.exports = defineConfig({
     plugins: [{
         name: 'autoIndex',
         configureServer(server) {
-            server.ws.on('autoIndex', async (data) => {
-                let content = await readFile(resolve(__dirname, './src/index.ts'), 'utf-8')
-                if(data.content !== content)
-                    writeFile(resolve(__dirname, './src/index.ts'), data.content)
-            })
+            // server.ws.on('autoIndex', async (data) => {
+            //     let content = await readFile(resolve(__dirname, './src/index.ts'), 'utf-8')
+            //     if(data.content !== content)
+            //         writeFile(resolve(__dirname, './src/index.ts'), data.content)
+            // })
         }
     }],
     build: {

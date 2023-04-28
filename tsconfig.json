@@ -11,6 +11,7 @@
         "noEmit": true,
         "rootDir": "./",
         "baseUrl": "./",
+        "outDir": "./js",
         "paths": {
             "../*": ["src/*"],
             "@orillusion/*": ["src/libs/*"],
