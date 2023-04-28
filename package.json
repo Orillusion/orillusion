@@ -43,10 +43,5 @@
         "electron": "npm:electron-nightly@latest",
         "uglify-js": "^3.17.4",
         "xvfb-maybe": "^0.2.1"
-    },
-    "dependencies": {
-        "add": "^2.0.6",
-        "global": "^4.4.0",
-        "madge": "^6.0.0"
     }
 }
