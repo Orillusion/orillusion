@@ -285,6 +285,10 @@ export class Res {
         return cubeMap;
     }
 
+    /**
+     * load json data from url.
+     * @param url the path of image
+     */
     public async loadJSON(url: string, loaderFunctions?: LoaderFunctions) {
         return await new FileLoader()
             .loadJson(url, loaderFunctions)
@@ -292,19 +296,9 @@ export class Res {
                 return ret;
             })
             .catch((e) => {
+                console.log(e);
             });
     }
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * normal texture
