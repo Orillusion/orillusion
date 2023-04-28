@@ -2,6 +2,7 @@ import { VertexAttributeName } from "../../../core/geometry/VertexAttributeName"
 import { GLTF_Info } from "./GLTFInfo";
 import { GLTFParser } from "./GLTFParser";
 import { GLTFSubParser } from "./GLTFSubParser";
+import { GLTFType } from "./GLTFType";
 import { KHR_draco_mesh_compression } from "./extends/KHR_draco_mesh_compression";
 
 /**
@@ -159,15 +160,15 @@ export class GLTFSubParserMesh {
                             let attribName;
                             switch (attribute) {
                                 case 'POSITION':
-                                    attribName = GLTFParser.MORPH_POSITION_PREFIX + j;
+                                    attribName = GLTFType.MORPH_POSITION_PREFIX + j;
                                     hasPositions = true;
                                     break;
                                 case 'NORMAL':
-                                    attribName = GLTFParser.MORPH_NORMAL_PREFIX + j;
+                                    attribName = GLTFType.MORPH_NORMAL_PREFIX + j;
                                     hasNormals = true;
                                     break;
                                 case 'TANGENT':
-                                    attribName = GLTFParser.MORPH_TANGENT_PREFIX + j;
+                                    attribName = GLTFType.MORPH_TANGENT_PREFIX + j;
                                     hasTangents = true;
                                     break;
                                 default:

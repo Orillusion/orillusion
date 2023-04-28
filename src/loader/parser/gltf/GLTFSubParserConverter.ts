@@ -19,6 +19,7 @@ import { UUID } from "../../../util/Global";
 import { GLTF_Info, GLTF_Node } from "./GLTFInfo";
 import { GLTFParser } from "./GLTFParser";
 import { GLTFSubParser } from "./GLTFSubParser";
+import { GLTFType } from "./GLTFType";
 import { KHR_materials_clearcoat } from "./extends/KHR_materials_clearcoat";
 import { KHR_materials_emissive_strength } from "./extends/KHR_materials_emissive_strength";
 import { KHR_materials_unlit } from "./extends/KHR_materials_unlit";
@@ -37,7 +38,7 @@ export class GLTFSubParserConverter {
     public async convertNodeToObject3D(nodeInfo: GLTF_Node, parentNode): Promise<Object3D> {
         const node = new Object3D();
         node.name = nodeInfo.name;
-        node[GLTFParser.GLTF_NODE_INDEX_PROPERTY] = nodeInfo.nodeId;
+        node[GLTFType.GLTF_NODE_INDEX_PROPERTY] = nodeInfo.nodeId;
         nodeInfo['nodeObj'] = node;
 
         if (nodeInfo.matrix) {

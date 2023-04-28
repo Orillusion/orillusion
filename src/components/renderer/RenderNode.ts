@@ -10,7 +10,6 @@ import { EntityCollect } from "../../gfx/renderJob/collect/EntityCollect";
 import { RTResourceMap } from "../../gfx/renderJob/frame/RTResourceMap";
 import { RenderContext } from "../../gfx/renderJob/passRenderer/RenderContext";
 import { ClusterLightingBuffer } from "../../gfx/renderJob/passRenderer/cluster/ClusterLightingBuffer";
-import { ClusterLightingRender } from "../../gfx/renderJob/passRenderer/cluster/ClusterLightingRender";
 import { RendererMask, RendererMaskUtil } from "../../gfx/renderJob/passRenderer/state/RendererMask";
 import { RendererPassState } from "../../gfx/renderJob/passRenderer/state/RendererPassState";
 import { RendererType } from "../../gfx/renderJob/passRenderer/state/RendererType";
@@ -115,8 +114,6 @@ export class RenderNode extends ComponentBase {
     public onEnable(): void {
         if (!this._readyPipeline) {
             this.initPipeline();
-
-
         }
         EntityCollect.instance.addRenderNode(this.transform.scene3D, this);
     }

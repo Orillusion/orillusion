@@ -101,13 +101,7 @@ export class ComponentBase implements IComponent {
         this._onCompute(null);
         this._onGraphic(null);
 
-        this.onEnable = null;
-        this.onDisable = null;
-        this.onUpdate = null;
-        this.onLateUpdate = null;
-        this.onBeforeUpdate = null;
-        this.onCompute = null;
-        this.onGraphic = null;
+
     }
 
     public init(param?: any) { }
@@ -201,6 +195,14 @@ export class ComponentBase implements IComponent {
         this._onBeforeUpdate(null);
         this._onUpdate(null);
         this._onLateUpdate(null);
+
+        this.onEnable = null;
+        this.onDisable = null;
+        this.onUpdate = null;
+        this.onLateUpdate = null;
+        this.onBeforeUpdate = null;
+        this.onCompute = null;
+        this.onGraphic = null;
     }
 
 

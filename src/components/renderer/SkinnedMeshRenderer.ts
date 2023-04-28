@@ -42,6 +42,10 @@ export class SkinnedMeshRenderer extends MeshRenderer {
     }
   }
 
+  public onEnable(): void {
+    super.onEnable();
+  }
+
   public get skeletonAnimation(): SkeletonAnimationComponent {
     return this.mSkeletonAnimation;
   }
@@ -105,7 +109,6 @@ export class SkinnedMeshRenderer extends MeshRenderer {
    * @param probes
    */
   public nodeUpdate(view: View3D, passType: RendererType, renderPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer) {
-    console.warn(`${passType}`)
     for (let i = 0; i < this.materials.length; i++) {
       const material = this.materials[i];
       let passes = material.renderPasses.get(passType);

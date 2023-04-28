@@ -23,6 +23,15 @@ export class MeshRenderer extends RenderNode {
     constructor() {
         super();
     }
+
+    public onEnable(): void {
+        super.onEnable();
+    }
+
+    public onDisable(): void {
+        super.onDisable();
+    }
+
     /**
      * The geometry of the mesh determines its shape
      */

@@ -37,11 +37,12 @@ export class Sample_Skeleton {
         hoverCameraController.setCamera(0, -45, 100);
         hoverCameraController.maxDistance = 1000;
 
-        await this.initScene(this.scene);
-
         let view = new View3D();
         view.scene = this.scene;
         view.camera = mainCamera;
+
+        await this.initScene(this.scene);
+
         Engine3D.startRenderView(view);
     }
 

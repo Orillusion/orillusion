@@ -7,6 +7,7 @@ import { GBufferPass } from '../../materials/multiPass/GBufferPass';
 import { SkyGBufferPass } from '../../materials/multiPass/SkyGBufferPass';
 import { RendererMaskUtil, RendererMask } from '../renderJob/passRenderer/state/RendererMask';
 import { RendererType } from '../renderJob/passRenderer/state/RendererType';
+import { GLTFType } from '../../loader/parser/gltf/GLTFType';
 
 /**
  * @internal
@@ -62,8 +63,8 @@ export class PassGenerate {
     public static createShadowPass(renderNode: RenderNode, material: MaterialBase) {
         let use_skeleton = RendererMaskUtil.hasMask(renderNode.rendererMask, RendererMask.SkinnedMesh);
         let useTangent = renderNode.geometry.hasAttribute('TANGENT');
-        // let useMorphTargets = renderNode.geometry.hasAttribute(GLTFParser.MORPH_POSITION_PREFIX + '0');
-        // let useMorphNormals = renderNode.geometry.hasAttribute(GLTFParser.MORPH_NORMAL_PREFIX + '0');
+        let useMorphTargets = renderNode.geometry.hasAttribute(GLTFType.MORPH_POSITION_PREFIX + '0');
+        let useMorphNormals = renderNode.geometry.hasAttribute(GLTFType.MORPH_NORMAL_PREFIX + '0');
 
         let shadowMaterialPass = material.renderShader.getPassShader(RendererType.SHADOW);
         if (!shadowMaterialPass) {
@@ -80,12 +81,12 @@ export class PassGenerate {
                 if (use_skeleton) {
                     renderShader.setDefine(`USE_SKELETON`, use_skeleton);
                 }
-                // if (useMorphTargets) {
-                //     renderShader.setDefine(`USE_MORPHTARGETS`, useMorphTargets);
-                // }
-                // if (useMorphNormals) {
-                //     renderShader.setDefine(`USE_MORPHNORMALS`, useMorphNormals);
-                // }
+                if (useMorphTargets) {
+                    renderShader.setDefine(`USE_MORPHTARGETS`, useMorphTargets);
+                }
+                if (useMorphNormals) {
+                    renderShader.setDefine(`USE_MORPHNORMALS`, useMorphNormals);
+                }
                 // renderShader.shaderState.cullMode = baseMat.getShader().cullMode ;
                 renderShader.shaderState.cullMode = `front`;
                 renderShader.preCompile(renderNode.geometry);
@@ -109,12 +110,12 @@ export class PassGenerate {
                 if (use_skeleton) {
                     renderShader.setDefine(`USE_SKELETON`, use_skeleton);
                 }
-                // if (useMorphTargets) {
-                //     renderShader.setDefine(`USE_MORPHTARGETS`, useMorphTargets);
-                // }
-                // if (useMorphNormals) {
-                //     renderShader.setDefine(`USE_MORPHNORMALS`, useMorphNormals);
-                // }
+                if (useMorphTargets) {
+                    renderShader.setDefine(`USE_MORPHTARGETS`, useMorphTargets);
+                }
+                if (useMorphNormals) {
+                    renderShader.setDefine(`USE_MORPHNORMALS`, useMorphNormals);
+                }
                 // renderShader.shaderState.cullMode = baseMat.getShader().cullMode ;
                 renderShader.shaderState.cullMode = `front`;
                 renderShader.preCompile(renderNode.geometry);
@@ -131,8 +132,8 @@ export class PassGenerate {
         //     let baseMat = renderNode.materials[0];
         //     reflectionPass.baseMap = baseMat.baseMap;
         //     let useTangent = renderNode.geometry.hasVertexAttribute('TANGENT');
-        //     let useMorphTargets = renderNode.geometry.hasVertexAttribute(GLTFParser.MORPH_POSITION_PREFIX + '0');
-        //     let useMorphNormals = renderNode.geometry.hasVertexAttribute(GLTFParser.MORPH_NORMAL_PREFIX + '0');
+        //     let useMorphTargets = renderNode.geometry.hasVertexAttribute(GLTFType.MORPH_POSITION_PREFIX + '0');
+        //     let useMorphNormals = renderNode.geometry.hasVertexAttribute(GLTFType.MORPH_NORMAL_PREFIX + '0');
 
         //     let use_skeleton = RendererMaskUtil.hasMask(renderNode.rendererMask, RendererMask.SkinnedMesh);
 
@@ -171,8 +172,8 @@ export class PassGenerate {
             let baseMat = renderNode.materials[0];
             depthMaterialPass.baseMap = baseMat.baseMap;
             let useTangent = renderNode.geometry.hasAttribute('TANGENT');
-            // let useMorphTargets = renderNode.geometry.hasAttribute(GLTFParser.MORPH_POSITION_PREFIX + '0');
-            // let useMorphNormals = renderNode.geometry.hasAttribute(GLTFParser.MORPH_NORMAL_PREFIX + '0');
+            let useMorphTargets = renderNode.geometry.hasAttribute(GLTFType.MORPH_POSITION_PREFIX + '0');
+            let useMorphNormals = renderNode.geometry.hasAttribute(GLTFType.MORPH_NORMAL_PREFIX + '0');
 
             let use_skeleton = RendererMaskUtil.hasMask(renderNode.rendererMask, RendererMask.SkinnedMesh);
 
@@ -189,12 +190,12 @@ export class PassGenerate {
                 if (use_skeleton) {
                     renderShader.setDefine(`USE_SKELETON`, use_skeleton);
                 }
-                // if (useMorphTargets) {
-                //     renderShader.setDefine(`USE_MORPHTARGETS`, useMorphTargets);
-                // }
-                // if (useMorphNormals) {
-                //     renderShader.setDefine(`USE_MORPHNORMALS`, useMorphNormals);
-                // }
+                if (useMorphTargets) {
+                    renderShader.setDefine(`USE_MORPHTARGETS`, useMorphTargets);
+                }
+                if (useMorphNormals) {
+                    renderShader.setDefine(`USE_MORPHNORMALS`, useMorphNormals);
+                }
 
                 renderShader.preCompile(renderNode.geometry);
             }

@@ -1,6 +1,7 @@
 import { GLTF_Info } from "./GLTFInfo";
 import { GLTFParser } from "./GLTFParser";
 import { GLTFSubParser } from "./GLTFSubParser";
+import { GLTFType } from "./GLTFType";
 
 export class GLTFSubParserSkin {
     protected gltf: GLTF_Info;
@@ -53,7 +54,7 @@ export class GLTFSubParserSkin {
             dskin.skeleton = rootNodeId;
         }
         // dskin.skeleton = skeleton === undefined ? GLTFParser.SCENE_ROOT_SKELETON : skeleton;
-        dskin.inverseBindMatrices = GLTFParser.IDENTITY_INVERSE_BIND_MATRICES;
+        dskin.inverseBindMatrices = GLTFType.IDENTITY_INVERSE_BIND_MATRICES;
 
         if (inverseBindMatrices !== undefined) {
             const accessor = this.parseAccessor(inverseBindMatrices);
