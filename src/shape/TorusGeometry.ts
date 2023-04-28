@@ -32,9 +32,9 @@ export class TorusGeometry extends GeometryBase {
      *
      * @constructor
      * @param radius {number} Radius of torus, default value is 0.4
-     * @param tube {number} Pipe radius, default value is 0.1。
-     * @param radialSegments {number}Number of torus segments, default value is 32。
-     * @param tubularSegments {number} Number of pipeline segments, defualt value is 32。
+     * @param tube {number} Pipe radius, default value is 0.1.
+     * @param radialSegments {number}Number of torus segments, default value is 32.
+     * @param tubularSegments {number} Number of pipeline segments, defualt value is 32.
      */
     constructor(radius: number = 0.4, tube: number = 0.1, radialSegments: number = 32, tubularSegments: number = 32) {
         super();

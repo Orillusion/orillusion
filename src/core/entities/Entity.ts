@@ -245,7 +245,7 @@ export class Entity extends CEventDispatcher {
 
     /**
      *
-     * Search for object children and return a child object with a matching name。
+     * Search for object children and return a child object with a matching name.
      * @param name matching name
      * @param loopChild Whether to traverse the children of the child object. The default value is true
      * @returns result

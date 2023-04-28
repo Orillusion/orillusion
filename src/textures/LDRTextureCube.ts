@@ -8,7 +8,7 @@ import { LoaderFunctions } from "../loader/LoaderFunctions";
 import { BitmapTexture2D } from "./BitmapTexture2D";
 
 /**
- * LDRTextureCube ： create a cube texture, it's low dynamic range texture
+ * LDRTextureCube: create a cube texture, it's low dynamic range texture
  * @group Texture
  */
 export class LDRTextureCube extends TextureCube {

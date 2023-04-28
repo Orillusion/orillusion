@@ -946,7 +946,7 @@ export class SN_Expression extends StatementNode {
                     throw 'An unexpected character';
                 }
             } else if (currToken.isOperation()) {
-                // ++a、--a
+                // ++a, --a
                 if (currToken.Type == TokenType.INC || currToken.Type == TokenType.DEC) {
                     let op = currToken;
                     r.skipToken(1);
@@ -1325,7 +1325,7 @@ export class SN_TernaryOperation extends StatementNode {
 
 /**
  * @internal
- * Statement node：Expression of select(a.b)
+ * Statement node: Expression of select(a.b)
  * @group GFX
  */
 export class SN_SelectOperation extends StatementNode {
@@ -1357,7 +1357,7 @@ export class SN_SelectOperation extends StatementNode {
 
 /**
  * @internal
- * Statement node：Expression of index(a[b])
+ * Statement node: Expression of index(a[b])
  * @group GFX
  */
 export class SN_IndexOperation extends StatementNode {
@@ -1585,7 +1585,7 @@ export class SN_CodeBlock extends StatementNode {
 
 /**
  * @internal
- * Statement node：precision
+ * Statement node: precision
  * @group GFX
  */
 export class SN_Precision extends StatementNode {

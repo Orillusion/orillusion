@@ -178,7 +178,7 @@ export class Vector3 {
 
 
     /**
-     * Creates an instance of a Vector3 object. If you do not specify a。
+     * Creates an instance of a Vector3 object. If you do not specify a.
      * parameter for the constructor, a Vector3 object is created with
      * the elements (0,0,0,0).
      *

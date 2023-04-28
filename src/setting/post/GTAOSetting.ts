@@ -26,7 +26,7 @@ export type GTAOSetting = {
      */
     multiBounce: boolean;
     /**
-     * true：Calculate the position value of GBuffer using f32 to obtain more accurate values (water and other effects may not be supported)
+     * true: Calculate the position value of GBuffer using f32 to obtain more accurate values (water and other effects may not be supported)
      * false: We will use the position value of GBuffer in f16 for operations, with a wider coverage
      */
     usePosFloat32: boolean;

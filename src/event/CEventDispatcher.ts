@@ -70,9 +70,9 @@ export class CEventDispatcher {
      * @param type {string} event type.
      * @param callback {Function} The callback function that handles events. 
      * This function must accept an Event3D object as its unique parameter and cannot return any result.
-     * for example：function(evt:Event3D):void。
-     * @param thisObject {any} Current registration object, it'll call callback function。
-     * @param param {any} the data binded to registered event, the default value is null。
+     * for example: function(evt:Event3D):void.
+     * @param thisObject {any} Current registration object, it'll call callback function.
+     * @param param {any} the data binded to registered event, the default value is null.
      * @param priority {number} The priority of callback function execution, with a larger set value having priority to call
      * @returns {number} Returns register event id
      */

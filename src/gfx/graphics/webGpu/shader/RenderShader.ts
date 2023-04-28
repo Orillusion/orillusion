@@ -89,11 +89,11 @@ export class RenderShader extends ShaderBase {
         this.fsName = fs.toLowerCase();
 
         if (!(this.vsName in ShaderLib)) {
-            console.error(`Shader Not Register， Please Register Shader!`, this.vsName);
+            console.error(`Shader Not Register, Please Register Shader!`, this.vsName);
         }
 
         if (!(this.fsName in ShaderLib)) {
-            console.error(`Shader Not Register， Please Register Shader!`, this.fsName);
+            console.error(`Shader Not Register, Please Register Shader!`, this.fsName);
         }
 
         if (ShaderLib[this.vsName]) {

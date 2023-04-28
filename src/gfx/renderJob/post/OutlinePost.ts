@@ -87,7 +87,7 @@ export class OutlinePostData {
 
 /**
  * post effect out line 
- * OutlinePostManager，
+ * OutlinePostManager,
  * ```
  *       //setting
  *       let cfg = {@link Engine3D.setting.render.postProcessing.outline};

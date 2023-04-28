@@ -12,7 +12,7 @@ export type GlobalFogSetting = {
     enable: boolean;
     /**
      * type of fog:
-     * 0: linear exponent 2：squar exponent
+     * 0: linear exponent 2: squar exponent
      */
     fogType: number;
     /**

@@ -18,7 +18,7 @@ import { RTResourceConfig } from '../config/RTResourceConfig';
 import { GBufferFrame } from '../frame/GBufferFrame';
 import { RTFrame } from '../frame/RTFrame';
 /**
- * depth of field effect。
+ * depth of field effect.
  * A common post-processing effect that simulates the focusing characteristics of a camera lens.
  * ```
  *       //Configure parameters related to depth of field

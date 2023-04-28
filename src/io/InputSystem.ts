@@ -447,7 +447,7 @@ export class InputSystem extends CEventDispatcher {
      * @param  startY {Number} 
      * @param  endX   {Number} 
      * @param  endY   {Number} 
-     * @returns result {number} 1：up，2：down，3：left，4：right,0：not move
+     * @returns result {number} 1: up, 2: down, 3: left, 4: right, 0: not move
      */
     public GetSlideDirection(startX: number, startY: number, endX: number, endY: number): number {
         var dy = startY - endY;

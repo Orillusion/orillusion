@@ -167,7 +167,7 @@ export class Color {
 
     /**
      * update this color rgba form hexadecimal 
-     * @param hex hex string。
+     * @param hex hex string.
      */
     public setHex(hex: string) {
         if (typeof hex !== 'string' || Color.NON_HEX_CHARS.test(hex) || !Color.VALID_HEX_SIZE.test(hex)) {

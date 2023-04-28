@@ -221,65 +221,65 @@ export enum TokenType {
     UINT,
     // built-in type: uint[]
     UINT_ARRAY,
-    // built-in type：bool
+    // built-in type: bool
     BOOL,
-    // built-in type：bool[]
+    // built-in type: bool[]
     BOOL_ARRAY,
-    // built-in type：float
+    // built-in type: float
     FLOAT,
-    // built-in type：float[]
+    // built-in type: float[]
     FLOAT_ARRAY,
-    // built-in type：double
+    // built-in type: double
     DOUBLE,
-    // built-in type：double[]
+    // built-in type: double[]
     DOUBLE_ARRAY,
-    // built-in type：vec2
+    // built-in type: vec2
     VEC2,
-    // built-in type：vec2[]
+    // built-in type: vec2[]
     VEC2_ARRAY,
-    // built-in type：vec3
+    // built-in type: vec3
     VEC3,
-    // built-in type：vec3[]
+    // built-in type: vec3[]
     VEC3_ARRAY,
-    // built-in type：vec4
+    // built-in type: vec4
     VEC4,
-    // built-in type：vec4[]
+    // built-in type: vec4[]
     VEC4_ARRAY,
-    // built-in type：bvec2
+    // built-in type: bvec2
     BVEC2,
-    // built-in type：bvec2[]
+    // built-in type: bvec2[]
     BVEC2_ARRAY,
-    // built-in type：bvec3
+    // built-in type: bvec3
     BVEC3,
-    // built-in type：bvec3[]
+    // built-in type: bvec3[]
     BVEC3_ARRAY,
-    // built-in type：bvec4
+    // built-in type: bvec4
     BVEC4,
-    // built-in type：bvec4[]
+    // built-in type: bvec4[]
     BVEC4_ARRAY,
-    // built-in type：ivec2
+    // built-in type: ivec2
     IVEC2,
-    // built-in type：ivec2[]
+    // built-in type: ivec2[]
     IVEC2_ARRAY,
-    // built-in type：ivec3
+    // built-in type: ivec3
     IVEC3,
-    // built-in type：ivec3[]
+    // built-in type: ivec3[]
     IVEC3_ARRAY,
-    // built-in type：ivec4
+    // built-in type: ivec4
     IVEC4,
-    // built-in type：ivec4[]
+    // built-in type: ivec4[]
     IVEC4_ARRAY,
-    // built-in type：uvec2
+    // built-in type: uvec2
     UVEC2,
-    // built-in type：uvec2[]
+    // built-in type: uvec2[]
     UVEC2_ARRAY,
-    // built-in type：uvec3
+    // built-in type: uvec3
     UVEC3,
-    // built-in type：uvec3[]
+    // built-in type: uvec3[]
     UVEC3_ARRAY,
-    // built-in type：uvec4
+    // built-in type: uvec4
     UVEC4,
-    // built-in type：uvec4[]
+    // built-in type: uvec4[]
     UVEC4_ARRAY,
     // built-in type: mat2x2
     MAT2x2,
@@ -333,15 +333,15 @@ export enum TokenType {
     SAMPLER_1D_SHADOW,
     // built-in type: sampler2DShadow
     SAMPLER_2D_SHADOW,
-    // built-in type：texture1D
+    // built-in type: texture1D
     TEXTURE_1D,
-    // built-in type：texture1DArray
+    // built-in type: texture1DArray
     TEXTURE_1D_ARRAY,
-    // built-in type：texture2D
+    // built-in type: texture2D
     TEXTURE_2D,
-    // built-in type：texture2DArray
+    // built-in type: texture2DArray
     TEXTURE_2D_ARRAY,
-    // built-in type：texture3D
+    // built-in type: texture3D
     TEXTURE_3D,
     // built-in type: textureCube
     TEXTURE_CUBE,
