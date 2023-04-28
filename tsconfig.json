@@ -25,6 +25,6 @@
         "allowJs": true,
         "strict": false
     },  
-    "include": ["src", "test"],
+    "include": ["src", "test", "sample"],
     "exclude": ["node_modules", "dist", "public"]
 }

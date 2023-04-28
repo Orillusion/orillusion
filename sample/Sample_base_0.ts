@@ -1,16 +1,16 @@
-import { Engine3D } from "../Engine3D";
-import { AtmosphericComponent } from "../components/AtmosphericComponent";
-import { HoverCameraController } from "../components/controller/HoverCameraController";
-import { DirectLight } from "../components/lights/DirectLight";
-import { MeshRenderer } from "../components/renderer/MeshRenderer";
-import { Camera3D } from "../core/Camera3D";
-import { Scene3D } from "../core/Scene3D";
-import { View3D } from "../core/View3D";
-import { Object3D } from "../core/entities/Object3D";
-import { webGPUContext } from "../gfx/graphics/webGpu/Context3D";
-import { LitMaterial } from "../materials/LitMaterial";
-import { BoxGeometry } from "../shape/BoxGeometry";
-import { KelvinUtil } from "../util/KelvinUtil";
+import { Engine3D } from "../src/Engine3D";
+import { AtmosphericComponent } from "../src/components/AtmosphericComponent";
+import { HoverCameraController } from "../src/components/controller/HoverCameraController";
+import { DirectLight } from "../src/components/lights/DirectLight";
+import { MeshRenderer } from "../src/components/renderer/MeshRenderer";
+import { Camera3D } from "../src/core/Camera3D";
+import { Scene3D } from "../src/core/Scene3D";
+import { View3D } from "../src/core/View3D";
+import { Object3D } from "../src/core/entities/Object3D";
+import { webGPUContext } from "../src/gfx/graphics/webGpu/Context3D";
+import { LitMaterial } from "../src/materials/LitMaterial";
+import { BoxGeometry } from "../src/shape/BoxGeometry";
+import { KelvinUtil } from "../src/util/KelvinUtil";
 
 export class Sample_Base_0 {
     lightObj: Object3D;
