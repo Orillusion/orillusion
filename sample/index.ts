@@ -1,10 +1,10 @@
 import { Sample_Base_0 } from "./Sample_base_0";
 
 /******** Load all samples in /src/sample/ ********/
-if (true) {
-    new Sample_Base_0().run();
-} else {
-}
+// if (false) {
+//     new Sample_Base_0().run();
+// } else {
+// }
 function Menu() {
     // load all modules in /sample
     const modules = import.meta.glob(['./*/*.ts', '!./*/_*.ts'])
@@ -63,7 +63,7 @@ function Menu() {
         <script>
             let target = sessionStorage.target
             if(target)
-            import('./src/sample/'+target).then(m=>{
+            import('./sample/'+target).then(m=>{
                 for(let i in m){
                     new m[i]().run()
                     break
@@ -73,7 +73,7 @@ function Menu() {
         document.body.appendChild(iframe)
     }
 }
-// Menu()
+Menu()
 
 // auto update index.ts, import all exports from /src/engine/
 const modules = import.meta.glob(['../engine/**/*.ts', '!../engine/**/*-back.ts', '!../engine/**/_*.ts'])

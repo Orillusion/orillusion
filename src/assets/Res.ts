@@ -1,18 +1,24 @@
-import { BitmapTexture2D } from '../textures/BitmapTexture2D';
-import { BitmapTextureCube } from '../textures/BitmapTextureCube';
-import { FileLoader } from '../loader/FileLoader';
-import { HDRTexture } from '../textures/HDRTexture';
-import { HDRTextureCube } from '../textures/HDRTextureCube';
-import { LDRTextureCube } from '../textures/LDRTextureCube';
-import { LoaderFunctions } from '../loader/LoaderFunctions';
-import { MaterialBase } from '../materials/MaterialBase';
+
 import { Object3D } from '../core/entities/Object3D';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
+import { FileLoader } from '../loader/FileLoader';
+import { LoaderFunctions } from '../loader/LoaderFunctions';
+import { GLBParser } from '../loader/parser/gltf/GLBParser';
+import { GLTFParser } from '../loader/parser/gltf/GLTFParser';
+import { OBJParser } from '../loader/parser/OBJParser';
+import { MaterialBase } from '../materials/MaterialBase';
+import { BitmapTexture2D } from '../textures/BitmapTexture2D';
+import { BitmapTextureCube } from '../textures/BitmapTextureCube';
+import { HDRTextureCube } from '../textures/HDRTextureCube';
+import { B3DMParser } from '../loader/parser/B3DMParser';
+import { I3DMParser } from "../loader/parser/I3DMParser";
+import { GLTF_Info } from '../loader/parser/gltf/GLTFInfo';
+import { HDRTexture } from '../textures/HDRTexture';
+import { LDRTextureCube } from '../textures/LDRTextureCube';
 import { BRDFLUTGenerate } from '../gfx/generate/BrdfLUTGenerate';
 import { Uint8ArrayTexture } from '../textures/Uint8ArrayTexture';
 
-
-/** 
+/**
  * Resource management classes for textures, materials, models, and preset bodies.
  * @group Assets
  */
@@ -20,6 +26,8 @@ export class Res {
     private _texturePool: Map<string, Texture>;
     private _materialPool: Map<string, MaterialBase>;
     private _prefabPool: Map<string, Object3D>;
+    // private _prefabLoaderPool: Map<string, PrefabLoader>;
+    private _gltfPool: Map<string, GLTF_Info>;
 
     /**
      * @constructor
@@ -28,8 +36,14 @@ export class Res {
         this._texturePool = new Map<string, Texture>();
         this._materialPool = new Map<string, MaterialBase>();
         this._prefabPool = new Map<string, Object3D>();
+        // this._prefabLoaderPool = new Map<string, PrefabLoader>;
+        this._gltfPool = new Map<string, GLTF_Info>;
 
         this.initDefault();
+    }
+
+    public getGltf(url: string): GLTF_Info {
+        return this._gltfPool.get(url);
     }
 
     /**
@@ -84,6 +98,90 @@ export class Res {
      */
     public getPrefab(name: string) {
         return this._prefabPool.get(name).instantiate();
+    }
+
+    /**
+     * load a gltf file
+     * @param url the url of file
+     * @param loaderFunctions callback
+     * @returns
+     */
+    public async loadGltf(url: string, loaderFunctions?: LoaderFunctions): Promise<Object3D> {
+        if (this._prefabPool.has(url)) {
+            return this._prefabPool.get(url) as Object3D;
+        }
+
+        let parser;
+        let ext = url.substring(url.lastIndexOf('.')).toLowerCase();
+        let loader = new FileLoader();
+        if (ext == '.gltf') {
+            parser = await loader.load(url, GLTFParser, loaderFunctions);
+
+        } else {
+            parser = await loader.load(url, GLBParser, loaderFunctions);
+        }
+        let obj = parser.data as Object3D;
+        this._prefabPool.set(url, obj);
+        this._gltfPool.set(url, parser.gltf);
+        return obj;
+        // return null;
+    }
+
+    /**
+     * load obj file
+     * @param url obj file path
+     * @param loaderFunctions callback
+     * @returns
+     */
+    public async loadObj(url: string, loaderFunctions?: LoaderFunctions): Promise<Object3D> {
+        if (this._prefabPool.has(url)) {
+            return this._prefabPool.get(url) as Object3D;
+        }
+
+        let parser;
+        let ext = url.substring(url.lastIndexOf('.')).toLowerCase();
+        let loader = new FileLoader();
+        if (ext == ".obj") {
+            parser = await loader.load(url, OBJParser, loaderFunctions);
+        }
+        let obj = parser.data as Object3D;
+        this._prefabPool.set(url, obj);
+        return obj;
+        // return null;
+    }
+
+    /**
+     * load b3dm file by url
+     * @param url path of file
+     * @param loaderFunctions callback
+     * @returns
+     */
+    public async loadB3DM(url: string, loaderFunctions?: LoaderFunctions, userData?: any): Promise<Object3D> {
+        if (this._prefabPool.has(url)) {
+            return this._prefabPool.get(url) as Object3D;
+        }
+        let loader = new FileLoader();
+        let parser = await loader.load(url, B3DMParser, loaderFunctions, userData);
+        let obj = parser.data;
+        this._prefabPool.set(url, obj);
+        return obj;
+    }
+
+    /**
+     * load i3dm file by url
+     * @param url path of i3dm file
+     * @param loaderFunctions callback
+     * @returns
+     */
+    public async loadI3DM(url: string, loaderFunctions?: LoaderFunctions, userData?: any): Promise<Object3D> {
+        if (this._prefabPool.has(url)) {
+            return this._prefabPool.get(url) as Object3D;
+        }
+        let loader = new FileLoader();
+        let parser = await loader.load(url, I3DMParser, loaderFunctions, userData);
+        let obj = parser.data;
+        this._prefabPool.set(url, obj);
+        return obj;
     }
 
     /**
