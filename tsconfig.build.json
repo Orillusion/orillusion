@@ -12,7 +12,7 @@
         "baseUrl": "./",
         "paths": {
             "../*": ["src/*"],
-            "@orillusion/*": ["src/libs/*"],
+            "@orillusion/*": ["packages/*"],
             "@orillusion/core": ["src"]
         },
         "types": ["vite/client", "@webgpu/types"],
