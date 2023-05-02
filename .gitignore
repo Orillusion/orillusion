@@ -8,7 +8,7 @@ yarn.lock
 package-lock.json
 
 # production
-/dist
+dist
 /docs
 
 # misc

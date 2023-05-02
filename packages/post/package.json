@@ -1,0 +1,24 @@
+{
+    "name": "@orillusion/post",
+    "version": "0.1.0",
+    "author": "Orillusion",
+    "description": "Orillusion Post Effects",
+    "main": "./dist/post.umd.js",
+    "module": "./dist/post.es.js",
+    "module:dev": "./index.ts",
+    "types": "./dist/index.d.ts",
+    "files": ["dist"],
+    "scripts": {
+        "build": "vite build && npm run build:types && npm run build:clean",
+        "build:types": "tsc --emitDeclarationOnly -p tsconfig.json",
+        "build:clean": "mv dist/packages/post/* dist && rm -rf dist/src && rm -rf dist/packages"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Orillusion/orillusion.git"
+    },
+    "dependencies": {
+        "@orillusion/core": "^0.6.0"
+    }
+}

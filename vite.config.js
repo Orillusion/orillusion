@@ -11,7 +11,7 @@ module.exports = defineConfig({
     resolve: {
         alias: {
             '@orillusion/core': resolve(__dirname, './src/index.ts'),
-            '@orillusion': resolve(__dirname, './src/libs')
+            '@orillusion': resolve(__dirname, './packages')
         },
         mainFields: ['module:dev', 'module']
     },

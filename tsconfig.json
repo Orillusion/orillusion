@@ -14,7 +14,7 @@
         "outDir": "./js",
         "paths": {
             "../*": ["src/*"],
-            "@orillusion/*": ["src/libs/*"],
+            "@orillusion/*": ["packages/*"],
             "@orillusion/core": ["src"]
         },
         "types": ["vite/client", "@webgpu/types"],
@@ -25,6 +25,6 @@
         "allowJs": true,
         "strict": false
     },  
-    "include": ["src", "test", "sample"],
+    "include": ["src", "test", "samples"],
     "exclude": ["node_modules", "dist", "public"]
 }
