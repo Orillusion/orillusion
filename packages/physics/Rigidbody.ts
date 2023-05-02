@@ -174,7 +174,7 @@ export class Rigidbody extends ComponentBase {
         return this._btRigidbody;
     }
 
-    protected onUpdate(): void {
+    onUpdate(): void {
         if (this._btRigidbody && this._btRigidbody.getMotionState()) {
             this._btRigidbody.getMotionState().getWorldTransform(Physics.TEMP_TRANSFORM);
 

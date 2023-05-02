@@ -1,6 +1,6 @@
 {
     "name": "@orillusion/media-extention",
-    "version": "0.1.4",
+    "version": "0.1.7",
     "author": "Orillusion",
     "description": "Orillusion Media Material Extention",
     "main": "./dist/media.umd.js",
@@ -11,7 +11,7 @@
     "scripts": {
         "build": "vite build && npm run build:types && npm run build:clean",
         "build:types": "tsc --emitDeclarationOnly -p tsconfig.json",
-        "build:clean": "mv dist/src/libs/media-extention/* dist && rm -rf dist/src"
+        "build:clean": "mv dist/packages/media-extention/* dist && rm -rf dist/src && rm -rf dist/packages"
     },
     "license": "MIT",
     "repository": {
@@ -19,6 +19,6 @@
         "url": "git+https://github.com/Orillusion/orillusion.git"
     },
     "dependencies": {
-        "@orillusion/core": "^0.4.2"
+        "@orillusion/core": "^0.6.0"
     }
 }

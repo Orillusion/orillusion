@@ -40,17 +40,11 @@ export class VideoTexture extends Texture {
         }
     }
 
-    /**
-     * 更新gpu纹理
-     * @returns 返回gpu纹理
-     */
     public getGPUTexture() {
         return null;
     }
 
-    protected updateGPUTexture() {
-
-    }
+    protected updateGPUTexture() {}
 
     private videoTexture: GPUExternalTexture;
     public getGPUView() {

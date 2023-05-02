@@ -1,6 +1,6 @@
 {
     "name": "@orillusion/physics",
-    "version": "0.1.6",
+    "version": "0.1.8",
     "author": "Orillusion",
     "description": "Orillusion Physics Plugin, Powerd by Ammo.js",
     "main": "./dist/physics.umd.js",
@@ -11,7 +11,7 @@
     "scripts": {
         "build": "vite build && npm run build:types && npm run build:clean",
         "build:types": "tsc --emitDeclarationOnly -p tsconfig.json",
-        "build:clean": "mv dist/src/libs/physics/* dist && rm -rf dist/src"
+        "build:clean": "mv dist/packages/physics/* dist && rm -rf dist/src & rm -rf dist/packages"
     },
     "license": "MIT",
     "repository": {
@@ -20,6 +20,6 @@
     },
     "dependencies": {
         "@orillusion/ammo": "^0.1.1",
-        "@orillusion/core": ">=0.4.0"
+        "@orillusion/core": "^0.6.0"
     }
 }

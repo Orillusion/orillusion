@@ -2,14 +2,14 @@ import { Engine3D, MaterialBase, ShaderLib, Vector4, Color, BlendMode, registerM
 import ChromaKeyShader from "./ChromaKeyShader.wgsl?raw";
 
 /**
- * Video 材质(ChromaKey)
- * 不计算光照，仅通过Video像素颜色渲染的基础材质，并且过滤了背景色.
+ * ChromaKey Material
+ * Do not compute light, only read pixel color from a video source with a background color filter
  * @group Material
  */
 export class ChromaKeyMaterial extends MaterialBase {
 
         /**
-         * 创建新的Video材质对象
+         * Create new ChromaKey material
          */
         constructor() {
                 super();
@@ -44,114 +44,120 @@ export class ChromaKeyMaterial extends MaterialBase {
                 this.baseMap = Engine3D.res.whiteTexture;
         }
 
+        /**
+         * Set the clip rect area
+         */
         public set rectClip(value: Vector4) {
                 this.renderShader.uniforms[`rectClip`].vector4 = value;
         }
 
+        /**
+         * Get current clip rect area
+         */
         public get rectClip(): Vector4 {
                 return this.renderShader.uniforms[`rectClip`].vector4;
         }
 
         /**
-         * 背景关键色
+         * Set the chromakey color
          */
         public set keyColor(value: Color) {
                 this.renderShader.uniforms[`keyColor`].color = value;
         }
 
         /**
-         * 背景关键色
+         * Get the chromakey color
          */
         public get keyColor(): Color {
                 return this.renderShader.uniforms[`keyColor`].color;
         }
 
         /**
-         * 颜色裁剪系数
+         * Set the color cutoff factor
          */
         public set colorCutoff(value: number) {
                 this.renderShader.uniforms[`colorCutoff`].value = value;
         }
 
         /**
-         * 颜色裁剪系数
+         * Get the color cutoff factor
          */
         public get colorCutoff(): number {
                 return this.renderShader.uniforms[`colorCutoff`].value;
         }
 
         /**
-         * 颜色羽化系数
+         * Set the color feather factor
          */
         public set colorFeathering(value: number) {
                 this.renderShader.uniforms[`colorFeathering`].value = value;
         }
 
         /**
-         * 颜色羽化系数
+         * Get the color feather factor
          */
         public get colorFeathering(): number {
                 return this.renderShader.uniforms[`colorFeathering`].value;
         }
 
         /**
-         * 遮罩羽化系数
+         * Set the mask feather factor
          */
         public set maskFeathering(value: number) {
                 this.renderShader.uniforms[`maskFeathering`].value = value;
         }
 
         /**
-         * 遮罩羽化系数
+         * Get the mask feather factor
          */
         public get maskFeathering(): number {
                 return this.renderShader.uniforms[`maskFeathering`].value;
         }
 
         /**
-         * 锐化系数
+         * Set the sharpen factor
          */
         public set sharpening(value: number) {
                 this.renderShader.uniforms[`sharpening`].value = value;
         }
 
         /**
-         * 锐化系数
+         * Get the sharpen factor
          */
         public get sharpening(): number {
                 return this.renderShader.uniforms[`sharpening`].value;
         }
 
         /**
-         * 消除系数
+         * Set the despoil factor
          */
         public set despoil(value: number) {
                 this.renderShader.uniforms[`despoil`].value = value;
         }
 
         /**
-         * 消除系数
+         * Get the despoil factor
          */
         public get despoil(): number {
                 return this.renderShader.uniforms[`despoil`].value;
         }
 
         /**
-         * 光场消除系数
+         * Set the despoil luminance factor
          */
         public set despoilLuminanceAdd(value: number) {
                 this.renderShader.uniforms[`despoilLuminanceAdd`].value = value;
         }
 
         /**
-         * 光场消除系数
+         * Get the despoil luminance factor
          */
         public get despoilLuminanceAdd(): number {
                 return this.renderShader.uniforms[`despoilLuminanceAdd`].value;
         }
 
         /**
-         * 启用GUI调试
+         * Show a debug GUI
          */
         debug() {
         }

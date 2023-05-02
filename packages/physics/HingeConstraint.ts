@@ -14,7 +14,7 @@ export class HingeConstraint extends ComponentBase {
     public axisTarget: Vector3 = new Vector3(0, 1, 0);
     private _hinge: Ammo.btHingeConstraint;
 
-    protected start(): void {
+    start(): void {
         var selfRb = this.object3D.getComponent(Rigidbody);
         if (selfRb == null) {
             console.error('HingeConstraint need rigidbody');
@@ -62,9 +62,6 @@ export class HingeConstraint extends ComponentBase {
     public set targetRigidbody(value: Rigidbody) {
         this._targetRigidbody = value;
     }
-
-    // 初始化btRigidbody
-    protected onUpdate(): void { }
 
     public destroy(): void {
         super.destroy();

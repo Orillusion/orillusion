@@ -61,7 +61,7 @@ export class ClothSoftBody extends ComponentBase {
         this._mass = value;
     }
 
-    protected start(): void {
+    start(): void {
         if (!this._planeGeo) {
             console.error('cloth need planeGeometry');
             return;
