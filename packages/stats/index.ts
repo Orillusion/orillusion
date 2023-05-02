@@ -96,7 +96,9 @@ class Panel {
     }
 }
 
-
+ /**
+ * @internal
+ */
 function worker() {
     let canvas: HTMLCanvasElement
     let context: CanvasRenderingContext2D

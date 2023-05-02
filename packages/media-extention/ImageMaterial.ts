@@ -4,13 +4,13 @@ import ImageMaterialShader from "./ImageMaterialShader.wgsl?raw";
 
 /**
  * ImageMaterial
- * 不计算光照，仅通过Image像素颜色渲染的基础材质
+ * Do not compute light, only read pixel color from a Image source
  * @group Material
  */
 export class ImageMaterial extends MaterialBase {
 
     /**
-     * 创建新的Video材质对象
+     * Create a new ImageMaterial
      */
     constructor() {
         super();
@@ -35,30 +35,36 @@ export class ImageMaterial extends MaterialBase {
         this.baseMap = Engine3D.res.whiteTexture;
     }
 
+    /**
+     * Set the clip rect area
+     */
     public set rectClip(value: Vector4) {
         this.renderShader.uniforms[`rectClip`].vector4 = value;
     }
 
+    /**
+     * Get the clip rect area
+     */
     public get rectClip(): Vector4 {
         return this.renderShader.uniforms[`rectClip`].vector4;
     }
 
     /**
-     * 设置材质环境贴图
+     * Set no env Map
      */
     public set envMap(texture: Texture) {
-        //not need env texture
+        //no need env texture
     }
 
     /**
-     * 设置材质阴影贴图
+     * Set no shadow Map
      */
     public set shadowMap(texture: Texture) {
         //not need shadowMap texture
     }
 
     /**
-     * 启用GUI调试
+     * Start debug GUI
      */
     debug() {
     }

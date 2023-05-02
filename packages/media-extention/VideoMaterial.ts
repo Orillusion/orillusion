@@ -3,14 +3,14 @@ import { Color, Engine3D, MaterialBase, ShaderLib, Texture, Vector4, registerMat
 import VideoShader from './VideoShader.wgsl?raw'
 
 /**
- * Video 材质
- * 不计算光照，仅通过Video像素颜色渲染的基础材质
+ * Video Material
+ * Do not compute light, only read pixel color from a Video source
  * @group Material
  */
 export class VideoMaterial extends MaterialBase {
 
     /**
-     * 创建新的Video材质对象
+     * Create new VideoMaterial
      */
     constructor() {
         super();
@@ -34,30 +34,36 @@ export class VideoMaterial extends MaterialBase {
         this.baseMap = Engine3D.res.whiteTexture;
     }
 
+    /**
+     * Set the clip rect area
+     */
     public set rectClip(value: Vector4) {
         this.renderShader.uniforms[`rectClip`].vector4 = value;
     }
 
+    /**
+     * Get the clip rect area
+     */
     public get rectClip(): Vector4 {
         return this.renderShader.uniforms[`rectClip`].vector4;
     }
 
     /**
-     * 设置材质环境贴图
+     * Set no envMap
      */
     public set envMap(texture: Texture) {
         //not need env texture
     }
 
     /**
-     * 设置材质阴影贴图
+     * Set no shadowMap
      */
     public set shadowMap(texture: Texture) {
         //not need shadowMap texture
     }
 
     /**
-     * 启用GUI调试
+     * Start debug GUI
      */
     debug() {
 

@@ -27,8 +27,8 @@ enum CollisionObjectTypes {
 }
 
 /**
- * Rigidbody(刚体)组件。
- * 刚体可以为游戏对象赋予物理属性,使游戏对象在物理系统的控制下接受推力与扭力,从而实现现实世界中的运动效果。
+ * Rigidbody Component
+ * Rigid bodies can endow game objects with physical properties, allowing them to be controlled by the physics system and subjected to forces and torques, thus achieving realistic motion effects.
  * @group Components
  */
 export class Rigidbody extends ComponentBase {
@@ -60,33 +60,47 @@ export class Rigidbody extends ComponentBase {
         this.initRigidbody();
     }
 
+    /**
+     * Get friction value
+     */
     public get friction() {
         return this._friction;
     }
-
+    /**
+     * Set friction value
+     */
     public set friction(value: number) {
         this._friction = value;
         if (this._btRigidbody) this._btRigidbody.setFriction(value);
     }
+    /**
+     * Get rolling friction value
+     */
     public get rollingFriction(): number {
         return this._rollingFriction;
     }
-
+    /**
+     * Set rolling friction value
+     */
     public set rollingFriction(value: number) {
         this._rollingFriction = value;
         if (this._btRigidbody) this._btRigidbody.setRollingFriction(value);
     }
-
+    /**
+     * Get restitution value
+     */
     public get restitution(): number {
         return this._restitution;
     }
+    /**
+     * Set restitution value
+     */
     public set restitution(value: number) {
         this._restitution = value;
         if (this._btRigidbody) this._btRigidbody.setRestitution(value);
     }
-
     /**
-     * 组件是否初始化
+     * Check if rigidbody inited
      */
     public get btRigidbodyInited(): boolean {
         return this._btRigidbodyInited;
@@ -127,17 +141,17 @@ export class Rigidbody extends ComponentBase {
     }
 
     /**
-     * 组件初始化函数
-     * @param fun 回调函数
-     * @param thisObj 引用对象
+     * Add init callback
+     * @param fun callback function
+     * @param thisObj this
      */
     public addInitedFunction(fun: Function, thisObj: Object) {
         this._initedFunctions.push({ fun: fun, thisObj: thisObj });
     }
     /**
-     * 移除组件初始化函数
-     * @param fun 回调函数
-     * @param thisObj 引用对象
+     * Remove init callback
+     * @param fun callback function
+     * @param thisObj this
      */
     public removeInitedFunction(fun: Function, thisObj: Object) {
         for (let i = 0; i < this._initedFunctions.length; i++) {
@@ -168,7 +182,7 @@ export class Rigidbody extends ComponentBase {
     }
 
     /**
-     * 获取Ammo刚体
+     * Return internal Ammo.btRigidBody
      */
     public get btRigidbody(): Ammo.btRigidBody {
         return this._btRigidbody;
@@ -198,12 +212,14 @@ export class Rigidbody extends ComponentBase {
     }
 
     /**
-     * 刚体的质量。
+     * Get mass value。
      */
     public get mass(): number {
         return this._mass;
     }
-
+    /**
+     * Set mass value。
+     */
     public set mass(value: number) {
         this._mass = value;
         if (this._btRigidbody) {
@@ -220,36 +236,42 @@ export class Rigidbody extends ComponentBase {
         }
     }
     /**
-     * 刚体的速度矢量。它表示刚体位置的变化率。
+     * Get velocity value of current object
      */
     public get velocity(): Vector3 {
         return this._velocity;
     }
-    //
+    /**
+     * Set velocity value of current object
+     */
     public set velocity(value: Vector3) {
         this._velocity = value.clone();
         if (this._btRigidbody) {
             this._btRigidbody.applyForce(new Ammo.btVector3(value.x, value.y, value.z), new Ammo.btVector3(0, 0, 0));
         }
     }
-
     /**
-     * 刚体的角速度矢量。
+     * Get the angular velocity value of current object
      */
     public get angularVelocity(): Vector3 {
         return this._angularVelocity;
     }
 
+    /**
+     * Set the angular velocity value of current object
+     */
     public set angularVelocity(value: Vector3) {
         this._angularVelocity = value;
     }
     /**
-     * 控制物理是否影响刚体。
+     * Check if the rigidbody affect physics system
      */
     public get isKinematic(): boolean {
         return this._isKinematic;
     }
-
+    /**
+     * Set if the rigidbody affect physics system
+     */
     public set isKinematic(value: boolean) {
         this._isKinematic = value;
     }

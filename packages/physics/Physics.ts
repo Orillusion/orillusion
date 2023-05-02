@@ -3,7 +3,7 @@ import {BoundingBox, Vector3, Time} from '@orillusion/core'
 import { Rigidbody } from './Rigidbody';
 
 /**
- * 物理引擎
+ * Physics Engine
  * @group Plugin
  * @notExported
  */
@@ -35,16 +35,15 @@ class _Physics {
     private physicBound: BoundingBox;
     private _isInited: boolean = false;
 
-    public TEMP_TRANSFORM: Ammo.btTransform; //临时变量，存放body.getWorldTransform()的结果
+    public TEMP_TRANSFORM: Ammo.btTransform; //Temp cache, save results from body.getWorldTransform()
 
     constructor() { }
 
     /**
-     * 初始化物理引擎
+     * Init Physics Engine
      */
     public async init() {
-        await Ammo(Ammo); //.then(
-        // (ammon) => {
+        await Ammo(Ammo);
         this.TEMP_TRANSFORM = new Ammo.btTransform();
         var collisionConfiguration = new Ammo.btDefaultCollisionConfiguration();
         var dispatcher = new Ammo.btCollisionDispatcher(collisionConfiguration);
@@ -55,9 +54,6 @@ class _Physics {
         this._isInited = true;
 
         this.physicBound = new BoundingBox(new Vector3(), new Vector3(2000, 2000, 2000));
-        // },
-        // () => {},
-        // );
     }
 
     public get maxSubSteps(): number {
@@ -168,13 +164,10 @@ class _Physics {
 }
 
 /**
- * 物理引擎实例，通常全局只申明一个实例
- * 配置
+ * Only init one physics instance
+ * ```ts
+ * await Physics.init();  
  * ```
- * { 
- *    await Physics.init();  
- * }
- *```
  * @group Plugin
  */
 export let Physics = new _Physics();

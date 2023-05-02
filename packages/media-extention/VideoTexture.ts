@@ -1,5 +1,9 @@
 import { Texture, webGPUContext } from "@orillusion/core";
 
+/**
+ * Video Texture
+ * @group Texture
+ */
 export class VideoTexture extends Texture {
     public media: HTMLVideoElement;
     private external: boolean = false;
@@ -11,6 +15,10 @@ export class VideoTexture extends Texture {
         this.samplerBindingLayout = null;
     }
 
+    /**
+     * load one Video Source
+     * @param video the url of a video source, or a MediaStream object, or a HTMLVideoElement
+     */
     public async load(video: string | MediaStream | HTMLVideoElement) {
         let media: HTMLVideoElement, old: HTMLVideoElement
         if (this.media && !this.external)
