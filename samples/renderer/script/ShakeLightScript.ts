@@ -1,4 +1,4 @@
-import { ComponentBase, AnimationCurve, PointLight } from "../@orillusion/core";
+import { ComponentBase, AnimationCurve, PointLight } from "@orillusion/core";
 
 export class ShakeLightScript extends ComponentBase {
     private curve: AnimationCurve;

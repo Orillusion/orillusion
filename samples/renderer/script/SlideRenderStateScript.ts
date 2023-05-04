@@ -1,4 +1,4 @@
-import { ComponentBase, Engine3D, KeyEvent, KeyCode, RTResourceMap, RTResourceConfig } from "../@orillusion/core";
+import { ComponentBase, Engine3D, KeyEvent, KeyCode, RTResourceMap, RTResourceConfig } from "@orillusion/core";
 
 enum RenderState {
     Cancel = 'Cancel',

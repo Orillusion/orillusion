@@ -1,4 +1,4 @@
-import { ComponentBase, MaterialBase, Vector4, MeshRenderer, Time } from "../@orillusion/core";
+import { ComponentBase, MaterialBase, Vector4, MeshRenderer, Time } from "@orillusion/core";
 
 export class UVMoveComponents extends ComponentBase {
 

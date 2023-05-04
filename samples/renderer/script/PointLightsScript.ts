@@ -1,4 +1,4 @@
-import { Vector3, ComponentBase, PointLight, SphereGeometry, LitMaterial, BoundingBox, Object3D, UUID, Quaternion, Time } from "../@orillusion/core";
+import { Vector3, ComponentBase, PointLight, SphereGeometry, LitMaterial, BoundingBox, Object3D, UUID, Quaternion, Time } from "@orillusion/core";
 
 class PD {
     public dir: Vector3 = new Vector3();

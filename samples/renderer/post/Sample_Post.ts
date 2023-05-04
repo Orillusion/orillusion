@@ -1,17 +1,4 @@
-import { Engine3D } from "../@orillusion/core/Engine3D";
-import { AtmosphericComponent } from "../@orillusion/core/components/AtmosphericComponent";
-import { HoverCameraController } from "../@orillusion/core/components/controller/HoverCameraController";
-import { DirectLight } from "../@orillusion/core/components/lights/DirectLight";
-import { PostProcessingComponent } from "../@orillusion/core/components/post/PostProcessingComponent";
-import { MeshRenderer } from "../@orillusion/core/components/renderer/MeshRenderer";
-import { Scene3D } from "../@orillusion/core/core/Scene3D";
-import { View3D } from "../@orillusion/core/core/View3D";
-import { Object3D } from "../@orillusion/core/core/entities/Object3D";
-import { LitMaterial } from "../@orillusion/core/materials/LitMaterial";
-import { Color } from "../@orillusion/core/math/Color";
-import { BoxGeometry } from "../@orillusion/core/shape/BoxGeometry";
-import { CameraUtil } from "../@orillusion/core/util/CameraUtil";
-import { KelvinUtil } from "../@orillusion/core/util/KelvinUtil";
+import { View3D, Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraController, Object3D, DirectLight, KelvinUtil, BoxGeometry, LitMaterial, MeshRenderer, Color, PostProcessingComponent } from "@orillusion/core";
 
 export class Sample_Post {
     view: View3D;

@@ -1,4 +1,4 @@
-import { ComponentBase, MaterialBase, MeshRenderer, LitMaterial, Engine3D, Color, Interpolator } from "../@orillusion/core";
+import { ComponentBase, MaterialBase, MeshRenderer, LitMaterial, Engine3D, Color, Interpolator } from "@orillusion/core";
 
 export class MaterialStateComponent extends ComponentBase {
     private _materials: MaterialBase[];
