@@ -50,7 +50,7 @@ module.exports = defineConfig({
             }
             server.httpServer.on('listening', autoIndex)
             server.watcher.on('change', autoIndex)
-            server.watcher.on('unlink', autoIndex)
+            server.watcher.on('unlink', autoIndex) 
         }
     }],
     build: {

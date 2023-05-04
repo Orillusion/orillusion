@@ -35,11 +35,6 @@ export type EngineSetting = {
     shadow: ShadowSetting;
 
     /**
-     * global illumination setting
-     */
-    gi: GlobalIlluminationSetting;
-
-    /**
      * light setting
      */
     light: LightSetting;
