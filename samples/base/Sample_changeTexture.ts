@@ -1,5 +1,5 @@
 import { Stats } from "@orillusion/stats";
-import { Object3D, Scene3D, HoverCameraController, Engine3D, AtmosphericComponent, Camera3D, webGPUContext, View3D, DirectLight, KelvinUtil, MeshRenderer, BoxGeometry, LitMaterial, Color } from "../../src";
+import { Object3D, Scene3D, HoverCameraController, Engine3D, AtmosphericComponent, Camera3D, webGPUContext, View3D, DirectLight, KelvinUtil, MeshRenderer, BoxGeometry, LitMaterial, Color } from "@orillusion/core";
 
 export class Sample_changeTexture {
     lightObj: Object3D;

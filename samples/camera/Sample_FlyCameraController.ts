@@ -1,18 +1,4 @@
-import { Engine3D } from "../../src/Engine3D";
-import { AtmosphericComponent } from "../../src/components/AtmosphericComponent";
-import { FlyCameraController } from "../../src/components/controller/FlyCameraController";
-import { DirectLight } from "../../src/components/lights/DirectLight";
-import { MeshRenderer } from "../../src/components/renderer/MeshRenderer";
-import { Camera3D } from "../../src/core/Camera3D";
-import { Scene3D } from "../../src/core/Scene3D";
-import { View3D } from "../../src/core/View3D";
-import { Object3D } from "../../src/core/entities/Object3D";
-import { webGPUContext } from "../../src/gfx/graphics/webGpu/Context3D";
-import { LitMaterial } from "../../src/materials/LitMaterial";
-import { Vector3 } from "../../src/math/Vector3";
-import { BoxGeometry } from "../../src/shape/BoxGeometry";
-import { AxisObject } from "../../src/util/AxisObject";
-import { KelvinUtil } from "../../src/util/KelvinUtil";
+import { Object3D, Scene3D, FlyCameraController, Engine3D, AtmosphericComponent, Camera3D, webGPUContext, Vector3, View3D, DirectLight, KelvinUtil, AxisObject, LitMaterial, MeshRenderer, BoxGeometry } from "@orillusion/core";
 
 export class Sample_FlyCameraController {
     lightObj: Object3D;

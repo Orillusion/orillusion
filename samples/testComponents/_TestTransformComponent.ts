@@ -1,9 +1,7 @@
-import { ComponentBase } from "../../src/components/ComponentBase";
-import { Time } from "../../src/util/Time";
+import { ComponentBase, Time } from "@orillusion/core";
 
 export class TestTransformComponent extends ComponentBase {
     start(): void {
-
     }
 
     onUpdate(): void {

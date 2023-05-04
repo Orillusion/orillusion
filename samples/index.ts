@@ -1,7 +1,8 @@
 import { Sample_AnimCurve } from "./animation/Sample_AnimCurve";
+import { Sample_Skeleton3 } from "./animation/Sample_Skeleton3";
+import { Sample_Base_0 } from "./base/Sample_Base_0";
 import { Sample_BoxBlendMode } from "./base/Sample_BoxBlendMode";
 import { Sample_allocMatrix } from "./base/Sample_allocMatrix";
-import { Sample_Base_0 } from "./base/Sample_base_0";
 import { Sample_Base_1 } from "./base/Sample_base_1";
 import { Sample_Base_2 } from "./base/Sample_base_2";
 import { Sample_base_3 } from "./base/Sample_base_3";
@@ -17,7 +18,7 @@ import { Sample_TAA } from "./renderer/Sample_TAA";
 
 /******** Load all samples in /src/sample/ ********/
 if (true) {
-  new Sample_Base_0().run();
+  // new Sample_Base_0().run();
   // new Sample_Base_1().run();
   // new Sample_Base_2().run();
   // new Sample_base_3().run();
@@ -34,6 +35,7 @@ if (true) {
   // new Sample_BistroExterior().run();
   // new Sample_SSR().run();
   // new Sample_TAA().run();
+  new Sample_Skeleton3().run();
 
 } else {
 }

@@ -1,4 +1,4 @@
-﻿import { MorphTargetMapper } from "../../src/components/anim/morphAnim/MorphTargetKey";
+﻿import { MorphTargetMapper } from "@orillusion/core";
 
 export let myMapper: MorphTargetMapper =
 {

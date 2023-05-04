@@ -1,18 +1,4 @@
-import { Engine3D } from "../../src/Engine3D";
-import { AtmosphericComponent } from "../../src/components/AtmosphericComponent";
-import { OrbitController } from "../../src/components/controller/OrbitController";
-import { DirectLight } from "../../src/components/lights/DirectLight";
-import { MeshRenderer } from "../../src/components/renderer/MeshRenderer";
-import { Camera3D } from "../../src/core/Camera3D";
-import { Scene3D } from "../../src/core/Scene3D";
-import { View3D } from "../../src/core/View3D";
-import { Object3D } from "../../src/core/entities/Object3D";
-import { GPUCullMode } from "../../src/gfx/graphics/webGpu/WebGPUConst";
-import { UnLitMaterial } from "../../src/materials/UnLitMaterial";
-import { Color } from "../../src/math/Color";
-import { Vector3 } from "../../src/math/Vector3";
-import { PlaneGeometry } from "../../src/shape/PlaneGeometry";
-import { BitmapTexture2D } from "../../src/textures/BitmapTexture2D";
+import { Engine3D, Scene3D, AtmosphericComponent, Object3D, Camera3D, OrbitController, DirectLight, Color, View3D, BitmapTexture2D, UnLitMaterial, MeshRenderer, PlaneGeometry, Vector3, GPUCullMode } from "@orillusion/core";
 
 export class Sample_CullMode {
 

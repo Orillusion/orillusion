@@ -1,18 +1,4 @@
-import { Engine3D } from "../../src/Engine3D";
-import { HoverCameraController } from "../../src/components/controller/HoverCameraController";
-import { DirectLight } from "../../src/components/lights/DirectLight";
-import { PointLight } from "../../src/components/lights/PointLight";
-import { MeshRenderer } from "../../src/components/renderer/MeshRenderer";
-import { Scene3D } from "../../src/core/Scene3D";
-import { View3D } from "../../src/core/View3D";
-import { Object3D } from "../../src/core/entities/Object3D";
-import { webGPUContext } from "../../src/gfx/graphics/webGpu/Context3D";
-import { LitMaterial } from "../../src/materials/LitMaterial";
-import { Color } from "../../src/math/Color";
-import { Vector3 } from "../../src/math/Vector3";
-import { BoxGeometry } from "../../src/shape/BoxGeometry";
-import { CameraUtil } from "../../src/util/CameraUtil";
-import { KelvinUtil } from "../../src/util/KelvinUtil";
+import { Engine3D, Scene3D, CameraUtil, webGPUContext, HoverCameraController, View3D, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, Color, Vector3, PointLight } from "@orillusion/core";
 
 export class Sample_AddRemove {
     async run() {

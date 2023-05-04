@@ -1,9 +1,4 @@
-import { Engine3D } from "../../../src/Engine3D";
-import { ComponentBase } from "../../../src/components/ComponentBase";
-import { KeyCode } from "../../../src/event/KeyCode";
-import { KeyEvent } from "../../../src/event/eventConst/KeyEvent";
-import { RTResourceConfig } from "../../../src/gfx/renderJob/config/RTResourceConfig";
-import { RTResourceMap } from "../../../src/gfx/renderJob/frame/RTResourceMap";
+import { ComponentBase, Engine3D, KeyEvent, KeyCode, RTResourceMap, RTResourceConfig } from "../@orillusion/core";
 
 enum RenderState {
     Cancel = 'Cancel',

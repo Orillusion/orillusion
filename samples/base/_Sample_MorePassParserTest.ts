@@ -1,13 +1,5 @@
-import { Engine3D } from "../../engine/Engine3D";
-import { AtmosphericComponent } from "../../engine/components/AtmosphericComponent";
-import { HoverCameraController } from "../../engine/components/controller/HoverCameraController";
-import { Camera3D } from "../../engine/core/Camera3D";
-import { Scene3D } from "../../engine/core/Scene3D";
-import { View3D } from "../../engine/core/View3D";
-import { Object3D } from "../../engine/core/entities/Object3D";
-import { webGPUContext } from "../../engine/gfx/graphics/webGpu/Context3D";
-import { MorePassParser } from "../../engine/gfx/graphics/webGpu/shader/util/MorePassParser";
-import { Stats } from "../../libs/stats";
+import { Stats } from "@orillusion/stats";
+import { Engine3D, Scene3D, AtmosphericComponent, Object3D, Camera3D, webGPUContext, HoverCameraController, View3D, MorePassParser } from "@orillusion/core";
 
 export class Sample_MorePassParserTest {
     async run() {

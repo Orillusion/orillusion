@@ -1,10 +1,4 @@
-import { Engine3D } from "../../../src/Engine3D";
-import { ComponentBase } from "../../../src/components/ComponentBase";
-import { MeshRenderer } from "../../../src/components/renderer/MeshRenderer";
-import { LitMaterial } from "../../../src/materials/LitMaterial";
-import { MaterialBase } from "../../../src/materials/MaterialBase";
-import { Color } from "../../../src/math/Color";
-import { Interpolator } from "../../../src/math/TimeInterpolator";
+import { ComponentBase, MaterialBase, MeshRenderer, LitMaterial, Engine3D, Color, Interpolator } from "../@orillusion/core";
 
 export class MaterialStateComponent extends ComponentBase {
     private _materials: MaterialBase[];

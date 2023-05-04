@@ -1,19 +1,5 @@
-import { Engine3D } from "../../engine/Engine3D";
-import { AtmosphericComponent } from "../../engine/components/AtmosphericComponent";
-import { HoverCameraController } from "../../engine/components/controller/HoverCameraController";
-import { DirectLight } from "../../engine/components/lights/DirectLight";
-import { MeshRenderer } from "../../engine/components/renderer/MeshRenderer";
-import { Scene3D } from "../../engine/core/Scene3D";
-import { View3D } from "../../engine/core/View3D";
-import { Object3D } from "../../engine/core/entities/Object3D";
-import { webGPUContext } from "../../engine/gfx/graphics/webGpu/Context3D";
-import { LitMaterial } from "../../engine/materials/LitMaterial";
-import { Color } from "../../engine/math/Color";
-import { BoxGeometry } from "../../engine/shape/BoxGeometry";
-import { HDRTextureCube } from "../../engine/textures/HDRTextureCube";
-import { SolidColorSky } from "../../engine/textures/SolidColorSky";
-import { CameraUtil } from "../../engine/util/CameraUtil";
-import { KelvinUtil } from "../../engine/util/KelvinUtil";
+import { Stats } from "@orillusion/stats";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, HDRTextureCube, SolidColorSky, Color, LitMaterial, MeshRenderer, BoxGeometry, DirectLight, KelvinUtil } from "@orillusion/core";
 
 export class Sample_FrameRate {
     lightObj: Object3D;

@@ -1,22 +1,5 @@
 import { Stats } from "@orillusion/stats";
-import { Engine3D } from "../../src/Engine3D";
-import { AtmosphericComponent } from "../../src/components/AtmosphericComponent";
-import { HoverCameraController } from "../../src/components/controller/HoverCameraController";
-import { PointLight } from "../../src/components/lights/PointLight";
-import { SpotLight } from "../../src/components/lights/SpotLight";
-import { MeshRenderer } from "../../src/components/renderer/MeshRenderer";
-import { Scene3D } from "../../src/core/Scene3D";
-import { View3D } from "../../src/core/View3D";
-import { Object3D } from "../../src/core/entities/Object3D";
-import { webGPUContext } from "../../src/gfx/graphics/webGpu/Context3D";
-import { LitMaterial } from "../../src/materials/LitMaterial";
-import { Color } from "../../src/math/Color";
-import { Vector3 } from "../../src/math/Vector3";
-import { BoxGeometry } from "../../src/shape/BoxGeometry";
-import { PlaneGeometry } from "../../src/shape/PlaneGeometry";
-import { SphereGeometry } from "../../src/shape/SphereGeometry";
-import { CameraUtil } from "../../src/util/CameraUtil";
-import { UUID } from "../../src/util/Global";
+import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, webGPUContext, View3D, HoverCameraController, Object3D, MeshRenderer, LitMaterial, PlaneGeometry, BoxGeometry, PointLight, Color, SpotLight, SphereGeometry, UUID, Vector3 } from "@orillusion/core";
 
 export class Sample_GraphicDraw {
     async run() {

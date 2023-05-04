@@ -1,17 +1,5 @@
 import { Stats } from "@orillusion/stats";
-import { Engine3D } from "../../src/Engine3D";
-import { AtmosphericComponent } from "../../src/components/AtmosphericComponent";
-import { HoverCameraController } from "../../src/components/controller/HoverCameraController";
-import { DirectLight } from "../../src/components/lights/DirectLight";
-import { MeshRenderer } from "../../src/components/renderer/MeshRenderer";
-import { Camera3D } from "../../src/core/Camera3D";
-import { Scene3D } from "../../src/core/Scene3D";
-import { View3D } from "../../src/core/View3D";
-import { Object3D } from "../../src/core/entities/Object3D";
-import { webGPUContext } from "../../src/gfx/graphics/webGpu/Context3D";
-import { Vector3 } from "../../src/math/Vector3";
-import { KelvinUtil } from "../../src/util/KelvinUtil";
-
+import { Object3D, Scene3D, HoverCameraController, Engine3D, AtmosphericComponent, Camera3D, webGPUContext, View3D, DirectLight, KelvinUtil, Vector3, MeshRenderer } from "@orillusion/core";
 export class Sample_base_4 {
     lightObj: Object3D;
     scene: Scene3D;

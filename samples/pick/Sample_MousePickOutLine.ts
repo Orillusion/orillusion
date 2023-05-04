@@ -1,20 +1,20 @@
-// import { Engine3D } from "../../src/Engine3D";
-// import { AtmosphericComponent } from "../../src/components/AtmosphericComponent";
-// import { ColliderComponent } from "../../src/components/ColliderComponent";
-// import { HoverCameraController } from "../../src/components/controller/HoverCameraController";
-// import { DirectLight } from "../../src/components/lights/DirectLight";
-// import { MeshRenderer } from "../../src/components/renderer/MeshRenderer";
-// import { Camera3D } from "../../src/core/Camera3D";
-// import { Scene3D } from "../../src/core/Scene3D";
-// import { View3D } from "../../src/core/View3D";
-// import { Object3D } from "../../src/core/entities/Object3D";
-// import { PointerEvent3D } from "../../src/event/eventConst/PointerEvent3D";
-// import { webGPUContext } from "../../src/gfx/graphics/webGpu/Context3D";
-// import { LitMaterial } from "../../src/materials/LitMaterial";
-// import { Color } from "../../src/math/Color";
-// import { SphereGeometry } from "../../src/shape/SphereGeometry";
-// import { CameraUtil } from "../../src/util/CameraUtil";
-// import { KelvinUtil } from "../../src/util/KelvinUtil";
+// import { Engine3D } from "@orillusion/core/Engine3D";
+// import { AtmosphericComponent } from "@orillusion/core/components/AtmosphericComponent";
+// import { ColliderComponent } from "@orillusion/core/components/ColliderComponent";
+// import { HoverCameraController } from "@orillusion/core/components/controller/HoverCameraController";
+// import { DirectLight } from "@orillusion/core/components/lights/DirectLight";
+// import { MeshRenderer } from "@orillusion/core/components/renderer/MeshRenderer";
+// import { Camera3D } from "@orillusion/core/core/Camera3D";
+// import { Scene3D } from "@orillusion/core/core/Scene3D";
+// import { View3D } from "@orillusion/core/core/View3D";
+// import { Object3D } from "@orillusion/core/core/entities/Object3D";
+// import { PointerEvent3D } from "@orillusion/core/event/eventConst/PointerEvent3D";
+// import { webGPUContext } from "@orillusion/core/gfx/graphics/webGpu/Context3D";
+// import { LitMaterial } from "@orillusion/core/materials/LitMaterial";
+// import { Color } from "@orillusion/core/math/Color";
+// import { SphereGeometry } from "@orillusion/core/shape/SphereGeometry";
+// import { CameraUtil } from "@orillusion/core/util/CameraUtil";
+// import { KelvinUtil } from "@orillusion/core/util/KelvinUtil";
 // import { Scene3DStartComponent } from "./coms/Scene3DStartComponent";
 
 // export class Sample_MousePickOutLine {

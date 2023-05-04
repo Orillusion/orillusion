@@ -1,4 +1,4 @@
-import { AtmosphericComponent, Camera3D, CameraUtil, Engine3D, FirstPersonCameraController, FlyCameraController, HoverCameraController, Object3D, Scene3D, View3D, webGPUContext } from '../..';
+import { Object3D, Camera3D, Scene3D, View3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext } from "@orillusion/core";
 
 export class Sample_Components {
     lightObj: Object3D;

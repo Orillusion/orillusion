@@ -1,24 +1,4 @@
-import { Engine3D } from "../../src/Engine3D";
-import { AtmosphericComponent } from "../../src/components/AtmosphericComponent";
-import { ColliderComponent } from "../../src/components/ColliderComponent";
-import { HoverCameraController } from "../../src/components/controller/HoverCameraController";
-import { DirectLight } from "../../src/components/lights/DirectLight";
-import { MeshRenderer } from "../../src/components/renderer/MeshRenderer";
-import { BoxColliderShape } from "../../src/components/shape/BoxColliderShape";
-import { SphereColliderShape } from "../../src/components/shape/SphereColliderShape";
-import { Camera3D } from "../../src/core/Camera3D";
-import { Scene3D } from "../../src/core/Scene3D";
-import { View3D } from "../../src/core/View3D";
-import { Object3D } from "../../src/core/entities/Object3D";
-import { PointerEvent3D } from "../../src/event/eventConst/PointerEvent3D";
-import { webGPUContext } from "../../src/gfx/graphics/webGpu/Context3D";
-import { LitMaterial } from "../../src/materials/LitMaterial";
-import { Color } from "../../src/math/Color";
-import { Vector3 } from "../../src/math/Vector3";
-import { BoxGeometry } from "../../src/shape/BoxGeometry";
-import { SphereGeometry } from "../../src/shape/SphereGeometry";
-import { CameraUtil } from "../../src/util/CameraUtil";
-import { KelvinUtil } from "../../src/util/KelvinUtil";
+import { Object3D, Camera3D, Scene3D, HoverCameraController, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, View3D, DirectLight, KelvinUtil, BoxColliderShape, Vector3, SphereColliderShape, BoxGeometry, SphereGeometry, MeshRenderer, LitMaterial, ColliderComponent, PointerEvent3D, Color } from "@orillusion/core";
 
 export class Sample_PickBoxCollider {
     lightObj: Object3D;

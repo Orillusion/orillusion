@@ -1,13 +1,4 @@
-import { ComponentBase } from "../../../src/components/ComponentBase";
-import { PointLight } from "../../../src/components/lights/PointLight";
-import { BoundingBox } from "../../../src/core/bound/BoundingBox";
-import { Object3D } from "../../../src/core/entities/Object3D";
-import { LitMaterial } from "../../../src/materials/LitMaterial";
-import { Quaternion } from "../../../src/math/Quaternion";
-import { Vector3 } from "../../../src/math/Vector3";
-import { SphereGeometry } from "../../../src/shape/SphereGeometry";
-import { UUID } from "../../../src/util/Global";
-import { Time } from "../../../src/util/Time";
+import { Vector3, ComponentBase, PointLight, SphereGeometry, LitMaterial, BoundingBox, Object3D, UUID, Quaternion, Time } from "../@orillusion/core";
 
 class PD {
     public dir: Vector3 = new Vector3();

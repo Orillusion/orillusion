@@ -1,17 +1,4 @@
-import { Engine3D } from "../../engine/Engine3D";
-import { AtmosphericComponent } from "../../engine/components/AtmosphericComponent";
-import { SkeletonAnimationComponent } from "../../engine/components/SkeletonAnimationComponent";
-import { HoverCameraController } from "../../engine/components/controller/HoverCameraController";
-import { DirectLight } from "../../engine/components/lights/DirectLight";
-import { MeshRenderer } from "../../engine/components/renderer/MeshRenderer";
-import { Scene3D } from "../../engine/core/Scene3D";
-import { View3D } from "../../engine/core/View3D";
-import { Object3D } from "../../engine/core/entities/Object3D";
-import { webGPUContext } from "../../engine/gfx/graphics/webGpu/Context3D";
-import { LitMaterial } from "../../engine/materials/LitMaterial";
-import { BoxGeometry } from "../../engine/shape/BoxGeometry";
-import { CameraUtil } from "../../engine/util/CameraUtil";
-import { KelvinUtil } from "../../engine/util/KelvinUtil";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, SkeletonAnimationComponent, LitMaterial, MeshRenderer, BoxGeometry, DirectLight, KelvinUtil } from "@orillusion/core";
 
 export class Sample_Skeleton2 {
     lightObj: Object3D;

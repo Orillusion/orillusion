@@ -1,11 +1,4 @@
-import { Engine3D } from "../../src/Engine3D";
-import { AtmosphericComponent } from "../../src/components/AtmosphericComponent";
-import { HoverCameraController } from "../../src/components/controller/HoverCameraController";
-import { Scene3D } from "../../src/core/Scene3D";
-import { View3D } from "../../src/core/View3D";
-import { Object3D } from "../../src/core/entities/Object3D";
-import { webGPUContext } from "../../src/gfx/graphics/webGpu/Context3D";
-import { CameraUtil } from "../../src/util/CameraUtil";
+import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, Object3D } from "@orillusion/core";
 
 export class Sample_JobsLoad {
     async run() {

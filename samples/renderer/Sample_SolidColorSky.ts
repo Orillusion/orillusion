@@ -1,15 +1,4 @@
-import { Engine3D } from "../../src/Engine3D";
-import { AtmosphericComponent } from "../../src/components/AtmosphericComponent";
-import { HoverCameraController } from "../../src/components/controller/HoverCameraController";
-import { DirectLight } from "../../src/components/lights/DirectLight";
-import { Scene3D } from "../../src/core/Scene3D";
-import { View3D } from "../../src/core/View3D";
-import { Object3D } from "../../src/core/entities/Object3D";
-import { webGPUContext } from "../../src/gfx/graphics/webGpu/Context3D";
-import { Color } from "../../src/math/Color";
-import { SolidColorSky } from "../../src/textures/SolidColorSky";
-import { CameraUtil } from "../../src/util/CameraUtil";
-import { KelvinUtil } from "../../src/util/KelvinUtil";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, DirectLight, KelvinUtil, SolidColorSky, Color } from "@orillusion/core";
 
 export class Sample_SolidColorSky {
     lightObj: Object3D;

@@ -1,5 +1,5 @@
 import { Stats } from "@orillusion/stats";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, Camera3D, webGPUContext, HoverCameraController, View3D, AxisObject, Transform, Object3DUtil } from "../../src";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, Camera3D, webGPUContext, HoverCameraController, View3D, AxisObject, Object3DUtil, Transform } from "@orillusion/core";
 
 export class Sample_allocMatrix {
     lightObj: Object3D;

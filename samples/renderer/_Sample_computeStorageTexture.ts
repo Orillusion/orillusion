@@ -1,7 +1,4 @@
-import { Object3D } from "../../src/core/entities/Object3D";
-import { Scene3D } from "../../src/core/Scene3D";
-import { Engine3D } from "../../src/Engine3D";
-import { BRDFLUTGenerate } from "../../src/gfx/generate/BrdfLUTGenerate";
+import { Object3D, Scene3D, Engine3D, BRDFLUTGenerate } from "@orillusion/core";
 
 export class Sample_computeStorageTexture {
     lightObj: Object3D;

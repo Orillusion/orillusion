@@ -1,21 +1,4 @@
-import { Engine3D } from "../../src/Engine3D";
-import { AtmosphericComponent } from "../../src/components/AtmosphericComponent";
-import { HoverCameraController } from "../../src/components/controller/HoverCameraController";
-import { DirectLight } from "../../src/components/lights/DirectLight";
-import { PointLight } from "../../src/components/lights/PointLight";
-import { MeshRenderer } from "../../src/components/renderer/MeshRenderer";
-import { Scene3D } from "../../src/core/Scene3D";
-import { View3D } from "../../src/core/View3D";
-import { Object3D } from "../../src/core/entities/Object3D";
-import { webGPUContext } from "../../src/gfx/graphics/webGpu/Context3D";
-import { Texture } from "../../src/gfx/graphics/webGpu/core/texture/Texture";
-import { LambertMaterial } from "../../src/materials/LambertMaterial";
-import { Color } from "../../src/math/Color";
-import { PlaneGeometry } from "../../src/shape/PlaneGeometry";
-import { BitmapTexture2D } from "../../src/textures/BitmapTexture2D";
-import { CameraUtil } from "../../src/util/CameraUtil";
-import { KelvinUtil } from "../../src/util/KelvinUtil";
-import { Object3DUtil } from "../../src/util/Object3DUtil";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, DirectLight, KelvinUtil, BitmapTexture2D, PointLight, Object3DUtil, Texture, LambertMaterial, Color, PlaneGeometry, MeshRenderer } from "@orillusion/core";
 
 export class Sample_LambertMaterial {
     lightObj: Object3D;

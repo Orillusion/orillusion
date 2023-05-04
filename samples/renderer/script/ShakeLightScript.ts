@@ -1,6 +1,4 @@
-import { ComponentBase } from "../../../src/components/ComponentBase";
-import { PointLight } from "../../../src/components/lights/PointLight";
-import { AnimationCurve } from "../../../src/math/AnimationCurve";
+import { ComponentBase, AnimationCurve, PointLight } from "../@orillusion/core";
 
 export class ShakeLightScript extends ComponentBase {
     private curve: AnimationCurve;

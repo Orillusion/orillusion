@@ -1,7 +1,4 @@
-import { Engine3D } from "../../../src/Engine3D";
-import { ShaderLib } from "../../../src/assets/shader/ShaderLib";
-import { MaterialBase } from "../../../src/materials/MaterialBase";
-import { Color } from "../../../src/math/Color";
+import { MaterialBase, ShaderLib, Engine3D, Color } from "@orillusion/core";
 import CusomMaterialUnlitShader from "./CusomMaterialUnlitShader.wgsl?raw"
 
 export class CustomMaterialUnlit extends MaterialBase {
