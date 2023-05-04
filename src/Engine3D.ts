@@ -321,4 +321,18 @@ export class Engine3D {
 
         if (this._lateRender) this._lateRender();
     }
+
+    /**
+     * Pause the engine render
+     */
+    public static pause() {
+        this._isRun = true;
+    }
+
+    /**
+     * Resume the engine render
+     */
+    public static resume() {
+        this._isRun = false;
+    }
 }
