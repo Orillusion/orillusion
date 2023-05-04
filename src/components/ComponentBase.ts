@@ -48,7 +48,7 @@ export class ComponentBase implements IComponent {
             this._enable = value;
             if (this._enable) {
                 this.onEnable();
-            } else {
+            } else if (this.onDisable) {
                 this.onDisable();
             }
         }
