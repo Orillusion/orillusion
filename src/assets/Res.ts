@@ -322,7 +322,7 @@ export class Res {
      * @param r component-red
      * @param g component-green
      * @param b component-blue
-     * @param a component-alpha (0 for transparent, 1 for opaque)
+     * @param a component-alpha（0 for transparent，1 for opaque）
      * @param name name string
      * @returns
      */
@@ -348,7 +348,7 @@ export class Res {
      * @param r component-red
      * @param g component-green
      * @param b component-blue
-     * @param a component-alpha (0 for transparent, 1 for opaque)
+     * @param a component-alpha（0 for transparent，1 for opaque）
      */
     public fillColor(array: any, w: number, h: number, r: number, g: number, b: number, a: number) {
         for (let i = 0; i < w; i++) {

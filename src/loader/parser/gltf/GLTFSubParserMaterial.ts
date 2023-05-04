@@ -59,7 +59,7 @@ export class GLTFSubParserMaterial {
             });
 
             if (baseColorTexture) {
-                //extensions:{KHR_texture_transform: {...}}
+                //extensions:{KHR_texture_transform: {…}}
                 let ext = baseColorTexture.extensions;
                 if (ext) {
                     let KHR_texture_transform = ext.KHR_texture_transform;

@@ -212,13 +212,13 @@ export class Rigidbody extends ComponentBase {
     }
 
     /**
-     * Get mass value.
+     * Get mass value。
      */
     public get mass(): number {
         return this._mass;
     }
     /**
-     * Set mass value.
+     * Set mass value。
      */
     public set mass(value: number) {
         this._mass = value;

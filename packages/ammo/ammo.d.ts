@@ -4,7 +4,7 @@ export default Ammo;
  */
 declare function Ammo<T>(target?: T): Promise<T & typeof Ammo>;
 /**
- * Ammo native class by Bullet2
+ * Ammo 原生类 by Bullet2
  */
 declare module Ammo {
     function destroy(obj: any): void;
