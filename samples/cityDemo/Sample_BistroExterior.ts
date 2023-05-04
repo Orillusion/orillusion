@@ -1,5 +1,5 @@
-import { PointLightsScript } from "samples/renderer/script/PointLightsScript";
 import { Object3D, Scene3D, HoverCameraController, Engine3D, AtmosphericComponent, Camera3D, webGPUContext, SSRPost, View3D, MeshRenderer, LitMaterial, DirectLight, KelvinUtil } from "@orillusion/core";
+import { PointLightsScript } from "@samples/renderer/script/PointLightsScript";
 
 /**
  * @root

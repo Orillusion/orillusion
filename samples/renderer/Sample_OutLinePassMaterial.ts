@@ -1,5 +1,5 @@
 import { Object3D, Camera3D, Scene3D, HoverCameraController, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, View3D, BitmapTexture2D, IESProfiles, DirectLight, KelvinUtil, PointLight, Color, LitMaterial, MeshRenderer, BoxGeometry, SphereGeometry, OutLinePass, RendererType } from "@orillusion/core";
-import { CustomMaterialUnlit } from "./materials/CustomMaterialUnlit";
+import { CustomMaterialUnlit } from "@samples/renderer/materials/CustomMaterialUnlit";
 
 export class Sample_OutLinePassMaterial {
     lightObj: Object3D;

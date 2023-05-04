@@ -1,4 +1,4 @@
-import { PointLightsScript } from "samples/renderer/script/PointLightsScript";
+import { PointLightsScript } from "@samples/renderer/script/PointLightsScript";
 import { Scene3D, HoverCameraController, Engine3D, AtmosphericComponent, Object3D, Camera3D, webGPUContext, Vector3, View3D, SphereGeometry, MeshRenderer, LitMaterial, BoxGeometry } from "@orillusion/core";
 
 export class Sample_PointLight {

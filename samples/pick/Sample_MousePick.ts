@@ -1,5 +1,5 @@
 import { Object3D, Camera3D, Scene3D, HoverCameraController, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, MeshRenderer, ColliderComponent, PointerEvent3D, View3D, DirectLight, KelvinUtil, SphereGeometry, LitMaterial, Color } from "@orillusion/core";
-import { MaterialStateComponent } from "./coms/MaterialStateComponent";
+import { MaterialStateComponent } from "@samples/pick/coms/MaterialStateComponent";
 
 export class Sample_MousePick {
     lightObj: Object3D;

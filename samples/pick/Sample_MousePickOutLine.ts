@@ -1,5 +1,5 @@
 import { Object3D, Camera3D, Scene3D, HoverCameraController, Color, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, View3D, DirectLight, KelvinUtil, SphereGeometry, LitMaterial, MeshRenderer, ColliderComponent, PointerEvent3D, outlinePostManager } from "@orillusion/core";
-import { Scene3DStartComponent } from "./coms/Scene3DStartComponent";
+import { Scene3DStartComponent } from "@samples/pick/coms/Scene3DStartComponent";
 
 export class Sample_MousePickOutLine {
     lightObj: Object3D;
