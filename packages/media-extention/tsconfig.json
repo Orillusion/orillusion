@@ -4,17 +4,10 @@
         "useDefineForClassFields": true,
         "module": "ESNext",
         "lib": ["ESNext", "DOM"],
-        "moduleResolution": "bundler",
+        "moduleResolution": "Node",
         "sourceMap": false,
         "resolveJsonModule": true,
         "esModuleInterop": true,
-        "rootDir": "./",
-        "baseUrl": "./",
-        "paths": {
-            "../*": ["src/*"],
-            "@orillusion/*": ["packages/*"],
-            "@orillusion/core": ["src"]
-        },
         "types": ["vite/client", "@webgpu/types"],
         // for build
         // "noEmit": true,
@@ -28,8 +21,9 @@
         "noImplicitReturns": false,
         "strictPropertyInitialization": false,
         "strictNullChecks": false,
-        "strict": false
-    },  
-    "include": ["src"],
-    "exclude": ["node_modules"]
+        "strict": false,
+        "paths": {
+            "@orillusion/core": ["../../src"],
+        }
+    }
 }
