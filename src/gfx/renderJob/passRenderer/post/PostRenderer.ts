@@ -1,6 +1,6 @@
 import { Engine3D } from "../../../../Engine3D";
 import { ShaderLib } from "../../../../assets/shader/ShaderLib";
-import { Quad_shader } from "../../../../assets/shader/quad/Quad_shader";
+import { FullQuad_vert_wgsl } from "../../../../assets/shader/quad/Quad_shader";
 import { View3D } from "../../../../core/View3D";
 import { ViewQuad } from "../../../../core/ViewQuad";
 import { GPUContext } from "../../GPUContext";
@@ -28,7 +28,7 @@ export class PostRenderer extends RendererBase {
     }
 
     public initRenderer() {
-        ShaderLib.register("FullQuad_vert_wgsl", Quad_shader.FullQuad_vert_wgsl);
+        ShaderLib.register("FullQuad_vert_wgsl", FullQuad_vert_wgsl);
         this.finalQuadView = new ViewQuad(`Quad_vert_wgsl`, `Quad_frag_wgsl`, new RTFrame([], []), null, null, false);
     }
 

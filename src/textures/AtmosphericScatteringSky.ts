@@ -1,4 +1,4 @@
-import { AtmosphericScatteringSky_shader } from '../assets/shader/materials/sky/AtmosphericScatteringSky_shader';
+import { AtmosphericScatteringSky_shader } from '../assets/shader/sky/AtmosphericScatteringSky_shader';
 import { UniformGPUBuffer } from '../gfx/graphics/webGpu/core/buffer/UniformGPUBuffer';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
 import { ComputeShader } from '../gfx/graphics/webGpu/shader/ComputeShader';

@@ -1,5 +1,5 @@
-import { CastShadow } from '../../assets/shader/core/pass/CastShadowPass_wgsl';
 import { ShaderLib } from '../../assets/shader/ShaderLib';
+import { castPointShadowMap_vert, shadowCastMap_frag } from '../../assets/shader/core/pass/CastShadow_pass';
 import { Vector3 } from '../../math/Vector3';
 import { MaterialBase } from '../MaterialBase';
 import { registerMaterial } from "../MaterialRegister";
@@ -14,10 +14,10 @@ export class CastPointShadowMaterialPass extends MaterialBase {
     constructor() {
         super();
         this.isPassMaterial = true;
-        ShaderLib.register("castPointShadowMap_vert_wgsl", CastShadow.castPointShadowMap_vert_wgsl);
-        ShaderLib.register("shadowCastMap_frag_wgsl", CastShadow.shadowCastMap_frag_wgsl);
+        ShaderLib.register("castPointShadowMap_vert", castPointShadowMap_vert);
+        ShaderLib.register("shadowCastMap_frag", shadowCastMap_frag);
 
-        let shader = this.setShader(`castPointShadowMap_vert_wgsl`, `shadowCastMap_frag_wgsl`);
+        let shader = this.setShader(`castPointShadowMap_vert`, `shadowCastMap_frag`);
         shader.setShaderEntry("main", "main");
         shader.setUniformFloat("cameraFar", 5000);
         shader.setUniformVector3("lightWorldPos", Vector3.ZERO);

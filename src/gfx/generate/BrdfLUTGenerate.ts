@@ -1,4 +1,4 @@
-import BRDFLUT from '../../assets/shader/utils/BRDFLUT.wgsl?raw';
+import { BRDFLUT } from '../../assets/shader/utils/BRDFLUT';
 import { VirtualTexture } from '../../textures/VirtualTexture';
 import { ComputeShader } from '../graphics/webGpu/shader/ComputeShader';
 import { GPUTextureFormat } from '../graphics/webGpu/WebGPUConst';

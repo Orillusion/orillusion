@@ -10,26 +10,20 @@ import { GPUContext } from '../GPUContext';
 import { RendererPassState } from '../passRenderer/state/RendererPassState';
 import { PostBase } from './PostBase';
 import { Engine3D } from '../../../Engine3D';
-import GTAOCs from '../../../assets/shader/compute/GTAOCs.wgsl?raw';
 import { Time } from '../../../util/Time';
 import { clamp } from '../../../math/MathUtil';
 import { View3D } from '../../../core/View3D';
 import { RTDescriptor } from '../../graphics/webGpu/descriptor/RTDescriptor';
 import { GBufferFrame } from '../frame/GBufferFrame';
 import { RTFrame } from '../frame/RTFrame';
+import { GTAO_cs } from '../../../assets/shader/compute/GTAO_cs';
 
 /**
  * Ground base Ambient Occlusion
  * Let the intersection of the object and the object imitate the effect of the light being cross-occluded
  * ```
- *       //gtao setting
- *       let cfg = {@link Engine3D.setting.render.postProcessing.gtao};
- *         let view = new View3D();
-        view.scene = this.scene;
-        view.camera = mainCamera;
-        
- *       
- *       Engine3D.startRender(renderJob);
+ * gtao setting
+ * let cfg = {@link Engine3D.setting.render.postProcessing.gtao};
  *```
  * @group Post Effects
  */
@@ -170,7 +164,7 @@ export class GTAOPost extends PostBase {
     private createCompute() {
         let setting = Engine3D.setting.render.postProcessing.gtao;
 
-        this.gtaoCompute = new ComputeShader(GTAOCs);
+        this.gtaoCompute = new ComputeShader(GTAO_cs);
 
         let gtaoSetting: UniformGPUBuffer = new UniformGPUBuffer(4 * 3); //vector4 * 2
         this.gtaoCompute.setUniformBuffer('gtaoData', gtaoSetting);

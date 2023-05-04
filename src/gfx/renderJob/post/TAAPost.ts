@@ -14,11 +14,11 @@ import { Matrix4 } from '../../../math/Matrix4';
 import { clamp } from '../../../math/MathUtil';
 import { RTDescriptor } from '../../graphics/webGpu/descriptor/RTDescriptor';
 import { RTFrame } from '../frame/RTFrame';
-import TAAcs from '../../../assets/shader/compute/TAAcs.wgsl?raw';
-import TAACopyTex from '../../../assets/shader/compute/TAACopyTex.wgsl?raw';
-import TAASharpTex from '../../../assets/shader/compute/TAASharpTex.wgsl?raw';
 import { GBufferFrame } from '../frame/GBufferFrame';
 import { View3D } from '../../../core/View3D';
+import { TAA_cs } from '../../../assets/shader/compute/TAA_cs';
+import { TAACopyTex_cs } from '../../../assets/shader/compute/TAACopyTex_cs';
+import { TAASharpTex_cs } from '../../../assets/shader/compute/TAASharpTex_cs';
 
 /**
  * Temporal AA
@@ -148,7 +148,7 @@ export class TAAPost extends PostBase {
     }
 
     private createCompute(view: View3D) {
-        let computeShader = new ComputeShader(TAAcs);
+        let computeShader = new ComputeShader(TAA_cs);
         let cfg = Engine3D.setting.render.postProcessing.taa;
 
         let taaSetting: UniformGPUBuffer = new UniformGPUBuffer(16 * 2 + 4 * 3); //matrix + 3 * vector4
@@ -172,7 +172,7 @@ export class TAAPost extends PostBase {
         this.taaSetting = taaSetting;
 
         //copy
-        this.copyTexCompute = new ComputeShader(TAACopyTex);
+        this.copyTexCompute = new ComputeShader(TAACopyTex_cs);
         this.copyTexCompute.setStorageBuffer(`preColor`, this.preColorBuffer);
         this.copyTexCompute.setStorageTexture(`preColorTex`, this.preColorTex);
         this.copyTexCompute.workerSizeX = Math.ceil(this.taaTexture.width / 8);
@@ -180,7 +180,7 @@ export class TAAPost extends PostBase {
         this.copyTexCompute.workerSizeZ = 1;
 
         //sharp
-        this.sharpCompute = new ComputeShader(TAASharpTex);
+        this.sharpCompute = new ComputeShader(TAASharpTex_cs);
         this.sharpCompute.setUniformBuffer('taaData', taaSetting);
         this.sharpCompute.setSamplerTexture(`inTex`, this.taaTexture);
         this.sharpCompute.setStorageTexture(`outTex`, this.outTexture);

@@ -22,7 +22,7 @@ module.exports = defineConfig({
             async function dir(folder, ts = []) {
                 let files = await readdir(folder)
                 for (let f of files) {
-                    let path = resolve(folder, f)
+                    let path = resolve(folder, f).replace(/\\/g, '/') // fix windows path
                     let ls = await lstat(path)
                     if (ls.isDirectory()) {
                         await dir(path, ts)
@@ -35,12 +35,12 @@ module.exports = defineConfig({
                 return ts
             }
             async function autoIndex(file) {
-                if(file && !tsFile.test(file))
+                if(file && !tsFile.test(file.replace(/\\/g, '/'))) // fix windows path
                     return
                 let ts = await dir('./src')
-                let improts = ''
+                let improts = '', _dir = __dirname.replace(/\\/g, '/') + '/src' // fix windows path
                 for (let path of ts) {
-                    improts += `export * from "${path.replace(__dirname + '/src', '.').slice(0, -3)}"\r\n`
+                    improts += `export * from "${path.replace(_dir, '.').slice(0, -3)}"\r\n`
                 }
                 let content = await readFile(resolve(__dirname, './src/index.ts'), 'utf-8')
                 if (improts !== content) {

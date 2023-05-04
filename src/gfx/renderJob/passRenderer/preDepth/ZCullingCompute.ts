@@ -1,5 +1,5 @@
 
-import ZPassShader_cs from '../../../../assets/shader/core/pass/ZPassShader_cs.wgsl?raw';
+import { ZPassShader_cs } from '../../../../assets/shader/core/pass/ZPassShader_cs';
 import { Scene3D } from '../../../../core/Scene3D';
 import { ComputeGPUBuffer } from '../../../graphics/webGpu/core/buffer/ComputeGPUBuffer';
 import { Texture } from '../../../graphics/webGpu/core/texture/Texture';

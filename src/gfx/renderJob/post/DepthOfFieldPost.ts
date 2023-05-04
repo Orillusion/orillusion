@@ -1,4 +1,3 @@
-import DepthOfView_CsShader from '../../../assets/shader/compute/DepthOfView_CsShader.wgsl?raw';
 import { VirtualTexture } from '../../../textures/VirtualTexture';
 import { GlobalBindGroup } from '../../graphics/webGpu/core/bindGroups/GlobalBindGroup';
 import { StorageGPUBuffer } from '../../graphics/webGpu/core/buffer/StorageGPUBuffer';
@@ -17,6 +16,7 @@ import { RTDescriptor } from '../../graphics/webGpu/descriptor/RTDescriptor';
 import { RTResourceConfig } from '../config/RTResourceConfig';
 import { GBufferFrame } from '../frame/GBufferFrame';
 import { RTFrame } from '../frame/RTFrame';
+import { DepthOfView_cs } from '../../../assets/shader/compute/DepthOfView_cs';
 /**
  * depth of field effect.
  * A common post-processing effect that simulates the focusing characteristics of a camera lens.
@@ -122,7 +122,7 @@ export class DepthOfFieldPost extends PostBase {
 
         for (let i = 0; i < cfg.iterationCount; i++) {
             let blurSetting: UniformGPUBuffer = new UniformGPUBuffer(4);
-            let blurCompute = new ComputeShader(DepthOfView_CsShader);
+            let blurCompute = new ComputeShader(DepthOfView_cs);
             this.blurComputes.push(blurCompute);
             this.blurSettings.push(blurSetting);
 
