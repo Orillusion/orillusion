@@ -9,20 +9,23 @@ import { Scene3D } from "../../src/core/Scene3D";
 import { View3D } from "../../src/core/View3D";
 import { Object3D } from "../../src/core/entities/Object3D";
 import { webGPUContext } from "../../src/gfx/graphics/webGpu/Context3D";
-import { LitMaterial } from "../../src/materials/LitMaterial";
-import { BoxGeometry } from "../../src/shape/BoxGeometry";
+import { Vector3 } from "../../src/math/Vector3";
 import { KelvinUtil } from "../../src/util/KelvinUtil";
 
-export class Sample_Base_0 {
+export class Sample_base_4 {
     lightObj: Object3D;
     scene: Scene3D;
+    mats: any[];
     hoverCameraController: HoverCameraController;
+    // probeSampler: ProbesAtlasTextureSampler;
+
     constructor() { }
 
     async run() {
-        // EngineSetting.OcclusionQuery.debug = true;
-        Engine3D.setting.shadow.shadowBound = 350
-        Engine3D.setting.shadow.shadowBias = 0.002;
+
+        Engine3D.setting.material.materialChannelDebug = true;
+        Engine3D.setting.material.materialDebug = true;
+        Engine3D.setting.shadow.autoUpdate = true;
         await Engine3D.init({});
 
         this.scene = new Scene3D();
@@ -39,7 +42,7 @@ export class Sample_Base_0 {
 
         mainCamera.perspective(60, webGPUContext.aspect, 1, 5000.0);
         this.hoverCameraController = mainCamera.object3D.addComponent(HoverCameraController);
-        this.hoverCameraController.setCamera(15, -15, 10);
+        this.hoverCameraController.setCamera(-125, -15, 30);
 
         await this.initScene(this.scene);
 
@@ -47,11 +50,6 @@ export class Sample_Base_0 {
         view.scene = this.scene;
         view.camera = mainCamera;
 
-        // renderJob.addPost(new SSAOPost());
-        // 
-        // 
-        // 
-        // 
         Engine3D.startRenderView(view);
     }
 
@@ -60,15 +58,7 @@ export class Sample_Base_0 {
      * @returns
      */
     async initScene(scene: Scene3D) {
-        //
-        {
-            let cubeObj = new Object3D();
-            let mr = cubeObj.addComponent(MeshRenderer);
-            mr.geometry = new BoxGeometry();
-            let mat = new LitMaterial();
-            mr.material = mat;
-            this.scene.addChild(cubeObj);
-        }
+
         /******** light *******/
         {
             this.lightObj = new Object3D();
@@ -77,18 +67,33 @@ export class Sample_Base_0 {
             this.lightObj.z = -40;
             this.lightObj.rotationX = 46;
             this.lightObj.rotationY = 62;
-            this.lightObj.rotationZ = 160;
+            this.lightObj.rotationZ = 360;
             let lc = this.lightObj.addComponent(DirectLight);
             lc.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
-            lc.castShadow = false;
-            lc.intensity = 1.7;
+            lc.castShadow = true;
+            lc.intensity = 200;
+            lc.debug();
             scene.addChild(this.lightObj);
         }
 
-        {
+        // let obj = new Object3D();
+        // let mr = obj.addComponent(MeshRenderer);
+        // mr.geometry = new BoxGeometry();
+        // mr.material = new LitMaterial();
+        // this.scene.addChild(obj);
+
+        let obj = await Engine3D.res.loadGltf("gltfs/Tree/Tree_8K.gltf");
+        obj.transform.localScale = new Vector3(10, 10, 10);
+        this.scene.addChild(obj);
+
+        let mrs = obj.getComponentsInChild(MeshRenderer);
+        for (const mr of mrs) {
+            // mr.material.debug();
         }
-        return true;
     }
 
-    loop() { }
+    ///
+    loop() {
+
+    }
 }
