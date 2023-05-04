@@ -2,7 +2,7 @@ import { ShaderLib } from '../../assets/shader/ShaderLib';
 import { MaterialBase } from '../MaterialBase';
 import { registerMaterial } from "../MaterialRegister";
 import { ZPassShader_vs } from '../../assets/shader/core/pass/ZPassShader_vs';
-import ZPassShader_fs from '../../assets/shader/core/pass/ZPassShader_fs.wgsl?raw';
+import { ZPassShader_fs } from '../../assets/shader/core/pass/ZPassShader_fs';
 
 
 /**

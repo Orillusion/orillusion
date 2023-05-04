@@ -1,9 +1,9 @@
+import { SkyGBuffer_pass } from '../..';
 import { ShaderLib } from '../../assets/shader/ShaderLib';
 import { Texture } from '../../gfx/graphics/webGpu/core/texture/Texture';
 import { GPUCompareFunction, GPUCullMode } from '../../gfx/graphics/webGpu/WebGPUConst';
 import { MaterialBase } from '../MaterialBase';
 import { registerMaterial } from "../MaterialRegister";
-import SkyGBuffer_fs from '../../assets/shader/core/pass/SkyGBuffer_fs.wgsl?raw';
 
 /**
  * @internal
@@ -16,7 +16,7 @@ export class SkyGBufferPass extends MaterialBase {
         super();
         this.isPassMaterial = true;
         //OutLineSubPass
-        ShaderLib.register("SkyGBuffer_fs", SkyGBuffer_fs);
+        ShaderLib.register("SkyGBuffer_fs", SkyGBuffer_pass);
 
         let shader = this.setShader(`sky_vs_frag_wgsl`, `SkyGBuffer_fs`);
         shader.setUniformFloat(`exposure`, 1.0);

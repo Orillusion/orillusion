@@ -1,8 +1,9 @@
 import { Texture } from '../../graphics/webGpu/core/texture/Texture';
 import { webGPUContext } from '../../graphics/webGpu/Context3D';
-import IBLEnvMapCreator_compute from '../../../assets/shader/compute/IBLEnvMapCreator_compute.wgsl?raw';
+
 import { TextureCubeUtils } from './TextureCubeUtils';
 import { GPUContext } from '../../renderJob/GPUContext';
+import { IBLEnvMapCreator_cs } from '../../../assets/shader/compute/IBLEnvMapCreator_cs';
 
 /**
  * @internal
@@ -21,7 +22,7 @@ export class IBLEnvMapCreator {
                 layout: `auto`,
                 compute: {
                     module: device.createShaderModule({
-                        code: IBLEnvMapCreator_compute,
+                        code: IBLEnvMapCreator_cs,
                     }),
                     entryPoint: 'main',
                 },

@@ -1,7 +1,7 @@
 import { MorphTarget_shader } from "../../../../components/anim/morphAnim/MorphTarget_shader";
 import { SkeletonAnimation_shader } from "../../anim/SkeletonAnimation_shader";
 
-export let ZPassShader_vs: string = /* wgsl */ `
+export let ZPassShader_vs: string = /*wgsl*/ `
     #include "GlobalUniform"
 
     struct VertexOutput {
@@ -96,4 +96,4 @@ export let ZPassShader_vs: string = /* wgsl */ `
         let a = 1.0 / (globalUniform.near - globalUniform.far);
         return (globalUniform.near*globalUniform.far*a) / (depth + globalUniform.far * a) ;
     }
-`;
+`

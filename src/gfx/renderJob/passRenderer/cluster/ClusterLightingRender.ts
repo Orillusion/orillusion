@@ -1,6 +1,3 @@
-import ClusterBoundsSource_cs from '../../../../assets/shader/cluster/ClusterBoundsSource_cs.wgsl?raw';
-import ClusterLighting_cs from '../../../../assets/shader/cluster/ClusterLighting_cs.wgsl?raw';
-
 import { View3D } from '../../../../core/View3D';
 import { GlobalBindGroup } from '../../../graphics/webGpu/core/bindGroups/GlobalBindGroup';
 import { ComputeShader } from '../../../graphics/webGpu/shader/ComputeShader';
@@ -12,6 +9,8 @@ import { RendererBase } from '../RendererBase';
 import { RendererType } from '../state/RendererType';
 import { ILight } from '../../../../components/lights/ILight';
 import { ClusterLightingBuffer } from './ClusterLightingBuffer';
+import { ClusterBoundsSource_cs } from '../../../../assets/shader/cluster/ClusterBoundsSource_cs';
+import { ClusterLighting_cs } from '../../../../assets/shader/cluster/ClusterLighting_cs';
 /**
  * @internal
  * @group Post

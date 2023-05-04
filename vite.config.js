@@ -39,6 +39,7 @@ module.exports = defineConfig({
                 if(file && !tsFile.test(file.replace(/\\/g, '/'))) // fix windows path
                     return
                 let ts = await dir('./src')
+                ts.sort() // make sure same sort on windows and unix
                 let improts = '', _dir = __dirname.replace(/\\/g, '/') + '/src' // fix windows path
                 for (let path of ts) {
                     improts += `export * from "${path.replace(_dir, '.').slice(0, -3)}"\r\n`
@@ -51,7 +52,7 @@ module.exports = defineConfig({
             }
             server.httpServer.on('listening', autoIndex)
             server.watcher.on('change', autoIndex)
-            server.watcher.on('unlink', autoIndex)
+            server.watcher.on('unlink', autoIndex) 
         }
     }],
     build: {

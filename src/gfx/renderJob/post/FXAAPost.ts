@@ -1,4 +1,3 @@
-import FSAA_Shader from '../../../assets/shader/post/FSAAShader.wgsl?raw';
 import { ShaderLib } from '../../../assets/shader/ShaderLib';
 import { Engine3D } from '../../../Engine3D';
 import { Vector2 } from '../../../math/Vector2';
@@ -9,6 +8,7 @@ import { RTResourceConfig } from '../config/RTResourceConfig';
 import { RTResourceMap } from '../frame/RTResourceMap';
 import { PostBase } from './PostBase';
 import { View3D } from '../../../core/View3D';
+import { FXAAShader } from '../../..';
 /**
  * FXAA(fast approximate antialiasing)
  * A deformation anti-aliasing method that pays more attention to performance. 
@@ -23,7 +23,7 @@ export class FXAAPost extends PostBase {
         let presentationSize = webGPUContext.presentationSize;
         RTResourceMap.createRTTexture(RTResourceConfig.colorBufferTex_NAME, presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float, false);
 
-        ShaderLib.register("FXAA_Shader", FSAA_Shader);
+        ShaderLib.register("FXAA_Shader", FXAAShader);
 
         let shaderUniforms = {
             u_texel: new UniformNode(new Vector2(1.0 / presentationSize[0], 1.0 / presentationSize[1])),

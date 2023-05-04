@@ -1,10 +1,10 @@
-import ErpImage2CubeMapCreateCube_compute from '../../../assets/shader/compute/ErpImage2CubeMapCreateCube_compute.wgsl?raw';
-import ErpImage2CubeMapRgbe2rgba_compute from '../../../assets/shader/compute/ErpImage2CubeMapRgbe2rgba_compute.wgsl?raw';
 import { VirtualTexture } from '../../../textures/VirtualTexture';
 import { Texture } from '../../graphics/webGpu/core/texture/Texture';
 import { webGPUContext } from '../../graphics/webGpu/Context3D';
 import { TextureCubeUtils } from './TextureCubeUtils';
 import { GPUContext } from '../../renderJob/GPUContext';
+import { ErpImage2CubeMapCreateCube_cs } from '../../../assets/shader/compute/ErpImage2CubeMapCreateCube_cs';
+import { ErpImage2CubeMapRgbe2rgba_cs } from '../../../assets/shader/compute/ErpImage2CubeMapRgbe2rgba_cs';
 /**
  * @internal
  * @group GFX
@@ -16,7 +16,7 @@ export class ErpImage2CubeMap {
             layout: `auto`,
             compute: {
                 module: device.createShaderModule({
-                    code: ErpImage2CubeMapRgbe2rgba_compute,
+                    code: ErpImage2CubeMapRgbe2rgba_cs,
                 }),
                 entryPoint: 'main',
             },
@@ -87,7 +87,7 @@ export class ErpImage2CubeMap {
             layout: `auto`,
             compute: {
                 module: device.createShaderModule({
-                    code: ErpImage2CubeMapCreateCube_compute,
+                    code: ErpImage2CubeMapCreateCube_cs,
                 }),
                 entryPoint: 'main',
             },

@@ -1,3 +1,4 @@
+// @ts-ignore
 import { isEqual, isMatch } from 'https://unpkg.com/underscore@1.13.6/underscore-esm-min.js'
 
 let target = sessionStorage.target.split('/').pop()

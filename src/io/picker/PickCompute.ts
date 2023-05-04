@@ -1,4 +1,4 @@
-import Picker_CsShader from '../../assets/shader/compute/Picker_CsShader.wgsl?raw';
+import { Picker_cs } from '../../assets/shader/compute/Picker_cs';
 import { Camera3D } from '../../core/Camera3D';
 import { View3D } from '../../core/View3D';
 import { GlobalBindGroup } from '../../gfx/graphics/webGpu/core/bindGroups/GlobalBindGroup';
@@ -18,18 +18,12 @@ export class PickCompute {
     constructor() { }
 
     public init() {
-
         let rtFrame = GBufferFrame.getGBufferFrame("ColorPassGBuffer");
-
-        this._computeShader = new ComputeShader(Picker_CsShader);
-
-
+        this._computeShader = new ComputeShader(Picker_cs);
 
         this._outBuffer = new ComputeGPUBuffer(32);
         this._computeShader.setStorageBuffer('outBuffer', this._outBuffer);
         this._computeShader.setSamplerTexture('visibleMap', rtFrame.getPositionMap());
-
-        this._outBuffer.debug();
     }
 
     compute(view: View3D) {

@@ -1,7 +1,7 @@
 import { Engine3D } from '../Engine3D';
 import { ShaderLib } from '../assets/shader/ShaderLib';
 import { PointShadowDebug } from '../assets/shader/materials/PointShadowDebug';
-import UnLit from '../assets/shader/materials/UnLit.wgsl?raw';
+import { UnLit } from '../assets/shader/materials/UnLit';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
 import { Color } from '../math/Color';
 import { Vector4 } from '../math/Vector4';
