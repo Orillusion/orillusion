@@ -15,7 +15,8 @@
         "paths": {
             "../*": ["src/*"],
             "@orillusion/*": ["packages/*"],
-            "@orillusion/core": ["src"]
+            "@orillusion/core": ["src"],
+            "@samples/*": ["samples/*"]
         },
         "types": ["vite/client", "@webgpu/types"],
         // for dev

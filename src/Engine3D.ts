@@ -19,7 +19,6 @@ import { ComponentCollect } from './gfx/renderJob/collect/ComponentCollect';
 
 /** 
  * Orillusion 3D Engine
- * @notExported
  * @group engine3D
  */
 export class Engine3D {
@@ -323,9 +322,3 @@ export class Engine3D {
         if (this._lateRender) this._lateRender();
     }
 }
-
-/**
- * Orillusion 3D
- * @group engine3D
- */
-// export let Engine3D = new _Engine3D();
