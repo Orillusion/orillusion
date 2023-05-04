@@ -11,8 +11,6 @@ import { Struct } from "../../../../../util/struct/Struct";
 import { webGPUContext } from "../../Context3D";
 import { MemoryDO } from "../../../../../core/pool/memory/MemoryDO";
 import { MemoryInfo } from "../../../../../core/pool/memory/MemoryInfo";
-import { GPUContext } from "../../../../renderJob/GPUContext";
-
 
 /**
  * @internal
@@ -360,17 +358,17 @@ export class GPUBufferBase {
     }
 
     private async read() {
-        // this._readFlag = true;
+        this._readFlag = true;
 
-        // let command = context.beginCommandEncoder();
-        // command.copyBufferToBuffer(this.buffer, 0, this._readBuffer, 0, this.memory.shareDataBuffer.byteLength);
-        // GPUContext.endCommandEncoder(command);
+        let command = webGPUContext.device.createCommandEncoder();;
+        command.copyBufferToBuffer(this.buffer, 0, this._readBuffer, 0, this.memory.shareDataBuffer.byteLength);
+        webGPUContext.device.queue.submit([command.finish()]);
 
-        // await this._readBuffer.mapAsync(GPUMapMode.READ);
-        // const copyArrayBuffer = this._readBuffer.getMappedRange();
-        // this.outFloat32Array.set(new Float32Array(copyArrayBuffer), 0);
-        // // this.memory.shareDataBuffer.set(new Float32Array(copyArrayBuffer), 0);
-        // this._readBuffer.unmap();
-        // this._readFlag = false;
+        await this._readBuffer.mapAsync(GPUMapMode.READ);
+        const copyArrayBuffer = this._readBuffer.getMappedRange();
+        this.outFloat32Array.set(new Float32Array(copyArrayBuffer), 0);
+        // this.memory.shareDataBuffer.set(new Float32Array(copyArrayBuffer), 0);
+        this._readBuffer.unmap();
+        this._readFlag = false;
     }
 }
