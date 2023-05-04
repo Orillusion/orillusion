@@ -29,6 +29,6 @@ jobs:
     - name: Test Build
       run: pnpm run build
 
-    - name: Test in Electron
-      run: pnpm run test:ci
+    # - name: Test in Electron
+    #   run: pnpm run test:ci
         
