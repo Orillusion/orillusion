@@ -63,6 +63,18 @@ class Compare {
         }
     }
     // TODO
+    toSubequal(obj: any, threshold: any = 0.00001) {
+        let min = obj - threshold;
+        let max = obj + threshold;
+        if (this.src < min || this.src > max) {
+            throw new Error('not subequal')
+        }
+    }
+    toRange(min: any, max: any) {
+        if (this.src < min || this.src > max) {
+            throw new Error('out of range')
+        }
+    }
 }
 function expect(object: any) {
     return new Compare(object)
