@@ -352,7 +352,7 @@ export class MaterialBase extends MaterialPass {
      * clone one material
      * @returns Material
      */
-    public clone() {
+    public clone(): MaterialBase {
         return null;
     }
 
