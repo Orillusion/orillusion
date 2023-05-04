@@ -4,6 +4,6 @@ import { webGPUContext } from '@orillusion/core';
 await test('GPUContext createIndexBuffer', async () => {
     let suc = await webGPUContext.init();
     expect(suc).toEqual(true);
-})
+}, true)
 
 setTimeout(end, 500)

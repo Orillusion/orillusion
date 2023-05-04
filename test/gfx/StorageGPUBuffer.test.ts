@@ -28,7 +28,7 @@ await test('StorageGPUBuffer ', async () => {
         new Color(0, 1, 0, 1),
         new Color(0, 0, 1, 1),
     ]);
-})
+}, true)
 
 
 setTimeout(end, 500)

@@ -231,11 +231,16 @@ export class Engine3D {
      * @returns
      */
     public static async init(descriptor: { canvasConfig?: CanvasConfig; beforeRender?: Function; renderLoop?: Function; lateRender?: Function, engineSetting?: EngineSetting } = {}) {
+        if (this.res) {
+            // Returns when Engine.init() is called repeatedly.
+            return true;
+        }
+        
         console.log('engine version', version);
 
         this.setting = { ...this.setting, ...descriptor.engineSetting }
 
-        await webGPUContext.init(descriptor.canvasConfig);
+        let result = await webGPUContext.init(descriptor.canvasConfig);
 
         ComponentCollect.init();
 
@@ -254,7 +259,7 @@ export class Engine3D {
         this._lateRender = descriptor.lateRender;
         this.inputSystem = new InputSystem();
         this.inputSystem.initCanvas(webGPUContext.canvas);
-        return;
+        return result;
     }
 
     public static startRenderView(view: View3D) {

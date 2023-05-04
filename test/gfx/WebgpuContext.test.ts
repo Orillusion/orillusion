@@ -4,27 +4,27 @@ import { Engine3D, webGPUContext } from '@orillusion/core';
 await test('webgpu context', async () => {
     let suc = await webGPUContext.init();
     expect(suc).toEqual(true);
-})
+}, true)
 
 await test('webgpu context adapter', async () => {
     let suc = await webGPUContext.init();
     expect(suc).toEqual(true);
     expect(webGPUContext.adapter != null).toEqual(true);
     expect(webGPUContext.device != null).toEqual(true);
-})
+}, true)
 
 
 await test('webgpu context pixelRatio', async () => {
     let suc = await webGPUContext.init();
     expect(suc).toEqual(true);
     expect(webGPUContext.pixelRatio >= 1).toEqual(true);
-})
+}, true)
 
 await test('webgpu canvas', async () => {
     let suc = await webGPUContext.init();
     expect(suc).toEqual(true);
     expect(webGPUContext.canvas != null).toEqual(true);
-})
+}, true)
 
 await test('webgpu size', async () => {
     let suc = await webGPUContext.init();
@@ -33,7 +33,7 @@ await test('webgpu size', async () => {
     expect(webGPUContext.presentationSize[1] > 32).toEqual(true);
     expect(webGPUContext.presentationSize[0] == webGPUContext.windowWidth).toEqual(true);
     expect(webGPUContext.presentationSize[1] == webGPUContext.windowHeight).toEqual(true);
-})
+}, true)
 
 
 setTimeout(end, 500)

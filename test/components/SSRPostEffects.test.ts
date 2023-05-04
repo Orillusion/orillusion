@@ -11,6 +11,6 @@ await test('Post SSR test', async () => {
 
     let postProcessing = view.scene.addComponent(PostProcessingComponent);
     postProcessing.addPost(SSRPost);
-})
+}, true)
 
 setTimeout(end, 500)

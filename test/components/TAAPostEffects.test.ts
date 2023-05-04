@@ -10,6 +10,6 @@ await test('Post TAAPost test', async () => {
 
     let postProcessing = view.scene.addComponent(PostProcessingComponent);
     postProcessing.addPost(TAAPost);
-})
+}, true)
 
 setTimeout(end, 500)

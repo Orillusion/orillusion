@@ -44,6 +44,6 @@ await test('ComputeShader', async () => {
     gaussianBlurShader.workerSizeX = 1;
     gaussianBlurShader.workerSizeY = 1;
     gaussianBlurShader.workerSizeZ = 1;
-})
+}, true)
 
 setTimeout(end, 500)

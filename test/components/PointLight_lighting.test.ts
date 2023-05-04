@@ -13,7 +13,7 @@ await test('PointLight test', async () => {
     pl.lightColor = new Color(1.0, 0.0, 0.0);
     view.scene.addChild(pointLight);
     Engine3D.startRenderViews([view]);
-})
+}, true)
 
 // await test('SpotLight test', async () => {
 //     let suc = await Engine3D.init();

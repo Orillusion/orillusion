@@ -1,10 +1,8 @@
 import { test, expect, end, delay } from '../util'
 import { Camera3D, CameraUtil, Color, DirectLight, Engine3D, Object3D, PointLight, Scene3D, SpotLight, View3D, webGPUContext } from '@orillusion/core';
 
-await Engine3D.init();
-
 await test('DirectionLight Shadow test', async () => {
-    let suc = await webGPUContext.init();
+    let suc = await Engine3D.init();
     expect(suc).toEqual(true);
 
     let view = new View3D();
@@ -16,10 +14,10 @@ await test('DirectionLight Shadow test', async () => {
     pl.lightColor = new Color(1.0, 0.0, 0.0);
     pl.castShadow = true;
     // Engine3D.startRenderViews([view]);
-})
+}, true)
 
 await test('PointLight Shadow test', async () => {
-    let suc = await webGPUContext.init();
+    let suc = await Engine3D.init();
     expect(suc).toEqual(true);
 
     let view = new View3D();
@@ -32,10 +30,10 @@ await test('PointLight Shadow test', async () => {
     pl.castShadow = true;
     pl.lightColor = new Color(1.0, 0.0, 0.0);
     // Engine3D.startRenderViews([view]);
-})
+}, true)
 
 await test('SpotLight Shadow test', async () => {
-    let suc = await webGPUContext.init();
+    let suc = await Engine3D.init();
     expect(suc).toEqual(true);
 
     let view = new View3D();
@@ -48,7 +46,7 @@ await test('SpotLight Shadow test', async () => {
     pl.castShadow = true;
     pl.lightColor = new Color(1.0, 0.0, 0.0);
     // Engine3D.startRenderViews([view]);
-})
+}, true)
 
 
 

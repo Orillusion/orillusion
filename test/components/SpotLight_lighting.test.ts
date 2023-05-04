@@ -13,7 +13,7 @@ await test('SpotLight test', async () => {
     pl.lightColor = new Color(1.0, 0.0, 0.0);
     view.scene.addChild(spotLight);
     Engine3D.startRenderViews([view]);
-})
+}, true)
 
 
 

@@ -10,7 +10,6 @@ await test('Post HDRBloomPost test', async () => {
 
     let postProcessing = view.scene.addComponent(PostProcessingComponent);
     postProcessing.addPost(HDRBloomPost);
-})
-
+}, true)
 
 setTimeout(end, 500)

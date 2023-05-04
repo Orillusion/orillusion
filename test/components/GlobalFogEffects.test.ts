@@ -10,6 +10,6 @@ await test('Post GlobalFog test', async () => {
 
     let postProcessing = view.scene.addComponent(PostProcessingComponent);
     postProcessing.addPost(GlobalFog);
-})
+}, true)
 
 setTimeout(end, 500)

@@ -1,8 +1,6 @@
 import { test, expect, end, delay } from '../util'
 import { Engine3D, RenderShader, ShaderLib } from '@orillusion/core';
 
-const a = Engine3D;
-
 await test('RenderShader', async () => {
     const shaderCode = /* wgsl */ `
 
@@ -60,6 +58,6 @@ await test('RenderShader', async () => {
 
     expect(renderShader.vsEntryPoint).toEqual('vsMain');
     expect(renderShader.fsEntryPoint).toEqual('fsMain');
-})
+}, true)
 
 setTimeout(end, 500)

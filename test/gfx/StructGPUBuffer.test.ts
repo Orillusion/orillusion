@@ -28,7 +28,7 @@ await test('StructGPUBuffer ', async () => {
     let structStorageGPUBuffer = new StructStorageGPUBuffer<TestInfo>(TestInfo, 100);
     structStorageGPUBuffer.setStruct<TestInfo>(TestInfo, 0, new TestInfo());
     structStorageGPUBuffer.setStructArray<TestInfo>(TestInfo, arr_TestInfos);
-})
+}, true)
 
 
 setTimeout(end, 500)

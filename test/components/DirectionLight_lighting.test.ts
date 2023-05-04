@@ -12,6 +12,6 @@ await test('DirectionLight test', async () => {
     pl.lightColor = new Color(1.0, 0.0, 0.0);
     view.scene.addChild(directLight);
     Engine3D.startRenderViews([view]);
-})
+}, true)
 
 setTimeout(end, 500)

@@ -2,32 +2,41 @@ import { isEqual, isMatch } from 'https://unpkg.com/underscore@1.13.6/underscore
 
 let target = sessionStorage.target.split('/').pop()
 let result: { [key: string]: any } = {}
-let totalS = 0, totalF = 0
+let totalS = 0, totalF = 0, totalSkip = 0
 console.group(`%c[${target}]`, 'color:yellow')
-async function test(unit: string, run: () => Promise<any>) {
+async function test(unit: string, run: () => Promise<any>, requestWebGPUSupport: boolean = false) {
     result[unit] = {
         success: 0,
-        fail: 0
+        fail: 0,
+        skip: 0
     }
     console.group(`%c[${unit}]`, 'color:green')
     console.time('[time]')
+
     let rej: any
-    try {
-        await Promise.race([
-            run(),
-            new Promise((_, _rej) => {
-                rej = (e: any) => _rej(e.reason)
-                window.addEventListener('unhandledrejection', rej, { once: true })
-            })
-        ])
-        result[unit].success++
-        totalS++
-    } catch (e: any) {
-        console.error('[TEST]', e.stack || e)
-        window.parent.electron?.error(e.stack || e.message)
-        result[unit].fail++
-        totalF++
+
+    if (requestWebGPUSupport && !isWebGPUSupported) {
+        result[unit].skip++
+        totalSkip++
+    } else {
+        try {
+            await Promise.race([
+                run(),
+                new Promise((_, _rej) => {
+                    rej = (e: any) => _rej(e.reason)
+                    window.addEventListener('unhandledrejection', rej, { once: true })
+                })
+            ])
+            result[unit].success++
+            totalS++
+        } catch (e: any) {
+            console.error('[TEST]', e.stack || e)
+            window.parent.electron?.error(e.stack || e.message)
+            result[unit].fail++
+            totalF++
+        }
     }
+    
     window.removeEventListener('unhandledrejection', rej)
     console.timeEnd('[time]')
     console.groupEnd()
@@ -86,7 +95,8 @@ function end() {
     window.parent.postMessage({
         type: 'end',
         success: totalS,
-        fail: totalF
+        fail: totalF,
+        skip: totalSkip
     }, '*')
     window.parent.electron?.test({
         target, result
@@ -98,4 +108,14 @@ function delay(time?: number) {
         setTimeout(res, time || 200)
     })
 }
+
+let isWebGPUSupported = await checkWebGPUSupported();
+async function checkWebGPUSupported() {
+    if ('navigator' in window && 'gpu' in navigator) {
+        const supported = await navigator.gpu.requestAdapter();
+        return !!supported;
+    }
+    return false;
+}
+
 export { test, expect, end, delay }

@@ -70,7 +70,8 @@ menu.querySelector('button')?.addEventListener('click', async (e: any) => {
                         result[a.id] = {
                             pass: e.data.fail > 0 ? false : true,
                             success: e.data.success,
-                            fail: e.data.fail
+                            fail: e.data.fail,
+                            skip: e.data.skip
                         }
                         res(true)
                     }

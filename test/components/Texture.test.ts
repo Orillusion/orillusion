@@ -6,9 +6,10 @@ await test('textue2D create Uint8Texture', async () => {
     let texture2D = Engine3D.res.createTexture(32, 64, 255, 255, 0, 255, 'uint8Texture')
     let success = (texture2D.gpuSampler && texture2D.getGPUTexture() && texture2D.getGPUView()) ? true : false;
     expect(success).toEqual(true);
-})
+}, true)
 
 await test('textue2D create Float16ArrayTexture', async () => {
+    await Engine3D.init();
     let texture2D = new Float16ArrayTexture();
     let color: number[] = [];
     let width = 64;
@@ -19,9 +20,10 @@ await test('textue2D create Float16ArrayTexture', async () => {
     texture2D.create(width, height, color, false);
     let success = (texture2D.gpuSampler && texture2D.getGPUTexture() && texture2D.getGPUView()) ? true : false;
     expect(success).toEqual(true);
-})
+}, true)
 
 await test('textue2D create Float32ArrayTexture', async () => {
+    await Engine3D.init();
     let texture2D = new Float32ArrayTexture();
     let width = 64;
     let height = 64;
@@ -36,14 +38,15 @@ await test('textue2D create Float32ArrayTexture', async () => {
     texture2D.create(width, height, color, false);
     let success = (texture2D.gpuSampler && texture2D.getGPUTexture() && texture2D.getGPUView()) ? true : false;
     expect(success).toEqual(true);
-})
+}, true)
 
 await test('textureCube create SolidColorSky', async () => {
+    await Engine3D.init();
     let color = new Color(1, 0, 1, 1);
     let texture2D = new SolidColorSky(color);
     let success = (texture2D.gpuSampler && texture2D.getGPUTexture() && texture2D.getGPUView()) ? true : false;
     expect(success).toEqual(true);
-})
+}, true)
 
 
 setTimeout(end, 500)

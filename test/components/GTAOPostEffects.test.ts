@@ -10,7 +10,6 @@ await test('Post GTAOPost test', async () => {
 
     let postProcessing = view.scene.addComponent(PostProcessingComponent);
     postProcessing.addPost(GTAOPost);
-})
-
+}, true)
 
 setTimeout(end, 500)
