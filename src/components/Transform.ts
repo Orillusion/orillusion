@@ -1,13 +1,13 @@
-import { ComponentBase } from "./ComponentBase";
-import { Object3D } from "../core/entities/Object3D";
 import { Scene3D } from "../core/Scene3D";
+import { View3D } from "../core/View3D";
+import { Object3D } from "../core/entities/Object3D";
 import { CEvent } from "../event/CEvent";
 import { MathUtil } from "../math/MathUtil";
-import { append, makeMatrix44, Matrix4 } from "../math/Matrix4";
+import { Matrix4, makeMatrix44, append } from "../math/Matrix4";
 import { Orientation3D } from "../math/Orientation3D";
 import { Quaternion } from "../math/Quaternion";
 import { Vector3 } from "../math/Vector3";
-import { View3D } from "../core/View3D";
+import { ComponentBase } from "./ComponentBase";
 
 /**
  * The Transform component contains the position, rotation, and scaling of an object in 3D space.

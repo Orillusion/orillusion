@@ -31,7 +31,7 @@ export class ForwardRenderJob extends RendererJob {
 
             colorPassRenderer.setRenderStates(rtFrame);
 
-            if (Engine3D.setting.gi.enable) {
+            // if (Engine3D.setting.gi.enable) {
                 // this.ddgiProbeRenderer = new DDGIProbeRenderer(GlobalBindGroup.getLightEntries(this.view.scene).irradianceVolume);
                 // this.ddgiProbeRenderer.clusterLightingRender = this.clusterLightingRender;
                 // this.ddgiProbeRenderer.setInputTexture([
@@ -51,7 +51,7 @@ export class ForwardRenderJob extends RendererJob {
                 //     this.ddgiProbeRenderer.irradianceColorMap,
                 //     this.ddgiProbeRenderer.irradianceDepthMap,
                 // );
-            }
+            // }
 
             if (this.postRenderer) {
                 this.postRenderer.setDebugTexture(debugTextures);

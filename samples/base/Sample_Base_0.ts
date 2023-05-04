@@ -8,22 +8,22 @@ class Sample_Base_0 {
         await Engine3D.init();
         // create new Scene
         let scene = new Scene3D();
-        
+
         // add performance stats
         scene.addComponent(Stats)
-        
+
         // add an Atmospheric sky enviroment
         let sky = scene.addComponent(AtmosphericComponent);
         sky.sunY = 0.6
-        
+
         // add a camera object
         let cameraObj = new Object3D();
         scene.addChild(cameraObj);
-        
+
         // set main camera component with a perspective view
         let mainCamera = cameraObj.addComponent(Camera3D);
         mainCamera.perspective(60, Engine3D.aspect, 0.01, 5000.0);
-        
+
         // add a basic camera controller
         let hoverCameraController = cameraObj.addComponent(HoverCameraController);
         hoverCameraController.setCamera(15, -15, 10);
@@ -35,7 +35,7 @@ class Sample_Base_0 {
         let mat = new LitMaterial();
         mr.material = mat;
         scene.addChild(cubeObj);
-        
+
         // add a basic direct light
         let lightObj = new Object3D();
         lightObj.rotationX = 45;
