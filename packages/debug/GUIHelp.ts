@@ -1,5 +1,7 @@
 // @ts-ignore
-import { GUI } from 'dat.gui';
+import { GUI } from 'https://unpkg.com/dat.gui@0.7.9/build/dat.gui.module.js'
+
+
 /**
  * @internal
  */
@@ -24,8 +26,7 @@ class _GUIHelp {
         this.gui = new GUI();
         this.gui.domElement.style.zIndex = `${zIndex}`;
         this.gui.domElement.parentElement.style.zIndex = `${zIndex}`;
-        // this.addFolder('Engine-3D');
-        this.addFolder('Orillustion');
+        this.addFolder('Orillusion');
     }
 
     addCustom(label: string, obj, property: string, c?: number, d?: number, e?: number) {
