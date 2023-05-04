@@ -1,10 +1,4 @@
 ![Cover Art](https://github.com/Orillusion/orillusion-webgpu-samples/blob/main/logo_new.png)     
-
-> **Note:**
-> 
-> Currently, this repo is used to collect feedback on the NPM package of the Orillusion engine. According to all the feedback, we will carry on refining the engine core. Then, we need to set up the regulations for a long-term open source project and all the source code will be put in this repo in the near future, which indicates a brand new journey for Orillusion.      
-  
-
 ## Orillusion
 
 [![Test](https://github.com/Orillusion/orillusion/actions/workflows/ci.yml/badge.svg)](https://github.com/Orillusion/orillusion/actions/workflows/ci.yml)
@@ -45,7 +39,7 @@ In order to use the engine more conveniently, we support to use native `<script>
 ```
 The above link loads the global build of `Orillusion`, where all top-level APIs are exposed as properties on the global `Orillusion` object.
 
--  **ESModule Build:** We recommend using the [ESModule](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Modules) way for development. As most browsers have supported `ES` module, we just need to import the `ES` build version of `orillusion.es.js`
+-  **ESModule Build:** We recommend using the [ESModule](https://developer.mozilla.org/docs/Web/JavaScript/Guide/Modules) way for development. As most browsers have supported `ES` module, we just need to import the `ES` build version of `orillusion.es.js`
 ```html
 <script type="module">  
     import { Engine3D, Camera3D } from "https://unpkg.com/@orillusion/core/dist/orillusion.es.js" 
@@ -103,12 +97,11 @@ await Engine3D.init({
     canvasConfig: { canvas }  
 })
 ```
+Please read the [Docs](https://www.orillusion.com/guide/) to Learn More.
 
 ## Platform
 **Chrome Canary: 113+**  
 **Edge Canary: 113+**
-
-> *As WebGPU is not released, please enable `chrome://flags/#enable-unsafe-webgpu` or `edge://flags/#enable-unsafe-webgpu`*
 
 ## Useful links
 - [Official Web Site](https://www.orillusion.com/)

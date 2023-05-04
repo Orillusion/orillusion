@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "useDefineForClassFields": true,
+        "module": "ESNext",
+        "lib": ["ESNext", "DOM"],
+        "moduleResolution": "Node",
+        "sourceMap": false,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "types": ["vite/client", "@webgpu/types"],
+        // for build
+        // "noEmit": true,
+        "declaration": true,
+        "declarationDir": "dist",
+        "outDir": "dist",
+        "skipLibCheck": true,
+        "noImplicitAny": false,
+        "noUnusedLocals": false,
+        "noUnusedParameters":false,
+        "noImplicitReturns": false,
+        "strictPropertyInitialization": false,
+        "strictNullChecks": false,
+        "strict": false,
+        "paths": {
+            "@orillusion/core": ["../../src"],
+        }
+    }
+}

@@ -1,6 +1,6 @@
 {
     "name": "@orillusion/core",
-    "version": "0.5.0",
+    "version": "0.6.0",
     "author": "Orillusion",
     "description": "Orillusion WebGPU Engine",
     "main": "./dist/orillusion.umd.js",
@@ -24,13 +24,13 @@
         "minify:es": "uglifyjs dist/orillusion.es.js -o dist/orillusion.es.js -c -m",
         "test": "electron test/ci/main.js",
         "test:ci": "xvfb-maybe -- electron test/ci/main.js",
-        "test:install": "pnpm i electron@npm:electron-nightly@latest xvfb-maybe -O",
-        "docs": "npm run docs:core && npm run docs:physics && npm run docs:media",
+        "docs": "npm run docs:core && npm run docs:physics && npm run docs:media && npm run docs:stats",
         "docs:typedoc": "npx typedoc --plugin typedoc-plugin-markdown --plugin ./script/typedoc-plugin-not-exported.js --tsconfig tsconfig.build.json --gitRevision main --hideBreadcrumbs true --allReflectionsHaveOwnDocument true --readme none --excludeInternal --excludePrivate --excludeProtected --sort source-order --out",
         "docs:core": "npm run docs:typedoc docs/api src/index.ts",
-        "docs:physics": "npm run docs:typedoc docs/physics src/libs/physics/index.ts",
-        "docs:media": "npm run docs:typedoc docs/media-extention src/libs/media-extention/index.ts",
-        "docs:stats": "npm run docs:typedoc docs/stats src/libs/stats/index.ts"
+        "docs:physics": "cd packages/physics && npm run docs",
+        "docs:media": "cd packages/media-extention && npm run docs",
+        "docs:stats": "cd packages/stats && npm run docs",
+        "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s"
     },
     "devDependencies": {
         "@webgpu/types": "^0.1.30",
@@ -40,7 +40,8 @@
         "vite": "^4.2.2"
     },
     "optionalDependencies": {
-        "electron": "npm:electron-nightly@latest",
+        "conventional-changelog-cli": "^2.2.2",
+        "electron": "25.0.0-beta.1",
         "uglify-js": "^3.17.4",
         "xvfb-maybe": "^0.2.1"
     }
