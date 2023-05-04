@@ -1,4 +1,4 @@
-import GlobalUniform from "../core/common/GlobalUniform.wgsl?raw";
+import { GlobalUniform } from "../core/common/GlobalUniform";
 
 /**
  * @internal

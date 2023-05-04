@@ -1,6 +1,3 @@
-import SSR_BlendColor_Shader from '../../../assets/shader/compute/SSR_BlendColor_Shader.wgsl?raw';
-import SSR_IS_Shader from '../../../assets/shader/compute/SSR_IS_Shader.wgsl?raw';
-import SSR_RayTrace_Shader from '../../../assets/shader/compute/SSR_RayTrace_Shader.wgsl?raw';
 import { Engine3D } from '../../../Engine3D';
 import { Vector3 } from '../../../math/Vector3';
 import { VirtualTexture } from '../../../textures/VirtualTexture';
@@ -24,6 +21,9 @@ import { GBufferFrame } from '../frame/GBufferFrame';
 import { SSRSetting } from '../../../setting/post/SSRSetting';
 import { View3D } from '../../../core/View3D';
 import { SkyRenderer } from '../../../components/renderer/SkyRenderer';
+import { SSR_RayTrace_cs } from '../../../assets/shader/compute/SSR_RayTrace_cs';
+import { SSR_IS_cs } from '../../../assets/shader/compute/SSR_IS_cs';
+import { SSR_BlendColor_cs } from '../../../assets/shader/compute/SSR_BlendColor_cs';
 /**
  * Screen space reflection
  * ```
@@ -162,7 +162,7 @@ export class SSRPost extends PostBase {
     }
 
     private createRayTraceShader() {
-        this.SSR_RayTraceCompute = new ComputeShader(SSR_RayTrace_Shader);
+        this.SSR_RayTraceCompute = new ComputeShader(SSR_RayTrace_cs);
         this.SSR_RayTraceCompute.setStorageBuffer('ssrUniform', this.ssrUniformBuffer);
         this.SSR_RayTraceCompute.setStorageBuffer(`rayTraceBuffer`, this.rayTraceData);
         this.SSR_RayTraceCompute.setStorageBuffer(`historyPosition`, this.historyPosition);
@@ -181,7 +181,7 @@ export class SSRPost extends PostBase {
     }
 
     private createISShader() {
-        this.SSR_IS_Compute = new ComputeShader(SSR_IS_Shader);
+        this.SSR_IS_Compute = new ComputeShader(SSR_IS_cs);
 
         this.SSR_IS_Compute.setStorageBuffer('ssrUniform', this.ssrUniformBuffer);
         this.SSR_IS_Compute.setStorageBuffer(`rayTraceBuffer`, this.rayTraceData);
@@ -197,7 +197,7 @@ export class SSRPost extends PostBase {
     }
 
     private createBlendShader(input: VirtualTexture): void {
-        this.SSR_Blend_Compute = new ComputeShader(SSR_BlendColor_Shader);
+        this.SSR_Blend_Compute = new ComputeShader(SSR_BlendColor_cs);
 
         this.SSR_Blend_Compute.setStorageBuffer(`rayTraceBuffer`, this.rayTraceData);
         this.autoSetColorTexture('colorMap', this.SSR_Blend_Compute);

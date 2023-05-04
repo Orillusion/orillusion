@@ -5,8 +5,8 @@ import { Color } from '../../math/Color';
 import { BlendMode } from '../BlendMode';
 import { MaterialBase } from '../MaterialBase';
 import { registerMaterial } from "../MaterialRegister";
-import GBuffer_shader from '../../assets/shader/core/pass/GBuffer_shader.wgsl?raw';
 import { Engine3D } from '../../Engine3D';
+import { GBuffer_pass } from '../..';
 
 /**
  * @internal
@@ -21,8 +21,8 @@ export class GBufferPass extends MaterialBase {
         this.isPassMaterial = true;
         //OutLineSubPass
 
-        ShaderLib.register("gbuffer_vs", GBuffer_shader);
-        ShaderLib.register("gbuffer_fs", GBuffer_shader);
+        ShaderLib.register("gbuffer_vs", GBuffer_pass);
+        ShaderLib.register("gbuffer_fs", GBuffer_pass);
         let shader = this.setShader(`gbuffer_vs`, `gbuffer_fs`);
         shader.setShaderEntry(`VertMain`, `FragMain`)
 

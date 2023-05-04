@@ -7,7 +7,6 @@ import { VirtualTexture } from '../../../textures/VirtualTexture';
 import { UniformNode } from '../../graphics/webGpu/core/uniforms/UniformNode';
 import { GPUTextureFormat } from '../../graphics/webGpu/WebGPUConst';
 import { webGPUContext } from '../../graphics/webGpu/Context3D';
-import { GPUContext } from '../GPUContext';
 import { PostBase } from './PostBase';
 import { View3D } from '../../../core/View3D';
 import { GBufferFrame } from '../frame/GBufferFrame';

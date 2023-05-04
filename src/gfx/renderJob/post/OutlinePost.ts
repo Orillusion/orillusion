@@ -12,14 +12,14 @@ import { PostBase } from './PostBase';
 import { Engine3D } from '../../../Engine3D';
 import { clamp } from '../../../math/MathUtil';
 import { Color } from '../../../math/Color';
-import OutLineBlendColor from '../../../assets/shader/compute/OutLineBlendColor.wgsl?raw';
-import OutlineCalcOutline from '../../../assets/shader/compute/OutlineCalcOutline.wgsl?raw';
-import OutlineCs from '../../../assets/shader/compute/OutlineCs.wgsl?raw';
 import { Vector2 } from '../../../math/Vector2';
 import { RTDescriptor } from '../../graphics/webGpu/descriptor/RTDescriptor';
 import { GBufferFrame } from '../frame/GBufferFrame';
 import { RTFrame } from '../frame/RTFrame';
 import { View3D } from '../../../core/View3D';
+import { OutlineCalcOutline_cs } from '../../../assets/shader/compute/OutlineCalcOutline_cs';
+import { Outline_cs } from '../../../assets/shader/compute/Outline_cs';
+import { OutLineBlendColor_cs } from '../../../assets/shader/compute/OutLineBlendColor_cs';
 
 export class OutlinePostSlot {
     public indexList: Float32Array;
@@ -210,7 +210,7 @@ export class OutlinePost extends PostBase {
         let rtFrame = GBufferFrame.getGBufferFrame("ColorPassGBuffer");
         let visibleMap = rtFrame.getPositionMap();// RTResourceMap.getTexture(RTResourceConfig.zBufferTexture_NAME);
 
-        this.calcWeightCompute = new ComputeShader(OutlineCalcOutline);
+        this.calcWeightCompute = new ComputeShader(OutlineCalcOutline_cs);
         this.calcWeightCompute.setStorageBuffer('outlineSetting', this.outlineSetting);
         this.calcWeightCompute.setStorageBuffer('slotsBuffer', this.slotsBuffer);
         this.calcWeightCompute.setStorageBuffer(`weightBuffer`, this.weightBuffer);
@@ -222,7 +222,7 @@ export class OutlinePost extends PostBase {
         this.calcWeightCompute.workerSizeZ = 1;
 
         //outline
-        this.outlineCompute = new ComputeShader(OutlineCs);
+        this.outlineCompute = new ComputeShader(Outline_cs);
         this.outlineCompute.setStorageBuffer('outlineSetting', this.outlineSetting);
         this.outlineCompute.setStorageBuffer('slotsBuffer', this.slotsBuffer);
         this.outlineCompute.setStorageBuffer(`weightBuffer`, this.weightBuffer);
@@ -234,7 +234,7 @@ export class OutlinePost extends PostBase {
         this.outlineCompute.workerSizeZ = 1;
 
         //blend
-        this.blendCompute = new ComputeShader(OutLineBlendColor);
+        this.blendCompute = new ComputeShader(OutLineBlendColor_cs);
         this.blendCompute.setStorageBuffer('outlineSetting', this.outlineSetting);
         this.autoSetColorTexture('inTex', this.blendCompute);
         this.blendCompute.setSamplerTexture(`lowTex`, this.lowTex);

@@ -1,4 +1,4 @@
-import MergeRGBA_Cs from '../../../assets/shader/compute/MergeRGBA_Cs.wgsl?raw';
+import { MergeRGBA_cs } from '../../../assets/shader/compute/MergeRGBA_cs';
 import { VirtualTexture } from '../../../textures/VirtualTexture';
 import { Texture } from '../../graphics/webGpu/core/texture/Texture';
 import { ComputeShader } from '../../graphics/webGpu/shader/ComputeShader';
@@ -23,7 +23,7 @@ export class MergeRGBACreator {
         h = Math.max(textureA.height, h);
         let outTex = new VirtualTexture(w, h, GPUTextureFormat.rgba8unorm);
 
-        let compute = new ComputeShader(MergeRGBA_Cs);
+        let compute = new ComputeShader(MergeRGBA_cs);
         compute.setSamplerTexture('textureR', textureR);
         compute.setSamplerTexture('textureG', textureG);
         compute.setSamplerTexture('textureB', textureB);

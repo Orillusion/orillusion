@@ -1,6 +1,6 @@
 
 import { Color, Engine3D, MaterialBase, ShaderLib, Texture, Vector4, registerMaterial } from '@orillusion/core';
-import VideoShader from './VideoShader.wgsl?raw'
+import VideoShader from "./VideoShader.wgsl?raw";
 
 /**
  * Video Material

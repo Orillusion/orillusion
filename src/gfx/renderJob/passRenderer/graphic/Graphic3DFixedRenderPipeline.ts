@@ -3,11 +3,11 @@ import { GlobalBindGroupLayout } from "../../../graphics/webGpu/core/bindGroups/
 import { GPUCullMode, GPUCompareFunction } from "../../../graphics/webGpu/WebGPUConst";
 import { webGPUContext } from "../../../graphics/webGpu/Context3D";
 import { Graphics3DShape } from "./Graphics3DShape";
-import Graphic3DShader_vs from "../../../../assets/shader/graphic/Graphic3DShader_vs.wgsl?raw"
-import Graphic3DShader_fs from "../../../../assets/shader/graphic/Graphic3DShader_fs.wgsl?raw"
 import { Preprocessor } from "../../../graphics/webGpu/shader/util/Preprocessor";
 import { GPUContext } from "../../GPUContext";
 import { RendererPassState } from "../state/RendererPassState";
+import { Graphic3DShader_vs } from "../../../../assets/shader/graphic/Graphic3DShader_vs";
+import { Graphic3DShader_fs } from "../../../../assets/shader/graphic/Graphic3DShader_fs";
 
 /**
  * @internal
