@@ -1,6 +1,6 @@
-import { Object3D } from '../../../../core/entities/Object3D';
-import { Time } from '../../../../util/Time';
-import { ComponentBase } from '../../../ComponentBase';
+import { Object3D } from '../../../core/entities/Object3D';
+import { Time } from '../../../util/Time';
+import { ComponentBase } from '../../ComponentBase';
 import { AnimationMonitor } from './AnimationMonitor';
 import { AnimatorEventKeyframe, PropertyAnimationEvent } from './PropertyAnimationEvent';
 import { PropertyAnimClip } from './PropertyAnimClip';

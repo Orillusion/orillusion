@@ -19,34 +19,47 @@ import { ComponentCollect } from './gfx/renderJob/collect/ComponentCollect';
 
 /** 
  * Orillusion 3D Engine
+ * 
+ * -- Engine3D.setting.*
+ * 
+ * -- await Engine3D.init();
  * @group engine3D
  */
 export class Engine3D {
+
     /**
-     * @internal
-     */
-    // [x: string]: any;
-    /**
-     * resource manager
+     * resource manager in engine3d
      */
     public static res: Res;
+
     /**
-     * input system
+     * input system in engine3d
      */
     public static inputSystem: InputSystem;
-    public static views: View3D[];
 
+    /**
+     * more view in engine3d
+     */
+    public static views: View3D[];
     private static _frameRateValue: number = 0;
     private static _frameRate: number = 360;
-    private static _isRun: boolean = false;
     private static _frameTimeCount: number = 0;
     private static _deltaTime: number = 0;
     private static _time: number = 0;
+    private static _beforeRender: Function;
+    private static _renderLoop: Function;
+    private static _lateRender: Function;
 
+    /**
+     * set engine render frameRate 24/30/60/114/120/144/240/360 fps or other
+     */
     public static get frameRate(): number {
         return this._frameRate;
     }
 
+    /**
+     * get engine render frameRate 
+     */
     public static set frameRate(value: number) {
         this._frameRate = value;
         this._frameRateValue = 1.0 / value;
@@ -55,18 +68,30 @@ export class Engine3D {
         }
     }
 
+    /**
+     * get render window size width and height
+     */
     public static get size(): number[] {
         return webGPUContext.presentationSize;
     }
 
+    /**
+     * get render window aspect
+     */
     public static get aspect(): number {
         return webGPUContext.aspect;
     }
 
+    /**
+     * get render window size width 
+     */
     public static get width(): number {
         return webGPUContext.windowWidth;
     }
 
+    /**
+     * get render window size height 
+     */
     public static get height(): number {
         return webGPUContext.windowHeight;
     }
@@ -215,15 +240,11 @@ export class Engine3D {
         },
     };
 
-    private static _beforeRender: Function;
-    private static _renderLoop: Function;
-    private static _lateRender: Function;
+
     /**
      * @internal
      */
     public static renderJobs: Map<View3D, RendererJob>;
-
-
 
     /**
      * create webgpu 3d engine
@@ -257,6 +278,11 @@ export class Engine3D {
         return;
     }
 
+    /**
+     * set render view and start renderer
+     * @param view 
+     * @returns 
+     */
     public static startRenderView(view: View3D) {
         this.renderJobs ||= new Map<View3D, RendererJob>();
         this.views = [view];
@@ -268,6 +294,12 @@ export class Engine3D {
         return renderJob;
     }
 
+
+    /**
+     * set render views and start renderer
+     * @param view 
+     * @returns 
+     */
     public static startRenderViews(views: View3D[]) {
         this.renderJobs ||= new Map<View3D, RendererJob>();
         this.views = views;
@@ -281,33 +313,50 @@ export class Engine3D {
         this.render(0);
     }
 
+    /**
+     * get view render job instance
+     * @param view 
+     * @returns 
+     */
     public static getRenderJob(view: View3D): RendererJob {
         return this.renderJobs.get(view);
     }
 
+    /**
+     * Pause the engine render
+     */
+    public static pause() {
+        requestAnimationFrame(null);
+    }
 
     /**
-     * @internal
+     * Resume the engine render
      */
-    public static render(time) {
-        if (!this._isRun) {
-            this._deltaTime = time - this._time;
-            this._time = time;
-
-            if (this._frameRateValue > 0) {
-                this._frameTimeCount += this._deltaTime * 0.001;
-                if (this._frameTimeCount >= this._frameRateValue * 0.95) {
-                    this._frameTimeCount = 0;
-                    this.updateFrame(time);
-                }
-            } else {
-                this.updateFrame(time);
-            }
-        }
+    public static resume() {
         requestAnimationFrame((t) => this.render(t));
     }
 
-    public static updateFrame(time: number) {
+    /**
+     * start engine render
+     * @internal
+     */
+    private static render(time) {
+        this._deltaTime = time - this._time;
+        this._time = time;
+
+        if (this._frameRateValue > 0) {
+            this._frameTimeCount += this._deltaTime * 0.001;
+            if (this._frameTimeCount >= this._frameRateValue * 0.95) {
+                this._frameTimeCount = 0;
+                this.updateFrame(time);
+            }
+        } else {
+            this.updateFrame(time);
+        }
+        this.resume();
+    }
+
+    private static updateFrame(time: number) {
         Time.delta = time - Time.time;
         Time.time = time;
         Time.frame += 1;
@@ -315,10 +364,57 @@ export class Engine3D {
         Interpolator.tick(Time.delta);
         if (this._beforeRender) this._beforeRender();
 
+        /****** auto before update with component list *****/
+        ComponentCollect.componentsBeforeUpdateList.forEach((v, k) => {
+            v.forEach((c, f) => {
+                if (f.enable) {
+                    c(k);
+                };
+            })
+        });
+
+        let command = webGPUContext.device.createCommandEncoder();;
+        ComponentCollect.componentsComputeList.forEach((v, k) => {
+            v.forEach((c, f) => {
+                if (f.enable) {
+                    c(k, command);
+                };
+            })
+        });
+        webGPUContext.device.queue.submit([command.finish()]);
+
+        /****** auto update global matrix share buffer write to gpu *****/
+        let globalMatrixBindGroup = GlobalBindGroup.modelMatrixBindGroup;
+        globalMatrixBindGroup.writeBuffer();
+
+        /****** auto update with component list *****/
+        ComponentCollect.componentsUpdateList.forEach((v, k) => {
+            v.forEach((c, f) => {
+                if (f.enable) {
+                    c(k);
+                };
+            })
+        });
+
+        if (this._renderLoop) {
+            this._renderLoop();
+        }
+
         this.renderJobs.forEach((v, k) => {
-            v.render(this._renderLoop);
+            v.renderFrame();
+        });
+
+        /****** auto late update with component list *****/
+        ComponentCollect.componentsLateUpdateList.forEach((v, k) => {
+            v.forEach((c, f) => {
+                if (f.enable) {
+                    c(k);
+                };
+            })
         });
 
         if (this._lateRender) this._lateRender();
     }
+
+
 }
