@@ -448,6 +448,12 @@ export class Interpolator {
         if (dispose) interpolator.dispose();
     }
 
+    public static removeList(interpolators: Interpolator[], dispose?: boolean) {
+        interpolators.forEach((v) => {
+            this.remove(v, dispose);
+        })
+    }
+
     /**
      * @internal
      */

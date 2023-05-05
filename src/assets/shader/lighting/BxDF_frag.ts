@@ -97,7 +97,7 @@ export let BxDF_frag: string = /*wgsl*/ `
       #if USEGI
           irradiance += getIrradiance().rgb ;
       #else
-          irradiance += globalUniform.skyExposure * LinearToGammaSpace(textureSampleLevel(prefilterMap, prefilterMapSampler, fragData.N.xyz, 0.8 * (MAX_REFLECTION_LOD) ).rgb);
+          irradiance += LinearToGammaSpace(globalUniform.skyExposure * textureSampleLevel(prefilterMap, prefilterMapSampler, fragData.N.xyz, 0.8 * (MAX_REFLECTION_LOD) ).rgb);
       #endif
 
       fragData.Irradiance = irradiance;

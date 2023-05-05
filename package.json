@@ -20,10 +20,11 @@
     "scripts": {
         "dev": "vite",
         "build": "tsc --p tsconfig.build.json && vite build && npm run build:types && npm run minify:es",
+        "build:test": "tsc --p tsconfig.build.json && vite build",
         "build:types": "tsc --emitDeclarationOnly -p tsconfig.build.json",
         "minify:es": "uglifyjs dist/orillusion.es.js -o dist/orillusion.es.js -c -m",
         "test": "electron test/ci/main.js",
-        "test:ci": "xvfb-maybe -- electron test/ci/main.js",
+        "test:ci": "xvfb-maybe -- electron --enable-unsafe-webgpu --enable-features=Vulkan --use-vulkan=swiftshader --use-webgpu-adapter=swiftshader --no-sandbox test/ci/main.js",
         "docs": "npm run docs:core && npm run docs:physics && npm run docs:media && npm run docs:stats",
         "docs:typedoc": "npx typedoc --plugin typedoc-plugin-markdown --plugin ./script/typedoc-plugin-not-exported.js --tsconfig tsconfig.build.json --gitRevision main --hideBreadcrumbs true --allReflectionsHaveOwnDocument true --readme none --excludeInternal --excludePrivate --excludeProtected --sort source-order --out",
         "docs:core": "npm run docs:typedoc docs/api src/index.ts",

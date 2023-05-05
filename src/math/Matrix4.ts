@@ -390,6 +390,8 @@ export class Matrix4 {
         data[15] = 1;
     }
 
+    private static float32Array = new Float32Array(16).fill(0);
+
     /**
      * matrix multiply
      * @param mat4 multiply target
@@ -398,7 +400,7 @@ export class Matrix4 {
     public multiply(mat4: Matrix4): void {
         let a = this.rawData;
         let b = mat4.rawData;
-        let r = Matrix4.helpMatrix.rawData;
+        let r = Matrix4.float32Array;
 
         r[0] = a[0] * b[0] + a[1] * b[4] + a[2] * b[8] + a[3] * b[12];
         r[1] = a[0] * b[1] + a[1] * b[5] + a[2] * b[9] + a[3] * b[13];
