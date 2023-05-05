@@ -49,6 +49,7 @@ export class Engine3D {
     private static _beforeRender: Function;
     private static _renderLoop: Function;
     private static _lateRender: Function;
+    private static _requestAnimationFrameID: number = 0;
 
     /**
      * set engine render frameRate 24/30/60/114/120/144/240/360 fps or other
@@ -326,14 +327,17 @@ export class Engine3D {
      * Pause the engine render
      */
     public static pause() {
-        requestAnimationFrame(null);
+        if (this._requestAnimationFrameID != 0) {
+            cancelAnimationFrame(this._requestAnimationFrameID);
+            this._requestAnimationFrameID = 0;
+        }
     }
 
     /**
      * Resume the engine render
      */
     public static resume() {
-        requestAnimationFrame((t) => this.render(t));
+        this._requestAnimationFrameID = requestAnimationFrame((t) => this.render(t));
     }
 
     /**
