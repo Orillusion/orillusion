@@ -1,7 +1,6 @@
-import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, Camera3D, webGPUContext, HoverCameraController, View3D, DirectLight, KelvinUtil, MeshRenderer, BoxGeometry, LitMaterial, Vector3, Color, BlendMode, CameraUtil } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, webGPUContext, HoverCameraController, View3D, DirectLight, KelvinUtil, MeshRenderer, BoxGeometry, LitMaterial, Vector3, Color, BlendMode, CameraUtil } from "@orillusion/core";
 
-export class Sample_ShaderState {
+class Sample_ChangeTexture {
     lightObj: Object3D;
     scene: Scene3D;
 
@@ -14,8 +13,6 @@ export class Sample_ShaderState {
         Engine3D.setting.shadow.shadowBound = 100
         Engine3D.setting.shadow.shadowBias = 0.00192;
         await Engine3D.init({});
-
-        GUIHelp.init();
 
         this.scene = new Scene3D();
         this.scene.addComponent(AtmosphericComponent);
@@ -52,23 +49,30 @@ export class Sample_ShaderState {
     }
 
     async initScene() {
+        //create first box
         let box1 = new Object3D();
-        let render1 = box1.addComponent(MeshRenderer);
-        render1.geometry = new BoxGeometry();
-        let material1 = render1.material = new LitMaterial();
-        material1.maskMap = Engine3D.res.maskTexture;
         this.scene.addChild(box1);
 
+        let render1 = box1.addComponent(MeshRenderer);
+        render1.geometry = new BoxGeometry(2, 2, 2);
+        let material1 = render1.material = new LitMaterial();
+        material1.maskMap = Engine3D.res.maskTexture;
+
+        //create second box
         let box2 = new Object3D();
+        box2.transform.z = 4;
+        this.scene.addChild(box2);
+
         let render2 = box2.addComponent(MeshRenderer);
-        render2.geometry = new BoxGeometry();
+        render2.geometry = new BoxGeometry(2, 2, 2);
         let material2 = render2.material = new LitMaterial();
-        material2.baseColor = new Color(1.0, 1.0, 1.0, 1.0);
         material2.maskMap = Engine3D.res.maskTexture;
 
+        //load 2 textures for switching display
         let texture_0 = await Engine3D.res.loadTexture('textures/diffuse.jpg');
         let texture_1 = await Engine3D.res.loadTexture('textures/KB3D_NTT_Ads_basecolor.png');
 
+        //auto change texture per 2 second
         let count = 0;
         setInterval(() => {
             if (count % 2 == 0) {
@@ -79,8 +83,8 @@ export class Sample_ShaderState {
             count++;
         }, 2000);
 
-        box2.transform.z = 2;
-        this.scene.addChild(box2);
     }
 
 }
+
+new Sample_ChangeTexture().run();
