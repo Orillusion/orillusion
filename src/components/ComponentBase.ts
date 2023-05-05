@@ -46,9 +46,9 @@ export class ComponentBase implements IComponent {
         if (this._enable != value) {
             this._enable = value;
             if (this._enable) {
-                this.onEnable();
-            } else if (this.onDisable) {
-                this.onDisable();
+                this.onEnable && this.onEnable();
+            } else {
+                this.onDisable && this.onDisable();
             }
         }
     }
@@ -92,7 +92,7 @@ export class ComponentBase implements IComponent {
 
     private __stop() {
         if (this.transform && this.transform.scene3D) {
-            this.onDisable();
+            this.onDisable && this.onDisable();
         }
         this._onUpdate(null);
         this._onLateUpdate(null);
