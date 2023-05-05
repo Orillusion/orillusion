@@ -2,11 +2,16 @@
 import { BoundingBox } from '../core/bound/BoundingBox';
 import { Object3D } from '../core/entities/Object3D';
 import { MeshRenderer } from '../components/renderer/MeshRenderer';
+import { BoxGeometry, SphereGeometry, LitMaterial, Color, MaterialBase } from '..';
 
 export class Object3DUtil {
     private static readonly genMeshMinVector = Vector3.ZERO.clone();
     private static readonly genMeshMaxVector = Vector3.ZERO.clone();
     private static readonly genMeshVectorList8: Vector3[] = [new Vector3(), new Vector3(), new Vector3(), new Vector3(), new Vector3(), new Vector3(), new Vector3(), new Vector3()];
+    private static boxGeo: BoxGeometry;
+    private static sphere: SphereGeometry;
+
+    private static mat: LitMaterial;
     /**
      * Merge the bounding boxes that have been added to the world matrix based on the mesh of the children node
      */
@@ -44,5 +49,86 @@ export class Object3DUtil {
         bound.setFromMinMax(bound.min, bound.max);
 
         return bound;
+    }
+
+
+    private static initHeap() {
+        if (!this.boxGeo)
+            this.boxGeo = new BoxGeometry();
+        if (!this.sphere)
+            this.sphere = new SphereGeometry(1, 35, 35);
+        if (!this.mat) {
+            this.mat = new LitMaterial();
+        }
+    }
+
+    public static get CubeMesh() {
+        this.initHeap();
+        return this.boxGeo;
+    }
+
+    public static get SphereMesh() {
+        this.initHeap();
+        return this.sphere;
+    }
+
+    public static GetCube() {
+        this.initHeap();
+
+        let obj = new Object3D();
+        let renderer = obj.addComponent(MeshRenderer);
+        renderer.geometry = this.boxGeo;
+        renderer.material = this.mat.clone();
+        renderer.castShadow = true;
+        return obj;
+    }
+
+    public static GetSingleCube(sizeX: number, sizeY: number, sizeZ: number, r: number, g: number, b: number) {
+        this.initHeap();
+
+        let mat = new LitMaterial();
+        mat.baseColor = new Color(r, g, b, 1);
+
+        let obj = new Object3D();
+        let renderer = obj.addComponent(MeshRenderer);
+        renderer.castGI = true;
+        renderer.geometry = new BoxGeometry(sizeX, sizeY, sizeZ);
+        renderer.material = mat;
+        return obj;
+    }
+
+    public static GetSingleSphere(radius: number, r: number, g: number, b: number) {
+        this.initHeap();
+
+        let mat = new LitMaterial();
+        mat.baseColor = new Color(r, g, b, 1);
+
+        let obj = new Object3D();
+        let renderer = obj.addComponent(MeshRenderer);
+        renderer.castGI = true;
+        renderer.geometry = new SphereGeometry(radius, 20, 20);
+        renderer.material = mat;
+        return obj;
+    }
+
+    public static get Sphere() {
+        this.initHeap();
+
+        let obj = new Object3D();
+        let renderer = obj.addComponent(MeshRenderer);
+        renderer.geometry = this.sphere;
+        renderer.material = this.mat;
+        return obj;
+    }
+
+    public static getSinglepCube(mat: MaterialBase, size: number = 10) {
+        this.initHeap();
+
+        let obj = new Object3D();
+        let renderer = obj.addComponent(MeshRenderer);
+        renderer.castShadow = false;
+        renderer.geometry = new BoxGeometry(size, size, size);
+        renderer.material = mat;
+        return obj;
     }
 }
