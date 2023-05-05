@@ -84,6 +84,8 @@ export class OutlinePostData {
     }
 }
 
+export let outlinePostData: OutlinePostData = new OutlinePostData();
+
 /**
  * post effect out line 
  * OutlinePostManager,
