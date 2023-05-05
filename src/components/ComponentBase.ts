@@ -39,7 +39,6 @@ export class ComponentBase implements IComponent {
         return this.object3D.transform;
     }
 
-
     /**
      * Enable/disable components. The enabled components can be updated, while the disabled components cannot be updated.
      */
@@ -129,9 +128,9 @@ export class ComponentBase implements IComponent {
      */
     private _onUpdate(call: Function) {
         if (call != null) {
-            ComponentCollect.componentsUpdateList.set(this, call);
+            ComponentCollect.bindUpdate(this.transform.view3D, this, call);
         } else {
-            ComponentCollect.componentsUpdateList.delete(this);
+            ComponentCollect.unBindUpdate(this.transform.view3D, this);
         }
     }
 
@@ -140,11 +139,10 @@ export class ComponentBase implements IComponent {
      * @param call callback
      */
     private _onLateUpdate(call: Function) {
-        // if(!this.enable) return;
         if (call != null) {
-            ComponentCollect.componentsLateUpdateList.set(this, call);
+            ComponentCollect.bindLateUpdate(this.transform.view3D, this, call);
         } else {
-            ComponentCollect.componentsLateUpdateList.delete(this);
+            ComponentCollect.unBindLateUpdate(this.transform.view3D, this);
         }
     }
 
@@ -153,11 +151,10 @@ export class ComponentBase implements IComponent {
      * @param call callback
      */
     private _onBeforeUpdate(call: Function) {
-        // if(!this.enable) return;
         if (call != null) {
-            ComponentCollect.componentsBeforeUpdateList.set(this, call);
+            ComponentCollect.bindLateUpdate(this.transform.view3D, this, call);
         } else {
-            ComponentCollect.componentsBeforeUpdateList.delete(this);
+            ComponentCollect.unBindLateUpdate(this.transform.view3D, this);
         }
     }
 
@@ -168,9 +165,9 @@ export class ComponentBase implements IComponent {
      */
     private _onCompute(call: Function) {
         if (call != null) {
-            ComponentCollect.componentsComputeList.set(this, call);
+            ComponentCollect.bindCompute(this.transform.view3D, this, call);
         } else {
-            ComponentCollect.componentsComputeList.delete(this);
+            ComponentCollect.unBindCompute(this.transform.view3D, this);
         }
     }
 
@@ -180,9 +177,9 @@ export class ComponentBase implements IComponent {
      */
     private _onGraphic(call: Function) {
         if (call != null) {
-            ComponentCollect.graphicComponent.set(this, call);
+            ComponentCollect.bindGraphic(this.transform.view3D, this, call);
         } else {
-            ComponentCollect.graphicComponent.delete(this);
+            ComponentCollect.unBindGraphic(this.transform.view3D, this);
         }
     }
 
@@ -204,16 +201,4 @@ export class ComponentBase implements IComponent {
         this.onCompute = null;
         this.onGraphic = null;
     }
-
-
-
-    /**
-     * @internal
-     */
-    static waitStartComponent: Map<Object3D, ComponentBase[]> = new Map<Object3D, ComponentBase[]>();
-
-    /**
-     * @internal
-     */
-    static graphicComponent: Map<ComponentBase, Function> = new Map<ComponentBase, Function>();
 }

@@ -5,23 +5,25 @@ import { Vector3 } from './Vector3';
  * @group Math
  */
 export class CubicBezierCurve {
-    private controlVerts: Vector3[];
+    private controlVertices: Vector3[];
 
     /**
      * @constructor
      * @param cvs controller points
      */
     constructor(cvs: Vector3[]) {
-        this.setControlVerts(cvs);
+        this.setControlVertices(cvs);
     }
 
     /**
      * update controller points
      * @param cvs controller points
      */
-    public setControlVerts(cvs: Vector3[]) {
+    public setControlVertices(cvs: Vector3[]) {
         // Cubic Bezier curves require 4 cvs.
-        if (cvs.length == 4) this.controlVerts = cvs.concat();
+        if (cvs.length == 4) {
+            this.controlVertices = cvs.concat();
+        }
     }
 
     /**
@@ -40,7 +42,7 @@ export class CubicBezierCurve {
         let bb2 = 3 * t * t * c;
         let bb3 = t * t * t;
 
-        let point = this.controlVerts[0].mul(bb0).add(this.controlVerts[1].mul(bb1)).add(this.controlVerts[2].mul(bb2)).add(this.controlVerts[3].mul(bb3));
+        let point = this.controlVertices[0].mul(bb0).add(this.controlVertices[1].mul(bb1)).add(this.controlVertices[2].mul(bb2)).add(this.controlVertices[3].mul(bb3));
 
         return point;
     }
@@ -52,8 +54,10 @@ export class CubicBezierCurve {
      * See: http://bimixual.org/AnimationLibrary/beziertangents.html
      */
     public getTangent(t: number): Vector3 {
-        if (!(t >= 0.0 && t <= 1.0)) return Vector3.ZERO;
-        let controlVerts = this.controlVerts;
+        if (!(t >= 0.0 && t <= 1.0)) {
+            return Vector3.ZERO
+        }
+        let controlVerts = this.controlVertices;
         let q0 = controlVerts[0].add(controlVerts[1].add(controlVerts[0]).mul(t));
         let q1 = controlVerts[1].add(controlVerts[2].add(controlVerts[1]).mul(t));
         let q2 = controlVerts[2].add(controlVerts[3].add(controlVerts[2]).mul(t));
@@ -85,7 +89,9 @@ export class CubicBezierCurve {
     public getClosestParamRec(pos: Vector3, beginT: number, endT: number, thresholdT: number): number {
         let mid = (beginT + endT) / 2.0;
 
-        if (endT - beginT < thresholdT) return mid;
+        if (endT - beginT < thresholdT) {
+            return mid
+        }
 
         let paramA = (beginT + mid) / 2.0;
         let paramB = (mid + endT) / 2.0;
@@ -95,8 +101,12 @@ export class CubicBezierCurve {
         let distASq = posA.subtract(pos).lengthSquared;
         let distBSq = posB.subtract(pos).lengthSquared;
 
-        if (distASq < distBSq) endT = mid;
-        else beginT = mid;
+        if (distASq < distBSq) {
+            endT = mid;
+        }
+        else {
+            beginT = mid;
+        }
 
         return this.getClosestParamRec(pos, beginT, endT, thresholdT);
     }
