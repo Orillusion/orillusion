@@ -20,6 +20,7 @@
     "scripts": {
         "dev": "vite",
         "build": "tsc --p tsconfig.build.json && vite build && npm run build:types && npm run minify:es",
+        "build:test": "tsc --p tsconfig.build.json && vite build",
         "build:types": "tsc --emitDeclarationOnly -p tsconfig.build.json",
         "minify:es": "uglifyjs dist/orillusion.es.js -o dist/orillusion.es.js -c -m",
         "test": "electron test/ci/main.js",
