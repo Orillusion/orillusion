@@ -1,3 +1,4 @@
+import { Color, View3D } from "..";
 import { AtmosphericScatteringSky, AtmosphericScatteringSkySetting } from "../textures/AtmosphericScatteringSky";
 import { SkyRenderer } from "./renderer/SkyRenderer";
 
@@ -9,14 +10,17 @@ import { SkyRenderer } from "./renderer/SkyRenderer";
 export class AtmosphericComponent extends SkyRenderer {
 
     private _atmosphericScatteringSky: AtmosphericScatteringSky;
+    private _onChange: boolean = true;
 
     public get sunX() {
         return this._atmosphericScatteringSky.setting.sunX;
     }
 
     public set sunX(value) {
-        this._atmosphericScatteringSky.setting.sunX = value;
-        this._atmosphericScatteringSky.apply();
+        if (this._atmosphericScatteringSky.setting.sunX != value) {
+            this._atmosphericScatteringSky.setting.sunX = value;
+            this._onChange = true;
+        }
     }
 
     public get sunY() {
@@ -24,8 +28,10 @@ export class AtmosphericComponent extends SkyRenderer {
     }
 
     public set sunY(value) {
-        this._atmosphericScatteringSky.setting.sunY = value;
-        this._atmosphericScatteringSky.apply();
+        if (this._atmosphericScatteringSky.setting.sunY != value) {
+            this._atmosphericScatteringSky.setting.sunY = value;
+            this._onChange = true;
+        }
     }
 
     public get eyePos() {
@@ -33,8 +39,10 @@ export class AtmosphericComponent extends SkyRenderer {
     }
 
     public set eyePos(value) {
-        this._atmosphericScatteringSky.setting.eyePos = value;
-        this._atmosphericScatteringSky.apply();
+        if (this._atmosphericScatteringSky.setting.eyePos != value) {
+            this._atmosphericScatteringSky.setting.eyePos = value;
+            this._onChange = true;
+        }
     }
 
     public get sunRadius() {
@@ -42,8 +50,10 @@ export class AtmosphericComponent extends SkyRenderer {
     }
 
     public set sunRadius(value) {
-        this._atmosphericScatteringSky.setting.sunRadius = value;
-        this._atmosphericScatteringSky.apply();
+        if (this._atmosphericScatteringSky.setting.sunRadius != value) {
+            this._atmosphericScatteringSky.setting.sunRadius = value;
+            this._onChange = true;
+        }
     }
 
     public get sunRadiance() {
@@ -51,8 +61,10 @@ export class AtmosphericComponent extends SkyRenderer {
     }
 
     public set sunRadiance(value) {
-        this._atmosphericScatteringSky.setting.sunRadiance = value;
-        this._atmosphericScatteringSky.apply();
+        if (this._atmosphericScatteringSky.setting.sunRadiance != value) {
+            this._atmosphericScatteringSky.setting.sunRadiance = value;
+            this._onChange = true;
+        }
     }
 
     public get sunBrightness() {
@@ -60,8 +72,10 @@ export class AtmosphericComponent extends SkyRenderer {
     }
 
     public set sunBrightness(value) {
-        this._atmosphericScatteringSky.setting.sunBrightness = value;
-        this._atmosphericScatteringSky.apply();
+        if (this._atmosphericScatteringSky.setting.sunBrightness != value) {
+            this._atmosphericScatteringSky.setting.sunBrightness = value;
+            this._onChange = true;
+        }
     }
 
     public get displaySun() {
@@ -69,9 +83,20 @@ export class AtmosphericComponent extends SkyRenderer {
     }
 
     public set displaySun(value) {
-        this._atmosphericScatteringSky.setting.displaySun = value;
-        this._atmosphericScatteringSky.apply();
+        if (this._atmosphericScatteringSky.setting.displaySun != value) {
+            this._atmosphericScatteringSky.setting.displaySun = value;
+            this._onChange = true;
+        }
     }
+
+    // public get skyColor(): Color {
+    //     return this._atmosphericScatteringSky.setting.skyColor;
+    // }
+
+    // public set skyColor(value: Color) {
+    //     this._atmosphericScatteringSky.setting.skyColor = value;
+    //     this._onChange = true;
+    // }
 
     public init(): void {
         super.init();
@@ -85,14 +110,12 @@ export class AtmosphericComponent extends SkyRenderer {
         super.start();
     }
 
-    public onEnable(): void {
+    public onUpdate(view?: View3D) {
+        if (this._onChange) {
+            console.log("change sky");
 
-    }
-
-    public onDisable(): void {
-
-    }
-
-    public debug() {
+            this._onChange = false;
+            this._atmosphericScatteringSky.apply();
+        }
     }
 }

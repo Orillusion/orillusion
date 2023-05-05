@@ -76,7 +76,8 @@ export class Entity extends CEventDispatcher {
      *
      * The bounding box of an object
      */
-    public bound: IBound;
+    private _bound: IBound;
+
 
     protected waitDisposeComponents: IComponent[];
 
@@ -313,20 +314,31 @@ export class Entity extends CEventDispatcher {
         }
     }
 
+    public get bound(): IBound {
+        if (!this._bound) {
+            this.genBounds();
+        }
+        return this._bound;
+    }
+
+    public set bound(value: IBound) {
+        this._bound = value;
+    }
+
     /**
      * Returns a bounding box that defines the display area of the specified layer.
      * @returns
      */
     public genBounds() {
-        if (!this.bound) {
-            this.bound = new BoundingBox(Vector3.ZERO.clone(), Vector3.ONE.clone());
+        if (!this._bound) {
+            this._bound = new BoundingBox(Vector3.ZERO.clone(), Vector3.ONE.clone());
         }
         for (const children of this.entityChildren) {
-            if (children.bound) {
-                this.bound.merge(children.bound);
+            if (children._bound) {
+                this._bound.merge(children._bound);
             }
         }
-        return this.bound;
+        return this._bound;
     }
 
 
