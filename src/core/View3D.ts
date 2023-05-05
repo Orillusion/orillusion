@@ -11,12 +11,22 @@ export class View3D extends CEventListener {
     private _scene: Scene3D;
     private _viewPort: Vector4;
     private _enablePick: boolean = false;
+    private _enable: boolean = true;
+
     public pickFire: PickFire;
 
     constructor(x: number = 0, y: number = 0, width: number = 0, height: number = 0) {
         super();
         this._viewPort = new Vector4(x, y, width, height);
         this.enablePick = true;
+    }
+
+    public get enable(): boolean {
+        return this._enable;
+    }
+
+    public set enable(value: boolean) {
+        this._enable = value;
     }
 
     public get enablePick(): boolean {
@@ -34,19 +44,24 @@ export class View3D extends CEventListener {
     public get scene(): Scene3D {
         return this._scene;
     }
+
     public set scene(value: Scene3D) {
         this._scene = value;
         value.view = this;
     }
+
     public get camera(): Camera3D {
         return this._camera;
     }
+
     public set camera(value: Camera3D) {
         this._camera = value;
     }
+
     public get viewPort(): Vector4 {
         return this._viewPort;
     }
+
     public set viewPort(value: Vector4) {
         this._viewPort = value;
     }

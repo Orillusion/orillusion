@@ -1,6 +1,6 @@
 import { AtmosphericComponent, BoxGeometry, Camera3D, DirectLight, Engine3D, HoverCameraController, KelvinUtil, LitMaterial, MeshRenderer, Object3D, Scene3D, View3D } from '@orillusion/core';
+import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { Stats } from '@orillusion/stats'
-import * as dat from 'https://unpkg.com/dat.gui@0.7.9/build/dat.gui.module.js'
 
 // simple base demo
 class Sample_Base_0 {
@@ -56,7 +56,7 @@ class Sample_Base_0 {
         Engine3D.startRenderView(view);
 
         // debug GUI
-        const GUIHelp = new dat.GUI({name: 'Orillusion'})
+        GUIHelp.init();
         GUIHelp.addFolder('Transform');
         GUIHelp.add(cubeObj.transform, 'x', -10.0, 10.0, 0.01);
         GUIHelp.add(cubeObj.transform, 'y', -10.0, 10.0, 0.01);
@@ -67,6 +67,7 @@ class Sample_Base_0 {
         GUIHelp.add(cubeObj.transform, 'scaleX', 0.0, 2.0, 0.01);
         GUIHelp.add(cubeObj.transform, 'scaleY', 0.0, 2.0, 0.01);
         GUIHelp.add(cubeObj.transform, 'scaleZ', 0.0, 2.0, 0.01);
+        GUIHelp.open();
         GUIHelp.endFolder();
     }
 }
