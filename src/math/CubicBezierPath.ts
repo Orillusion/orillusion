@@ -17,14 +17,14 @@ export enum CubicBezierType {
 export class CubicBezierPath {
     private type: CubicBezierType = CubicBezierType.Open;
     private numCurveSegments = 0;
-    private numControlVerts = 0;
-    private controlVerts: Vector3[] = [];
+    private numControlVertices = 0;
+    private controlVertices: Vector3[] = [];
 
     // The term 'knot' is another name for a point right on the path (an interpolated point). With this constructor the
     // knots are supplied and interpolated. knots.length (the number of knots) must be >= 2. Interior Cvs are generated
     // transparently and automatically.
-    constructor(controlVerts: Vector3[], t: CubicBezierType = CubicBezierType.Open) {
-        this.setControlVerts(controlVerts, t);
+    constructor(controlVertices: Vector3[], t: CubicBezierType = CubicBezierType.Open) {
+        this.setControlVertices(controlVertices, t);
     }
 
     public getPathType() {
@@ -43,10 +43,10 @@ export class CubicBezierPath {
     }
 
     public clear() {
-        this.controlVerts.length = 0;
+        this.controlVertices.length = 0;
         this.type = CubicBezierType.Open;
         this.numCurveSegments = 0;
-        this.numControlVerts = 0;
+        this.numControlVertices = 0;
     }
 
     public computeApproxLength(): number {
@@ -58,10 +58,10 @@ export class CubicBezierPath {
         if (numInterpolatedPoints < 2) return 0.0;
 
         let totalDist = 0.0;
-        let controlVerts = this.controlVerts;
+        let controlVertices = this.controlVertices;
         for (let n = 1; n < numInterpolatedPoints; n++) {
-            let a = controlVerts[(n - 1) * 3];
-            let b = controlVerts[n * 3];
+            let a = controlVertices[(n - 1) * 3];
+            let b = controlVertices[n * 3];
             totalDist += a.subtract(b).lengthSquared;
         }
 
@@ -86,25 +86,25 @@ export class CubicBezierPath {
 
         this.clear();
         this.type = t;
-        let controlVerts = this.controlVerts;
+        let controlVertices = this.controlVertices;
         switch (t) {
             case CubicBezierType.Open: {
                 this.numCurveSegments = numKnots - 1;
-                this.numControlVerts = 3 * numKnots - 2;
-                controlVerts.length = this.numControlVerts;
+                this.numControlVertices = 3 * numKnots - 2;
+                controlVertices.length = this.numControlVertices;
 
                 // Place the interpolated CVs.
-                for (let n = 0; n < numKnots; n++) controlVerts[n * 3] = knots[n];
+                for (let n = 0; n < numKnots; n++) controlVertices[n * 3] = knots[n];
 
                 // Place the first and last non-interpolated CVs.
                 let initialPoint = knots[1].subtract(knots[0]).mul(0.25);
 
                 // Interpolate 1/4 away along first segment.
-                controlVerts[1] = knots[0].add(initialPoint);
+                controlVertices[1] = knots[0].add(initialPoint);
                 let finalPoint = knots[numKnots - 2].subtract(knots[numKnots - 1]).mul(0.25);
 
                 // Interpolate 1/4 backward along last segment.
-                controlVerts[this.numControlVerts - 2] = knots[numKnots - 1].add(finalPoint);
+                controlVertices[this.numControlVertices - 2] = knots[numKnots - 1].add(finalPoint);
 
                 // Now we'll do all the interior non-interpolated CVs.
                 for (let k = 1; k < this.numCurveSegments; k++) {
@@ -119,11 +119,11 @@ export class CubicBezierPath {
                         ab.normalize();
                         ab = ab.mul(abLen);
 
-                        controlVerts[k * 3 - 1] = knots[k].subtract(ab);
-                        controlVerts[k * 3 + 1] = knots[k].add(ab);
+                        controlVertices[k * 3 - 1] = knots[k].subtract(ab);
+                        controlVertices[k * 3 + 1] = knots[k].add(ab);
                     } else {
-                        controlVerts[k * 3 - 1] = knots[k];
-                        controlVerts[k * 3 + 1] = knots[k];
+                        controlVertices[k * 3 - 1] = knots[k];
+                        controlVertices[k * 3 + 1] = knots[k];
                     }
                 }
                 break;
@@ -134,13 +134,13 @@ export class CubicBezierPath {
 
                 // We duplicate the first point at the end so we have contiguous memory to look of the curve value. That's
                 // what the +1 is for.
-                this.numControlVerts = 3 * numKnots + 1;
-                controlVerts.length = this.numControlVerts;
+                this.numControlVertices = 3 * numKnots + 1;
+                controlVertices.length = this.numControlVertices;
 
                 // First lets place the interpolated CVs and duplicate the first into the last CV slot.
-                for (let n = 0; n < numKnots; n++) controlVerts[n * 3] = knots[n];
+                for (let n = 0; n < numKnots; n++) controlVertices[n * 3] = knots[n];
 
-                controlVerts[this.numControlVerts - 1] = knots[0];
+                controlVertices[this.numControlVertices - 1] = knots[0];
 
                 // Now we'll do all the interior non-interpolated CVs. We go to k=NumCurveSegments which will compute the
                 // two CVs around the zeroth knot (points[0]).
@@ -156,18 +156,18 @@ export class CubicBezierPath {
                     let mod3km1 = 3 * k - 1;
 
                     // Need the -1 so the end point is a duplicated start point.
-                    let mod3kp1 = (3 * k + 1) % (this.numControlVerts - 1);
+                    let mod3kp1 = (3 * k + 1) % (this.numControlVertices - 1);
                     if (aLen > 0.0 && bLen > 0.0) {
                         let abLen = (aLen + bLen) / 8.0;
                         let ab = b.div(bLen).subtract(a.div(aLen));
                         ab.normalize();
                         ab = ab.mul(abLen);
 
-                        controlVerts[mod3km1] = knots[modk].subtract(ab);
-                        controlVerts[mod3kp1] = knots[modk].add(ab);
+                        controlVertices[mod3km1] = knots[modk].subtract(ab);
+                        controlVertices[mod3kp1] = knots[modk].add(ab);
                     } else {
-                        controlVerts[mod3km1] = knots[modk];
-                        controlVerts[mod3kp1] = knots[modk];
+                        controlVertices[mod3km1] = knots[modk];
+                        controlVertices[mod3kp1] = knots[modk];
                     }
                 }
                 break;
@@ -176,7 +176,7 @@ export class CubicBezierPath {
     }
 
     // For a closed path the last CV must match the first.
-    public setControlVerts(cvs: Vector3[], t: CubicBezierType) {
+    public setControlVertices(cvs: Vector3[], t: CubicBezierType) {
         let numCVs = cvs.length;
         if (numCVs <= 0) return;
         if (t == CubicBezierType.Open && (numCVs < 4)) return
@@ -185,9 +185,9 @@ export class CubicBezierPath {
         this.clear();
         this.type = t;
 
-        this.numControlVerts = numCVs;
+        this.numControlVertices = numCVs;
         this.numCurveSegments = (numCVs - 1) / 3;
-        this.controlVerts = cvs;
+        this.controlVertices = cvs;
     }
 
     // t E [0, numSegments]. If the type is closed, the number of segments is one more than the equivalent open path.
@@ -209,7 +209,7 @@ export class CubicBezierPath {
         if (segment >= this.numCurveSegments) segment = this.numCurveSegments - 1;
 
         let curveCVs: Vector3[] = [];
-        let controlVerts = this.controlVerts;
+        let controlVerts = this.controlVertices;
         curveCVs[0] = controlVerts[3 * segment + 0];
         curveCVs[1] = controlVerts[3 * segment + 1];
         curveCVs[2] = controlVerts[3 * segment + 2];
@@ -244,7 +244,7 @@ export class CubicBezierPath {
         let segment = Math.floor(t);
         if (segment >= this.numCurveSegments) segment = this.numCurveSegments - 1;
 
-        let controlVerts = this.controlVerts;
+        let controlVerts = this.controlVertices;
         let curveCVs = [];
         curveCVs[0] = controlVerts[3 * segment + 0];
         curveCVs[1] = controlVerts[3 * segment + 1];
@@ -267,10 +267,10 @@ export class CubicBezierPath {
         let closestParam = 0.0;
         let curveCVs: Vector3[] = [];
         let curve: CubicBezierCurve = new CubicBezierCurve(curveCVs);
-        for (let startIndex = 0; startIndex < this.controlVerts.length - 1; startIndex += 3) {
-            for (let i = 0; i < 4; i++) curveCVs[i] = this.controlVerts[startIndex + i];
+        for (let startIndex = 0; startIndex < this.controlVertices.length - 1; startIndex += 3) {
+            for (let i = 0; i < 4; i++) curveCVs[i] = this.controlVertices[startIndex + i];
 
-            curve.setControlVerts(curveCVs);
+            curve.setControlVertices(curveCVs);
             let curveClosestParam = curve.getClosestParam(pos, paramThreshold);
 
             let curvePos = curve.getPoint(curveClosestParam);
