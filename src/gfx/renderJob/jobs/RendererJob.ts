@@ -186,59 +186,17 @@ export class RendererJob {
     }
 
     /**
-     * @internal
+     * To render a frame of the scene 
      */
-    public render(renderLoop: Function) {
+    public renderFrame() {
         let view = this._view;
-        // let camera = this._view.camera;
-        // let scene = this._view.scene;
 
         this.view.scene.waitUpdate();
 
-        /******
-         * auto update component list
-         *****/
-        ComponentCollect.componentsBeforeUpdateList.forEach((v, k) => {
-            if (k.enable) v();
-        });
-
         GlobalBindGroup.getLightEntries(view.scene).update(view);
 
-        let globalMatrixBindGroup = GlobalBindGroup.modelMatrixBindGroup;
-        globalMatrixBindGroup.writeBuffer();
-
-        if (renderLoop) {
-            renderLoop();
-        }
-
-        ComponentCollect.componentsUpdateList.forEach((v, k) => {
-            if (k.enable) v();
-        });
-
-        let command = GPUContext.beginCommandEncoder();
-        ComponentCollect.componentsComputeList.forEach((v, k) => {
-            if (k.enable) v(view, command);
-        });
-        GPUContext.endCommandEncoder(command);
-
         this.occlusionSystem.update(view.camera, view.scene);
-        this.renderFrame(view);
-        if (this.postRenderer && this.postRenderer.postList.length > 0) {
-            this.postRenderer.render(view);
-        }
 
-        view.scene.envMapChange = false;
-
-        ComponentCollect.componentsLateUpdateList.forEach((v, k) => {
-            if (k.enable) v();
-        });
-
-    }
-
-    /**
-     * To render a frame of the scene 
-     */
-    protected renderFrame(view: View3D) {
         this.clusterLightingRender.render(view, this.occlusionSystem);
         if (this.shadowMapPassRenderer && Engine3D.setting.shadow.enable) {
             this.shadowMapPassRenderer.render(view, this.occlusionSystem);
@@ -260,6 +218,10 @@ export class RendererJob {
             renderer.beforeCompute(view, this.occlusionSystem);
             renderer.render(view, this.occlusionSystem, this.clusterLightingRender.clusterLightingBuffer);
             renderer.lateCompute(view, this.occlusionSystem);
+        }
+
+        if (this.postRenderer && this.postRenderer.postList.length > 0) {
+            this.postRenderer.render(view);
         }
     }
 
