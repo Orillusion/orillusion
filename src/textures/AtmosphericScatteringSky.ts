@@ -1,3 +1,4 @@
+import { Color } from '..';
 import { AtmosphericScatteringSky_shader } from '../assets/shader/sky/AtmosphericScatteringSky_shader';
 import { UniformGPUBuffer } from '../gfx/graphics/webGpu/core/buffer/UniformGPUBuffer';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
@@ -22,6 +23,7 @@ export class AtmosphericScatteringSkySetting {
     public displaySun: boolean = true;
     public defaultTextureCubeSize: number = 512;
     public defaultTexture2DSize: number = 1024;
+    public skyColor: Color = new Color(1, 1, 1, 1);
 }
 
 /**
@@ -63,6 +65,7 @@ export class AtmosphericScatteringSky extends HDRTextureCube {
         return this;
     }
 
+
 }
 
 /**
@@ -100,6 +103,7 @@ class AtmosphericTexture2D extends VirtualTexture {
         this._uniformBuffer.setFloat('mieHeight', setting.mieHeight);
         this._uniformBuffer.setFloat('sunBrightness', setting.sunBrightness);
         this._uniformBuffer.setFloat('displaySun', setting.displaySun ? 1 : 0);
+        this._uniformBuffer.setColor('skyColor', setting.skyColor);
         this._uniformBuffer.apply();
 
         let command = GPUContext.beginCommandEncoder();

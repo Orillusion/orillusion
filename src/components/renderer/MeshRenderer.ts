@@ -54,6 +54,8 @@ export class MeshRenderer extends RenderNode {
             this.removeRendererMask(RendererMask.MorphTarget);
         }
 
+        this.object3D.bound = this._geometry.bounds;
+
         if (this._readyPipeline) {
             this.initPipeline();
         }

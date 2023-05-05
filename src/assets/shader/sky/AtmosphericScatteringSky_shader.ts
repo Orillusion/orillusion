@@ -2,7 +2,8 @@
  * @internal
  */
 export class AtmosphericScatteringSky_shader {
-    public static cs: string = /* wgsl */ `
+  public static cs: string = /* wgsl */ `
+    #include 'ColorUtil'
     struct UniformData {
         width: f32,
         height: f32,
@@ -15,6 +16,7 @@ export class AtmosphericScatteringSky_shader {
         mieHeight: f32,         // = 1200;
         sunBrightness: f32,     // = 1.0;
         displaySun: f32,        // > 0.5: true
+        skyColor: vec4<f32>,        // sky color
       };
 
       @group(0) @binding(0) var<uniform> uniformBuffer: UniformData;
@@ -252,7 +254,7 @@ export class AtmosphericScatteringSky_shader {
 
           var limbDarkening: vec3<f32> = GetTransmittance(setting, -L, V);
           limbDarkening *= pow(vec3<f32>(cosAngle), vec3<f32>(0.420, 0.503, 0.652)) * mix(vec3<f32>(1.0), vec3<f32>(1.2,0.9,0.5), edge) * intersectionTest;
-          sky += limbDarkening * uniformBuffer.sunBrightness;
+          sky += limbDarkening * uniformBuffer.sunBrightness; 
         }
         return vec4<f32>(sky, phaseNight * intersectionTest);
       }
@@ -294,17 +296,16 @@ export class AtmosphericScatteringSky_shader {
         setting.waveLambdaRayleigh = ComputeWaveLambdaRayleigh(vec3<f32>(0.000000680, 0.000000550, 0.000000450));
 
         // see https://www.shadertoy.com/view/MllBR2
-        setting.waveLambdaOzone = vec3<f32>(1.36820899679147, 3.31405330400124, 0.13601728252538) * 0.0000006 * 2.504;
+        setting.waveLambdaOzone = vec3<f32>(1.36820899679147, 3.31405330400124, 0.13601728252538)* 0.0000006 * 2.504;
 
         var eye:vec3<f32> = vec3<f32>(0,eyePosition,0);
         var sky0:vec4<f32> = ComputeSkyInscattering(setting, eye, V, L);
         var sky = vec3<f32>(sky0.rgb);
 
         // sky = TonemapACES(sky.rgb * 2.0);
-        // sky = pow(sky.rgb, vec3<f32>(2.4)); // gamma
-        // sky.rgb += noise(uv*iTime) / 255.0; // dither
+        sky = pow(sky.rgb, vec3<f32>(1.0/1.2)); // gamma
 
-        var fragColor:vec4<f32> = vec4<f32>(sky, 1.0);
+        var fragColor:vec4<f32> = vec4<f32>((sky.rgb  ), 1.0);
         return fragColor;
       }
     `;
