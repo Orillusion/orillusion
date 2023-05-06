@@ -16,6 +16,7 @@ import { Res } from './assets/Res';
 import { ShaderLib } from './assets/shader/ShaderLib';
 import { ShaderUtil } from './gfx/graphics/webGpu/shader/util/ShaderUtil';
 import { ComponentCollect } from './gfx/renderJob/collect/ComponentCollect';
+import { ShadowLightsCollect } from './gfx/renderJob/collect/ShadowLightsCollect';
 
 /** 
  * Orillusion 3D Engine
@@ -268,6 +269,8 @@ export class Engine3D {
         GlobalBindGroup.init();
 
         RTResourceMap.init();
+
+        ShadowLightsCollect.init();
 
         this.res = new Res();
 
