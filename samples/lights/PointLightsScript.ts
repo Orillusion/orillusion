@@ -7,7 +7,7 @@ class PointLightItem {
     public mass: number = 10;
 }
 
-export class _PointLightsScript extends ComponentBase {
+export class PointLightsScript extends ComponentBase {
     private _points: PointLight[];
     private _pointLightItems: PointLightItem[];
     private _startAnim: boolean = false;
@@ -22,13 +22,13 @@ export class _PointLightsScript extends ComponentBase {
 
     constructor() {
         super();
-        _PointLightsScript.geo ||= new SphereGeometry(0.5, 6, 6);
-        _PointLightsScript.mat ||= new LitMaterial();
-        _PointLightsScript.boundBox ||= new BoundingBox(new Vector3(0, 10, 0), new Vector3(500, 50, 500));
+        PointLightsScript.geo ||= new SphereGeometry(0.5, 6, 6);
+        PointLightsScript.mat ||= new LitMaterial();
+        PointLightsScript.boundBox ||= new BoundingBox(new Vector3(0, 10, 0), new Vector3(500, 50, 500));
 
-        this._geo = _PointLightsScript.geo;
-        this._mat = _PointLightsScript.mat;
-        this._boundBox = _PointLightsScript.boundBox;
+        this._geo = PointLightsScript.geo;
+        this._mat = PointLightsScript.mat;
+        this._boundBox = PointLightsScript.boundBox;
         this._points = [];
         this._pointLightItems = [];
 

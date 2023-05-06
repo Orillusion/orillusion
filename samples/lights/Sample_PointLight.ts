@@ -1,6 +1,6 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { AtmosphericComponent, BoxGeometry, CameraUtil, Engine3D, HoverCameraController, LitMaterial, MeshRenderer, Object3D, Object3DUtil, PointLight, Scene3D, SphereGeometry, View3D, webGPUContext, } from "@orillusion/core";
-import { _PointLightsScript } from "./_PointLightsScript";
+import { PointLightsScript } from "./PointLightsScript";
 
 class Sample_PointLight {
     scene: Scene3D;
@@ -59,7 +59,7 @@ class Sample_PointLight {
         scene.addChild(lightObj3D);
 
         let pointlights = new Object3D();
-        let script = pointlights.addComponent(_PointLightsScript);
+        let script = pointlights.addComponent(PointLightsScript);
         script.beginAnim();
         scene.addChild(pointlights);
 
