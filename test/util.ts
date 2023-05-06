@@ -1,6 +1,3 @@
-// @ts-ignore
-import { isEqual, isMatch } from 'https://unpkg.com/underscore@1.13.6/underscore-esm-min.js'
-
 let target = sessionStorage.target.split('/').pop()
 let result: { [key: string]: any } = {}
 let totalS = 0, totalF = 0
@@ -99,4 +96,24 @@ function delay(time?: number) {
         setTimeout(res, time || 200)
     })
 }
+
+function isEqual(a: any, b: any) {
+    if (a === b) return a !== 0 || 1 / a === 1 / b;
+    if (a == null || b == null) return false;
+    if (a !== a) return b !== b;
+    const type = typeof a;
+    if (type !== 'function' && type !== 'object' && typeof b != 'object') return false;
+}
+
+function isMatch(object:any, attrs: {[key:string]:any}){
+    const _keys = Object.keys(attrs), length = _keys.length;
+    if (object == null) return !length;
+    const obj = Object(object);
+    for (let i = 0; i < length; i++) {
+        const key = _keys[i];
+        if (attrs[key] !== obj[key] || !(key in obj)) return false;
+    }
+    return true;
+}
+
 export { test, expect, end, delay }
