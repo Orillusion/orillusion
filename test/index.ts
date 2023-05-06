@@ -5,7 +5,7 @@ let title = '', list = ''
 for (const path in modules) {
     const arr = path.split('/')
     let _title = arr[1]
-    let _demo = arr[2].replace(/Sample_|Sample|\.ts/g, '')
+    let _demo = arr[2].replace(/\.test\.ts/g, '')
     if (_title != title) {
         list += `<p>${_title}</p>`
         title = _title

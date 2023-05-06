@@ -97,15 +97,20 @@ function delay(time?: number) {
     })
 }
 
+// no funcion types
 function isEqual(a: any, b: any) {
     if (a === b) return a !== 0 || 1 / a === 1 / b;
     if (a == null || b == null) return false;
     if (a !== a) return b !== b;
-    const type = typeof a;
-    if (type !== 'function' && type !== 'object' && typeof b != 'object') return false;
+    if(typeof a === 'function' || typeof b === 'function')
+        return false;
+    if (typeof a !== 'object' || typeof b != 'object') 
+        return false;
+    // for other objects just compare stringify results
+    return JSON.stringify(a) === JSON.stringify(b)
 }
 
-function isMatch(object:any, attrs: {[key:string]:any}){
+function isMatch(object: any, attrs: { [key: string]: any }) {
     const _keys = Object.keys(attrs), length = _keys.length;
     if (object == null) return !length;
     const obj = Object(object);
