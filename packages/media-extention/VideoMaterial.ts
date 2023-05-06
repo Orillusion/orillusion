@@ -14,7 +14,7 @@ export class VideoMaterial extends MaterialBase {
      */
     constructor() {
         super();
-        ShaderLib['VideoShader'] = VideoShader;
+        ShaderLib.register('VideoShader', VideoShader);
         let shader = this.setShader(`VideoShader`, `VideoShader`);
         shader.setShaderEntry(`VertMain`, `FragMain`)
         shader.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));
