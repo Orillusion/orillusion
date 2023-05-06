@@ -1,4 +1,4 @@
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, DirectLight, KelvinUtil, BitmapTexture2D, PointLight, Texture, LambertMaterial, Color, PlaneGeometry, MeshRenderer, Object3DUtil, UnLitMaterial } from "../../src";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, DirectLight, KelvinUtil, BitmapTexture2D, PointLight, Texture, LambertMaterial, Color, PlaneGeometry, MeshRenderer, Object3DUtil, UnLitMaterial } from "@orillusion/core";
 
 class Sample_UnlitMaterial {
     lightObj3D: Object3D;

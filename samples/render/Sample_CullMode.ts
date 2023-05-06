@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Engine3D, Scene3D, AtmosphericComponent, Object3D, Camera3D, OrbitController, DirectLight, Color, View3D, BitmapTexture2D, UnLitMaterial, MeshRenderer, PlaneGeometry, Vector3, GPUCullMode, CameraUtil, webGPUContext } from "../../src";
+import { Engine3D, Scene3D, AtmosphericComponent, Object3D, Camera3D, OrbitController, DirectLight, Color, View3D, BitmapTexture2D, UnLitMaterial, MeshRenderer, PlaneGeometry, Vector3, GPUCullMode, CameraUtil, webGPUContext } from "@orillusion/core";
 
 class Sample_CullMode {
     async run() {

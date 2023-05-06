@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, DirectLight, KelvinUtil, UnLitMaterial, MeshRenderer, PlaneGeometry, GPUAddressMode, GPUFilterMode, GPUCompareFunction, LitMaterial, Object3DUtil } from "../../src";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, DirectLight, KelvinUtil, UnLitMaterial, MeshRenderer, PlaneGeometry, GPUAddressMode, GPUFilterMode, GPUCompareFunction, LitMaterial, Object3DUtil } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
