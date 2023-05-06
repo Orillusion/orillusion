@@ -1,4 +1,7 @@
-import { Object3D, Color, MeshRenderer, outlinePostData } from "@orillusion/core";
+import { MeshRenderer } from "../components/renderer/MeshRenderer";
+import { Object3D } from "../core/entities/Object3D";
+import { Color } from "../math/Color";
+import { outlinePostData } from "./OutlinePostData";
 
 /**
  * manager of outline effect
