@@ -242,7 +242,6 @@ export class LightBase extends ComponentBase implements ILight {
     }
 
     public destroy(): void {
-        this.lightData = null;
         this.bindOnChange = null;
         this.transform.eventDispatcher.removeEventListener(Transform.ROTATION_ONCHANGE, this.onRotChange, this);
         this.transform.eventDispatcher.removeEventListener(Transform.SCALE_ONCHANGE, this.onScaleChange, this);
