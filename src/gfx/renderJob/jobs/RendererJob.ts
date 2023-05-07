@@ -17,6 +17,8 @@ import { RendererMap } from './RenderMap';
 import { PostRenderer } from '../passRenderer/post/PostRenderer';
 import { PostBase } from '../post/PostBase';
 import { ComponentCollect } from '../collect/ComponentCollect';
+import { RendererBase } from '../passRenderer/RendererBase';
+import { Ctor } from '../../../util/Global';
 
 /**
  * render jobs 
@@ -85,29 +87,35 @@ export class RendererJob {
     constructor(view: View3D) {
         this._view = view;
 
-        ShadowLightsCollect.init();
-
         this.rendererMap = new RendererMap();
 
         this.occlusionSystem = new OcclusionSystem();
 
-        this.clusterLightingRender = new ClusterLightingRender(view);
-        this.rendererMap.addRenderer(this.clusterLightingRender);
+        this.clusterLightingRender = this.addRenderer(ClusterLightingRender, view);
 
         this.graphic3D = new Graphic3D();
         if (view && this.graphic3D)
             view.scene.addChild(this.graphic3D);
 
         if (Engine3D.setting.render.zPrePass) {
-            this.depthPassRenderer = new PreDepthPassRenderer();
-            this.rendererMap.addRenderer(this.depthPassRenderer);
+            this.depthPassRenderer = this.addRenderer(PreDepthPassRenderer);
         }
 
-
         this.shadowMapPassRenderer = new ShadowMapPassRenderer();
+
         this.pointLightShadowRenderer = new PointLightShadowRenderer();
     }
 
+    public addRenderer<T extends RendererBase>(c: Ctor<T>, param?: any): T {
+        let renderer: RendererBase;
+        if (param) {
+            renderer = new c(param);
+        } else {
+            renderer = new c();
+        }
+        this.rendererMap.addRenderer(renderer);
+        return renderer as T;
+    }
 
     /**
      * @internal
@@ -153,9 +161,8 @@ export class RendererJob {
      * @internal
      */
     public enablePost(gbufferFrame: GBufferFrame) {
-        this.postRenderer = new PostRenderer();
+        this.postRenderer = this.addRenderer(PostRenderer);
         this.postRenderer.setRenderStates(gbufferFrame);
-        this.rendererMap.addRenderer(this.postRenderer);
     }
 
     /**

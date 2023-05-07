@@ -1,6 +1,6 @@
 {
     "name": "@orillusion/physics",
-    "version": "0.1.8",
+    "version": "0.2.0",
     "author": "Orillusion",
     "description": "Orillusion Physics Plugin, Powerd by Ammo.js",
     "main": "./dist/physics.umd.js",

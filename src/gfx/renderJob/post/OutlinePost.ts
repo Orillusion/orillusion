@@ -1,4 +1,3 @@
-
 import { VirtualTexture } from '../../../textures/VirtualTexture';
 import { StorageGPUBuffer } from '../../graphics/webGpu/core/buffer/StorageGPUBuffer';
 import { UniformGPUBuffer } from '../../graphics/webGpu/core/buffer/UniformGPUBuffer';
@@ -11,7 +10,6 @@ import { RendererPassState } from '../passRenderer/state/RendererPassState';
 import { PostBase } from './PostBase';
 import { Engine3D } from '../../../Engine3D';
 import { clamp } from '../../../math/MathUtil';
-import { Color } from '../../../math/Color';
 import { Vector2 } from '../../../math/Vector2';
 import { RTDescriptor } from '../../graphics/webGpu/descriptor/RTDescriptor';
 import { GBufferFrame } from '../frame/GBufferFrame';
@@ -20,69 +18,8 @@ import { View3D } from '../../../core/View3D';
 import { OutlineCalcOutline_cs } from '../../../assets/shader/compute/OutlineCalcOutline_cs';
 import { Outline_cs } from '../../../assets/shader/compute/Outline_cs';
 import { OutLineBlendColor_cs } from '../../../assets/shader/compute/OutLineBlendColor_cs';
+import { OutlinePostSlot, outlinePostData } from '../../../io/OutlinePostData';
 
-export class OutlinePostSlot {
-    public indexList: Float32Array;
-    public color: Color;
-    public count: number;
-}
-
-export class OutlinePostData {
-    //max to 8 groups of different colors can be selected
-    public readonly SlotCount: number = 8;
-    public readonly MaxEntities: number = 16;
-    public readonly defaultColor: Color = new Color(0.2, 1, 1, 1);
-    private readonly slots: OutlinePostSlot[] = [];
-
-    private dataDirty: boolean = true;
-
-    constructor() {
-        let groupCount = Engine3D.setting.render.postProcessing.outline.groupCount;
-        this.SlotCount = Math.max(1, Math.min(groupCount, this.SlotCount));
-        for (let i = 0; i < this.SlotCount; i++) {
-            let slot: OutlinePostSlot = (this.slots[i] = new OutlinePostSlot());
-            slot.indexList = new Float32Array(this.MaxEntities);
-            slot.color = this.defaultColor.clone();
-            slot.count = 0;
-        }
-    }
-
-    public clear(): void {
-        for (let i = 0; i < this.SlotCount; i++) {
-            this.clearAt(i);
-        }
-    }
-
-    public clearAt(slotIndex: number): this {
-        this.dataDirty = true;
-        let slot: OutlinePostSlot = this.slots[slotIndex];
-        slot.color.copyForm(this.defaultColor);
-        slot.indexList.fill(-1);
-        slot.count = 0;
-        return this;
-    }
-
-    public fillDataAt(slot: number, indexList: number[], color: Color): this {
-        this.dataDirty = true;
-        let data = this.slots[slot];
-        if (data) {
-            data.indexList.fill(-1);
-            for (let i = 0, c = indexList.length; i < c; i++) {
-                data.indexList[i] = indexList[i];
-            }
-            data.count = indexList.length;
-            data.color.copyForm(color);
-        }
-        return this;
-    }
-
-    public fetchData(target: { dirty: boolean; slots: OutlinePostSlot[] }): this {
-        target.dirty = this.dataDirty;
-        target.slots = this.slots;
-        this.dataDirty = false;
-        return this;
-    }
-}
 
 /**
  * post effect out line 
@@ -138,11 +75,8 @@ export class OutlinePost extends PostBase {
     oldOutlineColor: StorageGPUBuffer;
     rtFrame: RTFrame;
 
-    outlineData: OutlinePostData;
-
     constructor() {
         super();
-        this.outlineData = new OutlinePostData();
     }
 
     /**
@@ -208,7 +142,7 @@ export class OutlinePost extends PostBase {
 
     private createCompute() {
         let rtFrame = GBufferFrame.getGBufferFrame("ColorPassGBuffer");
-        let visibleMap = rtFrame.getPositionMap();// RTResourceMap.getTexture(RTResourceConfig.zBufferTexture_NAME);
+        let visibleMap = rtFrame.getPositionMap();
 
         this.calcWeightCompute = new ComputeShader(OutlineCalcOutline_cs);
         this.calcWeightCompute.setStorageBuffer('outlineSetting', this.outlineSetting);
@@ -263,29 +197,18 @@ export class OutlinePost extends PostBase {
         outDec.clearValue = [0, 0, 0, 1];
         outDec.loadOp = `clear`;
 
-        this.rtFrame = new RTFrame([
-            this.outlineTex
-        ], [
-            outDec
-        ]);
-
-        let rtFrame = GBufferFrame.getGBufferFrame("ColorPassGBuffer");
-
-        // RTResourceMap.createRTTextures(
-        //     [RTResourceConfig.colorBufferTex_NAME, RTResourceConfig.positionBufferTex_NAME, RTResourceConfig.normalBufferTex_NAME, RTResourceConfig.materialBufferTex_NAME],
-        //     [GPUTextureFormat.rgba16float, GPUTextureFormat.rgba16float, GPUTextureFormat.rgba8unorm, GPUTextureFormat.rgba8unorm],
-        // );
+        this.rtFrame = new RTFrame([this.outlineTex], [outDec]);
 
         this.outlineSetting = new UniformGPUBuffer(8);
         this.weightBuffer = new StorageGPUBuffer(this.lowTexSize.x * this.lowTexSize.y * 4, GPUBufferUsage.COPY_SRC);
         this.oldOutlineColor = new StorageGPUBuffer(this.lowTexSize.x * this.lowTexSize.y * 4, GPUBufferUsage.COPY_SRC);
 
-        this.slotsArray = new Float32Array(this.outlineData.SlotCount * 4);
+        this.slotsArray = new Float32Array(outlinePostData.SlotCount * 4);
         this.slotsBuffer = new StorageGPUBuffer(this.slotsArray.length);
         this.slotsBuffer.setFloat32Array('slotsArray', this.slotsArray);
         this.slotsBuffer.apply();
 
-        this.entitiesArray = new Float32Array(this.outlineData.SlotCount * this.outlineData.MaxEntities);
+        this.entitiesArray = new Float32Array(outlinePostData.SlotCount * outlinePostData.MaxEntities);
         this.entitiesBuffer = new StorageGPUBuffer(this.entitiesArray.length);
         this.entitiesBuffer.setFloat32Array('entitiesArray', this.entitiesArray);
         this.slotsBuffer.apply();
@@ -296,10 +219,10 @@ export class OutlinePost extends PostBase {
     private fetchData: { dirty: boolean; slots: OutlinePostSlot[] };
 
     private fetchOutlineData(): void {
-        this.outlineData.fetchData(this.fetchData);
+        outlinePostData.fetchData(this.fetchData);
         if (this.fetchData.dirty) {
-            let slotCount = this.outlineData.SlotCount;
-            let maxEntities = this.outlineData.MaxEntities;
+            let slotCount = outlinePostData.SlotCount;
+            let maxEntities = outlinePostData.MaxEntities;
             for (let i = 0; i < slotCount; i++) {
                 let offset = 4 * i;
                 let slot = this.fetchData.slots[i];

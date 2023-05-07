@@ -5,6 +5,7 @@
     // create menu
     let title = '', list = ''
     for (const path in modules) {
+        if (!path.includes('Sample_')) continue
         const arr = path.split('/')
         const _title = arr[1]
         const _demo = arr[2].replace(/Sample_|Sample|\.ts/g, '')
