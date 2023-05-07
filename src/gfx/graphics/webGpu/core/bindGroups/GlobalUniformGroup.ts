@@ -40,7 +40,7 @@ export class GlobalUniformGroup {
 
     createBindGroup() {
         this.uniformByteLength = this.uniformGPUBuffer.memory.shareDataBuffer.byteLength;
-        this.matrixesByteLength = Matrix4.blockBytes * Matrix4.totalCount;
+        this.matrixesByteLength = Matrix4.blockBytes * Matrix4.maxCount;
 
         this.globalBindGroup = webGPUContext.device.createBindGroup({
             label: `global_bindGroupLayout`,
@@ -130,18 +130,5 @@ export class GlobalUniformGroup {
 
     public addUniformNode() { }
 
-    writeBuffer() {
-        const matBytes = Matrix4.matrixBytes;
-        let totalBytes = matBytes.byteLength;
-        let offsetBytes = 0;
 
-        // webGPUContext.device.queue.writeBuffer(this.matrixBufferDst, offsetBytes, matBytes.buffer, matBytes.byteOffset, matBytes.byteLength);
-
-        const space = 5000 * 64; // 5000 * 16 * 4
-        while (offsetBytes < totalBytes) {
-            let len = Math.min(space, totalBytes - offsetBytes);
-            webGPUContext.device.queue.writeBuffer(this.matrixBindGroup.matrixBufferDst.buffer, offsetBytes, matBytes.buffer, matBytes.byteOffset + offsetBytes, len);
-            offsetBytes += len;
-        }
-    }
 }

@@ -240,8 +240,6 @@ export class RenderNode extends ComponentBase {
         this._castReflection = value;
     }
 
-
-
     public renderPass(view: View3D, passType: RendererType, renderContext: RenderContext) {
         let renderNode = this;
         for (let i = 0; i < renderNode.materials.length; i++) {
@@ -251,7 +249,7 @@ export class RenderNode extends ComponentBase {
             if (!passes || passes.length == 0) continue;
 
             GPUContext.bindGeometryBuffer(renderContext.encoder, renderNode._geometry);
-            let worldMatrix = renderNode.object3D.transform._worldMatrix;
+            let worldMatrix = renderNode.transform._worldMatrix;
             for (let j = 0; j < passes.length; j++) {
                 if (!passes || passes.length == 0) continue;
                 let matPass = passes[j];
@@ -260,7 +258,6 @@ export class RenderNode extends ComponentBase {
                 // for (let j = passes.length > 1 ? 1 : 0 ; j < passes.length; j++) {
                 const renderShader = matPass.renderShader;
                 if (renderShader.shaderState.splitTexture) {
-
                     renderContext.endRenderPass();
                     RTResourceMap.WriteSplitColorTexture(renderNode.instanceID);
                     renderContext.beginRenderPass();
@@ -270,17 +267,17 @@ export class RenderNode extends ComponentBase {
                 }
                 GPUContext.bindPipeline(renderContext.encoder, renderShader);
                 let subGeometries = renderNode._geometry.subGeometries;
-                for (let k = 0; k < subGeometries.length; k++) {
-                    const subGeometry = subGeometries[k];
-                    let lodInfos = subGeometry.lodLevels;
-                    let lodInfo = lodInfos[renderNode.lodLevel];
+                // for (let k = 0; k < subGeometries.length; k++) {
+                const subGeometry = subGeometries[i];
+                let lodInfos = subGeometry.lodLevels;
+                let lodInfo = lodInfos[renderNode.lodLevel];
 
-                    if (renderNode.instanceCount > 0) {
-                        GPUContext.drawIndexed(renderContext.encoder, lodInfo.indexCount, renderNode.instanceCount, lodInfo.indexStart, 0, 0);
-                    } else {
-                        GPUContext.drawIndexed(renderContext.encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
-                    }
+                if (renderNode.instanceCount > 0) {
+                    GPUContext.drawIndexed(renderContext.encoder, lodInfo.indexCount, renderNode.instanceCount, lodInfo.indexStart, 0, 0);
+                } else {
+                    GPUContext.drawIndexed(renderContext.encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
                 }
+                // }
             }
         }
     }
@@ -305,24 +302,21 @@ export class RenderNode extends ComponentBase {
 
             let worldMatrix = node.object3D.transform._worldMatrix;
             if (this.drawType == 2) {
-                for (let i = 0; i < passes.length; i++) {
-                    let renderShader = passes[i].renderShader;
+                for (let j = 0; j < passes.length; j++) {
+                    let renderShader = passes[j].renderShader;
                     GPUContext.bindPipeline(encoder, renderShader);
                     GPUContext.draw(encoder, 6, 1, 0, worldMatrix.index);
                 }
             } else {
                 GPUContext.bindGeometryBuffer(encoder, node._geometry);
-                for (let i = 0; i < passes.length; i++) {
-                    let renderShader = passes[i].renderShader;
-
+                for (let j = 0; j < passes.length; j++) {
+                    let renderShader = passes[j].renderShader;
                     GPUContext.bindPipeline(encoder, renderShader);
                     let subGeometries = node._geometry.subGeometries;
-                    for (let k = 0; k < subGeometries.length; k++) {
-                        const subGeometry = subGeometries[k];
-                        let lodInfos = subGeometry.lodLevels;
-                        let lodInfo = lodInfos[node.lodLevel];
-                        GPUContext.drawIndexed(encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
-                    }
+                    const subGeometry = subGeometries[i];
+                    let lodInfos = subGeometry.lodLevels;
+                    let lodInfo = lodInfos[node.lodLevel];
+                    GPUContext.drawIndexed(encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
                 }
             }
 
@@ -343,17 +337,14 @@ export class RenderNode extends ComponentBase {
             if (!passes || passes.length == 0) return;
 
             let worldMatrix = node.object3D.transform._worldMatrix;
-            for (let i = 0; i < passes.length; i++) {
-                const renderShader = passes[i].renderShader;
-
+            for (let j = 0; j < passes.length; j++) {
+                const renderShader = passes[j].renderShader;
                 GPUContext.bindPipeline(encoder, renderShader);
                 let subGeometries = node._geometry.subGeometries;
-                for (let k = 0; k < subGeometries.length; k++) {
-                    const subGeometry = subGeometries[k];
-                    let lodInfos = subGeometry.lodLevels;
-                    let lodInfo = lodInfos[node.lodLevel];
-                    GPUContext.drawIndexed(encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
-                }
+                const subGeometry = subGeometries[i];
+                let lodInfos = subGeometry.lodLevels;
+                let lodInfo = lodInfos[node.lodLevel];
+                GPUContext.drawIndexed(encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
             }
         }
 
@@ -373,16 +364,15 @@ export class RenderNode extends ComponentBase {
             let passes = material.renderPasses.get(passType);
             if (passes) {
                 for (let i = 0; i < passes.length; i++) {
-                    const pass = passes[i];// RenderShader.getShader(passes[i].shaderID);
-                    const renderShader = pass.renderShader;// RenderShader.getShader(passes[i].shaderID);
-
+                    const pass = passes[i];
+                    // RenderShader.getShader(passes[i].shaderID);
+                    const renderShader = pass.renderShader;
+                    // RenderShader.getShader(passes[i].shaderID);
                     if (renderShader.shaderState.splitTexture) {
                         let splitTexture = RTResourceMap.CreateSplitTexture(this.instanceID);
                         renderShader.setTexture("splitTexture_Map", splitTexture);
                     }
-
                     // renderShader.setUniformVector3("center", this.transform.worldPosition);
-
                     // if(scene3D.envMapChange){
                     if (!this._ignoreEnvMap) {
                         renderShader.setTexture(`envMap`, view.scene.envMap);
@@ -400,13 +390,16 @@ export class RenderNode extends ComponentBase {
                     let bdrflutTex = Engine3D.res.getTexture(`BRDFLUT`);
                     renderShader.setTexture(`brdflutMap`, bdrflutTex);
 
-                    if (Engine3D.getRenderJob(view).shadowMapPassRenderer.depth2DTextureArray) {
+                    let shadowRenderer = Engine3D.getRenderJob(view).shadowMapPassRenderer;
+                    if (shadowRenderer && shadowRenderer.depth2DTextureArray) {
                         renderShader.setTexture(`shadowMap`, Engine3D.getRenderJob(view).shadowMapPassRenderer.depth2DTextureArray);
                     }
-
                     // let shadowLight = ShadowLights.list;
                     // if (shadowLight.length) {
-                    renderShader.setTexture(`pointShadowMap`, Engine3D.getRenderJob(view).pointLightShadowRenderer.cubeTextureArray);
+                    let pointShadowRenderer = Engine3D.getRenderJob(view).pointLightShadowRenderer;
+                    if (pointShadowRenderer && pointShadowRenderer.cubeTextureArray) {
+                        renderShader.setTexture(`pointShadowMap`, pointShadowRenderer.cubeTextureArray);
+                    }
                     // }
 
                     let iesTexture = IESProfiles.iesTexture;
