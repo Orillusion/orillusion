@@ -295,7 +295,7 @@ export class Engine3D {
         this.renderJobs.set(view, renderJob);
         renderJob.addPost(new FXAAPost());
         renderJob.start();
-        this.render(0);
+        this.resume();
         return renderJob;
     }
 
@@ -315,7 +315,7 @@ export class Engine3D {
             renderJob.addPost(new FXAAPost());
             renderJob.start();
         }
-        this.render(0);
+        this.resume();
     }
 
     /**

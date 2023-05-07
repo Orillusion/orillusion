@@ -47,16 +47,6 @@ export class Scene3D extends Object3D {
             EntityCollect.instance.sky.map = value;
     }
 
-    public showSky() {
-        // if (EntityCollect.instance.sky)
-        //     EntityCollect.instance.sky.enable = true;
-    }
-
-    public hideSky() {
-        // if (EntityCollect.instance.sky)
-        //     EntityCollect.instance.sky.enable = false;
-    }
-
     /**
      * Exposure of Sky Box. A larger value produces a sky box with stronger exposure and a brighter appearance.
      *  A smaller value produces a sky box with weaker exposure and a darker appearance.
