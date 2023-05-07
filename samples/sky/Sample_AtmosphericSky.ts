@@ -1,5 +1,6 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, Texture, AtmosphericScatteringSky } from "@orillusion/core";
+import { GUIUtil } from "@samples/utils/GUIUtil";
 
 // sample of AtmosphericSky
 class Sample_AtmosphericSky {
@@ -19,8 +20,7 @@ class Sample_AtmosphericSky {
         mainCamera.perspective(60, webGPUContext.aspect, 1, 2000.0);
 
         // camera controller
-        let hoverCameraController = mainCamera.object3D.addComponent(HoverCameraController);
-        hoverCameraController.setCamera(45, -10, 10);
+        mainCamera.object3D.addComponent(HoverCameraController).setCamera(45, -10, 10);
 
         // init view3D
         let view = new View3D();
@@ -31,23 +31,10 @@ class Sample_AtmosphericSky {
         Engine3D.startRenderView(view);
 
         // gui
-        this.debug(component);
+        GUIHelp.init();
+        GUIUtil.renderAtomosphericSky(component);
     }
 
-    private debug(component: AtmosphericComponent) {
-        GUIHelp.init();
-        GUIHelp.addFolder('AtmosphericSky');
-        GUIHelp.add(component, 'sunX', 0, 1, 0.01);
-        GUIHelp.add(component, 'sunY', 0, 1, 0.01);
-        GUIHelp.add(component, 'eyePos', 0, 5000, 1);
-        GUIHelp.add(component, 'sunRadius', 0, 1000, 0.01);
-        GUIHelp.add(component, 'sunRadiance', 0, 100, 0.01);
-        GUIHelp.add(component, 'sunBrightness', 0, 10, 0.01);
-        GUIHelp.add(component, 'exposure', 0, 2, 0.01);
-        GUIHelp.add(component, 'displaySun', 0, 1, 0.01);
-        GUIHelp.open();
-        GUIHelp.endFolder();
-    }
 }
 
 new Sample_AtmosphericSky().run();
