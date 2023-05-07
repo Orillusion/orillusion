@@ -48,7 +48,7 @@ export class LightBase extends ComponentBase implements ILight {
 
     protected _castGI: boolean = false;
     protected _castShadow: boolean = false;
-    private _iesPofiles: IESProfiles;
+    private _iesProfiles: IESProfiles;
 
     constructor() {
         super();
@@ -106,15 +106,15 @@ export class LightBase extends ComponentBase implements ILight {
         EntityCollect.instance.removeLight(this.transform.scene3D, this);
     }
 
-    public set iesPofile(iesPofiles: IESProfiles) {
-        this._iesPofiles = iesPofiles;
-        this.lightData.iesPofiles = iesPofiles.index;
+    public set iesProfiles(iesProfiles: IESProfiles) {
+        this._iesProfiles = iesProfiles;
+        this.lightData.iesIndex = iesProfiles.index;
         IESProfiles.use = true;
         this.onChange();
     }
 
-    public get iesPofile(): IESProfiles {
-        return this._iesPofiles;
+    public get iesProfile(): IESProfiles {
+        return this._iesProfiles;
     }
 
     /**
