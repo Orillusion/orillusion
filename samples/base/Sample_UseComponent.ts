@@ -1,4 +1,4 @@
-import { Engine3D, Scene3D, CameraUtil, webGPUContext, View3D, AtmosphericComponent, ComponentBase, Time, AxisObject, Object3DUtil, KelvinUtil, DirectLight, Object3D, HoverCameraController } from "@orillusion/core";
+import { Engine3D, Scene3D, CameraUtil, View3D, AtmosphericComponent, ComponentBase, Time, AxisObject, Object3DUtil, KelvinUtil, DirectLight, Object3D, HoverCameraController } from "@orillusion/core";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 
 // sample use component
@@ -13,7 +13,7 @@ class Sample_UseComponent {
 
         // init camera3D
         let mainCamera = CameraUtil.createCamera3D(null, scene);
-        mainCamera.perspective(60, webGPUContext.aspect, 1, 2000.0);
+        mainCamera.perspective(60, Engine3D.aspect, 1, 2000.0);
         let hoverCameraController = mainCamera.object3D.addComponent(HoverCameraController);
         hoverCameraController.setCamera(15, -30, 10);
 

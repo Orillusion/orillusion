@@ -10,7 +10,7 @@ class Sample_CullMode {
         scene.addComponent(AtmosphericComponent);
 
         let camera = CameraUtil.createCamera3DObject(scene);
-        camera.perspective(60, webGPUContext.aspect, 0.01, 10000.0);
+        camera.perspective(60, Engine3D.aspect, 0.01, 10000.0);
         camera.object3D.z = 3;
 
         let oribit = camera.object3D.addComponent(OrbitController);

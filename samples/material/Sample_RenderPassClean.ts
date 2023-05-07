@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, DirectLight, KelvinUtil, MeshRenderer, LitMaterial, BlendMode, BoxGeometry, Color, PlaneGeometry } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, MeshRenderer, LitMaterial, BlendMode, BoxGeometry, Color, PlaneGeometry } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
 class Sample_RenderPassClean {
@@ -9,16 +9,14 @@ class Sample_RenderPassClean {
     async run() {
         await Engine3D.init();
 
-        Engine3D.setting.material.materialChannelDebug = true;
-        Engine3D.setting.shadow.shadowBound = 50;
-        Engine3D.setting.shadow.shadowBias = 0.00197;
-        Engine3D.setting.shadow.debug = true;
+        Engine3D.setting.shadow.shadowBound = 200;
+        Engine3D.setting.shadow.shadowBias = 0.0001;
 
         this.scene = new Scene3D();
         this.scene.addComponent(AtmosphericComponent);
 
         let camera = CameraUtil.createCamera3DObject(this.scene);
-        camera.perspective(60, webGPUContext.aspect, 0.01, 5000.0);
+        camera.perspective(60, Engine3D.aspect, 0.01, 5000.0);
 
         camera.object3D.addComponent(HoverCameraController).setCamera(25, -5, 20);
 

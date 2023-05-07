@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, CameraUtil, webGPUContext, HoverCameraController, View3D, AtmosphericComponent, DirectLight, KelvinUtil, MeshRenderer, LitMaterial } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, CameraUtil, HoverCameraController, View3D, AtmosphericComponent, DirectLight, KelvinUtil, MeshRenderer, LitMaterial } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
 class Sample_PBRMaterial {
@@ -10,24 +10,22 @@ class Sample_PBRMaterial {
         await Engine3D.init({ canvasConfig: { alpha: true, zIndex: 11, backgroundImage: '/logo/bg.webp' } });
 
         //config settings
-        Engine3D.setting.material.materialDebug = true;
-        Engine3D.setting.material.materialChannelDebug = true;
         Engine3D.setting.shadow.shadowBound = 50;
-        Engine3D.setting.shadow.shadowBias = 0.002;
+        Engine3D.setting.shadow.shadowBias = 0.0001;
         Engine3D.setting.render.postProcessing.bloom = {
             enable: true,
             blurX: 4,
             blurY: 4,
             intensity: 1.6,
             brightness: 0.8,
-            debug: true
+            debug: false
         };
 
         GUIHelp.init(999);
 
         this.scene = new Scene3D();
         let camera = CameraUtil.createCamera3DObject(this.scene);
-        camera.perspective(60, webGPUContext.aspect, 0.01, 5000.0);
+        camera.perspective(60, Engine3D.aspect, 0.01, 5000.0);
 
         camera.object3D.addComponent(HoverCameraController).setCamera(-25, -5, 30);
 

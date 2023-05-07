@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Camera3D, Scene3D, HoverCameraController, Engine3D, CameraUtil, webGPUContext, View3D, SSRPost, HDRBloomPost, AtmosphericComponent, DirectLight, KelvinUtil, Time } from "@orillusion/core";
+import { Object3D, Camera3D, Scene3D, HoverCameraController, Engine3D, CameraUtil, View3D, SSRPost, HDRBloomPost, AtmosphericComponent, DirectLight, KelvinUtil, Time } from "@orillusion/core";
 import { GUIUtil as GUIUtil } from "@samples/utils/GUIUtil";
 
 class Sample_FlightHelmet {
@@ -18,16 +18,11 @@ class Sample_FlightHelmet {
             renderLoop: () => this.loop(),
         });
 
-        Engine3D.setting.material.materialChannelDebug = true;
-        Engine3D.setting.shadow.debug = true;
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.shadowBound = 10;
-        Engine3D.setting.shadow.shadowBias = 0.00001;
-
+        Engine3D.setting.shadow.shadowBias = 0.0001;
         Engine3D.setting.render.postProcessing.ssao.radius = 0.018;
         Engine3D.setting.render.postProcessing.ssao.aoPower = 1;
-        Engine3D.setting.render.postProcessing.gtao.debug = false;
-
         Engine3D.setting.render.postProcessing.bloom = {
             enable: true,
             blurX: 4,
@@ -39,9 +34,8 @@ class Sample_FlightHelmet {
 
 
         this.scene = new Scene3D();
-        this.scene.hideSky();
         let camera = CameraUtil.createCamera3DObject(this.scene);
-        camera.perspective(60, webGPUContext.aspect, 1, 5000.0);
+        camera.perspective(60, Engine3D.aspect, 1, 5000.0);
 
         camera.object3D.addComponent(HoverCameraController).setCamera(-45, -30, 15);
 
@@ -67,6 +61,7 @@ class Sample_FlightHelmet {
             let atmospheric = this.scene.addComponent(AtmosphericComponent);
             atmospheric.sunY = 0.73;
             atmospheric.sunRadiance = 47;
+            atmospheric.enable = false
         }
         /******** light *******/
         {

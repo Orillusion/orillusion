@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, HoverCameraController, Engine3D, AtmosphericComponent, webGPUContext, View3D, DirectLight, KelvinUtil, MeshRenderer, BoxGeometry, LitMaterial, Color, BlendMode, GPUCullMode, CameraUtil } from "@orillusion/core";
+import { Object3D, Scene3D, HoverCameraController, Engine3D, AtmosphericComponent, View3D, DirectLight, KelvinUtil, MeshRenderer, BoxGeometry, LitMaterial, Color, BlendMode, GPUCullMode, CameraUtil } from "@orillusion/core";
 
 //sample of change BlendMode and CullMode
 class Sample_BlendMode {
@@ -15,7 +15,7 @@ class Sample_BlendMode {
         this.scene.addComponent(AtmosphericComponent);
 
         let mainCamera = CameraUtil.createCamera3DObject(this.scene, 'camera');
-        mainCamera.perspective(60, webGPUContext.aspect, 1, 5000.0);
+        mainCamera.perspective(60, Engine3D.aspect, 1, 5000.0);
 
         mainCamera.object3D.addComponent(HoverCameraController).setCamera(-125, 0, 120);
 
