@@ -14,8 +14,6 @@ class Sample_Transform {
         // add performance stats
         scene.addComponent(Stats);
 
-
-
         // add an Atmospheric sky enviroment
         let sky = scene.addComponent(AtmosphericComponent);
         sky.sunY = 0.6
