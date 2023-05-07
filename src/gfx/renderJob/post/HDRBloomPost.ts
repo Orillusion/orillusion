@@ -28,10 +28,12 @@ export class HDRBloomPost extends PostBase {
     public blurY: number = 1;
     constructor() {
         super();
-        Engine3D.setting.render.postProcessing.bloom.enable = true;
+        const bloomSetting = Engine3D.setting.render.postProcessing.bloom;
+        
+        bloomSetting.enable = true;
 
-        this.blurX = Engine3D.setting.render.postProcessing.bloom.blurX;
-        this.blurY = Engine3D.setting.render.postProcessing.bloom.blurY;
+        this.blurX = bloomSetting.blurX;
+        this.blurY = bloomSetting.blurY;
 
         let presentationSize = webGPUContext.presentationSize;
         let outTextures = this.createRTTexture('HDRBloomPost-outTextures', presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float, false);
@@ -41,7 +43,7 @@ export class HDRBloomPost extends PostBase {
             let brightnessTextures = this.createRTTexture('brightnessTextures', presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float, false);
 
             this.brightnessView = this.createViewQuad(`brightnessView`, `Bloom_Brightness_frag_wgsl`, brightnessTextures, {
-                luminosityThreshold: new UniformNode(Engine3D.setting.render.postProcessing.bloom.brightness),
+                luminosityThreshold: new UniformNode(bloomSetting.luminosityThreshold),
             });
         }
 
@@ -78,7 +80,7 @@ export class HDRBloomPost extends PostBase {
 
         {
             this.compositeView = this.createViewQuad(`compositeView`, `Bloom_composite_frag_wgsl`, outTextures, {
-                bloomStrength: new UniformNode(Engine3D.setting.render.postProcessing.bloom.intensity),
+                bloomStrength: new UniformNode(bloomSetting.strength),
                 bloomRadius: new UniformNode(1),
             });
         }
@@ -94,19 +96,19 @@ export class HDRBloomPost extends PostBase {
     public debug() {
     }
 
-    public get bloomStrength() {
+    public get strength() {
         return this.compositeView.uniforms['bloomStrength'].value;
     }
 
-    public set bloomStrength(value: number) {
+    public set strength(value: number) {
         this.compositeView.uniforms['bloomStrength'].value = value;
     }
 
-    public get bloomRadius() {
+    public get radius() {
         return this.compositeView.uniforms['bloomRadius'].value;
     }
 
-    public set bloomRadius(value: number) {
+    public set radius(value: number) {
         this.compositeView.uniforms['bloomRadius'].value = value;
     }
 
