@@ -19,11 +19,15 @@ export type BloomSetting = {
     /**
      * Strength setting
      */
-    intensity: number;
+    strength: number;
     /**
-     * Brightness setting
+     * Radius setting
      */
-    brightness: number;
+    radius: number;
+    /**
+     * Luminosity threshold
+     */
+    luminosityThreshold: number;
     /**
      * use debug or not
      */

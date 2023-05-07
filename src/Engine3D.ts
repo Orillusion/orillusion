@@ -193,8 +193,9 @@ export class Engine3D {
                     enable: false,
                     blurX: 4,
                     blurY: 4,
-                    intensity: 0.25,
-                    brightness: 1.3,
+                    strength: 0.25,
+                    radius: 1.3,
+                    luminosityThreshold: 0.98,
                     debug: false,
                 },
                 fxaa: {
