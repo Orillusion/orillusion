@@ -1,6 +1,6 @@
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { Stats } from '@orillusion/stats'
-import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D } from '@orillusion/core';
+import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D, UnLitMaterial } from '@orillusion/core';
 
 // simple base demo
 class Sample_Transform {
@@ -13,6 +13,8 @@ class Sample_Transform {
         // add performance stats
         scene.addComponent(Stats);
 
+
+
         // add an Atmospheric sky enviroment
         let sky = scene.addComponent(AtmosphericComponent);
         sky.sunY = 0.6
@@ -23,7 +25,7 @@ class Sample_Transform {
 
         // add a basic camera controller
         let hoverCameraController = mainCamera.object3D.addComponent(HoverCameraController);
-        hoverCameraController.setCamera(15, -15, 10);
+        hoverCameraController.setCamera(15, -15, 300);
 
         // create a basic cube
         let cubeObj = new Object3D();

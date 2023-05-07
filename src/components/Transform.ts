@@ -94,7 +94,7 @@ export class Transform extends ComponentBase {
     private _left: Vector3 = new Vector3();
     private _up: Vector3 = new Vector3();
     private _down: Vector3 = new Vector3();
-    public _worldMatrix: Matrix4;
+    public readonly _worldMatrix: Matrix4;
     private _localChange: boolean = true;
 
     private _targetPos: Vector3;
@@ -160,7 +160,7 @@ export class Transform extends ComponentBase {
 
     constructor() {
         super();
-        this.worldMatrix = new Matrix4(false);
+        this._worldMatrix = new Matrix4(true);
         this._localPos = new Vector3();
         this._localRot = new Vector3();
         this._localRotQuat = new Quaternion();
@@ -353,13 +353,6 @@ export class Transform extends ComponentBase {
     }
 
     /**
-    * @internal
-    */
-    public set worldMatrix(value: Matrix4) {
-        this._worldMatrix = value;
-    }
-
-    /**
      *
      * Update the matrix4 in world space
      */
@@ -429,7 +422,6 @@ export class Transform extends ComponentBase {
             this.localRotQuat = null;
             this.localRotation = null;
             this.localScale = null;
-            this._worldMatrix = null;
         }
         super.destroy();
     }
