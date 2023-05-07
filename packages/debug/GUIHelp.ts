@@ -1,6 +1,4 @@
-// @ts-ignore
 import { GUI } from 'https://unpkg.com/dat.gui@0.7.9/build/dat.gui.module.js'
-
 
 /**
  * @internal

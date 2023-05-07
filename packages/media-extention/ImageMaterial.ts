@@ -14,8 +14,8 @@ export class ImageMaterial extends MaterialBase {
      */
     constructor() {
         super();
-        ShaderLib.register("ImageShVideoShaderader", ImageMaterialShader);
-        let shader = this.setShader(`ImageShader`, `ImageShader`);
+        ShaderLib.register("ImageMaterialShader", ImageMaterialShader);
+        let shader = this.setShader(`ImageMaterialShader`, `ImageMaterialShader`);
         shader.setShaderEntry(`VertMain`, `FragMain`)
         shader.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));
         shader.setUniformVector4(`transformUV2`, new Vector4(0, 0, 1, 1));
