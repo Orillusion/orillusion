@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, Texture, AtmosphericScatteringSky } from "@orillusion/core";
+import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, Texture, AtmosphericScatteringSky } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
 // sample of AtmosphericSky
@@ -17,7 +17,7 @@ class Sample_AtmosphericSky {
 
         // init camera3D
         let mainCamera = CameraUtil.createCamera3D(null, this._scene);
-        mainCamera.perspective(60, webGPUContext.aspect, 1, 2000.0);
+        mainCamera.perspective(60, Engine3D.aspect, 1, 2000.0);
 
         // camera controller
         mainCamera.object3D.addComponent(HoverCameraController).setCamera(45, -10, 10);

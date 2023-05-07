@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, Object3D, DirectLight, KelvinUtil, MeshRenderer, UnLitMaterial, PlaneGeometry, BlendMode, GPUCullMode, LitMaterial, Color } from "@orillusion/core";
+import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, Object3D, DirectLight, KelvinUtil, MeshRenderer, UnLitMaterial, PlaneGeometry, BlendMode, GPUCullMode, LitMaterial, Color } from "@orillusion/core";
 
 class Sample_BlendMode2 {
     scene: Scene3D;
@@ -23,7 +23,7 @@ class Sample_BlendMode2 {
         this.scene.addComponent(AtmosphericComponent);
 
         let camera = CameraUtil.createCamera3DObject(this.scene);
-        camera.perspective(60, webGPUContext.aspect, 0.01, 5000.0);
+        camera.perspective(60, Engine3D.aspect, 0.01, 5000.0);
 
         camera.object3D.addComponent(HoverCameraController).setCamera(25, -60, 200);
 

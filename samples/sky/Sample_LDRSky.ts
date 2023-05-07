@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, Texture } from "@orillusion/core";
+import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, Texture, SkyRenderer } from "@orillusion/core";
 
 // sample to replace ldr sky map
 class Sample_LDRSky {
@@ -13,12 +13,13 @@ class Sample_LDRSky {
 
         // init scene
         this._scene = new Scene3D();
-        // add sky
-        this._scene.addComponent(AtmosphericComponent);
-
+        let sky = this._scene.addComponent(SkyRenderer)
+        sky.map = await Engine3D.res.loadLDRTextureCube('sky/LDR_sky.jpg')
+        this._scene.envMap = sky.map
+        
         // init camera3D
         let mainCamera = CameraUtil.createCamera3D(null, this._scene);
-        mainCamera.perspective(60, webGPUContext.aspect, 1, 2000.0);
+        mainCamera.perspective(60, Engine3D.aspect, 1, 2000.0);
 
         // camera controller
         let hoverCameraController = mainCamera.object3D.addComponent(HoverCameraController);
@@ -31,18 +32,6 @@ class Sample_LDRSky {
 
         // start renderer
         Engine3D.startRenderView(view);
-
-        // load LDR sky texture
-        this._externalTexture = await Engine3D.res.loadLDRTextureCube('sky/LDR_sky.jpg');
-
-        // gui
-        GUIHelp.init();
-        GUIHelp.addButton('Switch Maps', () => {
-            this._originTexture ||= this._scene.envMap;
-            this._useExternal = !this._useExternal;
-            this._scene.envMap = this._useExternal ? this._externalTexture : this._originTexture;
-        })
-        GUIHelp.open();
     }
 
 }

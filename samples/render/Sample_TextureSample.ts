@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, DirectLight, KelvinUtil, UnLitMaterial, MeshRenderer, PlaneGeometry, GPUAddressMode, GPUFilterMode, GPUCompareFunction, LitMaterial, Object3DUtil } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, UnLitMaterial, MeshRenderer, PlaneGeometry, GPUAddressMode, GPUFilterMode, GPUCompareFunction, LitMaterial, Object3DUtil } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
@@ -10,14 +10,14 @@ class Sample_TextureSample {
     async run() {
         Engine3D.setting.material.materialChannelDebug = true;
         Engine3D.setting.shadow.shadowBound = 5;
-        Engine3D.setting.shadow.shadowBias = 0.002;
+        Engine3D.setting.shadow.shadowBias = 0.001;
 
         await Engine3D.init();
 
         this.scene = new Scene3D();
         this.scene.addComponent(AtmosphericComponent);
         let camera = CameraUtil.createCamera3DObject(this.scene);
-        camera.perspective(60, webGPUContext.aspect, 0.01, 5000.0);
+        camera.perspective(60, Engine3D.aspect, 0.01, 5000.0);
 
         camera.object3D.addComponent(HoverCameraController).setCamera(25, -30, 100);
 

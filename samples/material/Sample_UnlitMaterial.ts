@@ -1,4 +1,4 @@
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, DirectLight, KelvinUtil, BitmapTexture2D, PointLight, Texture, LambertMaterial, Color, PlaneGeometry, MeshRenderer, Object3DUtil, UnLitMaterial } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, BitmapTexture2D, PointLight, Texture, LambertMaterial, Color, PlaneGeometry, MeshRenderer, Object3DUtil, UnLitMaterial } from "@orillusion/core";
 
 class Sample_UnlitMaterial {
     lightObj3D: Object3D;
@@ -12,7 +12,7 @@ class Sample_UnlitMaterial {
 
         let mainCamera = CameraUtil.createCamera3DObject(this.scene);
 
-        mainCamera.perspective(60, webGPUContext.aspect, 1, 2000.0);
+        mainCamera.perspective(60, Engine3D.aspect, 1, 2000.0);
         mainCamera.object3D.addComponent(HoverCameraController).setCamera(45, -45, 50);
 
         await this.initScene(this.scene);
@@ -22,7 +22,6 @@ class Sample_UnlitMaterial {
         view.camera = mainCamera;
 
         Engine3D.startRenderView(view);
-
     }
 
     async initScene(scene: Scene3D) {
@@ -33,19 +32,20 @@ class Sample_UnlitMaterial {
             this.lightObj3D.z = -40;
             this.lightObj3D.rotationX = 46;
             this.lightObj3D.rotationY = 62;
-            this.lightObj3D.rotationZ = 160;
+            this.lightObj3D.rotationZ = 0;
             let directLight = this.lightObj3D.addComponent(DirectLight);
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             directLight.castShadow = true;
-            directLight.intensity = 0.0;
+            directLight.intensity = 20;
             scene.addChild(this.lightObj3D);
         }
 
-        // load texture
+        // create a unlit plane
         let texture = new BitmapTexture2D();
         await texture.load('gltfs/Demonstration/T_Rollets_BC.jpg');
-
         this.createObject(scene, texture);
+        
+        // add a lit sphere
         {
             let sphere = Object3DUtil.Sphere;
             sphere.scaleX = 5;
@@ -59,7 +59,6 @@ class Sample_UnlitMaterial {
 
     private createObject(scene: Scene3D, texture: Texture): Object3D {
         let mat = new UnLitMaterial();
-        mat.shaderState.acceptGI = false;
         mat.baseMap = texture;
         mat.baseColor = new Color(1, 1, 1, 1);
 

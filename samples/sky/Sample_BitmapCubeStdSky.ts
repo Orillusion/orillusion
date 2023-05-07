@@ -1,24 +1,19 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, Texture } from "@orillusion/core";
+import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, Texture, SkyRenderer } from "@orillusion/core";
 
 // sample to replace standard sky map
 class Sample_BitmapCubeStdSky {
     private _scene: Scene3D;
-    private _originTexture: Texture;
-    private _externalTexture: Texture;
-    private _useExternal: boolean = false;
     async run() {
         // init engine
         await Engine3D.init({});
 
         // init scene
         this._scene = new Scene3D();
-        // add sky
-        this._scene.addComponent(AtmosphericComponent);
 
         // init camera3D
         let mainCamera = CameraUtil.createCamera3D(null, this._scene);
-        mainCamera.perspective(60, webGPUContext.aspect, 1, 2000.0);
+        mainCamera.perspective(60, Engine3D.aspect, 1, 2000.0);
 
         // camera controller
         let hoverCameraController = mainCamera.object3D.addComponent(HoverCameraController);
@@ -34,16 +29,10 @@ class Sample_BitmapCubeStdSky {
 
         // load standard sky texture
         let url = 'sky/StandardCubeMap-2.jpg';
-        this._externalTexture = await Engine3D.res.loadTextureCubeStd(url);
-
-        // gui
-        GUIHelp.init();
-        GUIHelp.addButton('Switch Maps', () => {
-            this._originTexture ||= this._scene.envMap;
-            this._useExternal = !this._useExternal;
-            this._scene.envMap = this._useExternal ? this._externalTexture : this._originTexture;
-        })
-        GUIHelp.open();
+        
+        let sky = this._scene.addComponent(SkyRenderer)
+        sky.map = await Engine3D.res.loadTextureCubeStd(url);
+        this._scene.envMap = sky.map
     }
 
 }
