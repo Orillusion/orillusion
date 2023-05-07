@@ -65,6 +65,6 @@ export class LightEntries {
         memory.writeInt32(light.castShadowIndex);
 
         memory.writeVector3(light.lightTangent);
-        memory.writeFloat(-1);
+        memory.writeFloat(light.iesIndex);
     }
 }
