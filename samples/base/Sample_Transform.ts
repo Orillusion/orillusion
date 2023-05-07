@@ -24,7 +24,7 @@ class Sample_Transform {
 
         // add a basic camera controller
         let hoverCameraController = mainCamera.object3D.addComponent(HoverCameraController);
-        hoverCameraController.setCamera(15, -15, 10);
+        hoverCameraController.setCamera(15, -15, 300);
 
         // create a basic cube
         let cubeObj = new Object3D();

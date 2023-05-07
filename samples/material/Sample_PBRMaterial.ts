@@ -26,7 +26,6 @@ class Sample_PBRMaterial {
         GUIHelp.init(999);
 
         this.scene = new Scene3D();
-        this.scene.hideSky();
         let camera = CameraUtil.createCamera3DObject(this.scene);
         camera.perspective(60, webGPUContext.aspect, 0.01, 5000.0);
 
@@ -43,7 +42,8 @@ class Sample_PBRMaterial {
     async initScene() {
         /******** sky *******/
         {
-            this.scene.addComponent(AtmosphericComponent);
+            let sky = this.scene.addComponent(AtmosphericComponent);
+            sky.enable = false;
         }
         /******** light *******/
         {

@@ -24,12 +24,12 @@ export class Matrix4 {
     /**
      * matrix do total count 
      */
-    public static totalCount: number = 0;
+    public static allocCount: number = 0;
 
     /**
      * matrix has max limit count
      */
-    public static maxCount: number = 300000;
+    public static maxCount: number = 200000;
 
     /**
      * current matrix use count 
@@ -119,10 +119,10 @@ export class Matrix4 {
     * @param count every alloc matrix count
     * @version Orillusion3D  0.5.1
     */
-    public static allocMatrix(totalCount: number) {
-        this.totalCount = totalCount;
+    public static allocMatrix(allocCount: number) {
+        this.allocCount = allocCount;
 
-        Matrix4.matrixBytes = new Float32Array(totalCount * 16);
+        Matrix4.matrixBytes = new Float32Array(allocCount * 16);
         Matrix4.buffer = Matrix4.matrixBytes.buffer;
         Matrix4.wasmMatrixPtr = 0;
 
@@ -317,10 +317,10 @@ export class Matrix4 {
      * 
      * @param local -- 
      */
-    constructor(local: boolean = true) {
-        // if (!local) {
-        if (Matrix4.useCount >= Matrix4.totalCount) {
-            Matrix4.allocMatrix(Matrix4.totalCount + 1000);
+    constructor(doMatrix: boolean = false) {
+        // if (doMatrix) {
+        if (Matrix4.useCount >= Matrix4.allocCount) {
+            Matrix4.allocMatrix(Matrix4.allocCount + 1000);
         }
 
         this.index = Matrix4.useCount;
@@ -328,8 +328,11 @@ export class Matrix4 {
 
         Matrix4.globalMatrixRef[this.index] = this;
         Matrix4.useCount++;
-
+        // console.log(this.index);
         this.rawData = new Float32Array(Matrix4.matrixBytes.buffer, this.offset, 16);
+        // } else {
+        //     this.rawData = new Float32Array(16);
+        // }
 
         this._position = new Vector3();
 
