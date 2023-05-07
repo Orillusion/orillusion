@@ -12,7 +12,7 @@
         "baseUrl": "./",
         "paths": {
             "../*": ["src/*"],
-            "@orillusion/*": ["src/libs/*"],
+            "@orillusion/*": ["packages/*"],
             "@orillusion/core": ["src"]
         },
         "types": ["vite/client", "@webgpu/types"],
@@ -31,5 +31,5 @@
         "strict": false
     },  
     "include": ["src"],
-    "exclude": ["node_modules", "src/sample"]
+    "exclude": ["node_modules"]
 }

@@ -1,4 +1,4 @@
-name: CI auto test on push
+name: CI Test
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     
@@ -27,7 +27,7 @@ jobs:
       run: pnpm install
     
     - name: Test Build
-      run: pnpm run build
+      run: pnpm run build:test
 
     - name: Test in Electron
       run: pnpm run test:ci

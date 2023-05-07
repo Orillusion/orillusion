@@ -8,22 +8,25 @@
         "sourceMap": true,
         "resolveJsonModule": true,
         "esModuleInterop": true,
+        "declaration": true,
         "noEmit": true,
         "rootDir": "./",
         "baseUrl": "./",
+        "outDir": "./js",
         "paths": {
             "../*": ["src/*"],
-            "@orillusion/*": ["src/libs/*"],
-            "@orillusion/core": ["src"]
+            "@orillusion/*": ["packages/*"],
+            "@orillusion/core": ["src"],
+            "@samples/*": ["samples/*"]
         },
         "types": ["vite/client", "@webgpu/types"],
         // for dev
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "noImplicitReturns": true,
+        // "noUnusedLocals": true,
+        // "noUnusedParameters": true,
+        // "noImplicitReturns": true,
         "allowJs": true,
-        "strict": true
+        "strict": false
     },  
-    "include": ["src", "test"],
+    "include": ["src", "test", "samples"],
     "exclude": ["node_modules", "dist", "public"]
 }

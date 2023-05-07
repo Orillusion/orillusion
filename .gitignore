@@ -8,7 +8,7 @@ yarn.lock
 package-lock.json
 
 # production
-/dist
+dist
 /docs
 
 # misc
@@ -21,3 +21,5 @@ package-lock.json
 /.env
 /.env.local
 /js
+
+/.vscode

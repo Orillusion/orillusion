@@ -1,0 +1,17 @@
+{
+    "name": "@orillusion/ammo",
+    "version": "0.1.2",
+    "author": "Orillusion",
+    "description": "Orillusion WebGPU Engine",
+    "main": "ammo.js",
+    "types": "ammo.d.ts",
+    "files": [
+        "ammo.js",
+        "ammo.d.ts"
+    ],
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Orillusion/orillusion.git"
+    }
+}

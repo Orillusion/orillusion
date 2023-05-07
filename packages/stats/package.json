@@ -1,0 +1,26 @@
+{
+    "name": "@orillusion/stats",
+    "version": "0.2.0",
+    "author": "Orillusion",
+    "description": "Orillusion Stats Plugin",
+    "main": "./dist/stats.umd.js",
+    "module": "./dist/stats.es.js",
+    "module:dev": "./index.ts",
+    "types": "./dist/index.d.ts",
+    "files": ["dist"],
+    "scripts": {
+        "build": "vite build && npm run build:types && npm run build:clean",
+        "build:types": "tsc --emitDeclarationOnly -p tsconfig.json",
+        "build:clean": "mv dist/packages/stats/* dist && rm -rf dist/src && rm -rf dist/packages",
+        "docs": "npm run docs:typedoc ../../docs/stats index.ts",
+        "docs:typedoc": "npx typedoc --plugin typedoc-plugin-markdown --plugin ../../script/typedoc-plugin-not-exported.js --tsconfig tsconfig.json --gitRevision main --hideBreadcrumbs true --allReflectionsHaveOwnDocument true --readme none --excludeInternal --excludePrivate --excludeProtected --sort source-order --out"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Orillusion/orillusion.git"
+    },
+    "dependencies": {
+        "@orillusion/core": "^0.6.0"
+    }
+}

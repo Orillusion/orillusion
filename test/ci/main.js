@@ -44,6 +44,13 @@ const createWindow = async ()=>{
         console.log(`\x1b[33m[${log.target}]\x1b[0m`)
         console.table(log.result)
         console.log('\n-----------------')
+        // quit ci on any test fail
+        for(let test in log.result){
+            if(log.result[test].fail !== 0){
+                vite.kill()
+                process.exit(1)
+            }
+        }
     })
 
     await win.loadURL(HOST + '/test/?auto')
