@@ -10,7 +10,7 @@ export type CanvasConfig = {
     canvas?: HTMLCanvasElement;
     /**
      * wheter use transparent background
-     * Pay attention to settings when using 3D transparent backgrounds{@link SkyRenderer} The enable of the sky rendering component is false
+     * To set a transparent background, the SkyRenderer{@link SkyRenderer} component should be disabled
      * skyRender.enable = false
      */
     alpha?: boolean;
@@ -20,20 +20,12 @@ export type CanvasConfig = {
     zIndex?: number;
     /**
      * canvas pixel ratio
+     * use window.devicePixelRatio is not provided
      */
     devicePixelRatio?: number;
     /**
      * canvas background image
-     * need call scene.hideSky() and set CanvasConfig.alpha is true
+     * a canvas background when skybox is hide/disabled and CanvasConfig.alpha is true
      */
     backgroundImage?: string;
-    /**
-     * canvas width
-     */
-    width?: number;
-    /**
-     * canvas width
-     */
-    height?: number,
-
 };
