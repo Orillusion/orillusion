@@ -719,7 +719,7 @@ export class Matrix4 {
     }
 
     /**
-     * set matrix form two direction
+     * set matrix from two direction
      * @param fromDirection first direction
      * @param toDirection second direction
      * @version Orillusion3D  0.5.1
@@ -2046,7 +2046,7 @@ export class Matrix4 {
     }
 
     /**
-     * form unity AMath.PI
+     * from unity AMath.PI
      */
     public setTRInverse(pos: Vector3, q: Quaternion) {
         q = q.inverse();

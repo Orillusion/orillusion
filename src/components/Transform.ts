@@ -303,7 +303,7 @@ export class Transform extends ComponentBase {
 
     /**
      *
-     * The transformation property of the object relative to the parent, stored in the form of a quaternion
+     * The transformation property of the object relative to the parent, stored in the from of a quaternion
      */
     public get localRotQuat(): Quaternion {
         return this._localRotQuat;

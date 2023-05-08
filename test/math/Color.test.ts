@@ -20,7 +20,7 @@ await test('Color hdr test', async () => {
 
 await test('Color Copy test', async () => {
     let color = new Color(1, 0.0, 0.0, 1.0);
-    color.copyFormArray([255, 255, 255, 255], 255);
+    color.copyFromArray([255, 255, 255, 255], 255);
 
     expect(color.r).toEqual(1);
     expect(color.g).toEqual(1);
