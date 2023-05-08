@@ -13,15 +13,14 @@ async function demo() {
     let hc = camera.addComponent(HoverCameraController);
     hc.setCamera(0, 0, 5);
 
-    // 创建视频纹理
+    // Create VideoTexture
     let videoTexture = new VideoTexture();
     await videoTexture.load('https://cdn.orillusion.com/videos/bunny.mp4')
-    // 创建视频材质
+    // Create VideoMaterial
     let mat = new VideoMaterial();
     mat.baseMap = videoTexture;
-    mat.debug();
 
-    // 创建2D平面
+    // Create a cube to play video
     let planeObj = new Object3D();
     let mr = planeObj.addComponent(MeshRenderer);
     mr.geometry = new BoxGeometry(2, 2, 2);
