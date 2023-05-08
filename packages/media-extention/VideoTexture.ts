@@ -55,18 +55,22 @@ export class VideoTexture extends Texture {
     protected updateGPUTexture() {}
 
     private videoTexture: GPUExternalTexture;
+
     public getGPUView() {
         this.samplerBindingLayout = null;
+        // force video refresh at renderring frameRate
+        this.media.pause()
+        this.media.play()
+        // import video current frame
         this.videoTexture = webGPUContext.device.importExternalTexture(this._des)
         this.noticeChange()
         return this.videoTexture
     }
 
     protected noticeChange() {
-        this.gpuSampler = webGPUContext.device.createSampler(this);
-        this._stateChangeRef.forEach((v, k) => {
-            v();
-        });
+        if(!this.gpuSampler)
+            this.gpuSampler = webGPUContext.device.createSampler(this);
+        this._stateChangeRef.forEach(v=>v());
     }
 
     private createVideo() {
