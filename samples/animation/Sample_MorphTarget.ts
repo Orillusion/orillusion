@@ -9,12 +9,7 @@ class Sample_MorphTarget {
     influenceData: { [key: string]: number } = {};
 
     async run() {
-        Engine3D.setting.material.materialChannelDebug = false;
-        Engine3D.setting.shadow.enable = true;
-        Engine3D.setting.shadow.debug = false;
-        Engine3D.setting.shadow.shadowBias = 0.002;
-        Engine3D.setting.render.postProcessing.ssr.pixelRatio = 1;
-        Engine3D.setting.render.postProcessing.ssr.roughnessThreshold = 0.3;
+        Engine3D.setting.shadow.shadowBias = 0.0001;
 
         await Engine3D.init();
 

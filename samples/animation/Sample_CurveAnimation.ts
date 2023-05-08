@@ -12,8 +12,8 @@ class Sample_AnimCurve {
     async run() {
         await Engine3D.init({ beforeRender: () => this.renderUpdate() });
 
-        Engine3D.setting.shadow.shadowBound = 1000;
-        Engine3D.setting.shadow.shadowBias = 0.002;
+        Engine3D.setting.shadow.shadowBound = 100;
+        Engine3D.setting.shadow.shadowBias = 0.0001;
         Engine3D.setting.shadow.pointShadowBias = 0.6;
         Engine3D.setting.shadow.debug = true;
 
