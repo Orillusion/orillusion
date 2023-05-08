@@ -2,7 +2,9 @@ import { test, expect, end, delay } from '../util'
 import { AtmosphericComponent, Camera3D, CameraUtil, Engine3D, Object3D, PostProcessingComponent, SSRPost, Scene3D, View3D } from '@orillusion/core';
 
 await test('Post SSR test', async () => {
-    let suc = await Engine3D.init();
+    await Engine3D.init();
+    Engine3D.frameRate = 10;
+
     let view = new View3D();
     view.scene = new Scene3D();
     view.scene.addComponent(AtmosphericComponent);
