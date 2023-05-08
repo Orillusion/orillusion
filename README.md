@@ -82,7 +82,7 @@ async function demo(){
 demo()
 ```
 ### Create canvas
-In default, `Engine3D.init()`will create a `canvas`  the same size with the window. Also, we could create a `canvas` manually using tag `<canvas>` with a `id`
+In default, `Engine3D.init()`will create a `canvas` the same size with the window. Also, we could create a `canvas` manually using tag `<canvas>` with a `id`
 
 ```html
 <canvas id="canvas" width="800" height="500" />
@@ -100,8 +100,8 @@ await Engine3D.init({
 Please read the [Docs](https://www.orillusion.com/guide/) to Learn More.
 
 ## Platform
-**Chrome Canary: 113+**  
-**Edge Canary: 113+**
+**Chrome Desktop: 113+**  
+**Edge Desktop: 113+**
 
 ## Useful links
 - [Official Web Site](https://www.orillusion.com/)

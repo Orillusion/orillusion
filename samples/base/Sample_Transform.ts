@@ -1,6 +1,7 @@
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { Stats } from '@orillusion/stats'
-import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D } from '@orillusion/core';
+import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D } from '@orillusion/core';
+import { GUIUtil } from '@samples/utils/GUIUtil';
 
 // simple base demo
 class Sample_Transform {
@@ -19,7 +20,7 @@ class Sample_Transform {
 
         // init camera3D
         let mainCamera = CameraUtil.createCamera3D(null, scene);
-        mainCamera.perspective(60, webGPUContext.aspect, 1, 2000.0);
+        mainCamera.perspective(60, Engine3D.aspect, 1, 2000.0);
 
         // add a basic camera controller
         let hoverCameraController = mainCamera.object3D.addComponent(HoverCameraController);
@@ -54,18 +55,7 @@ class Sample_Transform {
         let transform = cubeObj.transform;
         // debug GUI
         GUIHelp.init();
-        GUIHelp.addFolder('Transform');
-        GUIHelp.add(transform, 'x', -10.0, 10.0, 0.01);
-        GUIHelp.add(transform, 'y', -10.0, 10.0, 0.01);
-        GUIHelp.add(transform, 'z', -10.0, 10.0, 0.01);
-        GUIHelp.add(transform, 'rotationX', 0.0, 360.0, 0.01);
-        GUIHelp.add(transform, 'rotationY', 0.0, 360.0, 0.01);
-        GUIHelp.add(transform, 'rotationZ', 0.0, 360.0, 0.01);
-        GUIHelp.add(transform, 'scaleX', 0.0, 2.0, 0.01);
-        GUIHelp.add(transform, 'scaleY', 0.0, 2.0, 0.01);
-        GUIHelp.add(transform, 'scaleZ', 0.0, 2.0, 0.01);
-        GUIHelp.open();
-        GUIHelp.endFolder();
+        GUIUtil.renderTransform(transform);
     }
 }
 

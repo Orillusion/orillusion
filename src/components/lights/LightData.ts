@@ -103,5 +103,5 @@ export class LightData extends Struct {
     /**
      * Whether to use lighting ies
      */
-    public iesPofiles: number = -1;
+    public iesIndex: number = -1;
 }

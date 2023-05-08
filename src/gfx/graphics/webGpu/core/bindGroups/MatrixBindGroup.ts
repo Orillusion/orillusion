@@ -22,6 +22,7 @@ export class MatrixBindGroup {
         this.cacheWorldMatrix();
     }
 
+
     private cacheWorldMatrix() {
         this.groupBufferSize = Matrix4.maxCount * Matrix4.blockBytes;
         this.matrixBufferDst = new StorageGPUBuffer(this.groupBufferSize / 4);

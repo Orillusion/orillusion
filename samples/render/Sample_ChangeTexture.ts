@@ -1,4 +1,4 @@
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, webGPUContext, HoverCameraController, View3D, DirectLight, KelvinUtil, MeshRenderer, BoxGeometry, LitMaterial, Vector3, Color, BlendMode, CameraUtil } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, HoverCameraController, View3D, DirectLight, KelvinUtil, MeshRenderer, BoxGeometry, LitMaterial, Vector3, Color, BlendMode, CameraUtil } from "@orillusion/core";
 
 class Sample_ChangeTexture {
     lightObj: Object3D;
@@ -19,7 +19,7 @@ class Sample_ChangeTexture {
 
         //camera
         let mainCamera = CameraUtil.createCamera3DObject(this.scene, 'camera');
-        mainCamera.perspective(60, webGPUContext.aspect, 1, 5000.0);
+        mainCamera.perspective(60, Engine3D.aspect, 1, 5000.0);
         mainCamera.object3D.addComponent(HoverCameraController).setCamera(-125, -10, 10);
 
         await this.initScene();

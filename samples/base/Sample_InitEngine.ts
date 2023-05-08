@@ -1,4 +1,4 @@
-import { Engine3D, Scene3D, CameraUtil, webGPUContext, View3D, AtmosphericComponent } from "@orillusion/core";
+import { Engine3D, Scene3D, CameraUtil, View3D, AtmosphericComponent } from "@orillusion/core";
 
 // init engine
 class Sample_InitEngine {
@@ -12,7 +12,7 @@ class Sample_InitEngine {
 
         // init camera3D
         let mainCamera = CameraUtil.createCamera3D(null, scene);
-        mainCamera.perspective(60, webGPUContext.aspect, 1, 2000.0);
+        mainCamera.perspective(60, Engine3D.aspect, 1, 2000.0);
 
         // create a view with target scene and camera
         let view = new View3D();

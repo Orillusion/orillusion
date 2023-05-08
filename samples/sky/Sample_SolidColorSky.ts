@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, Texture, Color, SolidColorSky, Object3DUtil } from "@orillusion/core";
+import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, Texture, Color, SolidColorSky, Object3DUtil, SkyRenderer } from "@orillusion/core";
 
 // sample to display solid color sky
 class HDRSkyMap {
@@ -14,12 +14,13 @@ class HDRSkyMap {
 
         // init scene
         this._scene = new Scene3D();
-        // add default sky
-        this._scene.addComponent(AtmosphericComponent);
+        let sky = this._scene.addComponent(SkyRenderer)
+        sky.map = new SolidColorSky(new Color(0.5, 0.8, 0, 1))
+        this._scene.envMap = sky.map
 
         // init camera3D
         let mainCamera = CameraUtil.createCamera3D(null, this._scene);
-        mainCamera.perspective(60, webGPUContext.aspect, 1, 2000.0);
+        mainCamera.perspective(60, Engine3D.aspect, 1, 2000.0);
 
         // camera controller
         let hoverCameraController = mainCamera.object3D.addComponent(HoverCameraController);
@@ -32,21 +33,6 @@ class HDRSkyMap {
 
         // start renderer
         Engine3D.startRenderView(view);
-
-        // gui
-        GUIHelp.init();
-        GUIHelp.addButton('Switch Maps', () => {
-            if (!this._externalTexture) {
-                // init solid color sky
-                this._externalTexture = new SolidColorSky(new Color(0.5, 0.8, 0, 1));
-                this._originTexture = this._scene.envMap;
-                GUIHelp.addColor(this._externalTexture, 'color');
-            }
-
-            this._useExternal = !this._useExternal;
-            this._scene.envMap = this._useExternal ? this._externalTexture : this._originTexture;
-        })
-        GUIHelp.open();
     }
 
 }

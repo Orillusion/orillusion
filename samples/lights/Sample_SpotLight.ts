@@ -1,4 +1,4 @@
-import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, SphereGeometry, Object3D, MeshRenderer, LitMaterial, SpotLight, BoxGeometry, Vector3 } from "@orillusion/core";
+import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, SphereGeometry, Object3D, MeshRenderer, LitMaterial, SpotLight, BoxGeometry, Vector3 } from "@orillusion/core";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 
 // sample of SpotLight
@@ -8,7 +8,7 @@ class Sample_SpotLight {
     async run() {
         Engine3D.setting.occlusionQuery.enable = false;
         Engine3D.setting.shadow.enable = true;
-        Engine3D.setting.shadow.pointShadowBias = 0.075;
+        Engine3D.setting.shadow.pointShadowBias = 0.0001;
         await Engine3D.init({});
 
         GUIHelp.init();
@@ -18,7 +18,7 @@ class Sample_SpotLight {
 
         // init camera3D
         let mainCamera = CameraUtil.createCamera3D(null, this.scene);
-        mainCamera.perspective(60, webGPUContext.aspect, 1, 2000.0);
+        mainCamera.perspective(60, Engine3D.aspect, 1, 2000.0);
         //set camera data
         mainCamera.object3D.addComponent(HoverCameraController).setCamera(0, -25, 1000);
 
@@ -46,8 +46,8 @@ class Sample_SpotLight {
 
         let spotLight = lightObj3D.addComponent(SpotLight);
         lightObj3D.x = -86;
-        lightObj3D.y = 130;
-        lightObj3D.z = -395;
+        lightObj3D.y = 200;
+        lightObj3D.z = -300;
         lightObj3D.transform.rotationX = 342;
         lightObj3D.transform.rotationY = 360;
         lightObj3D.transform.rotationZ = 199;
