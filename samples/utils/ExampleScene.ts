@@ -1,4 +1,4 @@
-import { AtmosphericComponent, Camera3D, CameraUtil, DirectLight, Engine3D, HoverCameraController, KelvinUtil, Object3D, Scene3D, View3D, webGPUContext } from "@orillusion/core";
+import { AtmosphericComponent, Camera3D, CameraUtil, DirectLight, Engine3D, HoverCameraController, KelvinUtil, Object3D, Scene3D, View3D } from "@orillusion/core";
 
 type ExampleSceneContent = {
     scene: Scene3D,
@@ -109,7 +109,7 @@ export function createExampleScene(param?: ExampleSceneParam) {
     // init Camera3D
     let cameraData = param.camera;
     let camera = CameraUtil.createCamera3DObject(scene);
-    camera.perspective(cameraData.fov, webGPUContext.aspect, cameraData.near, cameraData.far);
+    camera.perspective(cameraData.fov, Engine3D.aspect, cameraData.near, cameraData.far);
 
     // init Camera Controller
     let hoverCtrl = camera.object3D.addComponent(HoverCameraController);
