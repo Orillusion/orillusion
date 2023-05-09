@@ -36,7 +36,6 @@ export class ColorPassRenderer extends RendererBase {
         let op_bundleList = this.renderBundleOp(view, collectInfo, occlusionSystem);
         let tr_bundleList = maskTr ? [] : this.renderBundleTr(view, collectInfo, occlusionSystem);
         ProfilerUtil.start("colorPass Renderer");
-
         {
             ProfilerUtil.start("ColorPass Draw Opaque");
 
@@ -113,9 +112,13 @@ export class ColorPassRenderer extends RendererBase {
         {
             for (let i = Engine3D.setting.render.drawOpMin; i < Math.min(nodes.length, Engine3D.setting.render.drawOpMax); ++i) {
                 let renderNode = nodes[i];
+                if (!occlusionSystem.renderCommitTesting(view.camera, renderNode))
+                    continue;
+                if (!renderNode.transform.enable)
+                    continue;
+                if (!renderNode.enable)
+                    continue;
 
-                if (!renderNode.transform.enable) continue;
-                if (!renderNode.enable) continue;
                 renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState, clusterLightingBuffer);
                 renderNode.renderPass(view, this.passType, this.renderContext);
             }

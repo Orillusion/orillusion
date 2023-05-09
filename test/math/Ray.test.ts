@@ -44,7 +44,7 @@ await test('Ray at', async () => {
     let ray = new Ray(Vector3.ZERO, Vector3.X_AXIS);
     let vec3 = new Vector3();
 
-    let result = ray.at(10, vec3);
+    let result = ray.pointAt(10, vec3);
     expect(result.x).toEqual(10);
     expect(result.y).toEqual(0);
     expect(result.z).toEqual(0);

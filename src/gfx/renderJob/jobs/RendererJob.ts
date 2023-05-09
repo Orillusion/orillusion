@@ -72,12 +72,6 @@ export class RendererJob {
      */
     public pauseRender: boolean = false;
     public pickFire: PickFire;
-
-    /**
-     * Graphics renderers (lines, rectangles, etc.)
-     */
-    public graphic3D: Graphic3D;
-
     protected _view: View3D;
 
     /**
@@ -92,10 +86,6 @@ export class RendererJob {
         this.occlusionSystem = new OcclusionSystem();
 
         this.clusterLightingRender = this.addRenderer(ClusterLightingRender, view);
-
-        this.graphic3D = new Graphic3D();
-        if (view && this.graphic3D)
-            view.scene.addChild(this.graphic3D);
 
         if (Engine3D.setting.render.zPrePass) {
             this.depthPassRenderer = this.addRenderer(PreDepthPassRenderer);
