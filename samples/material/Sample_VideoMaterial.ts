@@ -1,5 +1,5 @@
-import {Engine3D, Vector3, Scene3D, Object3D, Camera3D, View3D, MeshRenderer, HoverCameraController, PlaneGeometry, AtmosphericComponent, BoxGeometry } from "@orillusion/core";
-import { VideoTexture,VideoMaterial } from "@orillusion/media-extention"
+import { Engine3D, Scene3D, Object3D, Camera3D, View3D, MeshRenderer, HoverCameraController, AtmosphericComponent, BoxGeometry } from "@orillusion/core";
+import { VideoTexture, VideoMaterial } from "@orillusion/media-extention"
 
 async function demo() {
     await Engine3D.init();
@@ -11,11 +11,22 @@ async function demo() {
     let mainCamera = camera.addComponent(Camera3D);
     mainCamera.perspective(60, Engine3D.aspect, 0.1, 10000.0);
     let hc = camera.addComponent(HoverCameraController);
-    hc.setCamera(0, 0, 5);
+    hc.setCamera(-45, 0, 5);
+
+    let video = document.createElement('video')
+    video.src = 'https://cdn.orillusion.com/videos/bunny.mp4'
+    video.muted = true
+    video.autoplay = true
+    video.loop = true
+    video.crossOrigin = ''
+    video.setAttribute('controlslist', 'nodownload nofullscreen noremoteplayback')
+    video.setAttribute('style', 'position:fixed;right:0;top:0;z-index:1')
+    video.controls = true
+    document.body.appendChild(video)
 
     // Create VideoTexture
     let videoTexture = new VideoTexture();
-    await videoTexture.load('https://cdn.orillusion.com/videos/bunny.mp4')
+    await videoTexture.load(video)
     // Create VideoMaterial
     let mat = new VideoMaterial();
     mat.baseMap = videoTexture;
