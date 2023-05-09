@@ -27,6 +27,12 @@ export class BoundingSphere implements IBound {
     public owner: any;
     public forward: Vector3 = new Vector3(0, 0, 1);
 
+    public worldCenter: Vector3;
+    public worldSize: Vector3;
+
+    public worldMax: Vector3;
+    public worldMin: Vector3;
+
     /**
      * @internal
      */
@@ -34,6 +40,10 @@ export class BoundingSphere implements IBound {
     constructor(center?: Vector3, radius?: number) {
         this.center = center || new Vector3(0, 0, 0);
         this.radius = radius === undefined ? 0.5 : radius;
+    }
+
+    updateBound() {
+        throw new Error('Method not implemented.');
     }
 
     public containsPoint(point: Vector3) {

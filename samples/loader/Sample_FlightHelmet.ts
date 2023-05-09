@@ -27,8 +27,9 @@ class Sample_FlightHelmet {
             enable: true,
             blurX: 4,
             blurY: 4,
-            intensity: 0.5,
-            brightness: 1.25,
+            radius: 1,
+            luminosityThreshold: 0.98,
+            strength: 1.25,
             debug: false
         };
 

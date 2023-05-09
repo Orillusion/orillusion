@@ -66,66 +66,51 @@ export class Ray {
         return this.intersectBox(box, this._vector) !== null;
     }
 
-    /**
-     * Determine whether it intersects with a bounding box and 
-     * calculate the intersection point
-     * @param box bounding box
-     * @param target Output intersection
-     * @returns whether intersect
-     */
     public intersectBox(box: IBound, target: Vector3): Vector3 {
-        let tmin, tmax, tymin, tymax, tzmin, tzmax;
-
-        const invdirx = 1 / this.direction.x,
-            invdiry = 1 / this.direction.y,
-            invdirz = 1 / this.direction.z;
-
-        const origin = this.origin;
-
-        if (invdirx >= 0) {
-            tmin = (box.min.x - origin.x) * invdirx;
-            tmax = (box.max.x - origin.x) * invdirx;
-        } else {
-            tmin = (box.max.x - origin.x) * invdirx;
-            tmax = (box.min.x - origin.x) * invdirx;
+        if (!target) {
+            target = new Vector3();
         }
-
-        if (invdiry >= 0) {
-            tymin = (box.min.y - origin.y) * invdiry;
-            tymax = (box.max.y - origin.y) * invdiry;
-        } else {
-            tymin = (box.max.y - origin.y) * invdiry;
-            tymax = (box.min.y - origin.y) * invdiry;
+        let direction = this.direction;
+        let origin = this.origin;
+        let tMin: number;
+        let tMax: number;
+        let tYMin: number;
+        let tYMax: number;
+        let tZMin: number;
+        let tZMax: number;
+        const invDirX = 1 / direction.x;
+        const invDirY = 1 / direction.y;
+        const invDirZ = 1 / direction.z;
+        const min = box.min;
+        const max = box.max;
+        tMin = ((invDirX >= 0 ? min.x : max.x) - origin.x) * invDirX;
+        tMax = ((invDirX >= 0 ? max.x : min.x) - origin.x) * invDirX;
+        tYMin = ((invDirY >= 0 ? min.y : max.y) - origin.y) * invDirY;
+        tYMax = ((invDirY >= 0 ? max.y : min.y) - origin.y) * invDirY;
+        if (tMin > tYMax || tYMin > tMax) {
+            return null
         }
-
-        if (tmin > tymax || tymin > tmax) return null;
-
-        // These lines also handle the case where tmin or tmax is NaN
-        // (result of 0 * Infinity). x !== x returns true if x is NaN
-
-        if (tymin > tmin || tmin !== tmin) tmin = tymin;
-
-        if (tymax < tmax || tmax !== tmax) tmax = tymax;
-
-        if (invdirz >= 0) {
-            tzmin = (box.min.z - origin.z) * invdirz;
-            tzmax = (box.max.z - origin.z) * invdirz;
-        } else {
-            tzmin = (box.max.z - origin.z) * invdirz;
-            tzmax = (box.min.z - origin.z) * invdirz;
+        if (tYMin > tMin) {
+            tMin = tYMin;
         }
-
-        if (tmin > tzmax || tzmin > tmax) return null;
-
-        if (tzmin > tmin || tmin !== tmin) tmin = tzmin;
-
-        if (tzmax < tmax || tmax !== tmax) tmax = tzmax;
-
-        //return point closest to the ray (positive side)
-
-        if (tmax < 0) return null;
-
-        return this.at(tmin >= 0 ? tmin : tmax, target);
+        if (tYMax < tMax) {
+            tMax = tYMax;
+        }
+        tZMin = ((invDirZ >= 0 ? min.z : max.z) - origin.z) * invDirZ;
+        tZMax = ((invDirZ >= 0 ? max.z : min.z) - origin.z) * invDirZ;
+        if (tMin > tZMax || tZMin > tMax) {
+            return null
+        }
+        if (tZMin > tMin) {
+            tMin = tZMin;
+        }
+        if (tZMax < tMax) {
+            tMax = tZMax;
+        }
+        if (tMax < 0) {
+            return null;
+        }
+        return this.pointAt(tMin >= 0 ? tMin : tMax, target);
     }
 
     /**
@@ -134,12 +119,14 @@ export class Ray {
      * @param target output target
      * @returns result
      */
-    public at(t: number, target: Vector3) {
+    public pointAt(t: number, target: Vector3) {
         if (!target) {
-            console.warn('at() target is now required');
             target = new Vector3();
         }
-        return target.copy(this.direction).multiplyScalar(t).add(this.origin);
+        target.copy(this.direction);
+        target.mul(t);
+        target.add(this.origin);
+        return target;
     }
 
     /**

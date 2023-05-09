@@ -12,6 +12,10 @@ export interface IBound {
     max: Vector3;
     min: Vector3;
     size: Vector3;
+
+    worldMax: Vector3;
+    worldMin: Vector3;
+
     calculateTransform(obj: Object3D): void;
     clone(): IBound;
 
@@ -22,4 +26,6 @@ export interface IBound {
     setFromCenterAndSize(center: Vector3, size: Vector3 | number);
 
     containsFrustum(object3D: Object3D, frustum: Frustum);
+
+    updateBound();
 }

@@ -17,8 +17,9 @@ class Sample_UVMove {
             enable: true,
             blurX: 4,
             blurY: 4,
-            intensity: 5,
-            brightness: 0.629,
+            radius: 1,
+            luminosityThreshold: 0.98,
+            strength: 1.25,
             debug: true
         };
 
