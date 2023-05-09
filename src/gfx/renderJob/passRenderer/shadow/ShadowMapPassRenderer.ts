@@ -212,6 +212,9 @@ export class ShadowMapPassRenderer extends RendererBase {
             let matrixIndex = renderNode.transform.worldMatrix.index;
             if (!renderNode.transform.enable)
                 continue;
+            if (!renderNode.enable)
+                continue;
+            renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState, clusterLightingBuffer);
             renderNode.recordRenderPass2(view, this._rendererType, this.rendererPassState, clusterLightingBuffer, encoder);
         }
     }
@@ -226,6 +229,7 @@ export class ShadowMapPassRenderer extends RendererBase {
                 continue;
             if (!renderNode.enable)
                 continue;
+            renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState, clusterLightingBuffer);
             renderNode.renderPass2(view, this._rendererType, this.rendererPassState, clusterLightingBuffer, encoder);
         }
     }

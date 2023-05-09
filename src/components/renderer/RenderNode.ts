@@ -255,7 +255,6 @@ export class RenderNode extends ComponentBase {
                 let matPass = passes[j];
                 if (!matPass.enable) continue;
 
-                // for (let j = passes.length > 1 ? 1 : 0 ; j < passes.length; j++) {
                 const renderShader = matPass.renderShader;
                 if (renderShader.shaderState.splitTexture) {
                     renderContext.endRenderPass();
@@ -267,7 +266,6 @@ export class RenderNode extends ComponentBase {
                 }
                 GPUContext.bindPipeline(renderContext.encoder, renderShader);
                 let subGeometries = renderNode._geometry.subGeometries;
-                // for (let k = 0; k < subGeometries.length; k++) {
                 const subGeometry = subGeometries[i];
                 let lodInfos = subGeometry.lodLevels;
                 let lodInfo = lodInfos[renderNode.lodLevel];
@@ -277,7 +275,6 @@ export class RenderNode extends ComponentBase {
                 } else {
                     GPUContext.drawIndexed(renderContext.encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
                 }
-                // }
             }
         }
     }
@@ -297,12 +294,13 @@ export class RenderNode extends ComponentBase {
             const material = this.materials[i];
             let passes = material.renderPasses.get(passType);
             if (!passes || passes.length == 0) return;
-            let matPass = passes[i];
-            if (!matPass.enable) continue;
 
             let worldMatrix = node.object3D.transform._worldMatrix;
             if (this.drawType == 2) {
                 for (let j = 0; j < passes.length; j++) {
+                    let matPass = passes[j];
+                    if (!matPass.enable) continue;
+
                     let renderShader = passes[j].renderShader;
                     GPUContext.bindPipeline(encoder, renderShader);
                     GPUContext.draw(encoder, 6, 1, 0, worldMatrix.index);
@@ -310,6 +308,9 @@ export class RenderNode extends ComponentBase {
             } else {
                 GPUContext.bindGeometryBuffer(encoder, node._geometry);
                 for (let j = 0; j < passes.length; j++) {
+                    let matPass = passes[j];
+                    if (!matPass.enable) continue;
+
                     let renderShader = passes[j].renderShader;
                     GPUContext.bindPipeline(encoder, renderShader);
                     let subGeometries = node._geometry.subGeometries;
