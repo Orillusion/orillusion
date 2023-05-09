@@ -22,8 +22,19 @@ class Sample_PixelPick {
         GUIUtil.renderDirLight(exampleScene.light, false);
 
         await this.initPickObject(this.scene);
+
+        this.registerEvents();
     }
 
+    private registerEvents() {
+        // register event
+        let pickFire = this.scene.view.pickFire;
+        pickFire.addEventListener(PointerEvent3D.PICK_UP, this.onMouseUp, this);
+        pickFire.addEventListener(PointerEvent3D.PICK_DOWN, this.onMouseDown, this);
+        pickFire.addEventListener(PointerEvent3D.PICK_CLICK, this.onMousePick, this);
+        pickFire.addEventListener(PointerEvent3D.PICK_OVER, this.onMouseOver, this);
+        pickFire.addEventListener(PointerEvent3D.PICK_OUT, this.onMouseOut, this);
+    }
 
     private async initPickObject(scene: Scene3D) {
         //load model
@@ -40,12 +51,6 @@ class Sample_PixelPick {
             if (node.hasComponent(MeshRenderer)) {
                 node.addComponent(MaterialStateComponent);
                 node.addComponent(ColliderComponent);
-                node.addEventListener(PointerEvent3D.PICK_UP, this.onMouseUp, this);
-                node.addEventListener(PointerEvent3D.PICK_DOWN, this.onMouseDown, this);
-                node.addEventListener(PointerEvent3D.PICK_CLICK, this.onMousePick, this);
-                node.addEventListener(PointerEvent3D.PICK_OVER, this.onMouseOver, this);
-                node.addEventListener(PointerEvent3D.PICK_OUT, this.onMouseOut, this);
-                node.addEventListener(PointerEvent3D.PICK_MOVE, this.onMouseMove, this);
             }
         });
 
@@ -72,81 +77,51 @@ class Sample_PixelPick {
 
             // register collider component
             obj.addComponent(ColliderComponent);
-            // register event
-            obj.addEventListener(PointerEvent3D.PICK_UP, this.onMouseUp, this);
-            obj.addEventListener(PointerEvent3D.PICK_DOWN, this.onMouseDown, this);
-            obj.addEventListener(PointerEvent3D.PICK_CLICK, this.onMousePick, this);
-            obj.addEventListener(PointerEvent3D.PICK_OVER, this.onMouseOver, this);
-            obj.addEventListener(PointerEvent3D.PICK_OUT, this.onMouseOut, this);
-            obj.addEventListener(PointerEvent3D.PICK_MOVE, this.onMouseMove, this);
         }
+    }
+
+    private getPickObject(e: PointerEvent3D): Object3D {
+        let pick = e.data.pick;
+        return pick ? pick.object3D : null;
     }
 
     private onMouseUp(e: PointerEvent3D) {
-        if (e.currentTarget.current) {
-            console.log("onUp -> ", e.currentTarget.current.name);
-            console.log("onUp -> pickInfo", e.data.pickInfo);
-            console.log("onUp -> worldPos", e.data.pickInfo.worldPos);
+        let obj = this.getPickObject(e);
+        if (obj) {
+            let msc = obj.getComponent(MaterialStateComponent);
+            msc.changeColor(new Color(2, 0, 0, 1), 120);
         }
-
-        let obj = e.currentTarget.current as Object3D;
-        let msc = obj.getComponent(MaterialStateComponent);
-        msc.changeColor(new Color(2, 0, 0, 1), 120);
     }
 
     private onMouseDown(e: PointerEvent3D) {
-        if (e.currentTarget.current) {
-            console.log("onDow -> ", e.currentTarget.current.name);
-            console.log("onDow -> pickInfo", e.data.pickInfo);
-            console.log("onDow -> worldPos", e.data.pickInfo.worldPos);
+        let obj = this.getPickObject(e);
+        if (obj) {
+            let msc = obj.getComponent(MaterialStateComponent);
+            msc.changeColor(new Color(2, 2, 0, 1), 120);
         }
-
-        let obj = e.currentTarget.current as Object3D;
-        let msc = obj.getComponent(MaterialStateComponent);
-        msc.changeColor(new Color(2, 2, 0, 1), 120);
     }
 
     private onMousePick(e: PointerEvent3D) {
-        if (e.currentTarget.current) {
-            console.log("onMousePick", e.currentTarget.current.name);
-            console.log("onMousePick -> pickInfo", e.data.pickInfo);
-            console.log("onMousePick -> worldPos", e.data.pickInfo.worldPos);
+        let obj = this.getPickObject(e);
+        if (obj) {
+            let msc = obj.getComponent(MaterialStateComponent);
+            msc.changeColor(new Color(2, 0, 0, 1), 120);
         }
-
-        let obj = e.currentTarget.current as Object3D;
-        let msc = obj.getComponent(MaterialStateComponent);
-        msc.changeColor(new Color(2, 0, 0, 1), 120);
     }
 
     private onMouseOver(e: PointerEvent3D) {
-        if (e.currentTarget.current) {
-            console.log("onMouseOver -> ", e.currentTarget.current.name);
-            console.log("onMouseOver -> kInfo", e.data.pickInfo);
-            console.log("onMouseOver -> worldPos", e.data.pickInfo.worldPos);
+        let obj = this.getPickObject(e);
+        if (obj) {
+            let msc = obj.getComponent(MaterialStateComponent);
+            msc.changeColor(new Color(1, 0.64, 0.8, 2.5), 100);
         }
-
-        let obj = e.currentTarget.current as Object3D;
-        let msc = obj.getComponent(MaterialStateComponent);
-        msc.changeColor(new Color(1, 0.64, 0.8, 2.5), 100);
     }
 
     private onMouseOut(e: PointerEvent3D) {
-        if (e.currentTarget.current) {
-            console.log("onMouseOut -> ", e.currentTarget.current.name);
-            console.log("onMouseOut -> pickInfo", e.data.pickInfo);
-            console.log("onMouseOut -> worldPos", e.data.pickInfo.worldPos);
-        }
-
-        let obj = e.currentTarget.current as Object3D;
-        let msc = obj.getComponent(MaterialStateComponent);
-        msc.changeColor(new Color(0, 0, 0), 120);
-    }
-
-    private onMouseMove(e: PointerEvent3D) {
-        if (e.currentTarget.current) {
-            console.log("onMouseMove -> ", e.currentTarget.current.name);
-            console.log("onMouseMove -> pickInfo", e.data.pickInfo);
-            console.log("onMouseMove -> worldPos", e.data.pickInfo.worldPos);
+        let obj = this.getPickObject(e);
+        if (obj) {
+            let msc = obj.getComponent(MaterialStateComponent);
+            msc.changeColor(new Color(0, 0, 0), 120);
         }
     }
 

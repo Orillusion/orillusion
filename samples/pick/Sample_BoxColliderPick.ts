@@ -47,17 +47,20 @@ class Sample_BoxColliderPick {
             // register collider component
             let collider = obj.addComponent(ColliderComponent);
             collider.shape = i % 2 ? boxShape : sphereShape;
-
-            // register event
-            obj.addEventListener(PointerEvent3D.PICK_CLICK, this.onMousePick, this);
         }
+        let pickFire = Engine3D.views[0].pickFire;
+        // register event
+        pickFire.addEventListener(PointerEvent3D.PICK_CLICK, this.onMousePick, this);
     }
 
     private onMousePick(e: PointerEvent3D) {
-        let obj = e.currentTarget.current as Object3D;
-        let meshRenderer = obj.getComponent(MeshRenderer);
-        //modify base color
-        meshRenderer.material.baseColor = new Color(Math.random(), Math.random(), Math.random())
+        let pick = e.data.pick;
+        if (pick && pick.object3D) {
+            let obj = pick.object3D;
+            let meshRenderer = obj.getComponent(MeshRenderer);
+            //modify base color
+            meshRenderer.material.baseColor = new Color(Math.random(), Math.random(), Math.random())
+        }
     }
 
 }
