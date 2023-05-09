@@ -10,8 +10,10 @@ class Sample_PixelPick {
     async run() {
         Engine3D.setting.pick.enable = true;
         Engine3D.setting.pick.mode = `pixel`;
+        // init Engine3D
+        await Engine3D.init({});
 
-        let exampleScene = await createExampleScene();
+        let exampleScene = createExampleScene();
         this.scene = exampleScene.scene;
 
         Engine3D.startRenderView(exampleScene.view);

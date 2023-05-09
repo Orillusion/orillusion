@@ -25,7 +25,10 @@ class Sample_OutlineEffectPick {
         Engine3D.setting.render.postProcessing.outline.fadeOutlinePixel = 4;
         Engine3D.setting.render.postProcessing.outline.strength = 0.25;
 
-        let exampleScene = await createExampleScene();
+        // init Engine3D
+        await Engine3D.init({});
+
+        let exampleScene = createExampleScene();
         this.scene = exampleScene.scene;
 
         GUIHelp.init();

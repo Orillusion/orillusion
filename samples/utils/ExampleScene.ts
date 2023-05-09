@@ -97,12 +97,9 @@ function createDirectLight(param: ExampleSceneParam): DirectLight {
 
 
 /******** make a scene by param *******/
-export async function createExampleScene(param?: ExampleSceneParam) {
+export function createExampleScene(param?: ExampleSceneParam) {
     exampleSceneParam ||= createSceneParam();
     param ||= exampleSceneParam;
-
-    // init Engine3D
-    await Engine3D.init({});
 
     // init Scene3D
     let scene = new Scene3D();

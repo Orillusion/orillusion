@@ -5,12 +5,14 @@ import { Scene3D, Engine3D, BoxGeometry, SphereGeometry, SphereColliderShape, Bo
 
 class Sample_BoxColliderPick {
     scene: Scene3D;
-
     async run() {
         Engine3D.setting.pick.enable = true;
         Engine3D.setting.pick.mode = `bound`;
 
-        let exampleScene = await createExampleScene();
+        // init Engine3D
+        await Engine3D.init({});
+
+        let exampleScene = createExampleScene();
         this.scene = exampleScene.scene;
 
         GUIHelp.init();
