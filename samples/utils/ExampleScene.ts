@@ -112,7 +112,7 @@ export async function createExampleScene(param?: ExampleSceneParam) {
     // init Camera3D
     let cameraData = param.camera;
     let camera = CameraUtil.createCamera3DObject(scene);
-    camera.perspective(60, webGPUContext.aspect, cameraData.near, cameraData.far);
+    camera.perspective(cameraData.fov, webGPUContext.aspect, cameraData.near, cameraData.far);
 
     // init Camera Controller
     let hoverCtrl = camera.object3D.addComponent(HoverCameraController);
