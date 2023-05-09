@@ -84,8 +84,8 @@ function createDirectLight(param: ExampleSceneParam): DirectLight {
     lightObj3D.y = param.light.position.y;
     lightObj3D.z = param.light.position.z;
     lightObj3D.rotationX = param.light.euler.x;
-    lightObj3D.rotationY = param.light.euler.x;
-    lightObj3D.rotationZ = param.light.euler.x;
+    lightObj3D.rotationY = param.light.euler.y;
+    lightObj3D.rotationZ = param.light.euler.z;
 
     let directLight = lightObj3D.addComponent(DirectLight);
     directLight.lightColor = KelvinUtil.color_temperature_to_rgb(param.light.kelvin);
