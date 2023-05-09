@@ -6,6 +6,7 @@ type ExampleSceneContent = {
     light: DirectLight,
     view: View3D,
     hoverCtrl: HoverCameraController
+    atmosphericSky?: AtmosphericComponent,
 }
 
 type ExampleSceneParam = {
@@ -20,6 +21,7 @@ type ExampleSceneParam = {
 
     scene: {
         exposure: number,
+        atmosphericSky?: any,
     },
     light: {
         position: {
@@ -36,14 +38,14 @@ type ExampleSceneParam = {
         kelvin: number,
         intensity: number,
         castShadow: boolean,
-    }
+    },
 }
 
 let exampleSceneParam: ExampleSceneParam;
 
 /******** make an example scene param *******/
 export function createSceneParam(): ExampleSceneParam {
-    let param = {
+    let param: ExampleSceneParam = {
         camera: {
             near: 1,
             far: 5000,
@@ -55,6 +57,7 @@ export function createSceneParam(): ExampleSceneParam {
 
         scene: {
             exposure: 1,
+            atmosphericSky: {}
         },
 
         light: {
@@ -104,7 +107,12 @@ export function createExampleScene(param?: ExampleSceneParam) {
     // init Scene3D
     let scene = new Scene3D();
     scene.exposure = param.scene.exposure;
-    scene.addComponent(AtmosphericComponent);
+
+    // init sky
+    let atmosphericSky: AtmosphericComponent;
+    if (param.scene.atmosphericSky) {
+        atmosphericSky = scene.addComponent(AtmosphericComponent);
+    }
 
     // init Camera3D
     let cameraData = param.camera;
@@ -130,6 +138,7 @@ export function createExampleScene(param?: ExampleSceneParam) {
     content.light = light;
     content.scene = scene;
     content.view = view;
+    content.atmosphericSky = atmosphericSky;
     content.hoverCtrl = hoverCtrl;
 
     // return
