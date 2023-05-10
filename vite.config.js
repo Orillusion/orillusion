@@ -3,11 +3,12 @@ import { defineConfig } from 'vite'
 import { readFile, writeFile, readdir, lstat } from 'fs/promises'
 import { resolve, parse } from 'path'
 
-module.exports = defineConfig({
+export default defineConfig( option => ({
     server: {
         port: 3000,
         // hmr: false // open this line if no auto hot-reload required
     },
+    publicDir: option.command === 'build' ? false : 'public',
     resolve: {
         alias: {
             '@orillusion/core': resolve(__dirname, './src/index.ts'),
@@ -16,7 +17,7 @@ module.exports = defineConfig({
         },
         mainFields: ['module:dev', 'module']
     },
-    plugins: [{
+    plugins: option.command === 'build' ? undefined : [{
         name: 'autoIndex',
         configureServer(server) {
             const tsFile = /\/src\/.*.ts$/
@@ -63,4 +64,4 @@ module.exports = defineConfig({
         },
         // minify: 'terser'
     }
-})
+}))
