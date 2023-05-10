@@ -62,11 +62,11 @@ export class Ray {
      * @param box bounding box
      * @returns whether intersect
      */
-    public intersectsBox(box: IBound): boolean {
-        return this.intersectBox(box, this._vector) !== null;
-    }
+    // public intersectsBox(box: IBound): boolean {
+    //     return this.intersectBox(box, this._vector) !== null;
+    // }
 
-    public intersectBox(box: IBound, target: Vector3): Vector3 {
+    public intersectBox(box: IBound, target?: Vector3): Vector3 {
         if (!target) {
             target = new Vector3();
         }
@@ -124,8 +124,8 @@ export class Ray {
             target = new Vector3();
         }
         target.copy(this.direction);
-        target.mul(t);
-        target.add(this.origin);
+        target.multiplyScalar(t);
+        target.add(this.origin, target);
         return target;
     }
 

@@ -26,21 +26,22 @@ await test('Ray intersectsBox', async () => {
     let ray = new Ray(Vector3.ZERO, Vector3.X_AXIS);
     let boundBox = new BoundingBox(Vector3.ZERO, new Vector3(10, 10, 10));
 
-    expect(ray.intersectsBox(boundBox)).toEqual(true);
+    let intersects = ray.intersectBox(boundBox,) != null;
+    expect(intersects).toEqual(true);
 })
 
-await test('Ray intersectBox', async () => {
+await test('Ray intersectBox get value', async () => {
     let ray = new Ray(Vector3.ZERO, Vector3.X_AXIS);
     let vec3 = new Vector3();
     let boundBox = new BoundingBox(Vector3.ZERO, new Vector3(10, 10, 10));
 
-    let result = ray.intersectBox(boundBox, vec3);
-    expect(result.x).toEqual(5);
-    expect(result.y).toEqual(0);
-    expect(result.z).toEqual(0);
+    ray.intersectBox(boundBox, vec3);
+    expect(vec3.x).toEqual(5);
+    expect(vec3.y).toEqual(0);
+    expect(vec3.z).toEqual(0);
 })
 
-await test('Ray at', async () => {
+await test('Ray pointAt', async () => {
     let ray = new Ray(Vector3.ZERO, Vector3.X_AXIS);
     let vec3 = new Vector3();
 
