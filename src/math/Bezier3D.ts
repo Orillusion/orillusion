@@ -7,7 +7,7 @@ export class Bezier3D {
     private static tmp_points: Vector3[] = [];
 
     /**
-     * get cubic curve point value form t at bezier data 
+     * get cubic curve point value from t at bezier data 
      * @param t interval value
      * @param p0 start point
      * @param c1 left control point
@@ -40,7 +40,7 @@ export class Bezier3D {
     }
 
     /**
-     * get curve point form three point bezier curve 
+     * get curve point from three point bezier curve 
      * @param t interval value
      * @param p0 start point
      * @param c1 contrl point 

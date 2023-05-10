@@ -32,13 +32,13 @@ export class GeometryIndicesBuffer {
     }
 
     /**
-     * Get indices form geometry data 
-     * Get position attribute form geometry data 
-     * Get normal attribute form geometry data 
-     * Get tangent attribute form geometry data 
-     * Get uv0 attribute form geometry data 
-     * Get uv1 attribute form geometry data 
-     * Get uv2 attribute form geometry data 
+     * Get indices from geometry data 
+     * Get position attribute from geometry data 
+     * Get normal attribute from geometry data 
+     * Get tangent attribute from geometry data 
+     * Get uv0 attribute from geometry data 
+     * Get uv1 attribute from geometry data 
+     * Get uv2 attribute from geometry data 
      * 
      * Change position data to GPUBuffer and apply
      * Change normal data to GPUBuffer and apply

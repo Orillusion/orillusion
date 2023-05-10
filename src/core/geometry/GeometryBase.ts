@@ -88,7 +88,7 @@ export class GeometryBase {
     }
 
     /**
-     * add subGeometry form lod level 
+     * add subGeometry from lod level 
      * @param lodLevels @see LodLevel
      */
     public addSubGeometry(...lodLevels: LodLevel[]) {

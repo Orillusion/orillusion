@@ -121,7 +121,7 @@ export class Object3DUtil {
         return obj;
     }
 
-    public static getSinglepCube(mat: MaterialBase, size: number = 10) {
+    public static GetSingleCube2(mat: MaterialBase, size: number = 10) {
         this.initHeap();
 
         let obj = new Object3D();

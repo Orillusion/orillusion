@@ -108,6 +108,9 @@ Please read the [Docs](https://www.orillusion.com/guide/) to Learn More.
 - [Documentation](https://www.orillusion.com/guide/)
 - [Forum](https://forum.orillusion.com/)
 
+## Dev and Contribution
+Please make sure to read the [Contributing Guide](.github/contributing.md) before developing or making a pull request.
+
 ## License 
 
 Orillusion engine is released under the [MIT](https://opensource.org/licenses/MIT) license. 

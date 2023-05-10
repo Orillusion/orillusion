@@ -14,10 +14,10 @@ export class IESProfiles {
     }
 
     /**
-     * create ies image form ies file
+     * create ies image from ies file
      */
     private generateIES(file: any) {
-        //TODO add create ies image form ies file
+        //TODO add create ies image from ies file
     }
 
     public set IESTexture(texture: Texture) {

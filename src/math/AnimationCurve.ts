@@ -127,7 +127,7 @@ export class AnimationCurve {
     }
 
     /**
-     * remove keyframe form this curve
+     * remove keyframe from this curve
      * @param keyFrame {@link Keyframe} 
      */
     public removeKeyFrame(keyFrame: Keyframe) {
