@@ -135,9 +135,4 @@ export class MeshRenderer extends RenderNode {
         mr.rendererMask = this.rendererMask;
     }
 
-    drawWireFrame() {
-        this.object3D.transform.worldPosition;
-        //view.graphic3D..drawMeshWireframe(`Wireframe_${this.object3D.uuid}`, this.geometry, this.object3D.transform);
-    }
-
 }

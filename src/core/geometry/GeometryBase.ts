@@ -35,7 +35,8 @@ export class GeometryBase {
     public subGeometries: SubGeometry[] = [];
     public morphTargetsRelative: boolean;
     public morphTargetDictionary: { value: string; key: number };
-    public bounds: BoundingBox;
+    private _bounds: BoundingBox;
+
     private _attributeMap: Map<string, VertexAttributeData>;
     private _attributes: string[];
     private _indicesBuffer: GeometryIndicesBuffer;
@@ -46,14 +47,7 @@ export class GeometryBase {
         this._attributeMap = new Map<string, VertexAttributeData>();
         this._attributes = [];
 
-        this.bounds = new BoundingBox(new Vector3(), new Vector3(1, 1, 1));
-        this.bounds.min.x = Number.MAX_VALUE;
-        this.bounds.min.y = Number.MAX_VALUE;
-        this.bounds.min.z = Number.MAX_VALUE;
 
-        this.bounds.max.x = -Number.MAX_VALUE;
-        this.bounds.max.y = -Number.MAX_VALUE;
-        this.bounds.max.z = -Number.MAX_VALUE;
 
         this._vertexBuffer = new GeometryVertexBuffer();
     }
@@ -81,10 +75,51 @@ export class GeometryBase {
         this._vertexBuffer.geometryType = value;
     }
 
-    /**
-     */
-    public updateBounds(min: Vector3, max: Vector3) {
-        this.bounds.setFromMinMax(min, max);
+    public get bounds(): BoundingBox {
+        if (!this._bounds) {
+            this._bounds = new BoundingBox(new Vector3(), new Vector3(1, 1, 1));
+            this._bounds.min.x = Number.MAX_VALUE;
+            this._bounds.min.y = Number.MAX_VALUE;
+            this._bounds.min.z = Number.MAX_VALUE;
+
+            this._bounds.max.x = -Number.MAX_VALUE;
+            this._bounds.max.y = -Number.MAX_VALUE;
+            this._bounds.max.z = -Number.MAX_VALUE;
+
+            let attributes = this.getAttribute(VertexAttributeName.position);
+            if (attributes) {
+                for (let i = 0; i < attributes.data.length / 3; i++) {
+                    const px = attributes.data[i * 3 + 0];
+                    const py = attributes.data[i * 3 + 1];
+                    const pz = attributes.data[i * 3 + 2];
+                    if (this._bounds.min.x > px) {
+                        this._bounds.min.x = px;
+                    }
+                    if (this._bounds.min.y > py) {
+                        this._bounds.min.y = py;
+                    }
+                    if (this._bounds.min.z > pz) {
+                        this._bounds.min.z = pz;
+                    }
+
+                    if (this._bounds.max.x < px) {
+                        this._bounds.max.x = px;
+                    }
+                    if (this._bounds.max.y < py) {
+                        this._bounds.max.y = py;
+                    }
+                    if (this._bounds.max.z < pz) {
+                        this._bounds.max.z = pz;
+                    }
+                }
+            }
+            this._bounds.setFromMinMax(this._bounds.min, this._bounds.max);
+        }
+        return this._bounds;
+    }
+
+    public set bounds(value: BoundingBox) {
+        this._bounds = value;
     }
 
     /**

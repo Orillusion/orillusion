@@ -416,6 +416,7 @@ export class GLTFSubParserConverter {
                 index: 0,
             }
         )
+        geometry.bounds
         return geometry;
     }
 
