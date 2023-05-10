@@ -176,13 +176,13 @@ export class Frustum {
         let d;
         let p;
 
-        let worldPos = obj.transform.worldPosition;
+        obj.updateBound();
 
-        let r = Math.max(box.size.x * obj.transform.scaleX, box.size.y * obj.transform.scaleY, box.size.z * obj.transform.scaleZ);
+        let r = Math.max(box.size.x, box.size.y, box.size.z);
         let sr = r;
-        let scx = box.center.x + worldPos.x;
-        let scy = box.center.y + worldPos.y;
-        let scz = box.center.z + worldPos.z;
+        let scx = box.center.x;
+        let scy = box.center.y;
+        let scz = box.center.z;
         let planes = this.planes;
         let plane;
 
