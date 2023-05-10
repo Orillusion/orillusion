@@ -31,7 +31,7 @@ export class Graphic3DBatchRenderer extends RenderNode {
         this.addRendererMask(RendererMask.Particle);
     }
 
-    public fillShapData(uuid: string, type: string, color: Color, points: Vector3[]) {
+    public fillShapeData(uuid: string, type: string, color: Color, points: Vector3[]) {
         this.mDirtyData = true;
         var data: Graphics3DShape;
 

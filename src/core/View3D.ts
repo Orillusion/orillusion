@@ -12,13 +12,17 @@ export class View3D extends CEventListener {
     private _viewPort: Vector4;
     private _enablePick: boolean = false;
     private _enable: boolean = true;
-
     public pickFire: PickFire;
+    /**
+    * Graphics renderers (lines, rectangles, etc.)
+    */
+    public graphic3D: Graphic3D;
 
     constructor(x: number = 0, y: number = 0, width: number = 0, height: number = 0) {
         super();
         this._viewPort = new Vector4(x, y, width, height);
         this.enablePick = true;
+        this.graphic3D = new Graphic3D();
     }
 
     public get enable(): boolean {
@@ -48,6 +52,9 @@ export class View3D extends CEventListener {
     public set scene(value: Scene3D) {
         this._scene = value;
         value.view = this;
+
+        if (this.graphic3D)
+            value.addChild(this.graphic3D);
     }
 
     public get camera(): Camera3D {
@@ -66,8 +73,8 @@ export class View3D extends CEventListener {
         this._viewPort = value;
     }
 
-    public get graphic3D(): Graphic3D {
-        return Engine3D.getRenderJob(this).graphic3D;
-    }
+    // public get graphic3D(): Graphic3D {
+    //     return Engine3D.getRenderJob(this).graphic3D;
+    // }
 
 }
