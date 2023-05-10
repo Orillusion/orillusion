@@ -209,6 +209,57 @@ export class GeometryBase {
         }
     }
 
+    private static crossA: Vector3 = Vector3.UP.clone();
+    private static crossB: Vector3 = Vector3.UP.clone();
+    private static crossRet: Vector3 = Vector3.UP.clone();
+
+    private static point1: Vector3 = Vector3.UP.clone();
+    private static point2: Vector3 = Vector3.UP.clone();
+    private static point3: Vector3 = Vector3.UP.clone();
+
+    // compute normal by vertex position
+    public computeNormals(): this {
+        let posAttrData = this.getAttribute(VertexAttributeName.position);
+        let normalAttrData = this.getAttribute(VertexAttributeName.normal);
+        let indexAttrData = this.getAttribute(VertexAttributeName.indices);
+
+        if (!posAttrData || !normalAttrData || !indexAttrData) {
+            return this;
+
+        }
+        let trianglesCount = indexAttrData.data.length / 3;
+        let point1 = GeometryBase.point1;
+        let point2 = GeometryBase.point2;
+        let point3 = GeometryBase.point3;
+        let crossA = GeometryBase.crossA;
+        let crossB = GeometryBase.crossB;
+        let crossRet = GeometryBase.crossRet;
+
+        for (let i = 0; i < trianglesCount; i++) {
+            let index1 = indexAttrData.data[i * 3];
+            let index2 = indexAttrData.data[i * 3 + 1];
+            let index3 = indexAttrData.data[i * 3 + 2];
+
+            point1.set(posAttrData.data[index1 * 3], posAttrData.data[index1 * 3 + 1], posAttrData.data[index1 * 3 + 2]);
+            point2.set(posAttrData.data[index2 * 3], posAttrData.data[index2 * 3 + 1], posAttrData.data[index2 * 3 + 2]);
+            point3.set(posAttrData.data[index3 * 3], posAttrData.data[index3 * 3 + 1], posAttrData.data[index3 * 3 + 2]);
+
+            Vector3.sub(point1, point2, crossA).normalize();
+            Vector3.sub(point1, point3, crossB).normalize();
+
+            let normal = Vector3.cross(crossA, crossB, crossRet).normalize();
+
+            normalAttrData.data[index1 * 3] = normalAttrData.data[index2 * 3] = normalAttrData.data[index3 * 3] = normal.x;
+            normalAttrData.data[index1 * 3 + 1] = normalAttrData.data[index2 * 3 + 1] = normalAttrData.data[index3 * 3 + 1] = normal.y;
+            normalAttrData.data[index1 * 3 + 2] = normalAttrData.data[index3 * 3 + 2] = normalAttrData.data[index3 * 3 + 2] = normal.z;
+        }
+
+        // normal attr need to be upload
+        this._vertexBuffer.upload(VertexAttributeName.normal, normalAttrData);
+
+        return this;
+    }
+
     public isPrimitive(): boolean {
         return false;// this.geometrySource != null && this.geometrySource.type != 'none';
     }
