@@ -71,8 +71,7 @@ export class RendererBase extends CEventDispatcher {
 
 
 
-    public beforeCompute(view: View3D, occlusionSystem: OcclusionSystem) { }
-    public lateCompute(view: View3D, occlusionSystem: OcclusionSystem) { }
+    public compute(view: View3D, occlusionSystem: OcclusionSystem) { }
 
     public render(view: View3D, occlusionSystem: OcclusionSystem, clusterLightingBuffer: ClusterLightingBuffer, maskTr: boolean = false) {
         GPUContext.cleanCache();

@@ -17,6 +17,7 @@ import { ShaderLib } from './assets/shader/ShaderLib';
 import { ShaderUtil } from './gfx/graphics/webGpu/shader/util/ShaderUtil';
 import { ComponentCollect } from './gfx/renderJob/collect/ComponentCollect';
 import { ShadowLightsCollect } from './gfx/renderJob/collect/ShadowLightsCollect';
+import { ProfilerUtil } from '.';
 
 /** 
  * Orillusion 3D Engine
@@ -369,7 +370,7 @@ export class Engine3D {
         Time.delta = time - Time.time;
         Time.time = time;
         Time.frame += 1;
-        // let camera = Camera3D.mainCamera;
+
         Interpolator.tick(Time.delta);
         if (this._beforeRender) this._beforeRender();
 
