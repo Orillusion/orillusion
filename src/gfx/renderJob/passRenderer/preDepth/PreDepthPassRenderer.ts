@@ -45,14 +45,8 @@ export class PreDepthPassRenderer extends RendererBase {
         this.setRenderStates(rtFrame);
     }
 
-    public lateCompute(view: View3D, occlusionSystem: OcclusionSystem) {
-        // this.zCullingCompute.compute(scene, occlusionSystem);
-    }
-
     render(view: View3D, occlusionSystem: OcclusionSystem) {
         return;
-
-        // ProfilerUtil.print( "DepthPass Renderer" );
     }
 
 

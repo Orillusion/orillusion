@@ -63,22 +63,18 @@ export class ShadowMapPassRenderer extends RendererBase {
 
 
     render(view: View3D, occlusionSystem: OcclusionSystem) {
-        // return ;
         if (!Engine3D.setting.shadow.enable)
             return;
 
         let camera = view.camera;
         let scene = view.scene;
-
-        // return ;
         this.shadowPassCount = 0;
 
-        // return ;
         if (!Engine3D.setting.shadow.needUpdate)
             return;
         if (!(Time.frame % Engine3D.setting.shadow.updateFrameRate == 0))
             return;
-        // return ;//
+
         camera.transform.updateWorldMatrix();
         //*********************/
         //***shadow light******/
@@ -135,7 +131,7 @@ export class ShadowMapPassRenderer extends RendererBase {
         this._forceUpdate = false;
     }
 
-    public beforeCompute() {
+    public compute() {
 
     }
 

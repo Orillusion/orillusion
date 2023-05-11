@@ -122,11 +122,6 @@ class Sample_Skeleton3 {
         if (this.lightObj3D) {
             this.lightObj3D.rotationY += Time.delta * 0.01 * 2;
         }
-
-        let mrs = this.character.getComponentsInChild(SkinnedMeshRenderer);
-        for (const mr of mrs) {
-            this.view.graphic3D.drawBoundingBox("skeleton" + mr.geometry.uuid, mr.geometry.bounds as BoundingBox);
-        }
     }
 }
 

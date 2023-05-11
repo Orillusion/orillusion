@@ -106,7 +106,7 @@ fn TestSphereAABB( lightIndex:i32 ,  clusterIndex : u32 ) -> bool
 
 
 
-@compute @workgroup_size(16,12,1)
+@compute @workgroup_size(16,9,1)
 fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(local_invocation_id) local_invocation_id : vec3<u32> ){
     clusterTileX = clustersUniform.clusterTileX;
     clusterTileY = clustersUniform.clusterTileY;
