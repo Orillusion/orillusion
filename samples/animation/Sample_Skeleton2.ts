@@ -9,7 +9,7 @@ class Sample_Skeleton2 {
     async run() {
 
         Engine3D.setting.shadow.autoUpdate = true;
-        Engine3D.setting.shadow.updateFrameRate = 2;
+        Engine3D.setting.shadow.updateFrameRate = 1;
         Engine3D.setting.shadow.shadowBound = 500;
         Engine3D.setting.shadow.shadowBias = 0.0001;
 

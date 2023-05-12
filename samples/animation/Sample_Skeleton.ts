@@ -7,10 +7,8 @@ class Sample_Skeleton {
     scene: Scene3D;
     async run() {
 
-        Engine3D.setting.material.materialDebug = false;
-        Engine3D.setting.material.materialChannelDebug = true;
         Engine3D.setting.shadow.autoUpdate = true;
-        Engine3D.setting.shadow.updateFrameRate = 2;
+        Engine3D.setting.shadow.updateFrameRate = 1;
         Engine3D.setting.shadow.shadowBound = 200;
         Engine3D.setting.shadow.shadowBias = 0.0001;
 
