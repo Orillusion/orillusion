@@ -29,6 +29,7 @@ class Sample_PointLight {
         view.camera = mainCamera;
 
         Engine3D.startRenderViews([view]);
+
     }
 
     public debug(light: PointLight) {
