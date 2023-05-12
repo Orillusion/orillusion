@@ -164,7 +164,6 @@ export class PointLightShadowRenderer extends RendererBase {
                     );
                 }
                 GPUContext.endCommandEncoder(qCommand);
-                // Camera3D.mainCamera.cubeShadowCameras[li] = cubeShadowMapInfo.cubeCamera;
                 li++;
             }
         }
@@ -213,7 +212,6 @@ export class PointLightShadowRenderer extends RendererBase {
                 let worldMatrix = renderNode.object3D.transform._worldMatrix;
                 for (let i = 0; i < passes.length; i++) {
                     const renderShader = passes[i].renderShader;
-                    // const renderShader = RenderShader.getShader(passes[i].shaderID);
 
                     renderShader.setUniformFloat("cameraFar", shadowCamera.far);
                     renderShader.setUniformVector3("lightWorldPos", shadowCamera.transform.worldPosition);

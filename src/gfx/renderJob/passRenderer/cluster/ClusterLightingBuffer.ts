@@ -2,7 +2,6 @@ import { ComputeGPUBuffer } from "../../../graphics/webGpu/core/buffer/ComputeGP
 import { UniformGPUBuffer } from "../../../graphics/webGpu/core/buffer/UniformGPUBuffer";
 
 export class ClusterLightingBuffer {
-
     public clusterBuffer: ComputeGPUBuffer;
     public lightAssignBuffer: ComputeGPUBuffer;
     public assignTableBuffer: ComputeGPUBuffer;

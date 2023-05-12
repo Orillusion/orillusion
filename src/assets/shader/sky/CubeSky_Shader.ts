@@ -40,7 +40,7 @@ export class CubeSky_Shader {
       return ORI_VertexOut;
     }
   `
-  
+
   public static sky_fs_frag_wgsl: string = /* wgsl */ `
     #include "GlobalUniform"
 

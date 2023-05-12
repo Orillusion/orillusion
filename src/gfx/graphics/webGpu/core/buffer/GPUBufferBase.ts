@@ -284,6 +284,11 @@ export class GPUBufferBase {
     //     this.seek += 1;
     // }
 
+    public clean() {
+        let data = new Float32Array(this.memory.shareDataBuffer);
+        data.fill(0, 0, data.length);
+    }
+
     public apply() {
         webGPUContext.device.queue.writeBuffer(this.buffer, 0, this.memory.shareDataBuffer);//, this.memory.shareFloat32Array.byteOffset, this.memory.shareFloat32Array.byteLength);
     }

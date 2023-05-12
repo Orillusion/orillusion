@@ -24,7 +24,6 @@ export class ColorPassRenderer extends RendererBase {
     }
 
     public render(view: View3D, occlusionSystem: OcclusionSystem, clusterLightingBuffer?: ClusterLightingBuffer, maskTr: boolean = false) {
-        // return ;
         this.renderContext.clean();
 
         let scene = view.scene;
