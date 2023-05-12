@@ -9,6 +9,7 @@ import { Vector4 } from '../../../math/Vector4';
  * @group Core
  */
 export class MemoryInfo {
+
     public byteOffset: number;
     public byteSize: number;
     public offset: number = 0;
@@ -366,5 +367,12 @@ export class MemoryInfo {
 
     public reset() {
         this.offset = 0;
+    }
+
+    destroy() {
+        this.byteOffset = null;
+        this.byteSize = null;
+        this.offset = null;
+        this.dataBytes = null;
     }
 }

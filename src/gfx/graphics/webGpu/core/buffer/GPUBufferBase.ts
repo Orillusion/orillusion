@@ -294,9 +294,32 @@ export class GPUBufferBase {
     }
 
     public destroy() {
+        if (this.memoryNodes) {
+            this.memoryNodes.forEach((v) => {
+                v.destroy();
+            })
+        }
+
+        this.bufferType = null;
+        this.seek = null;
+        this.byteSize = null;
+        this.usage = null;
+        this.visibility = null;
+
         this.outFloat32Array = null;
-        this.buffer.destroy();
-        this.memory.destroy();
+        if (this.buffer) {
+            this.buffer.destroy();
+        }
+        this.buffer = null;
+
+        if (this.memory) {
+            this.memory.destroy();
+        }
+        this.memory = null;
+
+        if (this._readBuffer) {
+            this._readBuffer.destroy();
+        }
     }
 
     protected createBuffer(usage: GPUBufferUsageFlags, size: number, data?: ArrayBufferData) {

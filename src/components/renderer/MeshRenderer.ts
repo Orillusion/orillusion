@@ -125,6 +125,14 @@ export class MeshRenderer extends RenderNode {
         super.nodeUpdate(view, passType, renderPassState, clusterLightingBuffer);
     }
 
+    public destroy(): void {
+        this.geometry.destroy();
+        this.materials.forEach(mat => {
+            mat.destroy();
+        });
+        super.destroy();
+    }
+
     cloneTo(obj: Object3D) {
         let mr = obj.addComponent(MeshRenderer);
         mr.geometry = this.geometry;

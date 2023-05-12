@@ -56,11 +56,11 @@ class Sample_AddRemove {
             this.view.scene.addChild(cc);
             list.push(cc);
 
-            Interpolator.to(cc, { z: 100, scaleX: 5, scaleY: 5, scaleZ: 5 }, 1000).onComplete = () => {
-                this.view.scene.removeChild(cc);
-                let index = list.indexOf(cc);
-                list.splice(index, 1);
-            };
+            // Interpolator.to(cc, { z: 100, scaleX: 5, scaleY: 5, scaleZ: 5 }, 1000).onComplete = () => {
+            //     this.view.scene.removeChild(cc);
+            //     let index = list.indexOf(cc);
+            //     list.splice(index, 1);
+            // };
         });
 
         GUIHelp.addButton("remove", () => {
@@ -69,7 +69,7 @@ class Sample_AddRemove {
             if (obj) {
                 console.log(index, list);
                 list.splice(index, 1);
-                this.view.scene.removeChild(obj);
+                obj.destroy();
             }
         });
 
