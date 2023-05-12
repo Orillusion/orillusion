@@ -125,7 +125,7 @@ export class Transform extends ComponentBase {
         }
 
         this.object3D.entityChildren.forEach((v) => {
-            v.transform.parent = this;
+            v.transform.parent = value ? this : null;
         });
     }
 
