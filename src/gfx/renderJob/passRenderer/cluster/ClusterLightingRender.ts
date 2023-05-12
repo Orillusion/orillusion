@@ -17,8 +17,8 @@ import { ClusterLighting_cs } from '../../../../assets/shader/cluster/ClusterLig
  */
 export class ClusterLightingRender extends RendererBase {
     public clusterTileX = 16;
-    public clusterTileY = 16;
-    public clusterTileZ = 32;
+    public clusterTileY = 9;
+    public clusterTileZ = 16;
     public maxNumLights = 128;
     public maxNumLightsPerCluster = 1024;
     public clusterPix = 1;
