@@ -81,6 +81,10 @@ export class LitMaterial extends PhysicMaterial {
      */
     debug() {
     }
+
+    public destroy(): void {
+        super.destroy();
+    }
 }
 
 registerMaterial("LitMaterial", LitMaterial);

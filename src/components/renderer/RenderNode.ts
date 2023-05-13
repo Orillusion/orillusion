@@ -433,4 +433,12 @@ export class RenderNode extends ComponentBase {
         }
     }
 
+    public destroy() {
+        super.destroy();
+
+        this._geometry = null;
+        this._materials = null;
+        this._combineShaderRefection = null;
+    }
+
 }
