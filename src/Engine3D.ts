@@ -237,7 +237,7 @@ export class Engine3D {
             defaultNear: 1,
         },
         light: {
-            maxLight: 1024,
+            maxLight: 4096,
         },
         material: {
             materialChannelDebug: false,
