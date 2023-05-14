@@ -1,4 +1,4 @@
-import { GUI } from 'https://unpkg.com/dat.gui@0.7.9/build/dat.gui.module.js'
+import { GUI } from '../../public/jsLibs/dat.gui.module.js'
 
 /**
  * @internal
