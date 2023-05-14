@@ -51,7 +51,6 @@ class Sample_AddRemove {
             if (obj) {
                 list.splice(index, 1)
                 this.view.scene.removeChild(obj)
-                obj.destroy();
             }
         });
 
