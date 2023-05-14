@@ -46,7 +46,7 @@ export class LitMaterial extends PhysicMaterial {
     }
 
     public clone(): this {
-        console.log(`clone LitMaterial ${this.name}`);
+        // console.log(`clone LitMaterial ${this.name}`);
 
         let ret = new LitMaterial();
         ret.baseMap = this.baseMap;
