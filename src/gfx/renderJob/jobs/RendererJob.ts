@@ -6,17 +6,14 @@ import { GlobalBindGroup } from '../../graphics/webGpu/core/bindGroups/GlobalBin
 import { ShadowLightsCollect } from '../collect/ShadowLightsCollect';
 import { ColorPassRenderer } from '../passRenderer/color/ColorPassRenderer';
 import { GBufferFrame } from '../frame/GBufferFrame';
-import { GPUContext } from '../GPUContext';
 import { OcclusionSystem } from '../occlusion/OcclusionSystem';
 import { ClusterLightingRender } from '../passRenderer/cluster/ClusterLightingRender';
-import { Graphic3D } from '../passRenderer/graphic/Graphic3DRender';
 import { PointLightShadowRenderer } from '../passRenderer/shadow/PointLightShadowRenderer';
 import { ShadowMapPassRenderer } from '../passRenderer/shadow/ShadowMapPassRenderer';
 import { PreDepthPassRenderer } from '../passRenderer/preDepth/PreDepthPassRenderer';
 import { RendererMap } from './RenderMap';
 import { PostRenderer } from '../passRenderer/post/PostRenderer';
 import { PostBase } from '../post/PostBase';
-import { ComponentCollect } from '../collect/ComponentCollect';
 import { RendererBase } from '../passRenderer/RendererBase';
 import { Ctor } from '../../../util/Global';
 
@@ -197,6 +194,7 @@ export class RendererJob {
         this.clusterLightingRender.render(view, this.occlusionSystem);
 
         if (this.shadowMapPassRenderer) {
+            ShadowLightsCollect.update(view.scene);
             this.shadowMapPassRenderer.render(view, this.occlusionSystem);
         }
 

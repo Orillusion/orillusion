@@ -13,7 +13,7 @@ class Sample_Skeleton3 {
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.updateFrameRate = 1;
         Engine3D.setting.shadow.shadowBound = 350;
-        Engine3D.setting.shadow.shadowBias = 0.0001;
+        Engine3D.setting.shadow.shadowBias = 0.0002;
         await Engine3D.init({
             renderLoop: () => this.onRenderLoop(),
         });

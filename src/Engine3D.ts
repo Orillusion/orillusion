@@ -219,7 +219,7 @@ export class Engine3D {
             pointShadowBias: 0.002,
             shadowQuality: 2.5,
             shadowBound: 50,
-            shadowSize: 2048,
+            shadowSize: 1024,
             pointShadowSize: 1024,
             shadowSoft: 0.005,
             shadowNear: 1,

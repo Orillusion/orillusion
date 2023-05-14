@@ -14,7 +14,7 @@ export class ProbeGBufferFrame extends RTFrame {
 
     crateGBuffer(rtWidth: number, rtHeight: number) {
         let attachments = this.attachments;
-        let rtDescripts = this.rtDescriptors;
+        let rtDescriptors = this.rtDescriptors;
         let positionMap = new VirtualTexture(rtWidth, rtHeight, GPUTextureFormat.rgba16float, false);
         positionMap.name = `positionMap`;
         let posDec = new RTDescriptor();
@@ -39,9 +39,9 @@ export class ProbeGBufferFrame extends RTFrame {
         attachments.push(normalMap);
         attachments.push(colorMap);
 
-        rtDescripts.push(posDec);
-        rtDescripts.push(normalDec);
-        rtDescripts.push(colorDec);
+        rtDescriptors.push(posDec);
+        rtDescriptors.push(normalDec);
+        rtDescriptors.push(colorDec);
 
         this.depthTexture = depthTexture;
     }
