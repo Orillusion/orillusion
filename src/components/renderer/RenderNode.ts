@@ -243,18 +243,21 @@ export class RenderNode extends ComponentBase {
 
     public renderPass(view: View3D, passType: RendererType, renderContext: RenderContext) {
         let renderNode = this;
+        let worldMatrix = renderNode.transform._worldMatrix;
         for (let i = 0; i < renderNode.materials.length; i++) {
             const material = renderNode.materials[i];
             let passes = material.renderPasses.get(passType);
 
-            if (!passes || passes.length == 0) continue;
+            if (!passes || passes.length == 0)
+                continue;
 
             GPUContext.bindGeometryBuffer(renderContext.encoder, renderNode._geometry);
-            let worldMatrix = renderNode.transform._worldMatrix;
             for (let j = 0; j < passes.length; j++) {
-                if (!passes || passes.length == 0) continue;
+                if (!passes || passes.length == 0)
+                    continue;
                 let matPass = passes[j];
-                if (!matPass.enable) continue;
+                if (!matPass.enable)
+                    continue;
 
                 // for (let j = passes.length > 1 ? 1 : 0 ; j < passes.length; j++) {
                 const renderShader = matPass.renderShader;
@@ -290,29 +293,34 @@ export class RenderNode extends ComponentBase {
      * @returns
      */
     public renderPass2(view: View3D, passType: RendererType, rendererPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer, encoder: GPURenderPassEncoder, useBundle: boolean = false) {
-        if (!this.enable) return;
+        if (!this.enable)
+            return;
         this.nodeUpdate(view, passType, rendererPassState, clusterLightingBuffer);
 
         let node = this;
+        let worldMatrix = node.object3D.transform._worldMatrix;
         for (let i = 0; i < this.materials.length; i++) {
             const material = this.materials[i];
             let passes = material.renderPasses.get(passType);
-            if (!passes || passes.length == 0) return;
-            let matPass = passes[i];
-            if (!matPass.enable) continue;
+            if (!passes || passes.length == 0)
+                return;
 
-            let worldMatrix = node.object3D.transform._worldMatrix;
             if (this.drawType == 2) {
                 for (let j = 0; j < passes.length; j++) {
-                    let renderShader = passes[j].renderShader;
-                    GPUContext.bindPipeline(encoder, renderShader);
+                    let matPass = passes[j];
+                    if (!matPass.enable)
+                        continue;
+
+                    GPUContext.bindPipeline(encoder, matPass.renderShader);
                     GPUContext.draw(encoder, 6, 1, 0, worldMatrix.index);
                 }
             } else {
                 GPUContext.bindGeometryBuffer(encoder, node._geometry);
                 for (let j = 0; j < passes.length; j++) {
-                    let renderShader = passes[j].renderShader;
-                    GPUContext.bindPipeline(encoder, renderShader);
+                    let matPass = passes[j];
+                    if (!matPass.enable)
+                        continue;
+                    GPUContext.bindPipeline(encoder, matPass.renderShader);
                     let subGeometries = node._geometry.subGeometries;
                     const subGeometry = subGeometries[i];
                     let lodInfos = subGeometry.lodLevels;
