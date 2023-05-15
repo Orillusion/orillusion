@@ -99,11 +99,20 @@ export class LightBase extends ComponentBase implements ILight {
     public onEnable(): void {
         this.onChange();
         EntityCollect.instance.addLight(this.transform.scene3D, this);
+
+        if (this._castShadow) {
+            this.needUpdateShadow = true;
+            ShadowLightsCollect.addShadowLight(this);
+        }
     }
 
     public onDisable(): void {
         this.onChange();
         EntityCollect.instance.removeLight(this.transform.scene3D, this);
+
+        if (this._castShadow) {
+            ShadowLightsCollect.removeShadowLight(this);
+        }
     }
 
     public set iesProfiles(iesProfiles: IESProfiles) {
