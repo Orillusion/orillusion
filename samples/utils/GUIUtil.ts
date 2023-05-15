@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AtmosphericComponent, DirectLight, Transform } from "@orillusion/core";
+import { AtmosphericComponent, DirectLight, PointLight, SpotLight, Transform } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
@@ -42,6 +42,7 @@ export class GUIUtil {
     public static renderDirLight(light: DirectLight, open: boolean = true, name?: string) {
         name ||= 'DirectLight';
         GUIHelp.addFolder(name);
+        GUIHelp.add(light, 'enable');
         GUIHelp.add(light.transform, 'rotationX', 0.0, 360.0, 0.01);
         GUIHelp.add(light.transform, 'rotationY', 0.0, 360.0, 0.01);
         GUIHelp.add(light.transform, 'rotationZ', 0.0, 360.0, 0.01);
@@ -50,6 +51,51 @@ export class GUIUtil {
         GUIHelp.add(light, 'indirect', 0.0, 10.0, 0.01);
 
         open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
+
+    //show point light gui controller
+    public static showPointLightGUI(light: PointLight) {
+        GUIHelp.addFolder('PointLight');
+        GUIHelp.add(light, 'enable');
+        GUIHelp.addColor(light, 'lightColor');
+        GUIHelp.add(light.transform, 'x', -1000, 1000.0, 0.01);
+        GUIHelp.add(light.transform, 'y', -1000, 1000.0, 0.01);
+        GUIHelp.add(light.transform, 'z', -1000, 1000.0, 0.01);
+
+        GUIHelp.add(light, 'r', 0.0, 1.0, 0.001);
+        GUIHelp.add(light, 'g', 0.0, 1.0, 0.001);
+        GUIHelp.add(light, 'b', 0.0, 1.0, 0.001);
+        GUIHelp.add(light, 'intensity', 0.0, 1500.0, 0.001);
+        GUIHelp.add(light, 'at', 0.0, 1600.0, 0.001);
+        GUIHelp.add(light, 'radius', 0.0, 1000.0, 0.001);
+        GUIHelp.add(light, 'range', 0.0, 1000.0, 0.001);
+        GUIHelp.add(light, 'quadratic', 0.0, 2.0, 0.001);
+
+        GUIHelp.open();
+        GUIHelp.endFolder();
+    }
+
+    public static showSpotLightGUI(light: SpotLight) {
+        GUIHelp.addFolder('SpotLight');
+        GUIHelp.add(light, 'enable');
+        GUIHelp.add(light.transform, 'x', -1000, 1000.0, 0.01);
+        GUIHelp.add(light.transform, 'y', -1000, 1000.0, 0.01);
+        GUIHelp.add(light.transform, 'z', -1000, 1000.0, 0.01);
+
+        GUIHelp.add(light.transform, 'rotationX', -360, 360.0, 0.01);
+        GUIHelp.add(light.transform, 'rotationY', -360, 360.0, 0.01);
+        GUIHelp.add(light.transform, 'rotationZ', -360, 360.0, 0.01);
+
+        GUIHelp.addColor(light, 'lightColor');
+        GUIHelp.add(light, 'intensity', 0.0, 1600.0, 0.001);
+        GUIHelp.add(light, 'at', 0.0, 1600.0, 0.001);
+        GUIHelp.add(light, 'radius', 0.0, 1000.0, 0.001);
+        GUIHelp.add(light, 'range', 0.0, 1000.0, 0.001);
+        GUIHelp.add(light, 'outerAngle', 0.0, 180.0, 0.001);
+        GUIHelp.add(light, 'innerAngle', 0.0, 100.0, 0.001);
+
+        GUIHelp.open();
         GUIHelp.endFolder();
     }
 

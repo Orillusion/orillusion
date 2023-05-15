@@ -89,7 +89,7 @@ class Sample_InternalGeometry {
             meshRenderer.geometry = new CylinderGeometry(5, 10, 20, 50, 20);
             let topMaterial = new LitMaterial();
             topMaterial.baseColor = new Color(1, 0, 0, 1);
-            meshRenderer.materials = [material, topMaterial, topMaterial];
+            meshRenderer.material = material;
 
             box.y = 20;
             box.x = 50;
