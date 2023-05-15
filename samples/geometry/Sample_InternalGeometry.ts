@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Engine3D, View3D, Scene3D, CameraUtil, AtmosphericComponent, webGPUContext, HoverCameraController, Object3D, DirectLight, KelvinUtil, PlaneGeometry, VertexAttributeName, LitMaterial, MeshRenderer, BoxGeometry, SphereGeometry, CylinderGeometry, TorusGeometry } from "@orillusion/core";
+import { Engine3D, View3D, Scene3D, CameraUtil, AtmosphericComponent, webGPUContext, HoverCameraController, Object3D, DirectLight, KelvinUtil, PlaneGeometry, VertexAttributeName, LitMaterial, MeshRenderer, BoxGeometry, SphereGeometry, CylinderGeometry, TorusGeometry, Vector2, Color } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
 // An sample of display internal geometry
@@ -71,7 +71,7 @@ class Sample_InternalGeometry {
             scene.addChild(box);
         }
 
-        // add a cylinder closed
+        // add a cylinder opened
         {
             let box = new Object3D();
             let meshRenderer = box.addComponent(MeshRenderer);
@@ -79,6 +79,21 @@ class Sample_InternalGeometry {
             meshRenderer.material = material;
             box.y = 20;
             box.x = 50;
+            scene.addChild(box);
+        }
+
+        // add a cylinder closed
+        {
+            let box = new Object3D();
+            let meshRenderer = box.addComponent(MeshRenderer);
+            meshRenderer.geometry = new CylinderGeometry(5, 10, 20, 50, 20);
+            let topMaterial = new LitMaterial();
+            topMaterial.baseColor = new Color(1, 0, 0, 1);
+            meshRenderer.materials = [material, topMaterial, topMaterial];
+
+            box.y = 20;
+            box.x = 50;
+            box.z = 50;
             scene.addChild(box);
         }
 
