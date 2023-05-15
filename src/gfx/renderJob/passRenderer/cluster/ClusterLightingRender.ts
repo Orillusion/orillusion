@@ -11,6 +11,7 @@ import { ILight } from '../../../../components/lights/ILight';
 import { ClusterLightingBuffer } from './ClusterLightingBuffer';
 import { ClusterBoundsSource_cs } from '../../../../assets/shader/cluster/ClusterBoundsSource_cs';
 import { ClusterLighting_cs } from '../../../../assets/shader/cluster/ClusterLighting_cs';
+import { Camera3D } from '../../../..';
 /**
  * @internal
  * @group Post
@@ -27,7 +28,7 @@ export class ClusterLightingRender extends RendererBase {
     private _currentLightCount = 0;
     private _clusterGenerateCompute: ComputeShader;
     private _clusterLightingCompute: ComputeShader;
-    useCamera: import("c:/work/git/orillusion-nian/src/index").Camera3D;
+    private _useCamera: Camera3D;
     constructor(view: View3D) {
         super();
 
@@ -68,9 +69,9 @@ export class ClusterLightingRender extends RendererBase {
         let scene = view.scene;
         let lights: ILight[] = EntityCollect.instance.getLights(scene);
 
-        if (this.useCamera != view.camera) {
-            this.useCamera = view.camera;
-            let standBindGroup = GlobalBindGroup.getCameraGroup(this.useCamera);
+        if (this._useCamera != view.camera) {
+            this._useCamera = view.camera;
+            let standBindGroup = GlobalBindGroup.getCameraGroup(this._useCamera);
             this._clusterGenerateCompute.setUniformBuffer(`globalUniform`, standBindGroup.uniformGPUBuffer);
             this._clusterLightingCompute.setUniformBuffer(`globalUniform`, standBindGroup.uniformGPUBuffer);
         }

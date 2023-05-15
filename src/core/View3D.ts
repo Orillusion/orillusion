@@ -1,5 +1,6 @@
 import { Engine3D } from "../Engine3D";
 import { CEventListener } from "../event/CEventListener";
+import { ShadowLightsCollect } from "../gfx/renderJob/collect/ShadowLightsCollect";
 import { Graphic3D } from "../gfx/renderJob/passRenderer/graphic/Graphic3DRender";
 import { PickFire } from "../io/PickFire";
 import { Vector4 } from "../math/Vector4";
@@ -52,6 +53,8 @@ export class View3D extends CEventListener {
     public set scene(value: Scene3D) {
         this._scene = value;
         value.view = this;
+
+        ShadowLightsCollect.createBuffer(value);
 
         if (this.graphic3D)
             value.addChild(this.graphic3D);

@@ -1,4 +1,4 @@
-import { GUI } from 'https://unpkg.com/dat.gui@0.7.9/build/dat.gui.module.js'
+import { GUI } from './dat.gui.module.js'
 
 /**
  * @internal
@@ -32,8 +32,9 @@ class _GUIHelp {
             return this._nullBind;
         let dgui = this._current ? this._current : this.gui;
 
-        let tobj = {};
-        tobj[label] = obj[property];
+        let tobj = {
+            [label] : obj[property]
+        }
         dgui.add(tobj, label, c, d, e).onChange((v) => {
             obj[property] = v;
         })
@@ -109,7 +110,8 @@ class _GUIHelp {
             return this._nullBind;
         let folder = this.folders[label];
         if (folder) {
-            this._current = this.gui.removeFolder(folder);
+            this.gui.removeFolder(folder);
+            this._current = null;
             delete this.folders[label];
         }
     }

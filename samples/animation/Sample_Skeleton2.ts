@@ -11,7 +11,7 @@ class Sample_Skeleton2 {
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.updateFrameRate = 1;
         Engine3D.setting.shadow.shadowBound = 500;
-        Engine3D.setting.shadow.shadowBias = 0.0001;
+        Engine3D.setting.shadow.shadowBias = 0.0002;
 
         await Engine3D.init();
 
@@ -26,16 +26,37 @@ class Sample_Skeleton2 {
         hoverCameraController.setCamera(45, -30, 300);
         hoverCameraController.maxDistance = 500.0;
 
-        await this.initScene(this.scene);
-
         let view = new View3D();
         view.scene = this.scene;
         view.camera = mainCamera;
 
         Engine3D.startRenderView(view);
+
+        await this.initScene(this.scene);
     }
 
     async initScene(scene: Scene3D) {
+        /******** floor *******/
+        this.scene.addChild(Object3DUtil.GetSingleCube(3000, 1, 3000, 0.5, 0.5, 0.5));
+
+        /******** light *******/
+        {
+            this.lightObj3D = new Object3D();
+            this.lightObj3D.x = 0;
+            this.lightObj3D.y = 30;
+            this.lightObj3D.z = -40;
+            this.lightObj3D.rotationX = 144;
+            this.lightObj3D.rotationY = 0;
+            this.lightObj3D.rotationZ = 0;
+            let directLight = this.lightObj3D.addComponent(DirectLight);
+            directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
+            directLight.castShadow = true;
+            directLight.intensity = 40;
+            GUIHelp.init();
+            GUIUtil.renderDirLight(directLight);
+            scene.addChild(this.lightObj3D);
+        }
+     
         {
             // load model with skeletion animation
             let rootNode = await Engine3D.res.loadGltf('gltfs/glb/Soldier.glb');
@@ -69,33 +90,17 @@ class Sample_Skeleton2 {
                     let animIndex = Math.floor(Math.random() * 100 % 3);
                     animation.play(animName[animIndex], -5 + Math.random() * 10);
                 }
+                await this.sleep(10);
             }
         }
-
-        /******** floor *******/
-        this.scene.addChild(Object3DUtil.GetSingleCube(3000, 1, 3000, 0.5, 0.5, 0.5));
-
-        /******** light *******/
-        {
-            this.lightObj3D = new Object3D();
-            this.lightObj3D.x = 0;
-            this.lightObj3D.y = 30;
-            this.lightObj3D.z = -40;
-            this.lightObj3D.rotationX = 144;
-            this.lightObj3D.rotationY = 0;
-            this.lightObj3D.rotationZ = 0;
-            let directLight = this.lightObj3D.addComponent(DirectLight);
-            directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
-            directLight.castShadow = true;
-            directLight.intensity = 40;
-            GUIHelp.init();
-            GUIUtil.renderDirLight(directLight);
-            scene.addChild(this.lightObj3D);
-        }
-
         return true;
     }
 
+    sleep(time:number){
+        return new Promise(res=>{
+            setTimeout(res, time || 200)
+        })
+    }
 }
 
 new Sample_Skeleton2().run();

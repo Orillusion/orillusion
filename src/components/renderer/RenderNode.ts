@@ -1,3 +1,4 @@
+import { ShadowLightsCollect } from "../..";
 import { Engine3D } from "../../Engine3D";
 import { View3D } from "../../core/View3D";
 import { GeometryBase } from "../../core/geometry/GeometryBase";
@@ -401,6 +402,7 @@ export class RenderNode extends ComponentBase {
                     let shadowRenderer = Engine3D.getRenderJob(view).shadowMapPassRenderer;
                     if (shadowRenderer && shadowRenderer.depth2DTextureArray) {
                         renderShader.setTexture(`shadowMap`, Engine3D.getRenderJob(view).shadowMapPassRenderer.depth2DTextureArray);
+                        renderShader.setStorageBuffer(`shadowBuffer`, ShadowLightsCollect.shadowBuffer.get(view.scene));
                     }
                     // let shadowLight = ShadowLights.list;
                     // if (shadowLight.length) {
