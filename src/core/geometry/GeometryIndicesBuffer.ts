@@ -4,6 +4,7 @@ import { VertexAttributeData } from "./VertexAttributeData";
 
 
 export class GeometryIndicesBuffer {
+
     public uuid: string = '';
     public name: string;
     public indicesGPUBuffer: IndicesGPUBuffer;
@@ -29,6 +30,15 @@ export class GeometryIndicesBuffer {
 
     public compute() {
 
+    }
+
+    destroy() {
+        this.uuid = null;
+        this.name = null;
+        this.indicesFormat = null;
+        this.indicesCount = null;
+        this.indicesGPUBuffer.destroy();
+        this.indicesGPUBuffer = null;
     }
 
     /**

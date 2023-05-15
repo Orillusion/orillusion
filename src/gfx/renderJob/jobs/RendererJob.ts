@@ -195,7 +195,8 @@ export class RendererJob {
         this.occlusionSystem.update(view.camera, view.scene);
 
         this.clusterLightingRender.render(view, this.occlusionSystem);
-        if (this.shadowMapPassRenderer && Engine3D.setting.shadow.enable) {
+
+        if (this.shadowMapPassRenderer) {
             this.shadowMapPassRenderer.render(view, this.occlusionSystem);
         }
 
@@ -204,17 +205,15 @@ export class RendererJob {
         }
 
         if (this.depthPassRenderer) {
-            this.depthPassRenderer.beforeCompute(view, this.occlusionSystem);
+            this.depthPassRenderer.compute(view, this.occlusionSystem);
             this.depthPassRenderer.render(view, this.occlusionSystem);
-            this.depthPassRenderer.lateCompute(view, this.occlusionSystem);
         }
 
         let passList = this.rendererMap.getAllPassRenderer();
         for (let i = 0; i < passList.length; i++) {
             const renderer = passList[i];
-            renderer.beforeCompute(view, this.occlusionSystem);
+            renderer.compute(view, this.occlusionSystem);
             renderer.render(view, this.occlusionSystem, this.clusterLightingRender.clusterLightingBuffer);
-            renderer.lateCompute(view, this.occlusionSystem);
         }
 
         if (this.postRenderer && this.postRenderer.postList.length > 0) {

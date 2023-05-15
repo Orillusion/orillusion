@@ -335,9 +335,9 @@ export class Entity extends CEventDispatcher {
             this._bound = new BoundingBox(Vector3.ZERO.clone(), Vector3.ONE.clone());
         }
         for (const children of this.entityChildren) {
-            if (children._bound) {
-                this._bound.merge(children._bound);
-            }
+            // if (children._bound) {
+            this._bound.merge(children.genBounds());
+            // }
         }
         return this._bound;
     }
@@ -345,6 +345,7 @@ export class Entity extends CEventDispatcher {
     public updateBound() {
         if (!this._bound) {
             this._bound = new BoundingBox(Vector3.ZERO.clone(), Vector3.ONE.clone());
+            // this.genBounds();
         }
         let worldMatrix = this.transform.worldMatrix;
         worldMatrix.transformPoint(this._bound.min, this.bound.worldMin);
@@ -367,10 +368,14 @@ export class Entity extends CEventDispatcher {
      * release current object
      */
     public destroy() {
-        this.transform.parent = null;
         this.components.forEach((c) => {
             c.destroy();
         });
         this.components.clear();
+        this.entityChildren.forEach((c) => {
+            c.destroy();
+        })
+        this.transform.parent = null;
+        // this.entityChildren = null;
     }
 }

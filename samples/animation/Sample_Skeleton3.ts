@@ -1,11 +1,13 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, SkeletonAnimationComponent, LitMaterial, MeshRenderer, BoxGeometry, DirectLight, KelvinUtil, Time, Object3DUtil } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, SkeletonAnimationComponent, LitMaterial, MeshRenderer, BoxGeometry, DirectLight, KelvinUtil, Time, Object3DUtil, BoundingBox, SkinnedMeshRenderer } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
 // Sample to use SkeletonAnimationComponent
 class Sample_Skeleton3 {
     lightObj3D: Object3D;
     scene: Scene3D;
+    character: Object3D;
+    view: View3D;
 
     async run() {
         Engine3D.setting.shadow.autoUpdate = true;
@@ -30,24 +32,26 @@ class Sample_Skeleton3 {
 
         await this.initScene(this.scene);
 
-        let view = new View3D();
-        view.scene = this.scene;
-        view.camera = mainCamera;
+        this.view = new View3D();
+        this.view.scene = this.scene;
+        this.view.camera = mainCamera;
 
-        Engine3D.startRenderView(view);
+        Engine3D.startRenderView(this.view);
     }
 
     async initScene(scene: Scene3D) {
         {
             let rootNode = await Engine3D.res.loadGltf('gltfs/glb/Soldier_draco.glb');
-            let character = rootNode.getObjectByName('Character') as Object3D;
-            character.scaleX = 0.3;
-            character.scaleY = 0.3;
-            character.scaleZ = 0.3;
-            character.rotationY = 180;
-            scene.addChild(character);
+            this.character = rootNode.getObjectByName('Character') as Object3D;
+            this.character.scaleX = 0.3;
+            this.character.scaleY = 0.3;
+            this.character.scaleZ = 0.3;
+            this.character.rotationY = 180;
+            scene.addChild(this.character);
 
-            let animation = character.getComponentsInChild(SkeletonAnimationComponent)[0];
+
+
+            let animation = this.character.getComponentsInChild(SkeletonAnimationComponent)[0];
 
             const runClip = animation.getAnimationClip("Run");
             runClip.addEvent("Begin", 0);

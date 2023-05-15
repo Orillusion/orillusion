@@ -17,15 +17,17 @@ import { ClusterLighting_cs } from '../../../../assets/shader/cluster/ClusterLig
  */
 export class ClusterLightingRender extends RendererBase {
     public clusterTileX = 16;
-    public clusterTileY = 12;
-    public clusterTileZ = 24;
+    public clusterTileY = 9;
+    public clusterTileZ = 16;
     public maxNumLights = 128;
-    public maxNumLightsPerCluster = 100;
+    public maxNumLightsPerCluster = 1024;
     public clusterPix = 1;
     public clusterLightingBuffer: ClusterLightingBuffer;
 
+    private _currentLightCount = 0;
     private _clusterGenerateCompute: ComputeShader;
     private _clusterLightingCompute: ComputeShader;
+    useCamera: import("c:/work/git/orillusion-nian/src/index").Camera3D;
     constructor(view: View3D) {
         super();
 
@@ -34,7 +36,6 @@ export class ClusterLightingRender extends RendererBase {
     }
 
     private initCompute(view: View3D) {
-
         this._clusterGenerateCompute = new ComputeShader(ClusterBoundsSource_cs);
         this._clusterLightingCompute = new ComputeShader(ClusterLighting_cs);
 
@@ -48,9 +49,9 @@ export class ClusterLightingRender extends RendererBase {
         this.clusterLightingBuffer = new ClusterLightingBuffer(numClusters, this.maxNumLightsPerCluster);
         this.clusterLightingBuffer.update(size[0], size[1], this.clusterPix, this.clusterTileX, this.clusterTileY, this.clusterTileZ, this.maxNumLights, this.maxNumLightsPerCluster, near, far);
 
-        let standBindGroup = GlobalBindGroup.getCameraGroup(camera);
-        this._clusterGenerateCompute.setUniformBuffer(`globalUniform`, standBindGroup.uniformGPUBuffer);
-        this._clusterLightingCompute.setUniformBuffer(`globalUniform`, standBindGroup.uniformGPUBuffer);
+        // let standBindGroup = GlobalBindGroup.getCameraGroup(camera);
+        // this._clusterGenerateCompute.setUniformBuffer(`globalUniform`, standBindGroup.uniformGPUBuffer);
+        // this._clusterLightingCompute.setUniformBuffer(`globalUniform`, standBindGroup.uniformGPUBuffer);
         this._clusterGenerateCompute.setUniformBuffer(`clustersUniform`, this.clusterLightingBuffer.clustersUniformBuffer);
         this._clusterGenerateCompute.setStorageBuffer(`clusterBuffer`, this.clusterLightingBuffer.clusterBuffer);
 
@@ -61,38 +62,33 @@ export class ClusterLightingRender extends RendererBase {
         this._clusterLightingCompute.setStorageBuffer(`lightBuffer`, lightBuffer.storageGPUBuffer);
         this._clusterLightingCompute.setStorageBuffer(`lightAssignBuffer`, this.clusterLightingBuffer.lightAssignBuffer);
         this._clusterLightingCompute.setStorageBuffer(`assignTable`, this.clusterLightingBuffer.assignTableBuffer);
-
-        this.debug(view);
     }
 
     render(view: View3D, occlusionSystem: OcclusionSystem) {
-        let camera = view.camera;
         let scene = view.scene;
-        let near = camera.near;
-        let far = camera.far;
-
         let lights: ILight[] = EntityCollect.instance.getLights(scene);
-        let size = webGPUContext.presentationSize;
-        // this.clustersUniformBuffer.setFloat('screenWidth', size[0] );
-        // this.clustersUniformBuffer.setFloat('screenHeight', size[1] );
-        this.clusterLightingBuffer.clustersUniformBuffer.setFloat('numLights', lights.length);
-        this.clusterLightingBuffer.clustersUniformBuffer.apply();
 
-        this._clusterGenerateCompute.workerSizeX = this.clusterTileZ;
-        this._clusterLightingCompute.workerSizeX = this.clusterTileZ;
+        if (this.useCamera != view.camera) {
+            this.useCamera = view.camera;
+            let standBindGroup = GlobalBindGroup.getCameraGroup(this.useCamera);
+            this._clusterGenerateCompute.setUniformBuffer(`globalUniform`, standBindGroup.uniformGPUBuffer);
+            this._clusterLightingCompute.setUniformBuffer(`globalUniform`, standBindGroup.uniformGPUBuffer);
+        }
 
-        let command = GPUContext.beginCommandEncoder();
-        // if(!this._createGrid){
-        //     this._createGrid = true ;
-        GPUContext.computeCommand(command, [this._clusterGenerateCompute, this._clusterLightingCompute]);
-        // }else{
-        // GPUContext.compute_command(command,[this.clusterLightingCompute]);
-        // }
-        GPUContext.endCommandEncoder(command);
-    }
+        if (this._currentLightCount != lights.length) {
+            this._currentLightCount = lights.length;
 
-    private _createGrid: boolean = false;
+            this.clusterLightingBuffer.clustersUniformBuffer.setFloat('numLights', lights.length);
+            this.clusterLightingBuffer.clustersUniformBuffer.apply();
 
-    private debug(view: View3D) {
+            this._clusterGenerateCompute.workerSizeX = this.clusterTileZ;
+            this._clusterLightingCompute.workerSizeX = this.clusterTileZ;
+        }
+
+        if (lights.length > 0) {
+            let command = GPUContext.beginCommandEncoder();
+            GPUContext.computeCommand(command, [this._clusterGenerateCompute, this._clusterLightingCompute]);
+            GPUContext.endCommandEncoder(command);
+        }
     }
 }

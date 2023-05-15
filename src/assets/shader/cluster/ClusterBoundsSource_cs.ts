@@ -50,12 +50,8 @@ export let ClusterBoundsSource_cs: string = /* wgsl */`
             return result;
         }
 
-        // @compute @workgroup_size(2,2,1)
-        @compute @workgroup_size(16,12,1)
+        @compute @workgroup_size(16,9,1)
         fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(local_invocation_id) local_invocation_id : vec3<u32> ){
-            // let i = local_invocation_id.x ;
-            // let j = local_invocation_id.y ;
-
             let i = local_invocation_id.x ;
             let j = local_invocation_id.y ;
             let k = workgroup_id.x ;
