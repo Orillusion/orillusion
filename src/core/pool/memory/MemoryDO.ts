@@ -46,7 +46,7 @@ export class MemoryDO {
         this._byteOffset = 0;
     }
 
-    public destroy() {
+    public destroy(force?: boolean) {
         this.shareDataBuffer = null;
         this._byteOffset = 0;
     }

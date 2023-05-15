@@ -240,6 +240,6 @@ export class ShaderBase {
     /**
      * destroy
      */
-    public destroy() {
+    public destroy(force?: boolean) {
     }
 }

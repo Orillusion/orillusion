@@ -443,8 +443,8 @@ export class RenderNode extends ComponentBase {
         }
     }
 
-    public destroy() {
-        super.destroy();
+    public destroy(force?: boolean) {
+        super.destroy(force);
 
         this._geometry = null;
         this._materials = null;

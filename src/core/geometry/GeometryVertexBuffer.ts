@@ -192,14 +192,14 @@ export class GeometryVertexBuffer {
 
     }
 
-    public destroy() {
+    public destroy(force?: boolean) {
         this.vertexCount = null;
         this.geometryType = null;
         this._vertexBufferLayouts = null;
         this._attributeSlotLayouts = null;
         this._attributeLocation = null;
 
-        this.vertexGPUBuffer.destroy();
+        this.vertexGPUBuffer.destroy(force);
         this.vertexGPUBuffer = null;
     }
 }

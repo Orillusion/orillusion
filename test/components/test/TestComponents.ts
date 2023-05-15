@@ -42,8 +42,8 @@ export class TestComponents extends ComponentBase {
 
     }
 
-    public destroy(): void {
+    public destroy(force?: boolean): void {
         this.destroyState = true;
-        super.destroy();
+        super.destroy(force);
     }
 }

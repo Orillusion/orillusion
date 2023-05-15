@@ -186,7 +186,7 @@ export class ComponentBase implements IComponent {
     /**
      * release this component
      */
-    public destroy() {
+    public destroy(force?: boolean) {
         this.enable = false;
         this.stop();
         this._onBeforeUpdate(null);

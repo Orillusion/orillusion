@@ -343,8 +343,8 @@ export class MaterialBase extends MaterialPass {
     /**
      * destroy self
      */
-    public destroy(): void {
-        super.destroy();
+    public destroy(force?: boolean): void {
+        super.destroy(force);
     }
 
 
