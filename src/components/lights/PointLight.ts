@@ -116,7 +116,7 @@ export class PointLight extends LightBase {
     }
 
     public onGraphic(view?: View3D): void {
-        let custom = Engine3D.getRenderJob(view).graphic3D.createCustomShape(
+        let custom = view.graphic3D.createCustomShape(
             `PointLight_${this.object3D.uuid}`,
             this.transform,
         );

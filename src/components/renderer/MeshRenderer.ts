@@ -125,6 +125,16 @@ export class MeshRenderer extends RenderNode {
         super.nodeUpdate(view, passType, renderPassState, clusterLightingBuffer);
     }
 
+    public destroy(force?: boolean): void {
+        if (force) {
+            this.geometry.destroy(force);
+            this.materials.forEach(mat => {
+                mat.destroy(force);
+            });
+        }
+        super.destroy();
+    }
+
     cloneTo(obj: Object3D) {
         let mr = obj.addComponent(MeshRenderer);
         mr.geometry = this.geometry;
@@ -133,11 +143,6 @@ export class MeshRenderer extends RenderNode {
         mr.castGI = this.castGI;
         mr.receiveShadow = this.receiveShadow;
         mr.rendererMask = this.rendererMask;
-    }
-
-    drawWireFrame() {
-        this.object3D.transform.worldPosition;
-        //view.graphic3D..drawMeshWireframe(`Wireframe_${this.object3D.uuid}`, this.geometry, this.object3D.transform);
     }
 
 }

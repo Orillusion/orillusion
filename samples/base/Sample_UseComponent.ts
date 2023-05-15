@@ -15,7 +15,7 @@ class Sample_UseComponent {
         let mainCamera = CameraUtil.createCamera3D(null, scene);
         mainCamera.perspective(60, Engine3D.aspect, 1, 2000.0);
         let hoverCameraController = mainCamera.object3D.addComponent(HoverCameraController);
-        hoverCameraController.setCamera(15, -30, 10);
+        hoverCameraController.setCamera(15, -15, 10);
 
         // create a view with target scene and camera
         let view = new View3D();
@@ -25,10 +25,9 @@ class Sample_UseComponent {
         // start render
         Engine3D.startRenderView(view);
 
-
         // create cube
         let cube = Object3DUtil.GetSingleCube(2, 4, 1, 0.7, 1, 0.5);
-        cube.name = 'AxisObject';
+        cube.name = 'cube'
         scene.addChild(cube);
 
         // register a component

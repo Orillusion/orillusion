@@ -17,6 +17,7 @@ import { ShaderLib } from './assets/shader/ShaderLib';
 import { ShaderUtil } from './gfx/graphics/webGpu/shader/util/ShaderUtil';
 import { ComponentCollect } from './gfx/renderJob/collect/ComponentCollect';
 import { ShadowLightsCollect } from './gfx/renderJob/collect/ShadowLightsCollect';
+import { ProfilerUtil } from '.';
 
 /** 
  * Orillusion 3D Engine
@@ -51,6 +52,7 @@ export class Engine3D {
     private static _renderLoop: Function;
     private static _lateRender: Function;
     private static _requestAnimationFrameID: number = 0;
+    static Engine3D: any;
 
     /**
      * set engine render frameRate 24/30/60/114/120/144/240/360 fps or other
@@ -217,7 +219,7 @@ export class Engine3D {
             pointShadowBias: 0.002,
             shadowQuality: 2.5,
             shadowBound: 50,
-            shadowSize: 2048,
+            shadowSize: 1024,
             pointShadowSize: 1024,
             shadowSoft: 0.005,
             shadowNear: 1,
@@ -235,7 +237,7 @@ export class Engine3D {
             defaultNear: 1,
         },
         light: {
-            maxLight: 1024,
+            maxLight: 4096,
         },
         material: {
             materialChannelDebug: false,
@@ -368,7 +370,7 @@ export class Engine3D {
         Time.delta = time - Time.time;
         Time.time = time;
         Time.frame += 1;
-        // let camera = Camera3D.mainCamera;
+
         Interpolator.tick(Time.delta);
         if (this._beforeRender) this._beforeRender();
 

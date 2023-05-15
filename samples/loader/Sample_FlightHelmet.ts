@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Camera3D, Scene3D, HoverCameraController, Engine3D, CameraUtil, View3D, SSRPost, HDRBloomPost, AtmosphericComponent, DirectLight, KelvinUtil, Time } from "@orillusion/core";
+import { Object3D, Scene3D, HoverCameraController, Engine3D, CameraUtil, View3D, SSRPost, HDRBloomPost, AtmosphericComponent, DirectLight, KelvinUtil, Time } from "@orillusion/core";
 import { GUIUtil as GUIUtil } from "@samples/utils/GUIUtil";
 
 class Sample_FlightHelmet {
@@ -27,8 +27,9 @@ class Sample_FlightHelmet {
             enable: true,
             blurX: 4,
             blurY: 4,
-            intensity: 0.5,
-            brightness: 1.25,
+            strength: 1.5,
+            luminosityThreshold: 0.1,
+            radius: 4,
             debug: false
         };
 
@@ -61,7 +62,7 @@ class Sample_FlightHelmet {
             let atmospheric = this.scene.addComponent(AtmosphericComponent);
             atmospheric.sunY = 0.73;
             atmospheric.sunRadiance = 47;
-            atmospheric.enable = false
+            atmospheric.enable = false;
         }
         /******** light *******/
         {

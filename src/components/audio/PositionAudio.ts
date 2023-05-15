@@ -173,9 +173,9 @@ export class PositionAudio extends StaticAudio {
             panner.setOrientation(_orientation.x, _orientation.y, _orientation.z);
         }
     }
-    public destroy() {
+    public destroy(force?: boolean) {
         this.panner.disconnect();
         this.hideHelper();
-        super.destroy();
+        super.destroy(force);
     }
 }

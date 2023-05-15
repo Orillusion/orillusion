@@ -91,7 +91,7 @@ export class PlaneGeometry extends GeometryBase {
 
                         normal_arr[indexN++] = 0;
                         normal_arr[indexN++] = 0;
-                        normal_arr[indexN++] = -1;
+                        normal_arr[indexN++] = 1;
                         break;
                     case Vector3.X_AXIS:
                         position_arr[indexP++] = 0;

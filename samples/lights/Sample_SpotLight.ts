@@ -1,5 +1,6 @@
 import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, SphereGeometry, Object3D, MeshRenderer, LitMaterial, SpotLight, BoxGeometry, Vector3 } from "@orillusion/core";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
+import { GUIUtil } from "@samples/utils/GUIUtil";
 
 // sample of SpotLight
 class Sample_SpotLight {
@@ -61,31 +62,7 @@ class Sample_SpotLight {
         spotLight.innerAngle = 0;
         spotLight.castShadow = true;
 
-        this.showSpotLightGUI(spotLight);
-    }
-
-    // show gui
-    // control light direction/position/color/intensity/range and so on
-    private showSpotLightGUI(light: SpotLight) {
-        GUIHelp.addFolder('SpotLight');
-        GUIHelp.add(light.transform, 'x', -1000, 1000.0, 0.01);
-        GUIHelp.add(light.transform, 'y', -1000, 1000.0, 0.01);
-        GUIHelp.add(light.transform, 'z', -1000, 1000.0, 0.01);
-
-        GUIHelp.add(light.transform, 'rotationX', -360, 360.0, 0.01);
-        GUIHelp.add(light.transform, 'rotationY', -360, 360.0, 0.01);
-        GUIHelp.add(light.transform, 'rotationZ', -360, 360.0, 0.01);
-
-        GUIHelp.addColor(light, 'lightColor');
-        GUIHelp.add(light, 'intensity', 0.0, 1600.0, 0.001);
-        GUIHelp.add(light, 'at', 0.0, 1600.0, 0.001);
-        GUIHelp.add(light, 'radius', 0.0, 1000.0, 0.001);
-        GUIHelp.add(light, 'range', 0.0, 1000.0, 0.001);
-        GUIHelp.add(light, 'outerAngle', 0.0, 180.0, 0.001);
-        GUIHelp.add(light, 'innerAngle', 0.0, 100.0, 0.001);
-
-        GUIHelp.open();
-        GUIHelp.endFolder();
+        GUIUtil.showSpotLightGUI(spotLight);
     }
 
     // Build a slightly complex scene

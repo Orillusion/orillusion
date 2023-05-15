@@ -105,8 +105,8 @@ export class GlobalUniformGroup {
         this.uniformGPUBuffer.setInt32(`renderState_right`, Engine3D.setting.render.renderState_right);
         this.uniformGPUBuffer.setFloat(`renderState_split`, Engine3D.setting.render.renderState_split);
 
-        let mouseX = Engine3D.inputSystem.mouseX * webGPUContext.pixelRatio * webGPUContext.super;
-        let mouseY = Engine3D.inputSystem.mouseY * webGPUContext.pixelRatio * webGPUContext.super;
+        let mouseX = Engine3D.inputSystem.mouseX * webGPUContext.pixelRatio;
+        let mouseY = Engine3D.inputSystem.mouseY * webGPUContext.pixelRatio;
         this.uniformGPUBuffer.setFloat(`mouseX`, mouseX);
         this.uniformGPUBuffer.setFloat(`mouseY`, mouseY);
         this.uniformGPUBuffer.setFloat(`windowWidth`, webGPUContext.windowWidth);

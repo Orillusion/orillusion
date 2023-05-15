@@ -16,8 +16,9 @@ class Sample_PBRMaterial {
             enable: true,
             blurX: 4,
             blurY: 4,
-            intensity: 1.6,
-            brightness: 0.8,
+            luminosityThreshold: 0.8,
+            strength: 0.86,
+            radius: 4,
             debug: false
         };
 

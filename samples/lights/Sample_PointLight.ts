@@ -31,25 +31,6 @@ class Sample_PointLight {
         Engine3D.startRenderViews([view]);
     }
 
-    public debug(light: PointLight) {
-        GUIHelp.addFolder('PointLight' + light.name);
-        GUIHelp.addColor(light, 'lightColor');
-        GUIHelp.add(light.transform, 'x', -1000, 1000.0, 0.01);
-        GUIHelp.add(light.transform, 'y', -1000, 1000.0, 0.01);
-        GUIHelp.add(light.transform, 'z', -1000, 1000.0, 0.01);
-
-        GUIHelp.add(light, 'r', 0.0, 1.0, 0.001);
-        GUIHelp.add(light, 'g', 0.0, 1.0, 0.001);
-        GUIHelp.add(light, 'b', 0.0, 1.0, 0.001);
-        GUIHelp.add(light, 'intensity', 0.0, 1500.0, 0.001);
-        GUIHelp.add(light, 'at', 0.0, 1600.0, 0.001);
-        GUIHelp.add(light, 'radius', 0.0, 1000.0, 0.001);
-        GUIHelp.add(light, 'range', 0.0, 1000.0, 0.001);
-        GUIHelp.add(light, 'quadratic', 0.0, 2.0, 0.001);
-        GUIHelp.endFolder();
-    }
-
-
     initScene(scene: Scene3D) {
         let lightObj3D = new Object3D();
         let render = lightObj3D.addComponent(MeshRenderer);
@@ -75,7 +56,7 @@ class Sample_PointLight {
                 mr2.material = mat;
                 scene.addChild(box);
 
-                box.transform.x = i * 40 - 200;
+                box.transform.x = i * 40 - 300;
                 box.transform.y = 5;
                 box.transform.z = j * 40 - 200;
             }

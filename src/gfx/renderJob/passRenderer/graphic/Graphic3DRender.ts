@@ -165,7 +165,7 @@ export class Graphic3D extends Object3D {
         }
         points.push(points[points.length - 1]);
         points.push(center);
-        this.mLineRender.fillShapData(uuid, 'line', color, points);
+        this.mLineRender.fillShapeData(uuid, 'line', color, points);
     }
 
     /**
@@ -234,7 +234,7 @@ export class Graphic3D extends Object3D {
         points.push(new Vector3(maxPoint.x, minPoint.y, minPoint.z));
         points.push(new Vector3(maxPoint.x, minPoint.y, maxPoint.z));
 
-        this.mLineRender.fillShapData(uuid, 'line', color, points);
+        this.mLineRender.fillShapeData(uuid, 'line', color, points);
     }
 
     /**
@@ -245,7 +245,7 @@ export class Graphic3D extends Object3D {
      * @param color The color of the fill rectangle
      */
     public drawFillRect(uuid: string, origin: Vector3, width: number, height: number, color: Color = Color.COLOR_WHITE) {
-        this.mFillRender.fillShapData(uuid, 'fill', color, [
+        this.mFillRender.fillShapeData(uuid, 'fill', color, [
             origin,
             new Vector3(origin.x + width, origin.y, origin.z),
             new Vector3(origin.x + width, origin.y + height, origin.z),
@@ -290,7 +290,7 @@ export class Graphic3D extends Object3D {
                     break;
             }
         }
-        this.mFillRender.fillShapData(uuid, 'fill', color, points);
+        this.mFillRender.fillShapeData(uuid, 'fill', color, points);
     }
 
     /**
@@ -346,7 +346,7 @@ export class Graphic3D extends Object3D {
                     break;
             }
         }
-        this.mFillRender.fillShapData(uuid, 'fill', color, points);
+        this.mFillRender.fillShapeData(uuid, 'fill', color, points);
     }
 
     /**
@@ -356,7 +356,7 @@ export class Graphic3D extends Object3D {
      * @param color The color of the bounding box
      */
     public drawBoundingBox(uuid: string, boundingBox: BoundingBox, color: Color = Color.COLOR_WHITE) {
-        this.drawBox(uuid, boundingBox.min, boundingBox.max, color);
+        this.drawBox(uuid, boundingBox.worldMin, boundingBox.worldMax, color);
     }
 
     /**

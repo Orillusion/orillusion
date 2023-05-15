@@ -1,3 +1,4 @@
+import { Matrix4 } from '../..';
 import { IComponent } from '../../components/IComponent';
 import { RenderNode } from '../../components/renderer/RenderNode';
 import { Transform } from '../../components/Transform';
@@ -72,15 +73,14 @@ export class Entity extends CEventDispatcher {
      * List of components attached to an object
      */
     public components: Map<any, IComponent>;
+
+    protected waitDisposeComponents: IComponent[];
+
     /**
      *
      * The bounding box of an object
      */
     private _bound: IBound;
-
-
-    protected waitDisposeComponents: IComponent[];
-
     private _dispose: boolean = false;
     // private _visible: boolean = true;
 
@@ -316,13 +316,14 @@ export class Entity extends CEventDispatcher {
 
     public get bound(): IBound {
         if (!this._bound) {
-            this.genBounds();
+            this.updateBound();
         }
         return this._bound;
     }
 
     public set bound(value: IBound) {
         this._bound = value;
+        this.updateBound();
     }
 
     /**
@@ -334,22 +335,46 @@ export class Entity extends CEventDispatcher {
             this._bound = new BoundingBox(Vector3.ZERO.clone(), Vector3.ONE.clone());
         }
         for (const children of this.entityChildren) {
-            if (children._bound) {
-                this._bound.merge(children._bound);
-            }
+            // if (children._bound) {
+            this._bound.merge(children.genBounds());
+            // }
         }
         return this._bound;
+    }
+
+    public updateBound() {
+        if (!this._bound) {
+            this._bound = new BoundingBox(Vector3.ZERO.clone(), Vector3.ONE.clone());
+            // this.genBounds();
+        }
+        let worldMatrix = this.transform.worldMatrix;
+        worldMatrix.transformPoint(this._bound.min, this.bound.worldMin);
+        worldMatrix.transformPoint(this._bound.max, this.bound.worldMax);
+
+        let sizeX = this._bound.max.x - this._bound.min.x;
+        let sizeY = this._bound.max.y - this._bound.min.y;
+        let sizeZ = this._bound.max.z - this._bound.min.z;
+
+        this._bound.size.set(sizeX, sizeY, sizeZ);
+        this._bound.center.set(
+            sizeX + this._bound.worldMin.x,
+            sizeY + this._bound.worldMin.y,
+            sizeZ + this._bound.worldMin.z,
+        );
     }
 
 
     /**
      * release current object
      */
-    public destroy() {
-        this.transform.parent = null;
+    public destroy(force?: boolean) {
         this.components.forEach((c) => {
-            c.destroy();
+            c.destroy(force);
         });
         this.components.clear();
+        this.entityChildren.forEach((c) => {
+            c.destroy(force);
+        })
+        this.transform.parent = null;
     }
 }
