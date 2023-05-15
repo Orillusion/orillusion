@@ -23,7 +23,6 @@
 * **sample:** add samples of animation ([#115](https://github.com/Orillusion/orillusion/issues/115)) ([a68bb77](https://github.com/Orillusion/orillusion/commit/a68bb77f9f52094abad08148a3efe8f406f739ca))
 
 
-
 ## 0.6.1 (2023-05-07)
 
 ### Bug Fixes
