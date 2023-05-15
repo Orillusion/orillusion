@@ -8,8 +8,8 @@ class Sample_DirectLightShadow {
 
     async run() {
         Engine3D.setting.shadow.autoUpdate = true;
-        Engine3D.setting.shadow.shadowBias = 0.002;
-        Engine3D.setting.shadow.shadowBound = 1000;
+        Engine3D.setting.shadow.shadowBias = 0.0001;
+        Engine3D.setting.shadow.shadowBound = 100;
 
         await Engine3D.init({});
 
@@ -23,7 +23,7 @@ class Sample_DirectLightShadow {
         mainCamera.perspective(60, Engine3D.aspect, 1, 5000.0);
         //set camera data
         mainCamera.object3D.z = -15;
-        mainCamera.object3D.addComponent(HoverCameraController).setCamera(35, -20, 150);
+        mainCamera.object3D.addComponent(HoverCameraController).setCamera(-15, -35, 150);
 
         await this.initScene();
 
