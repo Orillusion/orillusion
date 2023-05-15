@@ -502,8 +502,8 @@ export class Object3D extends Entity {
      *
      * Release self
      */
-    public destroy(): void {
-        super.destroy();
+    public destroy(force?: boolean): void {
+        super.destroy(force);
     }
 
 }

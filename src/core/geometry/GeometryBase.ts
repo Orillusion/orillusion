@@ -265,7 +265,7 @@ export class GeometryBase {
         return false;// this.geometrySource != null && this.geometrySource.type != 'none';
     }
 
-    destroy() {
+    destroy(force?: boolean) {
         this.uuid = null;
         this.name = null;
         this.subGeometries = null;

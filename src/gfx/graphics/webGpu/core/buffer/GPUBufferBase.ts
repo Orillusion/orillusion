@@ -303,7 +303,7 @@ export class GPUBufferBase {
         webGPUContext.device.queue.writeBuffer(this.buffer, 0, this.memory.shareDataBuffer);//, this.memory.shareFloat32Array.byteOffset, this.memory.shareFloat32Array.byteLength);
     }
 
-    public destroy() {
+    public destroy(force?: boolean) {
         if (this.memoryNodes) {
             this.memoryNodes.forEach((v) => {
                 v.destroy();

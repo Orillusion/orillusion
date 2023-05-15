@@ -76,18 +76,18 @@ export class PostBase {
         });
     }
 
-    public destroy() {
+    public destroy(force?: boolean) {
         this.postRenderer = null;
         for (let i = 0; i < this.rtViewQuad.size; i++) {
             const quad = this.rtViewQuad.values[i] as ViewQuad;
-            quad.destroy();
+            quad.destroy(force);
         }
         this.rtViewQuad.clear();
         this.rtViewQuad = null;
 
         for (let i = 0; i < this.virtualTexture.size; i++) {
             const tex = this.virtualTexture.values[i] as VirtualTexture;
-            tex.destroy();
+            tex.destroy(force);
         }
     }
 }

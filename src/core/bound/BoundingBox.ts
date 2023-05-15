@@ -169,7 +169,7 @@ export class BoundingBox implements IBound {
 
     }
 
-    public destroy() {
+    public destroy(force?: boolean) {
         this.center = null;
         this.extents = null;
         this.min = null;
