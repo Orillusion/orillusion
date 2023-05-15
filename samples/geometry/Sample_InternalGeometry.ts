@@ -75,8 +75,9 @@ class Sample_InternalGeometry {
         {
             let box = new Object3D();
             let meshRenderer = box.addComponent(MeshRenderer);
-            meshRenderer.geometry = new CylinderGeometry(5, 10, 20, 50, 20);
+            meshRenderer.geometry = new CylinderGeometry(5, 10, 20, 50, 20, true);
             meshRenderer.material = material;
+            material.cullMode = 'none'
             box.y = 20;
             box.x = 50;
             scene.addChild(box);
@@ -89,7 +90,7 @@ class Sample_InternalGeometry {
             meshRenderer.geometry = new CylinderGeometry(5, 10, 20, 50, 20);
             let topMaterial = new LitMaterial();
             topMaterial.baseColor = new Color(1, 0, 0, 1);
-            meshRenderer.material = material;
+            meshRenderer.materials = [material, material, material];
 
             box.y = 20;
             box.x = 50;
