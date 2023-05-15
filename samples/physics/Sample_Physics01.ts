@@ -12,6 +12,7 @@ class SamplePhysics01 {
     async run() {
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.updateFrameRate = 1;
+        Engine3D.setting.shadow.shadowSize = 4096;
         Engine3D.setting.shadow.shadowBound = 100;
         Engine3D.setting.shadow.shadowBias = 0.0001;
 

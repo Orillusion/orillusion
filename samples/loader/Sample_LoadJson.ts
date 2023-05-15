@@ -1,4 +1,5 @@
 import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, View3D } from "@orillusion/core";
+import { GUIHelp } from "@orillusion/debug/GUIHelp";
 
 // Sample to load json file
 export class Sample_LoadJson {
@@ -19,17 +20,16 @@ export class Sample_LoadJson {
 
         Engine3D.startRenderView(view);
 
-        let json = await Engine3D.res.loadJSON('json/anim.json', { onProgress: (e) => this.onLoadProgress(e), onComplete: (e) => this.onComplete(e) });
-        console.log('json file loaded');
-        console.log(json);
+        let json = await Engine3D.res.loadJSON('json/anim.json', { onProgress: this.onLoadProgress, onComplete: this.onComplete });
+        console.log('[loaded]', json);
     }
 
-    onLoadProgress(e) {
-        console.log(e);
+    onLoadProgress(received, total, url) {
+        console.log('[progress]', received, total, url);
     }
 
-    onComplete(e) {
-        console.log(e);
+    onComplete(url) {
+        console.log('[complete]', url);
     }
 
 }

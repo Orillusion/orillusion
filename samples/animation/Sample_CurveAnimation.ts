@@ -95,8 +95,8 @@ class Sample_AnimCurve {
         if (this.Duck) {
             let time = (Time.time * 0.4 % (1000) / 1000);
             this.Duck.y = this.curve1.getValue(time) * 5;
-            this.Duck.x = this.curve3.getValue(time) * 5;
-            this.Duck.z = this.curve4.getValue(time) * 5;
+            this.Duck.x = this.curve3.getValue(time) * 5 - 2.5;
+            this.Duck.z = this.curve4.getValue(time) * 5 - 2.5;
             this.Duck.rotationY = this.curve2.getValue(time);
         }
     }

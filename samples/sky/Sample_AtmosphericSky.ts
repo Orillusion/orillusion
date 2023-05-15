@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, Texture, AtmosphericScatteringSky } from "@orillusion/core";
+import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, Texture, AtmosphericScatteringSky, BoxGeometry, LitMaterial, MeshRenderer, Object3D } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
 // sample of AtmosphericSky
@@ -22,6 +22,14 @@ class Sample_AtmosphericSky {
         // camera controller
         mainCamera.object3D.addComponent(HoverCameraController).setCamera(45, -10, 10);
 
+        // create a basic cube
+        let cubeObj = new Object3D();
+        let mr = cubeObj.addComponent(MeshRenderer);
+        mr.geometry = new BoxGeometry();
+        let mat = new LitMaterial();
+        mr.material = mat;
+        this._scene.addChild(cubeObj);
+        
         // init view3D
         let view = new View3D();
         view.scene = this._scene;
