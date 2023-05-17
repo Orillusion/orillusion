@@ -61,4 +61,4 @@ export class ZSorterUtil {
     }
 }
 
-// export let zSorterUtil: ZSorterUtil = new ZSorterUtil();
+export let zSorterUtil: ZSorterUtil = new ZSorterUtil();

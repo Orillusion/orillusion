@@ -2,12 +2,7 @@ import { Camera3D } from '../core/Camera3D';
 import { Object3D } from '../core/entities/Object3D';
 import { Vector3 } from '../math/Vector3';
 import { ComponentBase } from './ComponentBase';
-
-export enum BillboardType {
-    Normal = 0,
-    BillboardY = 9,
-    BillboardXYZ = 10,
-}
+import { BillboardType } from './gui/GUIConfig';
 
 export class BillboardComponent extends ComponentBase {
     public type: BillboardType;
@@ -20,7 +15,6 @@ export class BillboardComponent extends ComponentBase {
     }
 
     public onUpdate() {
-        super.onUpdate();
         if (this.enable && this.transform.view3D.camera) {
             this.updateBillboardMatrix();
         }
