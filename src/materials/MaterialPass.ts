@@ -143,16 +143,16 @@ export class MaterialPass {
     /**
      * release material pass
      */
-    public destroy() {
+    public destroy(force?: boolean) {
         if (this.renderShader) {
-            this.renderShader.destroy();
+            this.renderShader.destroy(force);
         }
         this.renderShader = null;
         this.renderPasses.forEach((v, k) => {
             for (let i = 0; i < v.length; i++) {
                 const pass = v[i];
                 if (pass != this)
-                    pass.destroy();
+                    pass.destroy(force);
             }
             v.length = 0;
         });

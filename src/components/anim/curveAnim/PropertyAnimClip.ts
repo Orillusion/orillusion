@@ -61,7 +61,7 @@ export class PropertyAnimClip {
         this._wrapMode = value;
     }
 
-    public parser(jsonData: any) {
+    public parse(jsonData: any) {
         this.objAnimClip = {};
 
         let clip = jsonData['AnimationClip'];

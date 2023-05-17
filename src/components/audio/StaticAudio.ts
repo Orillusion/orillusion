@@ -106,9 +106,9 @@ export class StaticAudio extends ComponentBase {
     public onUpdate() {
         super.onUpdate();
     }
-    public destroy() {
+    public destroy(force?: boolean) {
         this.stop();
         this.gainNode?.disconnect();
-        super.destroy();
+        super.destroy(force);
     }
 }

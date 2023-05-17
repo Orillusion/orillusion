@@ -250,11 +250,11 @@ export class LightBase extends ComponentBase implements ILight {
         return this.lightData.direction;
     }
 
-    public destroy(): void {
+    public destroy(force?: boolean): void {
         this.bindOnChange = null;
         this.transform.eventDispatcher.removeEventListener(Transform.ROTATION_ONCHANGE, this.onRotChange, this);
         this.transform.eventDispatcher.removeEventListener(Transform.SCALE_ONCHANGE, this.onScaleChange, this);
-        super.destroy();
+        super.destroy(force);
     }
 
 }

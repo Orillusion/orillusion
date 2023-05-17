@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, Texture, SkyRenderer } from "@orillusion/core";
+import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, Texture, SkyRenderer, BoxGeometry, LitMaterial, MeshRenderer, Object3D } from "@orillusion/core";
 
 // sample to replace hdr sky map
 class Sample_HDRSky {
@@ -22,6 +22,14 @@ class Sample_HDRSky {
         let mainCamera = CameraUtil.createCamera3D(null, this._scene);
         mainCamera.perspective(60, Engine3D.aspect, 1, 2000.0);
 
+        // create a basic cube
+        let cubeObj = new Object3D();
+        let mr = cubeObj.addComponent(MeshRenderer);
+        mr.geometry = new BoxGeometry();
+        let mat = new LitMaterial();
+        mr.material = mat;
+        this._scene.addChild(cubeObj);
+                
         // camera controller
         let hoverCameraController = mainCamera.object3D.addComponent(HoverCameraController);
         hoverCameraController.setCamera(45, -10, 10);

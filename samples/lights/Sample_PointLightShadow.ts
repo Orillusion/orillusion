@@ -1,5 +1,6 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, Vector3, View3D, SphereGeometry, Object3D, MeshRenderer, LitMaterial, PointLight, BoxGeometry, Object3DUtil } from "@orillusion/core";
+import { GUIUtil } from "@samples/utils/GUIUtil";
 
 // sample of point light shadow
 class Sample_PointLightShadow {
@@ -32,28 +33,6 @@ class Sample_PointLightShadow {
         Engine3D.startRenderView(view);
     }
 
-    //show point light gui controller
-    private showLightGUI(light: PointLight) {
-        GUIHelp.init();
-        GUIHelp.addFolder('PointLight');
-        GUIHelp.addColor(light, 'lightColor');
-        GUIHelp.add(light.transform, 'x', -1000, 1000.0, 0.01);
-        GUIHelp.add(light.transform, 'y', -1000, 1000.0, 0.01);
-        GUIHelp.add(light.transform, 'z', -1000, 1000.0, 0.01);
-
-        GUIHelp.add(light, 'r', 0.0, 1.0, 0.001);
-        GUIHelp.add(light, 'g', 0.0, 1.0, 0.001);
-        GUIHelp.add(light, 'b', 0.0, 1.0, 0.001);
-        GUIHelp.add(light, 'intensity', 0.0, 1500.0, 0.001);
-        GUIHelp.add(light, 'at', 0.0, 1600.0, 0.001);
-        GUIHelp.add(light, 'radius', 0.0, 1000.0, 0.001);
-        GUIHelp.add(light, 'range', 0.0, 1000.0, 0.001);
-        GUIHelp.add(light, 'quadratic', 0.0, 2.0, 0.001);
-
-        GUIHelp.open();
-        GUIHelp.endFolder();
-    }
-
     async initScene(scene: Scene3D) {
         let lightObj3D = new Object3D();
         lightObj3D.y = 25;
@@ -66,7 +45,8 @@ class Sample_PointLightShadow {
         scene.addChild(lightObj3D);
 
         //show gui
-        this.showLightGUI(pointLight);
+        GUIHelp.init()
+        GUIUtil.showPointLightGUI(pointLight);
 
         let cubeGeometry = new BoxGeometry(10, 10, 10);
         let litMaterial = new LitMaterial();

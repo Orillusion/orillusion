@@ -19,5 +19,5 @@ export interface IComponent {
     onCompute?(view?: View3D, command?: GPUCommandEncoder);
     onGraphic?(view?: View3D);
     cloneTo(obj: Object3D);
-    destroy()
+    destroy(force?: boolean)
 }

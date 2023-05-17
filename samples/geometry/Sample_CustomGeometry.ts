@@ -54,6 +54,7 @@ class Sample_CustomGeometry {
         }
 
         geometry.vertexBuffer.upload(VertexAttributeName.position, attribute);
+        geometry.computeNormals();
         scene.addChild(plane);
     }
 

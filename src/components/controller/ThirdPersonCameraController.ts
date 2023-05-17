@@ -61,10 +61,10 @@ export class ThirdPersonCameraController extends ComponentBase {
         this._camera.transform.localPosition = focusPoint.subtract(vec);
     }
 
-    public destroy(): void {
+    public destroy(force?: boolean): void {
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_WHEEL, this.mouseWheel, this);
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_UP, this.mouseUp, this);
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_DOWN, this.mouseDown, this);
-        super.destroy();
+        super.destroy(force);
     }
 }

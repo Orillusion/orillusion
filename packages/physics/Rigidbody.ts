@@ -205,10 +205,10 @@ export class Rigidbody extends ComponentBase {
         }
     }
 
-    public destroy(): void {
+    public destroy(force?: boolean): void {
         Physics.removeRigidbody(this);
         this._initedFunctions = null;
-        super.destroy();
+        super.destroy(force);
     }
 
     /**

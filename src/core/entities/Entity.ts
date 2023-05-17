@@ -367,15 +367,14 @@ export class Entity extends CEventDispatcher {
     /**
      * release current object
      */
-    public destroy() {
+    public destroy(force?: boolean) {
         this.components.forEach((c) => {
-            c.destroy();
+            c.destroy(force);
         });
         this.components.clear();
         this.entityChildren.forEach((c) => {
-            c.destroy();
+            c.destroy(force);
         })
         this.transform.parent = null;
-        // this.entityChildren = null;
     }
 }
