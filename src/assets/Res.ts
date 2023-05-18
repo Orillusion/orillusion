@@ -17,6 +17,7 @@ import { HDRTexture } from '../textures/HDRTexture';
 import { LDRTextureCube } from '../textures/LDRTextureCube';
 import { BRDFLUTGenerate } from '../gfx/generate/BrdfLUTGenerate';
 import { Uint8ArrayTexture } from '../textures/Uint8ArrayTexture';
+import { Reference } from '..';
 
 /**
  * Resource management classes for textures, materials, models, and preset bodies.
@@ -377,11 +378,24 @@ export class Res {
         this.grayTexture = this.createTexture(32, 32, 128, 128, 128, 255.0, 'default-grayTexture');
 
         let brdf = new BRDFLUTGenerate();
-        let texture = brdf.generateBRDFLUTTexture();
-        let BRDFLUT = texture.name = 'BRDFLUT';
-        this.addTexture(BRDFLUT, texture);
+        let brdf_texture = brdf.generateBRDFLUTTexture();
+        let BRDFLUT = brdf_texture.name = 'BRDFLUT';
+        this.addTexture(BRDFLUT, brdf_texture);
 
         this.defaultSky = new HDRTextureCube();
         this.defaultSky.createFromTexture(128, this.blackTexture);
+
+        Reference.getInstance().attache(this.defaultSky, this);
+        Reference.getInstance().attache(brdf_texture, this);
+
+        Reference.getInstance().attache(this.normalTexture, this);
+        Reference.getInstance().attache(this.maskTexture, this);
+        Reference.getInstance().attache(this.whiteTexture, this);
+        Reference.getInstance().attache(this.blackTexture, this);
+        Reference.getInstance().attache(this.redTexture, this);
+        Reference.getInstance().attache(this.blueTexture, this);
+        Reference.getInstance().attache(this.greenTexture, this);
+        Reference.getInstance().attache(this.yellowTexture, this);
+        Reference.getInstance().attache(this.grayTexture, this);
     }
 }
