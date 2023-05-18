@@ -1,7 +1,7 @@
 ﻿import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { createExampleScene, createSceneParam } from "@samples/utils/ExampleScene";
 import { GUIPanelBinder, sampleUIPanelDispatcher, sampleUIPanelClick } from "./panel/GUIBinder";
-import { Camera3D, Scene3D, View3D, Engine3D, Object3DUtil, Object3D, Vector3, WorldPanel, Time } from "@orillusion/core";
+import { Camera3D, Scene3D, View3D, Engine3D, Object3DUtil, Object3D, Vector3, WorldPanel, Time, zSorterUtil } from "@orillusion/core";
 
 export class Sample_UIMultiPanel {
     camera: Camera3D;
@@ -43,7 +43,6 @@ export class Sample_UIMultiPanel {
     private bindTarget3DRoot: Object3D;
 
     private makeUIPanelList(): void {
-        let uiRoot = new Object3D();
         this.bindTarget3DRoot = new Object3D();
         this.bindTarget3DRoot.y = 50;
         this.scene.addChild(this.bindTarget3DRoot);
@@ -51,9 +50,10 @@ export class Sample_UIMultiPanel {
 
         for (let i = 0; i < 50; i++) {
             //panel
-            let panelRoot: Object3D = uiRoot.addChild(new Object3D()) as Object3D;
+            let panelRoot: Object3D = new Object3D();
             let panel = panelRoot.addComponent(WorldPanel, { billboard: true });
-            canvas.addUIPanel(panel);
+            panel.needSortOnCameraZ = true;
+            canvas.addChild(panel.object3D);
 
             //random position
             let angle = Math.PI * 2 * Math.random();
@@ -61,9 +61,8 @@ export class Sample_UIMultiPanel {
             pos.set(Math.sin(angle), Math.cos(angle), (Math.random() - 0.5) * 2);
             pos.multiplyScalar(50 * Math.sqrt(Math.random() + 0.25));
 
-            let ball = new Object3D();
+            let ball = this.bindTarget3DRoot.addChild(new Object3D()) as Object3D;
             ball.localPosition = pos;
-            this.bindTarget3DRoot.addChild(ball);
 
             //binder
             let node = new GUIPanelBinder(ball, panelRoot, i);

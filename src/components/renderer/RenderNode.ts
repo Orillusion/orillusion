@@ -28,7 +28,6 @@ export class RenderNode extends ComponentBase {
     public instanceCount: number = 0;
     public lodLevel: number = 0;
     public alwaysRender: boolean = false;
-    public renderOrder: number = 0;
     public instanceID: string;
     public drawType: number = 0;
 
@@ -43,10 +42,24 @@ export class RenderNode extends ComponentBase {
     protected _combineShaderRefection: ShaderReflection;
     protected _ignoreEnvMap?: boolean;
     protected _ignorePrefilterMap?: boolean;
+    private _renderOrder: number = 0;
+    public isRenderOrderChange?: boolean;
+    public needSortOnCameraZ?: boolean;
 
     constructor() {
         super();
         this.rendererMask = RendererMask.Default;
+    }
+
+    public get renderOrder(): number {
+        return this._renderOrder;
+    }
+
+    public set renderOrder(value: number) {
+        if (value != this._renderOrder) {
+            this.isRenderOrderChange = true;
+            this._renderOrder = value;
+        }
     }
 
     public get geometry(): GeometryBase {

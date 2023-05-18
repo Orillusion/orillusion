@@ -20,22 +20,22 @@ export class GUICanvas extends ComponentBase {
 
     /**
      *
-     * Add an UIPanel
-     * @param child UIPanel
+     * Add an Object3D
+     * @param child Object3D
      * @returns
      */
-    public addUIPanel(child: UIPanel): this {
-        this.object3D.addChild(child.object3D) as Object3D;
+    public addChild(child: Object3D): this {
+        this.object3D.addChild(child);
         return this;
     }
 
     /**
     *
-    * Remove the child panel
-    * @param child Removed UIPanel
+    * Remove the child
+    * @param child Removed Object3D
     */
-    public removeUIPanel(child: UIPanel): this {
-        this.object3D.removeChild(child.object3D);
+    public removeChild(child: Object3D): this {
+        this.object3D.removeChild(child);
         return this;
     }
 
@@ -67,7 +67,8 @@ export class GUICanvas extends ComponentBase {
             }
             // panel.guiMesh.enable = transforms.length > 0;
             guiMesh.uiRenderer.enable = transforms.length > 0;
-            guiMesh.uiRenderer.renderOrder = GUIConfig.SortOrderStart + panel.renderOrderOffset;
+            guiMesh.uiRenderer.renderOrder = GUIConfig.SortOrderStart + panel.panelOrder;
+            guiMesh.uiRenderer.needSortOnCameraZ = panel.needSortOnCameraZ;
             panel.needUpdateGeometry = false;
         });
     }

@@ -15,6 +15,7 @@ export class WorldPanel extends UIPanel {
     let component: WorldPanel = obj.getOrAddComponent(WorldPanel);
     component.order = this.order;
     component.depthTest = this.depthTest;
-    component.renderOrderOffset = this.renderOrderOffset;
+    component.panelOrder = this.panelOrder;
+    component.needSortOnCameraZ = this.needSortOnCameraZ;
   }
 }

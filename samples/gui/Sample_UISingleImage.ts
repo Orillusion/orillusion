@@ -32,7 +32,7 @@ export class Sample_UISingleImage {
         await bitmapTexture2D.load('textures/KB3D_NTT_Ads_basecolor.png');
 
         let panel = panelRoot.addComponent(WorldPanel);
-        canvas.addUIPanel(panel);
+        canvas.addChild(panel.object3D);
 
         let imageQuad = new Object3D();
         panelRoot.addChild(imageQuad);

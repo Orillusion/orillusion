@@ -36,7 +36,7 @@ export class Sample_UIImageColor {
         await Engine3D.res.loadAtlas('atlas/UI_atlas.json');
 
         let panel = panelRoot.addComponent(WorldPanel);
-        canvas.addUIPanel(panel);
+        canvas.addChild(panel.object3D);
 
         // create image
         let imageQuad = new Object3D();

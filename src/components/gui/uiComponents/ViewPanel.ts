@@ -12,6 +12,7 @@ export class ViewPanel extends UIPanel {
   public cloneTo(obj: Object3D) {
     let component: ViewPanel = obj.getOrAddComponent(ViewPanel);
     component.order = this.order;
-    component.renderOrderOffset = this.renderOrderOffset;
+    component.panelOrder = this.panelOrder;
+    component.needSortOnCameraZ = false;
   }
 }

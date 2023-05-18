@@ -22,8 +22,7 @@ export class GUIMaterial extends MaterialBase {
 
         let shaderState = shader.shaderState;
         // shaderState.useZ = false;
-        shaderState.depthWriteEnabled = true;
-        shaderState.frontFace = `ccw`;
+        shaderState.depthWriteEnabled = false;
         this.blendMode = BlendMode.ALPHA;
         this.depthCompare = space == GUISpace.View ? GPUCompareFunction.always : GPUCompareFunction.less_equal;
         this.cullMode = GPUCullMode.back;

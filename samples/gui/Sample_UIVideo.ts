@@ -1,7 +1,7 @@
 ﻿import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { VideoTexture } from "@orillusion/media-extention";
 import { createExampleScene } from "@samples/utils/ExampleScene";
-import { Engine3D, Object3DUtil, Object3D, ViewPanel, BlendMode, UIImage, ImageType, makeAloneSprite } from "@orillusion/core";
+import { Engine3D, Object3DUtil, Object3D, ViewPanel, UIImage, ImageType, makeAloneSprite } from "@orillusion/core";
 
 export class Sample_UIVideo {
 
@@ -27,7 +27,8 @@ export class Sample_UIVideo {
 
         //create UI root
         let panelRoot: Object3D = new Object3D();
-        canvas.addUIPanel(panelRoot.addComponent(ViewPanel));
+        panelRoot.addComponent(ViewPanel);
+        canvas.addChild(panelRoot);
         {
             let imageQuad = new Object3D();
             panelRoot.addChild(imageQuad);

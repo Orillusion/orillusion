@@ -9,8 +9,8 @@ export class UIPanel extends UIComponentBase {
     public space: number = GUISpace.World;
     public needUpdateGeometry: boolean = true;
     public uuid: string;
-    public renderOrderOffset: number = 0;
-
+    public panelOrder: number = 0;
+    public needSortOnCameraZ?: boolean;
     protected _mesh: GUIMesh;
 
     public get guiMesh(): GUIMesh {

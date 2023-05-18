@@ -26,7 +26,7 @@ export class Sample_UISpriteSheet {
         panelRoot.scaleX = panelRoot.scaleY = panelRoot.scaleZ = 0.4;
         //create panel
         let panel = panelRoot.addComponent(WorldPanel, { billboard: true });
-        canvas.addUIPanel(panel);
+        canvas.addChild(panel.object3D);
 
         //
         let quad = new Object3D();

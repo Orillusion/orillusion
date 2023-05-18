@@ -41,7 +41,7 @@ export class Sample_UIButton {
             panel = panelRoot.addComponent(ViewPanel);
         }
         //add panel
-        canvas.addUIPanel(panel);
+        canvas.addChild(panel.object3D);
 
         {
             let quad = new Object3D();

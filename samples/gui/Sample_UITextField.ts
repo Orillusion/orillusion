@@ -36,7 +36,7 @@ export class Sample_UITextField {
             panelRoot.scaleX = panelRoot.scaleY = panelRoot.scaleZ = 1;
             panel = panelRoot.addComponent(ViewPanel);
         }
-        canvas.addUIPanel(panel);
+        canvas.addChild(panel.object3D);
 
         {
             let textQuad = new Object3D();
