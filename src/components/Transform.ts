@@ -127,6 +127,10 @@ export class Transform extends ComponentBase {
         this.object3D.entityChildren.forEach((v) => {
             v.transform.parent = value ? this : null;
         });
+
+        if (value) {
+            this.transform.updateWorldMatrix();
+        }
     }
 
     public set enable(value: boolean) {

@@ -151,7 +151,7 @@ export class RenderNode extends ComponentBase {
                     this._geometry.generate(shader.shaderReflection);
                 }
 
-                this.object3D.bound = this._geometry.bounds;
+                this.object3D.bound = this._geometry.bounds.clone();
             }
             this._readyPipeline = true;
 
