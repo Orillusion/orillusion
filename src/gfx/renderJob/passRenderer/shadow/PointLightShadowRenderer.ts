@@ -21,6 +21,7 @@ import { WebGPUDescriptorCreator } from '../../../graphics/webGpu/descriptor/Web
 import { RendererPassState } from '../state/RendererPassState';
 import { RendererType } from '../state/RendererType';
 import { ILight } from '../../../../components/lights/ILight';
+import { Reference } from '../../../..';
 
 type CubeShadowMapInfo = {
     cubeCamera: CubeCamera,
@@ -37,7 +38,7 @@ export class PointLightShadowRenderer extends RendererBase {
     private _forceUpdate = false;
     private _shadowCameraDic: Map<ILight, CubeShadowMapInfo>;
     public shadowCamera: Camera3D;
-    public cubeTextureArray: DepthCubeArrayTexture;
+    public cubeArrayTexture: DepthCubeArrayTexture;
     public colorTexture: VirtualTexture;
     public shadowSize: number = 1024;
     constructor() {
@@ -46,8 +47,10 @@ export class PointLightShadowRenderer extends RendererBase {
 
         // this.shadowSize = Engine3D.setting.shadow.pointShadowSize;
         this._shadowCameraDic = new Map<ILight, CubeShadowMapInfo>();
-        this.cubeTextureArray = new DepthCubeArrayTexture(this.shadowSize, this.shadowSize, 8);
+        this.cubeArrayTexture = new DepthCubeArrayTexture(this.shadowSize, this.shadowSize, 8);
         this.colorTexture = new VirtualTexture(this.shadowSize, this.shadowSize, GPUTextureFormat.bgra8unorm, false);
+
+        Reference.getInstance().attache(this.cubeArrayTexture, this);
     }
 
 
@@ -63,7 +66,7 @@ export class PointLightShadowRenderer extends RendererBase {
             let rendererPassStates: RendererPassState[] = [];
             for (let i = 0; i < 6; i++) {
 
-                let depthTexture = new VirtualTexture(this.shadowSize, this.shadowSize, this.cubeTextureArray.format, false);
+                let depthTexture = new VirtualTexture(this.shadowSize, this.shadowSize, this.cubeArrayTexture.format, false);
                 let rtFrame = new RTFrame([this.colorTexture], [new RTDescriptor()]);
                 depthTexture.name = `shadowDepthTexture_` + lightBase.name + i + "_face";
                 rtFrame.depthTexture = depthTexture;
@@ -152,7 +155,7 @@ export class PointLightShadowRenderer extends RendererBase {
                             origin: { x: 0, y: 0, z: 0 },
                         },
                         {
-                            texture: this.cubeTextureArray.getGPUTexture(),
+                            texture: this.cubeArrayTexture.getGPUTexture(),
                             mipLevel: 0,
                             origin: { x: 0, y: 0, z: light.shadowIndex * 6 + i },
                         },

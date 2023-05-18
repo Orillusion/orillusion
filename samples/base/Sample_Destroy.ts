@@ -38,39 +38,36 @@ class Sample_Destroy {
         // add light object
         scene3D.addChild(light)
         {
-            // create new object
-            const obj: Object3D = new Object3D()
-            // add MeshRenderer
-            let mr: MeshRenderer = obj.addComponent(MeshRenderer)
-            // set geometry
-            mr.geometry = new BoxGeometry(1, 1, 1)
-            // set material
-            mr.material = new LitMaterial()
-            // set rotation
-            obj.rotationY = 45
-            obj.x = -2
-            // add object
-            scene3D.addChild(obj)
-        }
-        {
-            // create new object
-            const obj: Object3D = new Object3D()
-            // add MeshRenderer
-            let mr: MeshRenderer = obj.addComponent(MeshRenderer)
-            // set geometry
-            mr.geometry = new BoxGeometry(1, 1, 1)
-            // set material
-            mr.material = new LitMaterial()
-            // set rotation
-            obj.rotationY = 45
-            obj.x = 2
-            // add object
-            scene3D.addChild(obj)
+            let list: Object3D[] = [];
+            GUIHelp.addButton("add", () => {
+                for (let i = 0; i < 20; i++) {
+                    // create new object
+                    const obj: Object3D = new Object3D()
+                    // add MeshRenderer
+                    let mr: MeshRenderer = obj.addComponent(MeshRenderer)
+                    // set geometry
+                    mr.geometry = new BoxGeometry(1, 1, 1)
+                    // set material
+                    mr.material = new LitMaterial()
+                    // set rotation
+                    obj.rotationY = 45
+                    obj.x = 2
+                    // add object
+                    scene3D.addChild(obj)
+                    obj.x = Math.random() * 50 - 25;
+                    obj.y = Math.random() * 50 - 25;
+                    obj.z = Math.random() * 50 - 25;
+                    list.push(obj);
+                }
+            });
 
-            // debug gui
-            GUIHelp.addButton('destroy', () => {
-                obj.destroy(true)
-            })
+            GUIHelp.addButton("del", () => {
+                for (let i = 0; i < list.length; i++) {
+                    const obj = list[i];
+                    obj.destroy(true);
+                }
+            });
+
         }
         // create a view with target scene and camera
         let view = new View3D()
