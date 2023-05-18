@@ -59,7 +59,6 @@ export class MaterialPass {
      */
     public set blendMode(value: BlendMode) {
         this.renderShader.blendMode = value;
-        // this.transparent = value != BlendMode.NONE && value != BlendMode.NORMAL;
     }
 
     /**

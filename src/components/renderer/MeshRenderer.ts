@@ -55,7 +55,7 @@ export class MeshRenderer extends RenderNode {
             this.onCompute = null;
         }
 
-        this.object3D.bound = this._geometry.bounds;
+        this.object3D.bound = this._geometry.bounds.clone();
 
         if (this._readyPipeline) {
             this.initPipeline();

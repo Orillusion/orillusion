@@ -3,7 +3,7 @@ import { webGPUContext } from '../Context3D';
 import { ShaderBase } from './ShaderBase';
 import { ShaderReflection, ShaderReflectionVarInfo } from './value/ShaderReflectionInfo';
 import { Preprocessor } from './util/Preprocessor';
-import { Struct } from '../../../..';
+import { Reference, Struct } from '../../../..';
 import { StorageGPUBuffer } from '../core/buffer/StorageGPUBuffer';
 import { StructStorageGPUBuffer } from '../core/buffer/StructStorageGPUBuffer';
 import { UniformGPUBuffer } from '../core/buffer/UniformGPUBuffer';
@@ -72,13 +72,8 @@ export class ComputeShader extends ShaderBase {
      * @param texture
      */
     public setSamplerTexture(name: string, texture: Texture) {
-        // if (!this.sampleTextureDic.has(name)) {
         this._sampleTextureDic.set(name, texture);
-        // this.useSampler.set(name, useSampler);
-        // }
     }
-
-
 
     /**
      * Record the compute shader distribution command
@@ -179,6 +174,7 @@ export class ComputeShader extends ShaderBase {
                                         resource: texture.getGPUView(),
                                     }
                                     entries.push(entry);
+                                    Reference.getInstance().attache(texture, this);
                                 } else {
                                     console.error(`ComputeShader(${this.instanceID})`, `texture ${refs.varName} is missing! `);
                                 }
@@ -190,6 +186,7 @@ export class ComputeShader extends ShaderBase {
                                         resource: texture.getGPUView(),
                                     }
                                     entries.push(entry);
+                                    Reference.getInstance().attache(texture, this);
                                 } else {
                                     console.error(`ComputeShader(${this.instanceID})`, `texture ${refs.varName} is missing! `);
                                 }
