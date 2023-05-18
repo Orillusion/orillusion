@@ -30,7 +30,7 @@ export class PostBase {
         let rt = RTResourceMap.createRTTexture(name, rtWidth, rtHeight, format, useMipmap, sampleCount);
         rt.name = name;
         this.virtualTexture.set(name, rt);
-        Reference.getInstance().attache(rt, this);
+        Reference.getInstance().attached(rt, this);
         return rt;
     }
 

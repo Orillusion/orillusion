@@ -385,17 +385,17 @@ export class Res {
         this.defaultSky = new HDRTextureCube();
         this.defaultSky.createFromTexture(128, this.blackTexture);
 
-        Reference.getInstance().attache(this.defaultSky, this);
-        Reference.getInstance().attache(brdf_texture, this);
+        Reference.getInstance().attached(this.defaultSky, this);
+        Reference.getInstance().attached(brdf_texture, this);
 
-        Reference.getInstance().attache(this.normalTexture, this);
-        Reference.getInstance().attache(this.maskTexture, this);
-        Reference.getInstance().attache(this.whiteTexture, this);
-        Reference.getInstance().attache(this.blackTexture, this);
-        Reference.getInstance().attache(this.redTexture, this);
-        Reference.getInstance().attache(this.blueTexture, this);
-        Reference.getInstance().attache(this.greenTexture, this);
-        Reference.getInstance().attache(this.yellowTexture, this);
-        Reference.getInstance().attache(this.grayTexture, this);
+        Reference.getInstance().attached(this.normalTexture, this);
+        Reference.getInstance().attached(this.maskTexture, this);
+        Reference.getInstance().attached(this.whiteTexture, this);
+        Reference.getInstance().attached(this.blackTexture, this);
+        Reference.getInstance().attached(this.redTexture, this);
+        Reference.getInstance().attached(this.blueTexture, this);
+        Reference.getInstance().attached(this.greenTexture, this);
+        Reference.getInstance().attached(this.yellowTexture, this);
+        Reference.getInstance().attached(this.grayTexture, this);
     }
 }

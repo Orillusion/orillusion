@@ -1,4 +1,4 @@
-import { ShadowLightsCollect } from "../..";
+import { Reference, ShadowLightsCollect } from "../..";
 import { Engine3D } from "../../Engine3D";
 import { View3D } from "../../core/View3D";
 import { GeometryBase } from "../../core/geometry/GeometryBase";
@@ -54,6 +54,12 @@ export class RenderNode extends ComponentBase {
     }
 
     public set geometry(value: GeometryBase) {
+        if (this._geometry != value) {
+            if (this._geometry) {
+                Reference.getInstance().detached(this._geometry, this)
+            }
+            Reference.getInstance().attached(value, this)
+        }
         this._geometry = value;
     }
 
@@ -82,6 +88,15 @@ export class RenderNode extends ComponentBase {
     }
 
     public set materials(value: MaterialBase[]) {
+        for (let i = 0; i < this._materials.length; i++) {
+            let mat = this._materials[i];
+            Reference.getInstance().detached(mat, this)
+        }
+        for (let i = 0; i < value.length; i++) {
+            let mat = value[i];
+            Reference.getInstance().attached(mat, this)
+        }
+
         this._materials = value;
         let transparent = false;
         let sort = 0;
@@ -400,15 +415,15 @@ export class RenderNode extends ComponentBase {
                     renderShader.setTexture(`brdflutMap`, bdrflutTex);
 
                     let shadowRenderer = Engine3D.getRenderJob(view).shadowMapPassRenderer;
-                    if (shadowRenderer && shadowRenderer.depth2DTextureArray) {
-                        renderShader.setTexture(`shadowMap`, Engine3D.getRenderJob(view).shadowMapPassRenderer.depth2DTextureArray);
+                    if (shadowRenderer && shadowRenderer.depth2DArrayTexture) {
+                        renderShader.setTexture(`shadowMap`, Engine3D.getRenderJob(view).shadowMapPassRenderer.depth2DArrayTexture);
                         renderShader.setStorageBuffer(`shadowBuffer`, ShadowLightsCollect.shadowBuffer.get(view.scene));
                     }
                     // let shadowLight = ShadowLights.list;
                     // if (shadowLight.length) {
                     let pointShadowRenderer = Engine3D.getRenderJob(view).pointLightShadowRenderer;
-                    if (pointShadowRenderer && pointShadowRenderer.cubeTextureArray) {
-                        renderShader.setTexture(`pointShadowMap`, pointShadowRenderer.cubeTextureArray);
+                    if (pointShadowRenderer && pointShadowRenderer.cubeArrayTexture) {
+                        renderShader.setTexture(`pointShadowMap`, pointShadowRenderer.cubeArrayTexture);
                     }
                     // }
 
@@ -445,6 +460,19 @@ export class RenderNode extends ComponentBase {
 
     public destroy(force?: boolean) {
         super.destroy(force);
+
+        Reference.getInstance().detached(this._geometry, this);
+        if (!Reference.getInstance().hasReference(this._geometry)) {
+            this._geometry.destroy(force);
+        }
+
+        for (let i = 0; i < this._materials.length; i++) {
+            const mat = this._materials[i];
+            Reference.getInstance().detached(mat, this);
+            if (!Reference.getInstance().hasReference(mat)) {
+                mat.destroy(force);
+            }
+        }
 
         this._geometry = null;
         this._materials = null;
