@@ -27,7 +27,6 @@ export class ShadowLightsCollect {
 
         this.shadowBuffer = new Map<Scene3D, StorageGPUBuffer>;
         this.shadowLights = new Map<Scene3D, Uint32Array>;
-        // this.shadowBuffer.visibility = GPUShaderStage.FRAGMENT;
     }
 
     public static createBuffer(scene: Scene3D) {
