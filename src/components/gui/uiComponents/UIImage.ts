@@ -35,6 +35,19 @@ export class UIImage extends UIComponentBase {
         return this._quad.sprite;
     }
 
+    protected onUIComponentVisible(visible: boolean): void {
+        this.applyComponentVisible();
+    }
+
+    protected onUITransformVisible(visible: boolean): void {
+        this.applyComponentVisible();
+    }
+
+    private applyComponentVisible(): void {
+        let isHidden = !this._visible || !this._uiTransform.globalVisible;
+        this._quad.visible = !isHidden;
+    }
+
     public get color() {
         return this._quad.color;
     }

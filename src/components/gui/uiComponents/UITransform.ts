@@ -63,7 +63,7 @@ export class UITransform extends ComponentBase {
         if (this._localVisible != value) {
             this._localVisible = value;
             let parentGlobal = this.parent ? this.parent._globalVisible : true;
-            this.onUIVisible(this._localVisible && parentGlobal);
+            this.onUITransformVisible(this._localVisible && parentGlobal);
         }
     }
 
@@ -71,34 +71,28 @@ export class UITransform extends ComponentBase {
         return this._localVisible;
     }
 
-    protected onUIVisible(global: boolean): void {
+    protected onUITransformVisible(global: boolean): void {
         let newGlobalVisible = this._localVisible && global;
         if (newGlobalVisible != this._globalVisible) {
             this._globalVisible = newGlobalVisible;
             this.object3D.components.forEach((v, k) => {
                 let ui = v as UITransform;//it could be UIComponentBase 
-                if (!ui.onUIVisible)
+                if (!ui.onUITransformVisible)
                     return;
                 if (ui == this) {
-                    this.applyUIVisible();
                     for (let child of this.object3D.entityChildren) {
                         let transform = (child as Object3D).getComponent(UITransform);
                         if (transform) {
-                            transform.onUIVisible(this._globalVisible);
+                            transform.onUITransformVisible(this._globalVisible);
                         }
                     }
                 } else {
-                    ui.onUIVisible(this._globalVisible);
+                    ui.onUITransformVisible(this._globalVisible);
                 }
             });
         }
     }
 
-    public applyUIVisible(): void {
-        for (let quad of this.quads) {
-            quad && (quad.visible = this._globalVisible);
-        }
-    }
 
     public onParentChange(parent: Object3D) {
         this.parent = parent ? parent.getComponent(UITransform) : null;

@@ -12,9 +12,10 @@ export enum UIInteractiveStyle {
 export interface IUIInteractive {
     interactive: boolean;
     enable: boolean;
+    visible: boolean;
     object3D?: CEventDispatcher;
 
-    get globalVisible(): boolean;
+    get interactiveVisible(): boolean;
 
     rayPick(ray: Ray, screenPos: Vector2, screenSize: Vector2);
 

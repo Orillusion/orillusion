@@ -22,8 +22,8 @@ export class UIInteractive extends UIComponentBase implements IUIInteractive {
         this._style = value;
     }
 
-    public get globalVisible(): boolean {
-        return this._uiTransform.globalVisible;
+    public get interactiveVisible(): boolean {
+        return this._uiTransform.globalVisible && this._visible;
     }
 
     init(param?: any) {

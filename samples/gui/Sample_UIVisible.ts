@@ -1,13 +1,12 @@
 ﻿import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { createExampleScene } from "@samples/utils/ExampleScene";
-import { Engine3D, Object3DUtil, Object3D, UIImage, ImageType, Camera3D, WorldPanel } from "@orillusion/core";
+import { Engine3D, Object3DUtil, Object3D, UIImage, ImageType, Camera3D, WorldPanel, UITransform } from "@orillusion/core";
 
 export class Sample_UIVisible {
-
-    camera: Camera3D;
-    imgList: UIImage[];
+    imageComponentList: UIImage[];
+    uiTransform: UITransform;
     counter: number = 0;
-    imageCount = 10;
+    spriteCount = 10;
     async run() {
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.shadowBias = 0.002;
@@ -31,20 +30,17 @@ export class Sample_UIVisible {
         let panelRoot: Object3D = new Object3D();
         panelRoot.scaleX = panelRoot.scaleY = panelRoot.scaleZ = 0.2;
 
-        this.camera = exampleScene.camera;
-
         await Engine3D.res.loadAtlas('atlas/Sheet_atlas.json');
-
 
         let panel = panelRoot.addComponent(WorldPanel);
         canvas.addChild(panel.object3D);
 
 
-        this.imgList = [];
+        this.imageComponentList = [];
         let frameStart = 65;
+        // create sprite list
 
-        for (let i = 0; i < this.imageCount; i++) {
-            // create image
+        for (let i = 0; i < this.spriteCount; i++) {
             let imageQuad = new Object3D();
             panelRoot.addChild(imageQuad);
             let img = imageQuad.addComponent(UIImage);
@@ -52,20 +48,40 @@ export class Sample_UIVisible {
             img.sprite = Engine3D.res.getGUISprite(frameKey);
             img.imageType = ImageType.Sliced;
             img.uiTransform.resize(200, 200);
-            img.uiTransform.x = (i - (this.imageCount - 1) * 0.5) * 50;
-            this.imgList.push(img);
+            img.uiTransform.x = (i - (this.spriteCount - 1) * 0.5) * 50;
+            this.imageComponentList.push(img);
+        }
+
+        //create panel
+        let quadGroup: Object3D = new Object3D();
+        panelRoot.addChild(quadGroup);
+        this.uiTransform = quadGroup.addComponent(UITransform);
+        let pi_2 = Math.PI * 2;
+        let rectCount = 50;
+        for (let i = 0; i < rectCount; i++) {
+            let rect = new Object3D();
+            quadGroup.addChild(rect);
+            let img = rect.addComponent(UIImage);
+            img.uiTransform.resize(10, 10);
+            let angle = i / rectCount * pi_2;
+            img.uiTransform.x = Math.sin(angle) * 160;
+            img.uiTransform.y = Math.cos(angle) * 160;
         }
     }
 
     renderUpdate() {
-        if (this.imgList) {
+        if (this.imageComponentList) {
             this.counter += 0.02;
             let mathSin = (Math.sin(this.counter) + 1) * 0.5;
-            let index = Math.floor(mathSin * this.imgList.length);
+            let index = Math.floor(mathSin * this.imageComponentList.length);
 
-            for (let i = 0; i < this.imgList.length; i++) {
-                this.imgList[i].uiTransform.visible = i != index;
+            //component visible
+            for (let i = 0; i < this.imageComponentList.length; i++) {
+                this.imageComponentList[i].visible = i != index;
             }
+
+            // transform visible
+            this.uiTransform.visible = index % 2 == 0;
         }
 
     }

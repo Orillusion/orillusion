@@ -100,7 +100,22 @@ export class UITextField extends UIComponentBase {
         //refresh color;
         this.color = this._color;
         this._uiTransform.markNeedsUpdateGUIMesh();
-        this._uiTransform.applyUIVisible();
+        this.onUIComponentVisible && this.onUIComponentVisible(this._visible);
+    }
+
+    protected onUIComponentVisible(visible: boolean): void {
+        this.applyComponentVisible();
+    }
+
+    protected onUITransformVisible(visible: boolean): void {
+        this.applyComponentVisible();
+    }
+
+    private applyComponentVisible(): void {
+        let isHidden = !this._visible || !this._uiTransform.globalVisible;
+        for (let quad of this._textQuads) {
+            quad && (quad.visible = !isHidden);
+        }
     }
 
     protected onTransformResize() {

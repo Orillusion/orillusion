@@ -4,9 +4,20 @@ import { UITransform } from "./UITransform";
 
 export class UIComponentBase extends ComponentBase {
     protected _uiTransform: UITransform;
-
+    protected _visible: boolean = true;
     public get uiTransform() {
         return this._uiTransform;
+    }
+
+    public get visible(): boolean {
+        return this._visible;
+    }
+
+    public set visible(value: boolean) {
+        if (this._visible != value) {
+            this._visible = value;
+            this.onUIComponentVisible && this.onUIComponentVisible(this._visible);
+        }
     }
 
     init(param?: any) {
@@ -15,7 +26,8 @@ export class UIComponentBase extends ComponentBase {
         this._uiTransform.eventDispatcher.addEventListener(UITransform.Resize, this.onTransformResize, this);
     }
 
-    protected onUIVisible?(visible: boolean): void;
+    protected onUITransformVisible?(visible: boolean): void;
+    protected onUIComponentVisible?(visible: boolean): void;
 
     //Called when component size changes
     protected onTransformResize(): void { }
