@@ -23,6 +23,7 @@ import { GUIAtlasTexture } from '../components/gui/core/GUIAtlasTexture';
 import { FontParser, FontInfo } from '../loader/parser/FontParser';
 import { fonts } from './Fonts';
 import { AtlasParser } from '../loader/parser/AtlasParser';
+import { Reference } from '../util/Reference';
 
 /**
  * Resource management classes for textures, materials, models, and preset bodies.
@@ -435,13 +436,25 @@ export class Res {
         this.grayTexture = this.createTexture(32, 32, 128, 128, 128, 255.0, 'default-grayTexture');
 
         let brdf = new BRDFLUTGenerate();
-        let texture = brdf.generateBRDFLUTTexture();
-        let BRDFLUT = texture.name = 'BRDFLUT';
-        this.addTexture(BRDFLUT, texture);
+        let brdf_texture = brdf.generateBRDFLUTTexture();
+        let BRDFLUT = brdf_texture.name = 'BRDFLUT';
+        this.addTexture(BRDFLUT, brdf_texture);
 
         this.defaultSky = new HDRTextureCube();
         this.defaultSky.createFromTexture(128, this.blackTexture);
 
+        Reference.getInstance().attached(this.defaultSky, this);
+        Reference.getInstance().attached(brdf_texture, this);
+
+        Reference.getInstance().attached(this.normalTexture, this);
+        Reference.getInstance().attached(this.maskTexture, this);
+        Reference.getInstance().attached(this.whiteTexture, this);
+        Reference.getInstance().attached(this.blackTexture, this);
+        Reference.getInstance().attached(this.redTexture, this);
+        Reference.getInstance().attached(this.blueTexture, this);
+        Reference.getInstance().attached(this.greenTexture, this);
+        Reference.getInstance().attached(this.yellowTexture, this);
+        Reference.getInstance().attached(this.grayTexture, this);
         this.defaultGUITexture = new GUITexture(this.whiteTexture);
         this.defaultGUISprite = new GUISprite(this.defaultGUITexture);
         this.defaultGUISprite.trimSize.set(4, 4)

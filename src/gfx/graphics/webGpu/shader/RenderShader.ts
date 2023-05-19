@@ -627,7 +627,7 @@ export class RenderShader extends ShaderBase {
                             // if(info.binding == 8){
                             //     console.log(info.binding, entry );
                             // }
-                            Reference.getInstance().attache(texture, this);
+                            Reference.getInstance().attached(texture, this);
                         }
                         break;
                     case `texture_external`:
@@ -641,7 +641,7 @@ export class RenderShader extends ShaderBase {
                             entries.push(entry);
                             this._textureGroup = index;
                             // console.log(info.binding, entry );
-                            Reference.getInstance().attache(texture, this);
+                            Reference.getInstance().attached(texture, this);
                         }
                         break;
                     default:
@@ -655,7 +655,7 @@ export class RenderShader extends ShaderBase {
                             entries.push(entry);
                             this._textureGroup = index;
                             // console.log(info.binding, entry );
-                            Reference.getInstance().attache(texture, this);
+                            Reference.getInstance().attached(texture, this);
                         }
                         break;
                 }

@@ -174,7 +174,7 @@ export class ComputeShader extends ShaderBase {
                                         resource: texture.getGPUView(),
                                     }
                                     entries.push(entry);
-                                    Reference.getInstance().attache(texture, this);
+                                    Reference.getInstance().attached(texture, this);
                                 } else {
                                     console.error(`ComputeShader(${this.instanceID})`, `texture ${refs.varName} is missing! `);
                                 }
@@ -186,7 +186,7 @@ export class ComputeShader extends ShaderBase {
                                         resource: texture.getGPUView(),
                                     }
                                     entries.push(entry);
-                                    Reference.getInstance().attache(texture, this);
+                                    Reference.getInstance().attached(texture, this);
                                 } else {
                                     console.error(`ComputeShader(${this.instanceID})`, `texture ${refs.varName} is missing! `);
                                 }

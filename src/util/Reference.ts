@@ -13,11 +13,11 @@ export class Reference {
     }
 
     /**
-     * current instance attache from parent instance
+     * current instance attached from parent instance
      * @param ref reference current 
      * @param target reference parent
      */
-    public attache(ref: any, target: any) {
+    public attached(ref: any, target: any) {
         this.reference ||= new Map<any, Map<any, any>>();
 
         let refMap = this.reference.get(ref);
