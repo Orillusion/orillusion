@@ -53,8 +53,6 @@ export class PointLightShadowRenderer extends RendererBase {
         Reference.getInstance().attached(this.cubeArrayTexture, this);
     }
 
-
-
     public getShadowCamera(view: View3D, lightBase: ILight): CubeShadowMapInfo {
         let cubeShadowMapInfo: CubeShadowMapInfo;
         if (this._shadowCameraDic.has(lightBase)) {
