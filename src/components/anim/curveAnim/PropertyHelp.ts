@@ -47,9 +47,9 @@ export class PropertyHelp {
     };
 
     static property_scale: any = {
-        'm_LocalPosition.x': -1,
+        'm_LocalPosition.x': 1,
         'm_LocalPosition.y': 1,
-        'm_LocalPosition.z': 1,
+        'm_LocalPosition.z': -1,
 
         'localEulerAnglesRaw.x': -1, //Deg2Rad(1),
         'localEulerAnglesRaw.y': 1, //Deg2Rad(1),
@@ -59,9 +59,9 @@ export class PropertyHelp {
         'm_LocalEulerAngles.y': 1, //Deg2Rad(1),
         'm_LocalEulerAngles.z': 1, //Deg2Rad(1),
 
-        'm_LocalRotation.x': -1, //Rad2Deg(1),
+        'm_LocalRotation.x': 1, //Rad2Deg(1),
         'm_LocalRotation.y': 1, //Rad2Deg(1),
-        'm_LocalRotation.z': 1, //Rad2Deg(1),
+        'm_LocalRotation.z': -1, //Rad2Deg(1),
         'm_LocalRotation.w': -1, //Rad2Deg(1),
 
         'm_LocalScale.x': 1,
