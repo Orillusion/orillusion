@@ -65,10 +65,18 @@ export class UITextField extends UIComponentBase {
     }
 
     public clean(): this {
+        let allQuads = this._uiTransform.quads;
         while (this._textQuads.length > 0) {
             let quad = this._textQuads.shift();
-            quad.sprite = null;
-            GUIQuad.quadPool.pushBack(quad);
+            if (quad) {
+                quad.sprite = null;
+                GUIQuad.quadPool.pushBack(quad);
+                let index = allQuads.indexOf(quad);
+                if (index >= 0) {
+                    allQuads.splice(index, 1);
+                }
+            }
+
         }
         return this;
     }
@@ -91,7 +99,8 @@ export class UITextField extends UIComponentBase {
         }
         //refresh color;
         this.color = this._color;
-        this.uiTransform.markNeedsUpdateGUIMesh();
+        this._uiTransform.markNeedsUpdateGUIMesh();
+        this._uiTransform.applyUIVisible();
     }
 
     protected onTransformResize() {

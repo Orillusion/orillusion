@@ -14,6 +14,8 @@ export interface IUIInteractive {
     enable: boolean;
     object3D?: CEventDispatcher;
 
+    get globalVisible(): boolean;
+
     rayPick(ray: Ray, screenPos: Vector2, screenSize: Vector2);
 
     destroy(): void;

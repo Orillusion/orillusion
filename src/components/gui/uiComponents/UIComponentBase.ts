@@ -15,6 +15,8 @@ export class UIComponentBase extends ComponentBase {
         this._uiTransform.eventDispatcher.addEventListener(UITransform.Resize, this.onTransformResize, this);
     }
 
+    protected onUIVisible?(visible: boolean): void;
+
     //Called when component size changes
     protected onTransformResize(): void { }
 

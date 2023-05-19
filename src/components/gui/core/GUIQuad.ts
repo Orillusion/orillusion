@@ -12,7 +12,7 @@ let gui_help_mtx3: Matrix3;
 export class GUIQuad {
     public x: number = 0;
     public y: number = 0;
-    public z: number;
+    public z: number = 0;
     public width: number = 1;
     public height: number = 1;
 
@@ -21,14 +21,13 @@ export class GUIQuad {
 
     private _globalWidth: number = 0;
     private _globalHeight: number = 0;
-
+    private _visible: boolean = true;
     private _offsetX: number = 0;
     private _offsetY: number = 0;
     protected _sprite: GUISprite = Engine3D.res.defaultGUISprite;
     public readonly color: Color = new Color(1, 1, 1, 1);
     public imageType: ImageType = ImageType.Simple;
     public onChange: boolean = true;
-
 
     private static textPool: PoolNode<GUIQuad>;
 
@@ -37,6 +36,17 @@ export class GUIQuad {
             this.textPool = new PoolNode<GUIQuad>();
         }
         return this.textPool;
+    }
+
+    public get visible(): boolean {
+        return this._visible;
+    }
+
+    public set visible(value: boolean) {
+        if (value != this._visible) {
+            this._visible = value;
+            this.onChange = true;
+        }
     }
 
     public get sprite() {

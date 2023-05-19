@@ -165,7 +165,7 @@ export class GUIPick {
 
         let intersect: { intersect: boolean; intersectPoint?: Vector3; distance: number; interactive?: IUIInteractive };
         for (const iterator of colliders) {
-            if (iterator.interactive && iterator.enable) {
+            if (iterator.interactive && iterator.enable && iterator.globalVisible) {
                 intersect = iterator.rayPick(this._ray, screenPos, screenSize);
                 if (intersect) {
                     intersect.interactive = iterator;
