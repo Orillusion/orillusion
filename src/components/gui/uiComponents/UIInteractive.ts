@@ -43,6 +43,7 @@ export class UIInteractive extends UIComponentBase implements IUIInteractive {
 
     cloneTo(obj: Object3D) {
         let component = obj.getOrAddComponent(UIInteractive);
+        component.copyComponent(this);
         component.enable = this.enable;
         component.interactive = this.interactive;
         component.mouseStyle = this._style;

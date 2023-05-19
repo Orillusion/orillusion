@@ -86,6 +86,7 @@ export class UIButton extends UIInteractive {
 
     cloneTo(obj: Object3D) {
         let component = obj.getOrAddComponent(UIButton);
+        component.copyComponent(this);
         component.downSprite = this.downSprite;
         component.normalSprite = this.normalSprite;
         component.disableSprite = this.disableSprite;

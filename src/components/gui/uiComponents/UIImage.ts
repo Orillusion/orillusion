@@ -22,6 +22,7 @@ export class UIImage extends UIComponentBase {
 
     public cloneTo(obj: Object3D) {
         let component = obj.getOrAddComponent(UIImage);
+        component.copyComponent(this);
         component.sprite = this.sprite;
         component.color = this.color;
         component.imageType = this.imageType;

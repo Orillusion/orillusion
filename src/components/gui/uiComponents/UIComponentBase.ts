@@ -46,4 +46,9 @@ export class UIComponentBase extends ComponentBase {
         this._uiTransform.quads.length = 0;
         return this;
     }
+
+    public copyComponent(from: this): this {
+        this.visible = from.visible;
+        return this;
+    }
 }

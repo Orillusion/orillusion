@@ -20,6 +20,7 @@ export class UITextField extends UIComponentBase {
 
     cloneTo(obj: Object3D) {
         let component = obj.getOrAddComponent(UITextField);
+        component.copyComponent(this);
         component._font = this._font;
         component._fontSize = this._fontSize;
         component._originSize = this._originSize;

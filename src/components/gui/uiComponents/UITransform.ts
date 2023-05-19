@@ -220,7 +220,7 @@ export class UITransform extends ComponentBase {
 
     public cloneTo(obj: Object3D) {
         let component = obj.getOrAddComponent(UITransform);
-
+        component.visible = this.visible;
         component.x = this.x;
         component.y = this.y;
         component.z = this.z;

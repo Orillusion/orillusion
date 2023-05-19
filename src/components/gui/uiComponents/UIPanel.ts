@@ -1,4 +1,4 @@
-import { Object3D, View3D } from "../../..";
+import { View3D } from "../../..";
 import { GUISpace } from "../GUIConfig";
 import { GUIMesh } from "../core/GUIMesh";
 import { UIComponentBase } from "./UIComponentBase";
@@ -8,7 +8,6 @@ export class UIPanel extends UIComponentBase {
     public order: number;
     public space: number = GUISpace.World;
     public needUpdateGeometry: boolean = true;
-    public uuid: string;
     public panelOrder: number = 0;
     public needSortOnCameraZ?: boolean;
     protected _mesh: GUIMesh;
@@ -44,16 +43,20 @@ export class UIPanel extends UIComponentBase {
     onGraphic?(view?: View3D) {
         // throw new Error("Method not implemented.");
     }
-    cloneTo(obj: Object3D) {
-        // throw new Error("Method not implemented.");
-    }
+
     destroy(force?: boolean) {
         // throw new Error("Method not implemented.");
+    }
+    public copyComponent(from: this): this {
+        this.visible = from.visible;
+        this.order = from.order;
+        this.panelOrder = from.panelOrder;
+        this.needSortOnCameraZ = from.needSortOnCameraZ;
+        return this;
     }
 
     init(param?: any) {
         super.init(param);
-        this.uuid = this.object3D.uuid;
         this._mesh = new GUIMesh(this.space, param);
         this.object3D.addChild(this._mesh);
     }
