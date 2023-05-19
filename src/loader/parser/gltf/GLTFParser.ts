@@ -13,7 +13,7 @@ export class GLTFParser extends ParserBase {
     static format: string = 'json';
     private _gltf: GLTF_Info;
 
-    public async parserJson(obj: object) {
+    public async parseJson(obj: object) {
         this._gltf = new GLTF_Info();
         this._gltf = { ...this._gltf, ...obj };
         this._gltf.resources = {};

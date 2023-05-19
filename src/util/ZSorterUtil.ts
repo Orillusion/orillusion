@@ -42,9 +42,7 @@ export class ZSorterUtil {
             let zSortItemObject3D = this.pop();
             zSortItemObject3D.userData = userData;
             zSortItemObject3D.obj3d = getObject3D(userData);
-            this._worldPosition.copyFrom(zSortItemObject3D.obj3d.transform.worldPosition);
-            camera3D.worldToScreenPoint(this._worldPosition, this._viewPosition);
-            zSortItemObject3D.z = this._viewPosition.z;
+            zSortItemObject3D.z = this.worldToCameraDepth(zSortItemObject3D.obj3d, camera3D);
             this._zSortList.push(zSortItemObject3D);
         }
 
@@ -59,6 +57,19 @@ export class ZSorterUtil {
         this.recycle();
         return result;
     }
+
+    public worldToCameraDepth(obj3d: Object3D, camera?: Camera3D): number {
+        camera ||= obj3d.transform.view3D.camera;
+        let z: number = 0;
+        if (camera) {
+            this._worldPosition.copyFrom(obj3d.transform.worldPosition);
+            camera.worldToScreenPoint(this._worldPosition, this._viewPosition);
+            z = this._viewPosition.z;
+        }
+        return z;
+
+    }
 }
 
-// export let zSorterUtil: ZSorterUtil = new ZSorterUtil();
+
+export let zSorterUtil: ZSorterUtil = new ZSorterUtil();

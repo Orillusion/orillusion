@@ -152,9 +152,9 @@ export class ComponentBase implements IComponent {
      */
     private _onBeforeUpdate(call: Function) {
         if (call != null) {
-            ComponentCollect.bindLateUpdate(this.transform.view3D, this, call);
+            ComponentCollect.bindBeforeUpdate(this.transform.view3D, this, call);
         } else {
-            ComponentCollect.unBindLateUpdate(this.transform.view3D, this);
+            ComponentCollect.unBindBeforeUpdate(this.transform.view3D, this);
         }
     }
 
