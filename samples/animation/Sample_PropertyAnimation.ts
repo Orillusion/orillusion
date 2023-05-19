@@ -10,7 +10,7 @@ class Sample_PropertyAnimation {
     async run() {
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.updateFrameRate = 1;
-        Engine3D.setting.shadow.shadowBound = 10;
+        Engine3D.setting.shadow.shadowBound = 20;
         Engine3D.setting.shadow.shadowBias = 0.0001;
 
         await Engine3D.init();
@@ -37,10 +37,13 @@ class Sample_PropertyAnimation {
 
         // load external model
         let model = await Engine3D.res.loadGltf('PBR/Duck/Duck.gltf') as Object3D;
-        this.scene.addChild(model);
+        let container = new Object3D();
+        container.addChild(model);
+        model.rotationY = 180;
+        this.scene.addChild(container);
         model.scaleX = model.scaleY = model.scaleZ = 0.01;
 
-        this.animation = await this.initPropertyAnim(model);
+        this.animation = await this.initPropertyAnim(container);
         this.animation.play(this.animation.defaultClip);
 
         return true;

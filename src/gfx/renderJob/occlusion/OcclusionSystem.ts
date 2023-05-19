@@ -51,7 +51,7 @@ export class OcclusionSystem {
             this._renderList.set(camera, cameraViewRenderList);
         }
         cameraViewRenderList.clear();
-
+        EntityCollect.instance.autoSortRenderNodes(scene);
         let nodes = EntityCollect.instance.getRenderNodes(scene);
         // for (let i = 0; i < nodes.opaqueList.length; i++) {
         //     const node = nodes.opaqueList[i];
