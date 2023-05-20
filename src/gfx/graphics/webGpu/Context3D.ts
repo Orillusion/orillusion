@@ -83,7 +83,7 @@ class Context3D {
         }
 
         this.device = await this.adapter.requestDevice({
-            requiredFeatures: [`texture-compression-bc`],
+            //requiredFeatures: [`texture-compression-bc`],
             requiredLimits: {
                 minUniformBufferOffsetAlignment: 256,
                 maxStorageBufferBindingSize: this.adapter.limits.maxStorageBufferBindingSize
