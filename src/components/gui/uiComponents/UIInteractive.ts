@@ -22,6 +22,10 @@ export class UIInteractive extends UIComponentBase implements IUIInteractive {
         this._style = value;
     }
 
+    public get interactiveVisible(): boolean {
+        return this._uiTransform.globalVisible && this._visible;
+    }
+
     init(param?: any) {
         super.init(param);
         this._uiTransform.addUIInteractive(this);
@@ -39,6 +43,7 @@ export class UIInteractive extends UIComponentBase implements IUIInteractive {
 
     cloneTo(obj: Object3D) {
         let component = obj.getOrAddComponent(UIInteractive);
+        component.copyComponent(this);
         component.enable = this.enable;
         component.interactive = this.interactive;
         component.mouseStyle = this._style;

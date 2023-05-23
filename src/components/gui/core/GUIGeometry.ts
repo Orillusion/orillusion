@@ -116,7 +116,7 @@ export class GUIGeometry extends GeometryBase {
         let sizePositionArray = quadNum * 4 * 2;
         this._vPosition = new StorageGPUBuffer(sizePositionArray, 0);
         this._positionArray = new Float32Array(this._vPosition.memory.shareDataBuffer);
-        //Each quad has : color/uvRec_size/uvBorder_size/uvSlice_size/textureID/slot
+        //Each quad has : color/uvRec_size/uvBorder_size/uvSlice_size/textureID/visible
         let sizeUniformArray = quadNum * (4 + 4 + 4 + 2 + 2);
         this._vUniform = new StorageGPUBuffer(sizeUniformArray, 0);
         this._uniformArray = new Float32Array(this._vUniform.memory.shareDataBuffer);
@@ -165,7 +165,7 @@ export class GUIGeometry extends GeometryBase {
         let color = quad.color;
         let uvRec = texture.uvRec;
         let uvBorder = texture.uvBorder;
-        //Each quad has: color/uvRec_size/uvBorder_size/uvSlice_size/textureID
+        //Each quad has: color/uvRec_size/uvBorder_size/uvSlice_size/textureID/visible
 
         let offset = (4 + 4 + 4 + 2 + 2) * i;
         this._uniformArray[offset + 0] = color.r;
@@ -186,7 +186,7 @@ export class GUIGeometry extends GeometryBase {
         this._uniformArray[offset + 12] = uvSliceWidth;
         this._uniformArray[offset + 13] = uvSliceHeight;
         this._uniformArray[offset + 14] = textureID;
-        this._uniformArray[offset + 15] = 0;//free
+        this._uniformArray[offset + 15] = quad.visible ? 1 : 0;
 
         this._onUniformChange = true;
     }

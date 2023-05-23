@@ -22,6 +22,7 @@ export class UIImage extends UIComponentBase {
 
     public cloneTo(obj: Object3D) {
         let component = obj.getOrAddComponent(UIImage);
+        component.copyComponent(this);
         component.sprite = this.sprite;
         component.color = this.color;
         component.imageType = this.imageType;
@@ -33,6 +34,19 @@ export class UIImage extends UIComponentBase {
 
     public get sprite(): GUISprite {
         return this._quad.sprite;
+    }
+
+    protected onUIComponentVisible(visible: boolean): void {
+        this.applyComponentVisible();
+    }
+
+    protected onUITransformVisible(visible: boolean): void {
+        this.applyComponentVisible();
+    }
+
+    private applyComponentVisible(): void {
+        let isHidden = !this._visible || !this._uiTransform.globalVisible;
+        this._quad.visible = !isHidden;
     }
 
     public get color() {

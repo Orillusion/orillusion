@@ -20,6 +20,7 @@ export class UITextField extends UIComponentBase {
 
     cloneTo(obj: Object3D) {
         let component = obj.getOrAddComponent(UITextField);
+        component.copyComponent(this);
         component._font = this._font;
         component._fontSize = this._fontSize;
         component._originSize = this._originSize;
@@ -65,10 +66,18 @@ export class UITextField extends UIComponentBase {
     }
 
     public clean(): this {
+        let allQuads = this._uiTransform.quads;
         while (this._textQuads.length > 0) {
             let quad = this._textQuads.shift();
-            quad.sprite = null;
-            GUIQuad.quadPool.pushBack(quad);
+            if (quad) {
+                quad.sprite = null;
+                GUIQuad.quadPool.pushBack(quad);
+                let index = allQuads.indexOf(quad);
+                if (index >= 0) {
+                    allQuads.splice(index, 1);
+                }
+            }
+
         }
         return this;
     }
@@ -91,7 +100,23 @@ export class UITextField extends UIComponentBase {
         }
         //refresh color;
         this.color = this._color;
-        this.uiTransform.markNeedsUpdateGUIMesh();
+        this._uiTransform.markNeedsUpdateGUIMesh();
+        this.onUIComponentVisible && this.onUIComponentVisible(this._visible);
+    }
+
+    protected onUIComponentVisible(visible: boolean): void {
+        this.applyComponentVisible();
+    }
+
+    protected onUITransformVisible(visible: boolean): void {
+        this.applyComponentVisible();
+    }
+
+    private applyComponentVisible(): void {
+        let isHidden = !this._visible || !this._uiTransform.globalVisible;
+        for (let quad of this._textQuads) {
+            quad && (quad.visible = !isHidden);
+        }
     }
 
     protected onTransformResize() {

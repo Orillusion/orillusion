@@ -113,7 +113,7 @@ export class GUIShader {
             vUvBorder: vec4<f32>,
             vUvSlice: vec2<f32>,
             vTextureID: f32,
-            slot: f32
+            vVisible: f32
         }
                 
         struct MaterialUniform{
@@ -160,11 +160,14 @@ export class GUIShader {
             let quadIndex = u32(vertex.vIndex * 0.25);
             var vUniformData = vUniformBuffer[quadIndex];
             
-            var op = 2.0 * vec2<f32>(vPositionBuffer[u32(vertexIndex)]) / materialUniform.screen;
-            
+            var op = vec2<f32>(0.0001);
+            if(vUniformData.vVisible > 0.5){
+                op = 2.0 * vec2<f32>(vPositionBuffer[u32(vertexIndex)]) / materialUniform.screen;
+            }
+
             vertexOut.member = vec4<f32>(op.x, op.y, vertexIndex * 0.0001, 1.0);
+
             vertexOut.vUV = vec2<f32>(vertex.uv);
-            
             vertexOut.vUvRec = vUniformData.vUvRec;
             vertexOut.vColor4 = vUniformData.vColor4;
             vertexOut.vUvBorder = vUniformData.vUvBorder;
@@ -188,9 +191,10 @@ export class GUIShader {
             var vUniformData = vUniformBuffer[quadIndex];
             
             var localPos = vec4<f32>(vPositionBuffer[u32(vertexIndex)], vertexIndex * 0.0001, 1.0) ;
-            
-            var op = globalUniform.projMat * globalUniform.viewMat * modelMatrix * localPos ;
-            
+            var op = vec4<f32>(0.0001);
+            if(vUniformData.vVisible > 0.5){
+                op = globalUniform.projMat * globalUniform.viewMat * modelMatrix * localPos ;
+            }
             vertexOut.member = op;
             vertexOut.vUV = vec2<f32>(vertex.uv);
             

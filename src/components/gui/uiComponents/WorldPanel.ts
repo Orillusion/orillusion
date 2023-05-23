@@ -13,9 +13,7 @@ export class WorldPanel extends UIPanel {
 
   public cloneTo(obj: Object3D) {
     let component: WorldPanel = obj.getOrAddComponent(WorldPanel);
-    component.order = this.order;
+    component.copyComponent(this);
     component.depthTest = this.depthTest;
-    component.panelOrder = this.panelOrder;
-    component.needSortOnCameraZ = this.needSortOnCameraZ;
   }
 }

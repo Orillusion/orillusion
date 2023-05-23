@@ -19,8 +19,9 @@ export class UITransform extends ComponentBase {
 
     private _width: number = 1;
     private _height: number = 1;
+    private _localVisible: boolean = true;
+    private _globalVisible: boolean = true;
     public guiMesh: GUIMesh;
-
     public static readonly Resize: string = 'GUITransformResize';
 
     private _resizeEvent = new CEvent(UITransform.Resize);
@@ -29,6 +30,12 @@ export class UITransform extends ComponentBase {
 
     public get uiInteractiveList() {
         return this._uiInteractiveList;
+    }
+
+    constructor() {
+        super();
+        this._localMatrix = new Matrix3();
+        this._worldMatrix = new Matrix3();
     }
 
     public addUIInteractive(item: IUIInteractive): this {
@@ -47,6 +54,45 @@ export class UITransform extends ComponentBase {
         }
         return null;
     }
+
+    public get globalVisible(): boolean {
+        return this._globalVisible;
+    }
+
+    public set visible(value: boolean) {
+        if (this._localVisible != value) {
+            this._localVisible = value;
+            let parentGlobal = this.parent ? this.parent._globalVisible : true;
+            this.onUITransformVisible(this._localVisible && parentGlobal);
+        }
+    }
+
+    public get visible(): boolean {
+        return this._localVisible;
+    }
+
+    protected onUITransformVisible(global: boolean): void {
+        let newGlobalVisible = this._localVisible && global;
+        if (newGlobalVisible != this._globalVisible) {
+            this._globalVisible = newGlobalVisible;
+            this.object3D.components.forEach((v, k) => {
+                let ui = v as UITransform;//it could be UIComponentBase 
+                if (!ui.onUITransformVisible)
+                    return;
+                if (ui == this) {
+                    for (let child of this.object3D.entityChildren) {
+                        let transform = (child as Object3D).getComponent(UITransform);
+                        if (transform) {
+                            transform.onUITransformVisible(this._globalVisible);
+                        }
+                    }
+                } else {
+                    ui.onUITransformVisible(this._globalVisible);
+                }
+            });
+        }
+    }
+
 
     public onParentChange(parent: Object3D) {
         this.parent = parent ? parent.getComponent(UITransform) : null;
@@ -138,6 +184,7 @@ export class UITransform extends ComponentBase {
 
     public set onChange(value: boolean) {
         if (this._onChange != value) {
+            this._onChange = value;
             if (value) {
                 this._tempTransforms.length = 0;
                 //notice: The component list contains corresponding components that belong to the current Object 3D
@@ -171,15 +218,9 @@ export class UITransform extends ComponentBase {
         }
     }
 
-    constructor() {
-        super();
-        this._localMatrix = new Matrix3();
-        this._worldMatrix = new Matrix3();
-    }
-
     public cloneTo(obj: Object3D) {
         let component = obj.getOrAddComponent(UITransform);
-
+        component.visible = this.visible;
         component.x = this.x;
         component.y = this.y;
         component.z = this.z;
