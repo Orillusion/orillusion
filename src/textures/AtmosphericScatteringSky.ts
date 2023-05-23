@@ -13,12 +13,12 @@ import { VirtualTexture } from './VirtualTexture';
  */
 export class AtmosphericScatteringSkySetting {
     public sunRadius: number = 500.0;
-    public sunRadiance: number = 10.0;
+    public sunRadiance: number = 11.0;
     public mieG: number = 0.76;
     public mieHeight: number = 1200;
     public eyePos: number = 1500;
     public sunX: number = 0.55;
-    public sunY: number = 0.54;
+    public sunY: number = 0.56;
     public sunBrightness: number = 1.0;
     public displaySun: boolean = true;
     public defaultTextureCubeSize: number = 512;

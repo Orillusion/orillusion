@@ -1,6 +1,6 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { createExampleScene } from "@samples/utils/ExampleScene";
-import { Scene3D, SolidColorSky, Engine3D, SkyRenderer, Color, Object3DUtil } from "@orillusion/core";
+import { SolidColorSky, Engine3D, SkyRenderer, Color, Object3DUtil } from "@orillusion/core";
 
 // sample to display solid color sky
 class HDRSkyMap {
