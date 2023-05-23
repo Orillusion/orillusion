@@ -1,10 +1,11 @@
-import { Color, LDRTextureCube } from '..';
 import { AtmosphericScatteringSky_shader } from '../assets/shader/sky/AtmosphericScatteringSky_shader';
 import { UniformGPUBuffer } from '../gfx/graphics/webGpu/core/buffer/UniformGPUBuffer';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
 import { ComputeShader } from '../gfx/graphics/webGpu/shader/ComputeShader';
 import { GPUTextureFormat } from '../gfx/graphics/webGpu/WebGPUConst';
 import { GPUContext } from '../gfx/renderJob/GPUContext';
+import { Color } from '../math/Color';
+import { LDRTextureCube } from './LDRTextureCube';
 import { VirtualTexture } from './VirtualTexture';
 /**
  * AtmosphericScattering Sky Setting
