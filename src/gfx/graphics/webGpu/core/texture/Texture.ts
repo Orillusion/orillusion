@@ -120,6 +120,7 @@ export class Texture implements GPUSamplerDescriptor {
      *  whether is video texture
      */
     public isVideoTexture?: boolean;
+    public isHDRTexture?: boolean;
 
     private _useMipmap: boolean = false;
 

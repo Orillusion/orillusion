@@ -1,11 +1,11 @@
-import { Color } from '..';
 import { AtmosphericScatteringSky_shader } from '../assets/shader/sky/AtmosphericScatteringSky_shader';
 import { UniformGPUBuffer } from '../gfx/graphics/webGpu/core/buffer/UniformGPUBuffer';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
 import { ComputeShader } from '../gfx/graphics/webGpu/shader/ComputeShader';
 import { GPUTextureFormat } from '../gfx/graphics/webGpu/WebGPUConst';
 import { GPUContext } from '../gfx/renderJob/GPUContext';
-import { HDRTextureCube } from './HDRTextureCube';
+import { Color } from '../math/Color';
+import { LDRTextureCube } from './LDRTextureCube';
 import { VirtualTexture } from './VirtualTexture';
 /**
  * AtmosphericScattering Sky Setting
@@ -13,12 +13,12 @@ import { VirtualTexture } from './VirtualTexture';
  */
 export class AtmosphericScatteringSkySetting {
     public sunRadius: number = 500.0;
-    public sunRadiance: number = 10.0;
+    public sunRadiance: number = 11.0;
     public mieG: number = 0.76;
     public mieHeight: number = 1200;
     public eyePos: number = 1500;
     public sunX: number = 0.55;
-    public sunY: number = 0.54;
+    public sunY: number = 0.56;
     public sunBrightness: number = 1.0;
     public displaySun: boolean = true;
     public defaultTextureCubeSize: number = 512;
@@ -30,7 +30,7 @@ export class AtmosphericScatteringSkySetting {
  * Atmospheric Scattering Sky Texture
  * @group Texture
  */
-export class AtmosphericScatteringSky extends HDRTextureCube {
+export class AtmosphericScatteringSky extends LDRTextureCube {
     private _internalTexture: AtmosphericTexture2D;
     private _cubeSize: number;
     public readonly setting: AtmosphericScatteringSkySetting;
@@ -61,11 +61,9 @@ export class AtmosphericScatteringSky extends HDRTextureCube {
      */
     public apply(): this {
         this._internalTexture.update(this.setting);
-        this.uploadErpTexture(this._internalTexture);
+        this._faceData.uploadErpTexture(this._internalTexture);
         return this;
     }
-
-
 }
 
 /**

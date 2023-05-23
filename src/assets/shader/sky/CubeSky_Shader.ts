@@ -77,8 +77,11 @@ export class CubeSky_Shader {
     @fragment
     fn main(@location(0) fragUV: vec2<f32>, @location(1) vWorldPos: vec4<f32>, @location(2) vWorldNormal: vec3<f32>) -> FragmentOutput {
         let maxLevel: u32 = textureNumLevels(baseMap);
-        let textureColor:vec3<f32> = textureSampleLevel(baseMap, baseMapSampler, normalize(vWorldPos.xyz), global.roughness * f32(maxLevel) ).xyz;
-        let o_Target: vec4<f32> = vec4<f32>(LinearToGammaSpace(textureColor),1.0) * globalUniform.skyExposure ;
+        var textureColor:vec3<f32> = textureSampleLevel(baseMap, baseMapSampler, normalize(vWorldPos.xyz), global.roughness * f32(maxLevel) ).xyz;
+        #if IS_HDR_SKY
+        textureColor = LinearToGammaSpace(textureColor);
+        #endif
+        let o_Target: vec4<f32> =vec4<f32>(textureColor, 1.0) * globalUniform.skyExposure ;
         var normal_rgba8unorm = (vWorldNormal + 1.0) * 0.5;
         normal_rgba8unorm = clamp(normal_rgba8unorm, vec3<f32>(0.0), vec3<f32>(1.0));
 
