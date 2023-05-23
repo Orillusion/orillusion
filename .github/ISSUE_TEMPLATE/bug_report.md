@@ -25,10 +25,10 @@ If applicable, add screenshots to help explain your problem
 ## Orillusion engine version
 State the version you use for developement, e.g. 0.6.1
 
-## Desktop (please complete the following information)
+## Platform (please complete the following information)
 - OS: [e.g. win, mac, android]
-- Browser [e.g. chrome]
-- Version [e.g. 113]
+- Browser: [e.g. chrome]
+- Version: [e.g. 113]
 
 ## Code demo link
 If applicabla, please provide a sandbox/codepen/code snippet... to demonstrate the bug.  
