@@ -1,11 +1,10 @@
-import { Color } from '..';
+import { Color, LDRTextureCube } from '..';
 import { AtmosphericScatteringSky_shader } from '../assets/shader/sky/AtmosphericScatteringSky_shader';
 import { UniformGPUBuffer } from '../gfx/graphics/webGpu/core/buffer/UniformGPUBuffer';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
 import { ComputeShader } from '../gfx/graphics/webGpu/shader/ComputeShader';
 import { GPUTextureFormat } from '../gfx/graphics/webGpu/WebGPUConst';
 import { GPUContext } from '../gfx/renderJob/GPUContext';
-import { HDRTextureCube } from './HDRTextureCube';
 import { VirtualTexture } from './VirtualTexture';
 /**
  * AtmosphericScattering Sky Setting
@@ -30,7 +29,7 @@ export class AtmosphericScatteringSkySetting {
  * Atmospheric Scattering Sky Texture
  * @group Texture
  */
-export class AtmosphericScatteringSky extends HDRTextureCube {
+export class AtmosphericScatteringSky extends LDRTextureCube {
     private _internalTexture: AtmosphericTexture2D;
     private _cubeSize: number;
     public readonly setting: AtmosphericScatteringSkySetting;
@@ -61,11 +60,9 @@ export class AtmosphericScatteringSky extends HDRTextureCube {
      */
     public apply(): this {
         this._internalTexture.update(this.setting);
-        this.uploadErpTexture(this._internalTexture);
+        this._faceData.uploadErpTexture(this._internalTexture);
         return this;
     }
-
-
 }
 
 /**

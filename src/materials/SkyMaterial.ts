@@ -29,13 +29,23 @@ export class SkyMaterial extends MaterialBase {
         shaderState.depthCompare = GPUCompareFunction.less;
     }
 
-    // public get baseMap(): Texture {
-    //     return this.renderShader.textures[0];
-    // }
+    /**
+     *  Set base map(main map)
+     */
+    public set baseMap(texture: Texture) {
+        super.baseMap = texture;
+        let define = 'IS_HDR_SKY';
+        if (this.renderShader.defineValue[define] != texture?.isHDRTexture) {
+            this.renderShader.setDefine('IS_HDR_SKY', texture?.isHDRTexture ? true : false);
+        }
+    }
 
-    // public set baseMap(value: Texture) {
-    //     this.renderShader.setTexture( `baseMap` , value );
-    // }
+    /**
+     * Get base map(main map)
+     */
+    public get baseMap(): Texture {
+        return super.baseMap;
+    }
 
     public set envMap(texture: Texture) {
         //not need env texture

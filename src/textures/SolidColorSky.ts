@@ -2,13 +2,13 @@ import { Engine3D } from '../Engine3D';
 import { Color } from '../math/Color';
 
 import { Float16ArrayTexture } from './Float16ArrayTexture';
-import { HDRTextureCube } from './HDRTextureCube';
+import { LDRTextureCube } from './LDRTextureCube';
 
 /**
  * create a cube texture, which filled by solid color.
  * @group Texture
  */
-export class SolidColorSky extends HDRTextureCube {
+export class SolidColorSky extends LDRTextureCube {
     private _internalTexture: Float16ArrayTexture;
     private readonly _minSize = 32;
     private _skyColor: Color;
@@ -34,7 +34,7 @@ export class SolidColorSky extends HDRTextureCube {
         this._skyColor = color;
         Engine3D.res.fillColor(this._internalTexture.floatArray, this._minSize, this._minSize, this.color.r, this.color.g, this.color.b, this.color.a);
         this._internalTexture.updateTexture(this._minSize, this._minSize, this._internalTexture.floatArray, false);
-        this.uploadTexture(0, this._internalTexture);
+        this._faceData.uploadTexture(0, this._internalTexture);
         return this;
     }
 
