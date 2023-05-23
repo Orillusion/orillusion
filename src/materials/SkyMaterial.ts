@@ -34,9 +34,9 @@ export class SkyMaterial extends MaterialBase {
      */
     public set baseMap(texture: Texture) {
         super.baseMap = texture;
-        let define = 'IS_HDR_SKY';
-        if (this.renderShader.defineValue[define] != texture?.isHDRTexture) {
-            this.renderShader.setDefine('IS_HDR_SKY', texture?.isHDRTexture ? true : false);
+        const key = 'IS_HDR_SKY';
+        if (this.renderShader.defineValue[key] != texture?.isHDRTexture) {
+            this.renderShader.setDefine(key, texture?.isHDRTexture ? true : false);
         }
     }
 
