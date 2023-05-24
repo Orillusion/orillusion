@@ -91,7 +91,7 @@ export class UITransform extends ComponentBase {
     public onParentChange(lastParent?: Object3D, currentParent?: Object3D) {
         this.parent?.setNeedUpdateUIPanel();
         this.parent = currentParent?.getComponent(UITransform);
-        currentParent?.getComponent(UITransform)?.setNeedUpdateUIPanel();
+        this.parent?.setNeedUpdateUIPanel();
     }
 
     public get width() {

@@ -1,4 +1,3 @@
-import { Object3D } from "../../..";
 import { ComponentBase } from "../../ComponentBase";
 import { GUIQuad } from "../core/GUIQuad";
 import { UITransform } from "./UITransform";
