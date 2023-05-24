@@ -16,8 +16,8 @@ export class UIImage extends UIComponentBase {
 
     public init() {
         super.init();
-        this._quad = new GUIQuad();
-        this._uiTransform.quads.push(this._quad);
+        this._quad = GUIQuad.quadPool.getOne(GUIQuad);
+        this.attachQuad(this._quad);
     }
 
     public cloneTo(obj: Object3D) {
@@ -68,5 +68,6 @@ export class UIImage extends UIComponentBase {
             this._quad.onChange = true;
         }
     }
+
 }
 

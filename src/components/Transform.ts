@@ -112,6 +112,9 @@ export class Transform extends ComponentBase {
     }
 
     public set parent(value: Transform) {
+        //why don't it need to compare the data
+        //if (this._parent !== value){}
+        let lastParent = this._parent?.object3D;
         this._parent = value;
         let hasRoot = value ? value.scene3D : null;
         if (!hasRoot) {
@@ -132,6 +135,11 @@ export class Transform extends ComponentBase {
         if (value) {
             this.transform.updateWorldMatrix();
         }
+
+        //notify parent change
+        this.object3D.components.forEach((c) => {
+            c.onParentChange?.(lastParent, this._parent?.object3D);
+        });
     }
 
     public set enable(value: boolean) {
