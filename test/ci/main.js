@@ -1,18 +1,11 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
-const {spawn} = require('child_process')
+const {spawn, execSync} = require('child_process')
 
 app.commandLine.appendSwitch('log-level', 'silent')
 const HOST = 'http://localhost:4000'
 
 const createWindow = async ()=>{
-    // force exit the process on timeout
-    setTimeout(()=>{
-        console.error('\x1b[31m[timeout]\x1b[0m')
-        vite.kill('SIGKILL')
-        process.exit(1)
-    }, 5 * 60 * 1000)
-
     const win = new BrowserWindow({
         width: 400,
         height: 350,
@@ -37,8 +30,7 @@ const createWindow = async ()=>{
         else
             console.error('\x1b[31mCI not pass\x1b[0m')
         console.table(result)
-        vite.kill('SIGKILL')
-        process.exit(pass ? 0 : 1)
+        close( pass ? 0 : 1 )
     })
     ipcMain.on('error', (_event, log) => {
         console.error(`\x1b[31m${log.replaceAll(HOST + '/', '')}\x1b[0m\n-----------------`)
@@ -50,8 +42,7 @@ const createWindow = async ()=>{
         // quit ci on any test fail
         for(let test in log.result){
             if(log.result[test].fail !== 0){
-                vite.kill('SIGKILL')
-                process.exit(1)
+                close(1)
             }
         }
     })
@@ -61,7 +52,7 @@ const createWindow = async ()=>{
 
 let vite
 app.whenReady().then(() => {
-    vite = spawn('npx', ['vite', '--port', '4000', '--strictPort'])
+    vite = spawn('npx', ['vite', '--port', '4000', '--strictPort'], {detached: true})
     vite.stdout.on('data', data=>{
         console.log(`\x1b[32m${data.toString()}\x1b[0m`)
         if(data.toString().match(/vite.*.ready/i)){
@@ -70,14 +61,20 @@ app.whenReady().then(() => {
     })
     vite.stderr.on('data', data=>{
         console.error(`\x1b[31m${data.toString()}\x1b[0m`)
-        vite.kill('SIGKILL')
-        process.exit(1)
+        close(1)
     })
+    vite.unref()
 })
 app.on('window-all-closed', () => {
     app.quit()
 })
 app.on('before-quit',()=>{
     if(vite)
-        vite.kill('SIGKILL')
+        process.kill(-vite.pid)
 })
+
+function close(code = 1){
+    console.log('Close Electron & Vite', vite.pid)
+    process.kill(-vite.pid)
+    process.exit(code)
+}
