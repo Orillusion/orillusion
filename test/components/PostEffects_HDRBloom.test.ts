@@ -1,4 +1,4 @@
-import { test, end } from '../util'
+import { test, end, delay } from '../util'
 import { Camera3D, CameraUtil, Engine3D, HDRBloomPost, Object3D, PostProcessingComponent, Scene3D, View3D } from '@orillusion/core';
 
 await test('Post HDRBloomPost test', async () => {
@@ -12,7 +12,8 @@ await test('Post HDRBloomPost test', async () => {
 
     let postProcessing = view.scene.addComponent(PostProcessingComponent);
     postProcessing.addPost(HDRBloomPost);
+    await delay(100)
+    Engine3D.pause()
 })
-
 
 setTimeout(end, 500)
