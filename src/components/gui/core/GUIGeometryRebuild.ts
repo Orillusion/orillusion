@@ -52,7 +52,7 @@ export class GUIGeometryRebuild {
           }
         }
 
-        if (needUpdateQuads || quad.onChange || forceUpdate) {
+        if (needUpdateQuads || quad.onChange || isGeometryDirty) {
           quad.transformQuad(transform);
         }
         if (quad.onChange) {

@@ -1,6 +1,5 @@
 import { Object3D } from '../../../core/entities/Object3D';
 import { Color } from '../../../math/Color';
-import { GUIQuad } from '../core/GUIQuad';
 import { TextAnchor, TextFieldLayout, TextFieldLine } from './TextFieldLayout';
 import { UIComponentBase } from './UIComponentBase';
 
@@ -11,7 +10,6 @@ export class UITextField extends UIComponentBase {
     private _alignment: TextAnchor = 0;
     private _lineSpacing: number = 1;
     private _text: string = '';
-    private _textQuads: GUIQuad[] = [];
     private readonly _color: Color = new Color(1, 1, 1, 1);
 
     constructor() {
@@ -49,7 +47,7 @@ export class UITextField extends UIComponentBase {
     public set fontSize(value: number) {
         if (this._fontSize != value) {
             this._fontSize = value;
-            this.reLayout();
+            this.layoutText();
         }
     }
 
@@ -61,46 +59,28 @@ export class UITextField extends UIComponentBase {
         if (this._text != value) {
             if (!value) value = '';
             this._text = value;
-            this.reLayout();
+            this.layoutText();
         }
-    }
-
-    public clean(): this {
-        let allQuads = this._uiTransform.quads;
-        while (this._textQuads.length > 0) {
-            let quad = this._textQuads.shift();
-            if (quad) {
-                quad.sprite = null;
-                GUIQuad.quadPool.pushBack(quad);
-                let index = allQuads.indexOf(quad);
-                if (index >= 0) {
-                    allQuads.splice(index, 1);
-                }
-            }
-
-        }
-        return this;
     }
 
     private textLine: TextFieldLine[] = null;
     private layoutProxy: TextFieldLayout = new TextFieldLayout();
 
-    private reLayout() {
-        this.clean();
+    private layoutText() {
+        this.detachQuads();
         this.textLine = this.layoutProxy.layout(this);
         for (let i: number = 0, count = this.textLine.length; i < count; i++) {
             let line = this.textLine[i];
             for (let j: number = 0, count = line.quadList.length; j < count; j++) {
                 let quad = line.quadList[j];
                 if (quad) {
-                    this.addQuad(quad);
-                    this._textQuads.push(quad);
+                    this.attachQuad(quad);
                 }
             }
         }
         //refresh color;
         this.color = this._color;
-        this._uiTransform.markNeedsUpdateGUIMesh();
+        this._uiTransform.setNeedUpdateUIPanel();
         this.onUIComponentVisible && this.onUIComponentVisible(this._visible);
     }
 
@@ -114,14 +94,13 @@ export class UITextField extends UIComponentBase {
 
     private applyComponentVisible(): void {
         let isHidden = !this._visible || !this._uiTransform.globalVisible;
-        for (let quad of this._textQuads) {
+        for (let quad of this._exlusiveQuads) {
             quad && (quad.visible = !isHidden);
         }
     }
 
     protected onTransformResize() {
-        super.onTransformResize();
-        this.reLayout();
+        this.layoutText();
     }
 
     public get color(): Color {
@@ -130,7 +109,7 @@ export class UITextField extends UIComponentBase {
 
     public set color(value: Color) {
         this._color.copyFrom(value);
-        for (let quad of this._textQuads) {
+        for (let quad of this._exlusiveQuads) {
             quad.color.copyFrom(value);
             quad.onChange = true;
         }
@@ -143,7 +122,7 @@ export class UITextField extends UIComponentBase {
     public set alignment(value: TextAnchor) {
         if (this._alignment != value) {
             this._alignment = value;
-            this.reLayout();
+            this.layoutText();
         }
     }
 
@@ -154,8 +133,13 @@ export class UITextField extends UIComponentBase {
     public set lineSpacing(value: number) {
         if (this._lineSpacing != value) {
             this._lineSpacing = value;
-            this.reLayout();
+            this.layoutText();
         }
+    }
+
+    public destroy(): void {
+        this.detachQuads();
+        super.destroy();
     }
 }
 

@@ -5,6 +5,8 @@ import { UITransform } from "./UITransform";
 export class UIComponentBase extends ComponentBase {
     protected _uiTransform: UITransform;
     protected _visible: boolean = true;
+    protected readonly _exlusiveQuads: GUIQuad[] = [];
+
     public get uiTransform() {
         return this._uiTransform;
     }
@@ -23,27 +25,38 @@ export class UIComponentBase extends ComponentBase {
     init(param?: any) {
         super.init(param);
         this._uiTransform = this.object3D.getOrAddComponent(UITransform);
-        this._uiTransform.eventDispatcher.addEventListener(UITransform.Resize, this.onTransformResize, this);
+        this._uiTransform.setNeedUpdateUIPanel();
     }
 
     protected onUITransformVisible?(visible: boolean): void;
     protected onUIComponentVisible?(visible: boolean): void;
-
-    //Called when component size changes
-    protected onTransformResize(): void { }
+    protected onTransformResize?(): void;
 
     public destroy() {
-        this._uiTransform.eventDispatcher.removeEventListener(UITransform.Resize, this.onTransformResize, this);
+        this.detachQuads();
+        this._uiTransform.setNeedUpdateUIPanel();
         super.destroy();
     }
 
-    public addQuad(quad: GUIQuad): this {
+    protected attachQuad(quad: GUIQuad): this {
+        this._exlusiveQuads.push(quad);
         this._uiTransform.quads.push(quad);
         return this;
     }
 
-    public clean(): this {
-        this._uiTransform.quads.length = 0;
+    protected detachQuads(): this {
+        let allQuads = this._uiTransform.quads;
+        while (this._exlusiveQuads.length > 0) {
+            let quad = this._exlusiveQuads.shift();
+            if (quad) {
+                quad.sprite = null;
+                GUIQuad.quadPool.pushBack(quad);
+                let index = allQuads.indexOf(quad);
+                if (index >= 0) {
+                    allQuads.splice(index, 1);
+                }
+            }
+        }
         return this;
     }
 

@@ -8,12 +8,16 @@ import { UIInteractive } from './UIInteractive';
 export class UIButton extends UIInteractive {
     protected _spriteMap: Map<UIInteractiveStyle, GUISprite>;
     protected _image: UIImage;
-
+    private _isCreateImage: boolean;
     init(param?: any) {
         super.init(param);
         this._interactive = true;
         this._spriteMap = new Map<UIInteractiveStyle, GUISprite>();
-        this._image = this.object3D.getOrAddComponent(UIImage);
+        this._image = this.object3D.getComponent(UIImage);
+        this._isCreateImage = this._image == null;
+        if (!this._image) {
+            this._image = this.object3D.addComponent(UIImage);
+        }
     }
 
     onEnable() {
@@ -93,5 +97,13 @@ export class UIButton extends UIInteractive {
         component.overSprite = this.overSprite;
         component.mouseStyle = this.mouseStyle;
         component.enable = this.enable;
+    }
+
+    public destroy(): void {
+        if (this._isCreateImage && this._image) {
+            this.object3D.removeComponent(UIImage);
+            this._image = null;
+        }
+        super.destroy();
     }
 }

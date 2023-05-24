@@ -1,5 +1,4 @@
 import { Object3D } from "../../../core/entities/Object3D";
-import { CEvent } from "../../../event/CEvent";
 import { Matrix3 } from "../../../math/Matrix3";
 import { ComponentBase } from "../../ComponentBase";
 import { GUIMesh } from "../core/GUIMesh";
@@ -22,10 +21,6 @@ export class UITransform extends ComponentBase {
     private _localVisible: boolean = true;
     private _globalVisible: boolean = true;
     public guiMesh: GUIMesh;
-    public static readonly Resize: string = 'GUITransformResize';
-
-    private _resizeEvent = new CEvent(UITransform.Resize);
-
     protected _uiInteractiveList: IUIInteractive[];
 
     public get uiInteractiveList() {
@@ -93,9 +88,10 @@ export class UITransform extends ComponentBase {
         }
     }
 
-
-    public onParentChange(parent: Object3D) {
-        this.parent = parent ? parent.getComponent(UITransform) : null;
+    public onParentChange(lastParent?: Object3D, currentParent?: Object3D) {
+        this.parent?.setNeedUpdateUIPanel();
+        this.parent = currentParent?.getComponent(UITransform);
+        this.parent?.setNeedUpdateUIPanel();
     }
 
     public get width() {
@@ -111,7 +107,9 @@ export class UITransform extends ComponentBase {
             this._width = width;
             this._height = height;
             this.onChange = true;
-            this.eventDispatcher.dispatchEvent(this._resizeEvent);
+            for (let component of this.object3D.components) {
+                component['onTransformResize']?.();
+            }
             return true;
         }
         return false;
@@ -198,16 +196,16 @@ export class UITransform extends ComponentBase {
     }
 
     onEnable(): void {
-        this.markNeedsUpdateGUIMesh();
+        this.setNeedUpdateUIPanel();
         this.onChange = true;
     }
 
     onDisable(): void {
-        this.markNeedsUpdateGUIMesh();
+        this.setNeedUpdateUIPanel();
         this.onChange = true;
     }
 
-    public markNeedsUpdateGUIMesh(): void {
+    public setNeedUpdateUIPanel(): void {
         let panel: UIPanel;
         panel = this.object3D.getComponentFromParent(WorldPanel);
         if (!panel) {
