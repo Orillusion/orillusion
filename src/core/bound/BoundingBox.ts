@@ -10,6 +10,7 @@ import { Vector3 } from '../../math/Vector3';
  * @group Core
  */
 export class BoundingBox implements IBound {
+
     /**
      * The center of the bounding box.
      */
@@ -34,6 +35,9 @@ export class BoundingBox implements IBound {
      * The total size of the box. This is always twice as much as extensions.
      */
     public size: Vector3;
+    public worldMax: Vector3;
+    public worldMin: Vector3;
+
     /**
      *
      * Create a new Bounds.
@@ -46,6 +50,9 @@ export class BoundingBox implements IBound {
         this.size = size;
         this.max = this.center.add(this.extents);
         this.min = this.center.subtract(this.extents);
+
+        this.worldMin = new Vector3();
+        this.worldMax = new Vector3();
     }
 
     public setFromMinMax(min: Vector3, max: Vector3) {
@@ -67,7 +74,6 @@ export class BoundingBox implements IBound {
     public containsFrustum(obj: Object3D, frustum: Frustum) {
         return frustum.containsBox(obj);
     }
-
 
     public merge(bound: BoundingBox) {
         if (bound.min.x < this.min.x) this.min.x = bound.min.x;
@@ -109,69 +115,6 @@ export class BoundingBox implements IBound {
         return this.min.x <= box.max.x && this.max.x >= box.min.x && this.min.y <= box.max.y && this.max.y >= box.min.y && this.min.z <= box.max.z && this.max.z >= box.min.z;
     }
 
-    /**
-     *
-     * Does the ray collide with the bounding box
-     * @param ray
-     * @param bounds
-     * @returns
-     */
-    public static intersectRay(ray: Ray, bounds: IBound): boolean {
-        let tmin: number = 0;
-        let tmax: number = Number.MAX_VALUE;
-        let invdirx: number = 1 / ray.direction.x;
-        let invdiry: number = 1 / ray.direction.y;
-        let invdirz: number = 1 / ray.direction.z;
-        let origin: Vector3 = ray.origin;
-        let dirx: number = ray.direction.x;
-        let diry: number = ray.direction.y;
-        let dirz: number = ray.direction.z;
-        let min: Vector3 = bounds.min;
-        let max: Vector3 = bounds.max;
-        let t1: number;
-        let t2: number;
-        if (dirx >= 0) {
-            t1 = (min.x - origin.x) * invdirx;
-            t2 = (max.x - origin.x) * invdirx;
-        } else {
-            t1 = (max.x - origin.x) * invdirx;
-            t2 = (min.x - origin.x) * invdirx;
-        }
-        if (t1 > tmin) {
-            tmin = t1;
-        }
-        if (t2 < tmax) {
-            tmax = t2;
-        }
-        if (diry >= 0) {
-            t1 = (min.y - origin.y) * invdiry;
-            t2 = (max.y - origin.y) * invdiry;
-        } else {
-            t1 = (max.y - origin.y) * invdiry;
-            t2 = (min.y - origin.y) * invdiry;
-        }
-        if (t1 > tmin) {
-            tmin = t1;
-        }
-        if (t2 < tmax) {
-            tmax = t2;
-        }
-        if (dirz >= 0) {
-            t1 = (min.z - origin.z) * invdirz;
-            t2 = (max.z - origin.z) * invdirz;
-        } else {
-            t1 = (max.z - origin.z) * invdirz;
-            t2 = (min.z - origin.z) * invdirz;
-        }
-        if (t1 > tmin) {
-            tmin = t1;
-        }
-        if (t2 < tmax) {
-            tmax = t2;
-        }
-        return tmax >= tmin;
-    }
-
     public equals(bounds: IBound): boolean {
         return this.center.equals(bounds.center) && this.extents.equals(bounds.extents);
     }
@@ -183,7 +126,6 @@ export class BoundingBox implements IBound {
         if (point.x > this.max.x) {
             this.max.x = point.x;
         }
-
         if (point.y < this.min.y) {
             this.min.y = point.y;
         }
@@ -223,166 +165,17 @@ export class BoundingBox implements IBound {
         return this.min.x <= point.x && this.max.x >= point.x && this.min.y <= point.y && this.max.y >= point.y && this.min.z <= point.z && this.max.z >= point.z;
     }
 
-    public getBoundVertex() {
-        let p0 = new Vector3(this.min.x, this.min.y, this.min.z);
-        let p1 = new Vector3(this.max.x, this.min.y, this.min.z);
-        let p2 = new Vector3(this.max.x, this.min.y, this.max.z);
-        let p3 = new Vector3(this.min.x, this.min.y, this.max.z);
+    public updateBound() {
 
-        let p4 = new Vector3(this.min.x, this.max.y, this.min.z);
-        let p5 = new Vector3(this.max.x, this.max.y, this.min.z);
-        let p6 = new Vector3(this.max.x, this.max.y, this.max.z);
-        let p7 = new Vector3(this.min.x, this.max.y, this.max.z);
-        return [
-            p2.x,
-            p2.y,
-            p2.z,
-            1.0,
-            p3.x,
-            p3.y,
-            p3.z,
-            1.0,
-            p0.x,
-            p0.y,
-            p0.z,
-            1.0,
-            p1.x,
-            p1.y,
-            p1.z,
-            1.0,
-            p2.x,
-            p2.y,
-            p2.z,
-            1.0,
-            p0.x,
-            p0.y,
-            p0.z,
-            1.0,
+    }
 
-            p6.x,
-            p6.y,
-            p6.z,
-            1.0,
-            p2.x,
-            p2.y,
-            p2.z,
-            1.0,
-            p1.x,
-            p1.y,
-            p1.z,
-            1.0,
-            p5.x,
-            p5.y,
-            p5.z,
-            1.0,
-            p6.x,
-            p6.y,
-            p6.z,
-            1.0,
-            p1.x,
-            p1.y,
-            p1.z,
-            1.0,
-
-            p7.x,
-            p7.y,
-            p7.z,
-            1.0,
-            p6.x,
-            p6.y,
-            p6.z,
-            1.0,
-            p5.x,
-            p5.y,
-            p5.z,
-            1.0,
-            p4.x,
-            p4.y,
-            p4.z,
-            1.0,
-            p7.x,
-            p7.y,
-            p7.z,
-            1.0,
-            p5.x,
-            p5.y,
-            p5.z,
-            1.0,
-
-            p3.x,
-            p3.y,
-            p3.z,
-            1.0,
-            p7.x,
-            p7.y,
-            p7.z,
-            1.0,
-            p4.x,
-            p4.y,
-            p4.z,
-            1.0,
-            p0.x,
-            p0.y,
-            p0.z,
-            1.0,
-            p3.x,
-            p3.y,
-            p3.z,
-            1.0,
-            p4.x,
-            p4.y,
-            p4.z,
-            1.0,
-
-            p6.x,
-            p6.y,
-            p6.z,
-            1.0,
-            p7.x,
-            p7.y,
-            p7.z,
-            1.0,
-            p3.x,
-            p3.y,
-            p3.z,
-            1.0,
-            p3.x,
-            p3.y,
-            p3.z,
-            1.0,
-            p2.x,
-            p2.y,
-            p2.z,
-            1.0,
-            p6.x,
-            p6.y,
-            p6.z,
-            1.0,
-
-            p1.x,
-            p1.y,
-            p1.z,
-            1.0,
-            p0.x,
-            p0.y,
-            p0.z,
-            1.0,
-            p4.x,
-            p4.y,
-            p4.z,
-            1.0,
-            p5.x,
-            p5.y,
-            p5.z,
-            1.0,
-            p1.x,
-            p1.y,
-            p1.z,
-            1.0,
-            p4.x,
-            p4.y,
-            p4.z,
-            1.0,
-        ];
+    public destroy(force?: boolean) {
+        this.center = null;
+        this.extents = null;
+        this.min = null;
+        this.max = null;
+        this.size = null;
+        this.worldMax = null;
+        this.worldMin = null;
     }
 }

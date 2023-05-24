@@ -125,7 +125,7 @@ export class Transform extends ComponentBase {
         }
 
         this.object3D.entityChildren.forEach((v) => {
-            v.transform.parent = this;
+            v.transform.parent = value ? this : null;
         });
     }
 
@@ -303,7 +303,7 @@ export class Transform extends ComponentBase {
 
     /**
      *
-     * The transformation property of the object relative to the parent, stored in the form of a quaternion
+     * The transformation property of the object relative to the parent, stored in the from of a quaternion
      */
     public get localRotQuat(): Quaternion {
         return this._localRotQuat;
@@ -414,17 +414,7 @@ export class Transform extends ComponentBase {
         }
     }
 
-    destroy(): void {
-        if (this.parent && this.parent.object3D) {
-            this.parent.object3D.removeChild(this.object3D);
-            this.scene3D = null;
-            this.localPosition = null;
-            this.localRotQuat = null;
-            this.localRotation = null;
-            this.localScale = null;
-        }
-        super.destroy();
-    }
+
 
 
     public decomposeFromMatrix(matrix: Matrix4, orientationStyle: string = 'eulerAngles'): this {
@@ -713,6 +703,35 @@ export class Transform extends ComponentBase {
      */
     public get localScale(): Vector3 {
         return this._localScale;
+    }
+
+    destroy(): void {
+        if (this.parent && this.parent.object3D) {
+            this.parent.object3D.removeChild(this.object3D);
+            this.scene3D = null;
+        }
+        super.destroy();
+
+        this.eventPositionChange = null;
+        this.eventRotationChange = null;
+        this.eventScaleChange = null;
+        this.onPositionChange = null;
+        this.onRotationChange = null;
+        this.onScaleChange = null;
+        this._scene3d = null;
+        this._parent = null;
+        this._localPos = null;
+        this._localRot = null;
+        this._localRotQuat = null;
+        this._localScale = null;
+        this._forward = null;
+        this._back = null;
+        this._right = null;
+        this._left = null;
+        this._up = null;
+        this._down = null;
+        this._localChange = null;
+        this._targetPos = null;
     }
 
     // private _rotateAroundAxisX:number = 0 ;

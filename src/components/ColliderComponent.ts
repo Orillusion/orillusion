@@ -53,11 +53,11 @@ export class ColliderComponent extends ComponentBase {
     /**
      * @internal
      */
-    public destroy() {
+    public destroy(force?: boolean) {
         if (Engine3D.setting.pick.mode == `pixel`) {
             this.transform.scene3D.view.pickFire.mouseEnableMap.delete(this.transform.worldMatrix.index);
         }
-        super.destroy();
+        super.destroy(force);
     }
 
 }

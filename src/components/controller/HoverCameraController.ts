@@ -261,12 +261,12 @@ export class HoverCameraController extends ComponentBase {
     /**
      * @internal
      */
-    public destroy() {
+    public destroy(force?: boolean) {
         this.camera = null;
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_DOWN, this.onMouseDown, this);
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_MOVE, this.onMouseMove, this);
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_UP, this.onMouseUp, this);
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_WHEEL, this.onMouseWheel, this);
-        super.destroy();
+        super.destroy(force);
     }
 }

@@ -4,6 +4,7 @@ import { VertexAttributeData } from "./VertexAttributeData";
 
 
 export class GeometryIndicesBuffer {
+
     public uuid: string = '';
     public name: string;
     public indicesGPUBuffer: IndicesGPUBuffer;
@@ -31,14 +32,23 @@ export class GeometryIndicesBuffer {
 
     }
 
+    destroy() {
+        this.uuid = null;
+        this.name = null;
+        this.indicesFormat = null;
+        this.indicesCount = null;
+        this.indicesGPUBuffer.destroy();
+        this.indicesGPUBuffer = null;
+    }
+
     /**
-     * Get indices form geometry data 
-     * Get position attribute form geometry data 
-     * Get normal attribute form geometry data 
-     * Get tangent attribute form geometry data 
-     * Get uv0 attribute form geometry data 
-     * Get uv1 attribute form geometry data 
-     * Get uv2 attribute form geometry data 
+     * Get indices from geometry data 
+     * Get position attribute from geometry data 
+     * Get normal attribute from geometry data 
+     * Get tangent attribute from geometry data 
+     * Get uv0 attribute from geometry data 
+     * Get uv1 attribute from geometry data 
+     * Get uv2 attribute from geometry data 
      * 
      * Change position data to GPUBuffer and apply
      * Change normal data to GPUBuffer and apply

@@ -1,4 +1,5 @@
 
+import { Engine3D } from '../../..';
 import { ILight } from '../../../components/lights/ILight';
 import { RenderNode } from '../../../components/renderer/RenderNode';
 import { Scene3D } from '../../../core/Scene3D';
@@ -144,9 +145,15 @@ export class EntityCollect {
         if (!this._sceneLights.has(root)) {
             this._sceneLights.set(root, [light]);
         } else {
-            let hasLight = this._sceneLights.get(root).indexOf(light) != -1;
-            if (!hasLight)
-                this._sceneLights.get(root).push(light);
+            let lights = this._sceneLights.get(root)
+            if(lights.length >= Engine3D.setting.light.maxLight){
+                console.warn('Alreay meet maxmium light number:', Engine3D.setting.light.maxLight)
+                return
+            }
+            let hasLight = lights.indexOf(light) != -1;
+            if (!hasLight){
+                lights.push(light);
+            }
         }
     }
 

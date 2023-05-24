@@ -15,8 +15,9 @@ class Sample_LoadGLTF {
             enable: true,
             blurX: 4,
             blurY: 4,
-            intensity: 5,
-            brightness: 0.86,
+            luminosityThreshold: 0.8,
+            strength: 0.86,
+            radius: 4,
             debug: false
         };
 

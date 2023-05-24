@@ -85,12 +85,15 @@ export class ShaderBase {
     }
 
     /**
-    * set storage gpu buffer
-    * @param name buffer name
-    * @param buffer storage useAge gpu buffer
-    */
+* set storage gpu buffer
+* @param name buffer name
+* @param buffer storage useAge gpu buffer
+*/
     public setStorageBuffer(name: string, buffer: StorageGPUBuffer) {
-        if (!this._bufferDic.has(name)) {
+        if (this._bufferDic.has(name)) {
+            this._bufferDic.set(name, buffer);
+            this.noticeBufferChange(name);
+        } else {
             this._bufferDic.set(name, buffer);
         }
     }
@@ -101,7 +104,10 @@ export class ShaderBase {
      * @param buffer struct storage useAge gpu buffer
      */
     public setStructStorageBuffer<T extends Struct>(name: string, buffer: StructStorageGPUBuffer<T>) {
-        if (!this._bufferDic.has(name)) {
+        if (this._bufferDic.has(name)) {
+            this._bufferDic.set(name, buffer);
+            this.noticeBufferChange(name);
+        } else {
             this._bufferDic.set(name, buffer);
         }
     }
@@ -112,7 +118,10 @@ export class ShaderBase {
      * @param buffer
      */
     public setUniformBuffer(name: string, buffer: UniformGPUBuffer) {
-        if (!this._bufferDic.has(name)) {
+        if (this._bufferDic.has(name)) {
+            this._bufferDic.set(name, buffer);
+            this.noticeBufferChange(name);
+        } else {
             this._bufferDic.set(name, buffer);
         }
     }
@@ -224,9 +233,13 @@ export class ShaderBase {
         }
     }
 
+    protected noticeBufferChange(name: string) {
+
+    }
+
     /**
      * destroy
      */
-    public destroy() {
+    public destroy(force?: boolean) {
     }
 }

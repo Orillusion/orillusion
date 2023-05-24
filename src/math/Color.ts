@@ -117,7 +117,7 @@ export class Color {
     }
 
     /**
-     * update this color rgb form hexadecimal no alpha
+     * update this color rgb from hexadecimal no alpha
      * @param value 
      */
     public hexToRGB(value: number) {
@@ -128,7 +128,7 @@ export class Color {
     }
 
     /**
-     * update this color rgb form hexadecimal has alpha
+     * update this color rgb from hexadecimal has alpha
      * @param value 
      */
     public hexToRGBA(value: number) {
@@ -166,7 +166,7 @@ export class Color {
     }
 
     /**
-     * update this color rgba form hexadecimal 
+     * update this color rgba from hexadecimal 
      * @param hex hex string.
      */
     public setHex(hex: string) {
@@ -251,14 +251,14 @@ export class Color {
      * @returns 
      */
     public clone(): Color {
-        return new Color().copyForm(this);
+        return new Color().copyFrom(this);
     }
 
     /**
-     * copy color form source color
+     * copy color from source color
      * @returns
      */
-    public copyForm(src: Color): this {
+    public copyFrom(src: Color): this {
         this.r = src.r;
         this.g = src.g;
         this.b = src.b;
@@ -267,12 +267,12 @@ export class Color {
     }
 
     /**
-     * copy color form array
+     * copy color from array
      * @param arr [ 255 , 255 , 255 , 255 ]
      * @param scalar 
      * @returns 
      */
-    public copyFormArray(arr: number[], scalar: number = 255) {
+    public copyFromArray(arr: number[], scalar: number = 255) {
         this.r = arr[0] / scalar;
         this.g = arr[1] / scalar;
         this.b = arr[2] / scalar;
@@ -281,7 +281,7 @@ export class Color {
     }
 
     /**
-     * update this color rgb form hexadecimal no alpha
+     * update this color rgb from hexadecimal no alpha
      * @param hexColor rgb color
      * @param dst ref out color
      */

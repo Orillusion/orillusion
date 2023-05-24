@@ -428,7 +428,7 @@ export class RenderShader extends ShaderBase {
     /**
      * Destroy and release render shader related resources
      */
-    public destroy() {
+    public destroy(force?: boolean) {
         this.bindGroups.length = 0;
         this._passShaderCache.clear();
         this.shaderState = null;
@@ -441,7 +441,7 @@ export class RenderShader extends ShaderBase {
         this._destFS = null;
         this._vsShaderModule = null;
         this._fsShaderModule = null;
-        this.materialDataUniformBuffer.destroy();;
+        this.materialDataUniformBuffer.destroy(force);;
         this.materialDataUniformBuffer = null;
     }
 

@@ -63,7 +63,7 @@ export class HingeConstraint extends ComponentBase {
         this._targetRigidbody = value;
     }
 
-    public destroy(): void {
-        super.destroy();
+    public destroy(force?: boolean): void {
+        super.destroy(force);
     }
 }

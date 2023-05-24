@@ -7,8 +7,8 @@ const HOST = 'http://localhost:4000'
 
 const createWindow = async ()=>{
     const win = new BrowserWindow({
-        width: 800,
-        height: 600,
+        width: 400,
+        height: 350,
         // show: false,
         // frame: false,
         webPreferences: {

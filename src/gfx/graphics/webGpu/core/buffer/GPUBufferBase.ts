@@ -218,6 +218,16 @@ export class GPUBufferBase {
         node.setInt32Array(0, data);
     }
 
+
+    public setUint32Array(name: string, data: Uint32Array) {
+        let node = this.memoryNodes.get(name);
+        if (!node) {
+            node = this.memory.allocation_node(data.length * 4);
+            this.memoryNodes.set(name, node);
+        }
+        node.setUint32Array(0, data);
+    }
+
     public setStruct<T extends Struct>(c: { new(): T }, index: number, data: any, property?: string) {
         let ref = Struct.Ref(c);
         let size = Struct.GetSize(c);
@@ -284,14 +294,42 @@ export class GPUBufferBase {
     //     this.seek += 1;
     // }
 
+    public clean() {
+        let data = new Float32Array(this.memory.shareDataBuffer);
+        data.fill(0, 0, data.length);
+    }
+
     public apply() {
         webGPUContext.device.queue.writeBuffer(this.buffer, 0, this.memory.shareDataBuffer);//, this.memory.shareFloat32Array.byteOffset, this.memory.shareFloat32Array.byteLength);
     }
 
-    public destroy() {
+    public destroy(force?: boolean) {
+        if (this.memoryNodes) {
+            this.memoryNodes.forEach((v) => {
+                v.destroy();
+            })
+        }
+
+        this.bufferType = null;
+        this.seek = null;
+        this.byteSize = null;
+        this.usage = null;
+        this.visibility = null;
+
         this.outFloat32Array = null;
-        this.buffer.destroy();
-        this.memory.destroy();
+        if (this.buffer) {
+            this.buffer.destroy();
+        }
+        this.buffer = null;
+
+        if (this.memory) {
+            this.memory.destroy();
+        }
+        this.memory = null;
+
+        if (this._readBuffer) {
+            this._readBuffer.destroy();
+        }
     }
 
     protected createBuffer(usage: GPUBufferUsageFlags, size: number, data?: ArrayBufferData) {

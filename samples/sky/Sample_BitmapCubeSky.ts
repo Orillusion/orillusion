@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Scene3D, Engine3D, CameraUtil, HoverCameraController, View3D, Texture, SkyRenderer } from "@orillusion/core";
+import { Scene3D, Engine3D, CameraUtil, HoverCameraController, View3D, Texture, SkyRenderer, Object3D, BoxGeometry, LitMaterial, MeshRenderer } from "@orillusion/core";
 
 // sample to replace sky map. (witch contains 6 faces)
 class Sample_BitmapCubeSky {
@@ -18,6 +18,14 @@ class Sample_BitmapCubeSky {
         // camera controller
         let hoverCameraController = mainCamera.object3D.addComponent(HoverCameraController);
         hoverCameraController.setCamera(45, -10, 10);
+
+        // create a basic cube
+        let cubeObj = new Object3D();
+        let mr = cubeObj.addComponent(MeshRenderer);
+        mr.geometry = new BoxGeometry();
+        let mat = new LitMaterial();
+        mr.material = mat;
+        this._scene.addChild(cubeObj);
 
         // init view3D
         let view = new View3D();

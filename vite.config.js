@@ -5,7 +5,7 @@ import { resolve, parse } from 'path'
 
 export default defineConfig( option => ({
     server: {
-        port: 3000,
+        port: 8000,
         // hmr: false // open this line if no auto hot-reload required
     },
     publicDir: option.command === 'build' ? false : 'public',

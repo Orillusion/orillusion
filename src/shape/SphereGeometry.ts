@@ -1,3 +1,4 @@
+import { BoundingBox, Vector3 } from "..";
 import { GeometryBase } from "../core/geometry/GeometryBase";
 import { VertexAttributeName } from "../core/geometry/VertexAttributeName";
 
@@ -157,6 +158,8 @@ export class SphereGeometry extends GeometryBase {
             vertexStart: 0,
             index: 0,
         });
+
+        this.bounds = new BoundingBox(Vector3.ZERO, new Vector3(this.radius * 2, this.radius * 2, this.radius * 2))
     }
 
 }

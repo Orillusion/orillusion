@@ -6,17 +6,14 @@ import { GlobalBindGroup } from '../../graphics/webGpu/core/bindGroups/GlobalBin
 import { ShadowLightsCollect } from '../collect/ShadowLightsCollect';
 import { ColorPassRenderer } from '../passRenderer/color/ColorPassRenderer';
 import { GBufferFrame } from '../frame/GBufferFrame';
-import { GPUContext } from '../GPUContext';
 import { OcclusionSystem } from '../occlusion/OcclusionSystem';
 import { ClusterLightingRender } from '../passRenderer/cluster/ClusterLightingRender';
-import { Graphic3D } from '../passRenderer/graphic/Graphic3DRender';
 import { PointLightShadowRenderer } from '../passRenderer/shadow/PointLightShadowRenderer';
 import { ShadowMapPassRenderer } from '../passRenderer/shadow/ShadowMapPassRenderer';
 import { PreDepthPassRenderer } from '../passRenderer/preDepth/PreDepthPassRenderer';
 import { RendererMap } from './RenderMap';
 import { PostRenderer } from '../passRenderer/post/PostRenderer';
 import { PostBase } from '../post/PostBase';
-import { ComponentCollect } from '../collect/ComponentCollect';
 import { RendererBase } from '../passRenderer/RendererBase';
 import { Ctor } from '../../../util/Global';
 
@@ -72,12 +69,6 @@ export class RendererJob {
      */
     public pauseRender: boolean = false;
     public pickFire: PickFire;
-
-    /**
-     * Graphics renderers (lines, rectangles, etc.)
-     */
-    public graphic3D: Graphic3D;
-
     protected _view: View3D;
 
     /**
@@ -92,10 +83,6 @@ export class RendererJob {
         this.occlusionSystem = new OcclusionSystem();
 
         this.clusterLightingRender = this.addRenderer(ClusterLightingRender, view);
-
-        this.graphic3D = new Graphic3D();
-        if (view && this.graphic3D)
-            view.scene.addChild(this.graphic3D);
 
         if (Engine3D.setting.render.zPrePass) {
             this.depthPassRenderer = this.addRenderer(PreDepthPassRenderer);
@@ -205,7 +192,9 @@ export class RendererJob {
         this.occlusionSystem.update(view.camera, view.scene);
 
         this.clusterLightingRender.render(view, this.occlusionSystem);
-        if (this.shadowMapPassRenderer && Engine3D.setting.shadow.enable) {
+
+        if (this.shadowMapPassRenderer) {
+            ShadowLightsCollect.update(view.scene);
             this.shadowMapPassRenderer.render(view, this.occlusionSystem);
         }
 
@@ -214,17 +203,15 @@ export class RendererJob {
         }
 
         if (this.depthPassRenderer) {
-            this.depthPassRenderer.beforeCompute(view, this.occlusionSystem);
+            this.depthPassRenderer.compute(view, this.occlusionSystem);
             this.depthPassRenderer.render(view, this.occlusionSystem);
-            this.depthPassRenderer.lateCompute(view, this.occlusionSystem);
         }
 
         let passList = this.rendererMap.getAllPassRenderer();
         for (let i = 0; i < passList.length; i++) {
             const renderer = passList[i];
-            renderer.beforeCompute(view, this.occlusionSystem);
+            renderer.compute(view, this.occlusionSystem);
             renderer.render(view, this.occlusionSystem, this.clusterLightingRender.clusterLightingBuffer);
-            renderer.lateCompute(view, this.occlusionSystem);
         }
 
         if (this.postRenderer && this.postRenderer.postList.length > 0) {
