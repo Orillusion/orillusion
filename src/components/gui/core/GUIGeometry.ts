@@ -146,14 +146,14 @@ export class GUIGeometry extends GeometryBase {
         this._colorAttribute = new GUIAttribute(quadNum * 4);
     }
 
-    public fillQuad(quad: GUIQuad, changeAttr: GUIQuadAttrEnum, transform: UITransform) {
-        if (changeAttr & GUIQuadAttrEnum.POSITION) {
+    public fillQuad(quad: GUIQuad, transform: UITransform) {
+        if (quad.dirtyAttributes & GUIQuadAttrEnum.POSITION) {
             this.fillQuadPosition(quad, transform);
         }
-        if (changeAttr & GUIQuadAttrEnum.COLOR) {
+        if (quad.dirtyAttributes & GUIQuadAttrEnum.COLOR) {
             this.fillQuadColor(quad, transform);
         }
-        if (changeAttr & GUIQuadAttrEnum.SPRITE) {
+        if (quad.dirtyAttributes & GUIQuadAttrEnum.SPRITE) {
             this.fillQuadSprite(quad, transform);
         }
     }

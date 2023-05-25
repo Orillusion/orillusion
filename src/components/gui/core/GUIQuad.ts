@@ -27,7 +27,7 @@ export class GUIQuad {
     protected _sprite: GUISprite = Engine3D.res.defaultGUISprite;
     private _color: Color = new Color(1, 1, 1, 1);
     private _imageType: ImageType = ImageType.Simple;
-    public changeAttr: GUIQuadAttrEnum = GUIQuadAttrEnum.MAX;
+    public dirtyAttributes: GUIQuadAttrEnum = GUIQuadAttrEnum.MAX;
 
     private static textPool: PoolNode<GUIQuad>;
 
@@ -96,7 +96,7 @@ export class GUIQuad {
     }
 
     public setAttrChange(attr: GUIQuadAttrEnum) {
-        this.changeAttr = this.changeAttr | attr;
+        this.dirtyAttributes = this.dirtyAttributes | attr;
     }
     public applyTransform(transform: UITransform): this {
         this.setAttrChange(GUIQuadAttrEnum.POSITION);
@@ -144,9 +144,8 @@ export class GUIQuad {
     }
 
     public writeToGeometry(guiGeometry: GUIGeometry, transform: UITransform): this {
-        let changed = this.changeAttr;
-        this.changeAttr = GUIQuadAttrEnum.NONE;
-        guiGeometry.fillQuad(this, changed, transform);
+        guiGeometry.fillQuad(this, transform);
+        this.dirtyAttributes = GUIQuadAttrEnum.NONE;
         return this;
     }
 }
