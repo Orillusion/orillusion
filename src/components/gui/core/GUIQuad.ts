@@ -44,7 +44,7 @@ export class GUIQuad {
 
     public set imageType(value: ImageType) {
         this._imageType = value;
-        this.setAttrChange(GUIQuadAttrEnum.SPRITE);
+        this.setAttrChange(GUIQuadAttrEnum.SPRITE | GUIQuadAttrEnum.POSITION);
     }
 
     public get color(): Color {
@@ -108,7 +108,7 @@ export class GUIQuad {
         }
         let matrixScaleX = _worldMatrix.getScaleX();
         let matrixScaleY = _worldMatrix.getScaleY();
-        let isSliced = item.isSliced && this.imageType == ImageType.Sliced;
+        let isSliced = item.isSliced && this._imageType == ImageType.Sliced;
         //计算trim图偏移量
         this._offsetX = transform.width * 0.5 * matrixScaleX;
         this._offsetY = transform.height * 0.5 * matrixScaleY;
