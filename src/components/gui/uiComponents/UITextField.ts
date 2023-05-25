@@ -135,11 +135,6 @@ export class UITextField extends UIComponentBase {
             this.layoutText();
         }
     }
-
-    public destroy(): void {
-        this.detachQuads();
-        super.destroy();
-    }
 }
 
 

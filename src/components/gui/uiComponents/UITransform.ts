@@ -181,6 +181,19 @@ export class UITransform extends ComponentBase {
     private _onChange: boolean = true;
     public needUpdateQuads = true;
 
+    public recycleQuad(quad?: GUIQuad): GUIQuad {
+        if (quad) {
+            let index = this.quads.indexOf(quad);
+            if (index >= 0) {
+                this.quads.splice(index, 1);
+                GUIQuad.recycleQuad(quad);
+            } else {
+                quad = null;
+            }
+        }
+        return quad;
+    }
+
     public get onChange() {
         return this._onChange;
     }

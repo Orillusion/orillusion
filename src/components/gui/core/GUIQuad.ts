@@ -32,10 +32,22 @@ export class GUIQuad {
     private static textPool: PoolNode<GUIQuad>;
 
     static get quadPool(): PoolNode<GUIQuad> {
-        if (this.textPool == null) {
-            this.textPool = new PoolNode<GUIQuad>();
-        }
+        this.textPool ||= new PoolNode<GUIQuad>();
         return this.textPool;
+    }
+
+    static recycleQuad(quad: GUIQuad): void {
+        quad.sprite = null;
+        quad.dirtyAttributes = GUIQuadAttrEnum.MAX;
+        quad.x = 0;
+        quad.y = 0;
+        quad.z = -1;
+        GUIQuad.quadPool.pushBack(quad);
+    }
+
+    static spawnQuad(): GUIQuad {
+        let quad = GUIQuad.quadPool.getOne(GUIQuad);
+        return quad;
     }
 
     public get imageType(): ImageType {
@@ -93,6 +105,18 @@ export class GUIQuad {
 
     public get bottom(): number {
         return this.top + this._globalHeight;
+    }
+
+    public setSize(width: number, height: number) {
+        this.width = width;
+        this.height = height;
+        this.setAttrChange(GUIQuadAttrEnum.POSITION);
+    }
+
+    public setXY(x: number, y: number) {
+        this.x = x;
+        this.y = y;
+        this.setAttrChange(GUIQuadAttrEnum.POSITION);
     }
 
     public setAttrChange(attr: GUIQuadAttrEnum) {

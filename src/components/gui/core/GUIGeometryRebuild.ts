@@ -28,7 +28,7 @@ export class GUIGeometryRebuild {
     this._textureList.length = 0;
 
     let zMax: number = guiMesh.quadMaxCount - 1;
-
+    let needBreak: boolean;
     for (let transform of transforms) {
       transform.guiMesh = guiMesh;
       let needUpdateQuads = transform.needUpdateQuads;
@@ -61,8 +61,12 @@ export class GUIGeometryRebuild {
           quad.writeToGeometry(guiMesh.geometry, transform);
         }
         if (quadIndex == zMax) {
-          return false;
+          needBreak = true;
+          break;
         }
+      }
+      if (needBreak) {
+        break;
       }
     }
 
@@ -71,6 +75,6 @@ export class GUIGeometryRebuild {
     // if (isGeometryDirty) {
     //   guiMesh.geometry.cutOff(quadIndex + 1);
     // }
-    return true;
+    return !needBreak;
   }
 }

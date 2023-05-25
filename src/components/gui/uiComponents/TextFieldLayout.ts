@@ -119,7 +119,7 @@ export class TextFieldLayout {
       let charSprite = fonts.getFnt(fontName, originSize, code);
       let quad: GUIQuad = null;
       if (charSprite) {
-        quad = GUIQuad.quadPool.getOne(GUIQuad);
+        quad = GUIQuad.spawnQuad();
         quad.sprite = charSprite;
         quad.x = (offsetX + charSprite.xoffset) * realSize - transformOffsetX;
         quad.y = (fontData.base - charSprite.height - charSprite.yoffset - fontData.base) * realSize + transformOffsetY;
