@@ -7,6 +7,7 @@ import { VertexAttributeSize } from "./VertexAttributeSize";
 
 
 export class GeometryVertexBuffer {
+
     public vertexCount: number = 0;
     public vertexGPUBuffer: VertexGPUBuffer;
     public geometryType: GeometryVertexType = GeometryVertexType.compose;
@@ -189,5 +190,16 @@ export class GeometryVertexBuffer {
 
     public compute() {
 
+    }
+
+    public destroy(force?: boolean) {
+        this.vertexCount = null;
+        this.geometryType = null;
+        this._vertexBufferLayouts = null;
+        this._attributeSlotLayouts = null;
+        this._attributeLocation = null;
+
+        this.vertexGPUBuffer.destroy(force);
+        this.vertexGPUBuffer = null;
     }
 }

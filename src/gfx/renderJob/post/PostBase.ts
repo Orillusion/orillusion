@@ -9,6 +9,7 @@ import { ComputeShader } from '../../../gfx/graphics/webGpu/shader/ComputeShader
 import { RTResourceConfig } from '../config/RTResourceConfig';
 import { PostRenderer } from '../passRenderer/post/PostRenderer';
 import { View3D } from '../../../core/View3D';
+import { Reference } from '../../../util/Reference';
 /**
  * @internal
  * Base class for post-processing effects
@@ -29,6 +30,7 @@ export class PostBase {
         let rt = RTResourceMap.createRTTexture(name, rtWidth, rtHeight, format, useMipmap, sampleCount);
         rt.name = name;
         this.virtualTexture.set(name, rt);
+        Reference.getInstance().attached(rt, this);
         return rt;
     }
 
@@ -76,18 +78,19 @@ export class PostBase {
         });
     }
 
-    public destroy() {
+    public destroy(force?: boolean) {
         this.postRenderer = null;
         for (let i = 0; i < this.rtViewQuad.size; i++) {
             const quad = this.rtViewQuad.values[i] as ViewQuad;
-            quad.destroy();
+            quad.destroy(force);
         }
         this.rtViewQuad.clear();
         this.rtViewQuad = null;
 
         for (let i = 0; i < this.virtualTexture.size; i++) {
             const tex = this.virtualTexture.values[i] as VirtualTexture;
-            tex.destroy();
+            Reference.getInstance().detached(tex, this);
+            tex.destroy(force);
         }
     }
 }

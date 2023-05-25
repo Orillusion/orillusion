@@ -13,13 +13,13 @@ export class ParserBase {
     public userData?: any;
     public data: any;
 
-    public parserString(str: string) { }
+    public parseString(str: string) { }
 
-    public parserJson(obj: object) { }
+    public parseJson(obj: object) { }
 
     public parseBuffer(buffer: ArrayBuffer) { }
 
-    public parserTexture(buffer: ArrayBuffer): Texture {
+    public parseTexture(buffer: ArrayBuffer): Texture {
         throw this.parserError('Method not implemented.', -1);
     }
 

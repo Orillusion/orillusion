@@ -3,7 +3,7 @@ import { Camera3D, CameraUtil, Engine3D, Object3D, PostProcessingComponent, Scen
 
 await test('Post TAAPost test', async () => {
     await Engine3D.init();
-    Engine3D.frameRate = 10;
+    Engine3D.frameRate = 2;
 
     let view = new View3D();
     view.scene = new Scene3D();
@@ -11,7 +11,10 @@ await test('Post TAAPost test', async () => {
     Engine3D.startRenderViews([view]);
 
     let postProcessing = view.scene.addComponent(PostProcessingComponent);
-    postProcessing.addPost(TAAPost);
+    let taa = postProcessing.addPost(TAAPost);
+    await delay(500)
+    expect(taa.taaTexture?.width).tobe(window.innerWidth)
+    Engine3D.pause()
 })
 
 setTimeout(end, 500)

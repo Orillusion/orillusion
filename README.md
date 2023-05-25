@@ -100,8 +100,13 @@ await Engine3D.init({
 Please read the [Docs](https://www.orillusion.com/guide/) to Learn More.
 
 ## Platform
-**Chrome Desktop: 113+**  
-**Edge Desktop: 113+**
+**Windows/Mac/Linux:**
+- Chrome 113+
+- Edge: 113+
+
+**Android (Behind the `enable-unsafe-webgpu` flag):** 
+- Chrome Canary 113+ 
+- Edge Canary 113+
 
 ## Useful links
 - [Official Web Site](https://www.orillusion.com/)

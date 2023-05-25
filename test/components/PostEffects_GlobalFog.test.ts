@@ -3,7 +3,7 @@ import { Camera3D, CameraUtil, Engine3D, GlobalFog, Object3D, PostProcessingComp
 
 await test('Post GlobalFog test', async () => {
     await Engine3D.init();
-    Engine3D.frameRate = 10;
+    Engine3D.frameRate = 2;
 
     let view = new View3D();
     view.scene = new Scene3D();
@@ -11,7 +11,10 @@ await test('Post GlobalFog test', async () => {
     Engine3D.startRenderViews([view]);
 
     let postProcessing = view.scene.addComponent(PostProcessingComponent);
-    postProcessing.addPost(GlobalFog);
+    let fog = postProcessing.addPost(GlobalFog);
+    await delay(500)
+    expect(fog.rtTexture?.width).tobe(window.innerWidth)
+    Engine3D.pause()
 })
 
 setTimeout(end, 500)

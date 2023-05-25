@@ -1,5 +1,8 @@
-import { Engine3D } from "../Engine3D";
+import { Object3D } from "..";
+import { GUIPick } from "../components/gui/GUIPick";
+import { GUICanvas } from "../components/gui/core/GUICanvas";
 import { CEventListener } from "../event/CEventListener";
+import { ShadowLightsCollect } from "../gfx/renderJob/collect/ShadowLightsCollect";
 import { Graphic3D } from "../gfx/renderJob/passRenderer/graphic/Graphic3DRender";
 import { PickFire } from "../io/PickFire";
 import { Vector4 } from "../math/Vector4";
@@ -13,6 +16,9 @@ export class View3D extends CEventListener {
     private _enablePick: boolean = false;
     private _enable: boolean = true;
     public pickFire: PickFire;
+    public guiPick: GUIPick;
+    public readonly canvasList: GUICanvas[];
+
     /**
     * Graphics renderers (lines, rectangles, etc.)
     */
@@ -20,6 +26,7 @@ export class View3D extends CEventListener {
 
     constructor(x: number = 0, y: number = 0, width: number = 0, height: number = 0) {
         super();
+        this.canvasList = [];
         this._viewPort = new Vector4(x, y, width, height);
         this.enablePick = true;
         this.graphic3D = new Graphic3D();
@@ -53,8 +60,16 @@ export class View3D extends CEventListener {
         this._scene = value;
         value.view = this;
 
+        ShadowLightsCollect.createBuffer(value);
+
         if (this.graphic3D)
             value.addChild(this.graphic3D);
+
+        if (value) {
+            this.canvasList.forEach(canvas => {
+                canvas && value.addChild(canvas.object3D);
+            });
+        }
     }
 
     public get camera(): Camera3D {
@@ -71,6 +86,32 @@ export class View3D extends CEventListener {
 
     public set viewPort(value: Vector4) {
         this._viewPort = value;
+    }
+
+    public enableUICanvas(index: number = 0): GUICanvas {
+        let canvas = this.canvasList[index];
+        if (!canvas) {
+            let obj = new Object3D();
+            obj.name = 'Canvas ' + index;
+            canvas = obj.addComponent(GUICanvas);
+            this.canvasList[index] = canvas;
+        }
+
+        this.scene.addChild(canvas.object3D);
+
+        if (!this.guiPick) {
+            this.guiPick = new GUIPick();
+            this.guiPick.init(this);
+        }
+
+        return canvas;
+    }
+
+    public disableUICanvas(index: number = 0) {
+        let canvas = this.canvasList[index];
+        if (canvas && canvas.object3D) {
+            canvas.object3D.removeFromParent();
+        }
     }
 
     // public get graphic3D(): Graphic3D {

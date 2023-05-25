@@ -176,7 +176,7 @@ export class AnimationMonitor {
 
                 if (hasQuaternion) {
                     let transform = this._target.transform;
-                    Matrix4.getEuler(transform.localRotation, transform.localRotQuat, true, 'YXZ');
+                    Matrix4.getEuler(transform.localRotation, transform.localRotQuat, true, 'ZYX');
                 }
             }
         }

@@ -83,7 +83,7 @@ export class OBJParser extends ParserBase {
   mtlUrl: string;
   // public geometryDatas:GeometryData[];
 
-  async parserString(obj: string) {
+  async parseString(obj: string) {
     this.source_vertices = [];
     this.source_normals = [];
     this.source_tangents = [];

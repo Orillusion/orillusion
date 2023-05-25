@@ -80,7 +80,7 @@ export class Entity extends CEventDispatcher {
      *
      * The bounding box of an object
      */
-    private _bound: IBound;
+    protected _bound: IBound;
     private _dispose: boolean = false;
     // private _visible: boolean = true;
 
@@ -367,11 +367,14 @@ export class Entity extends CEventDispatcher {
     /**
      * release current object
      */
-    public destroy() {
-        this.transform.parent = null;
+    public destroy(force?: boolean) {
         this.components.forEach((c) => {
-            c.destroy();
+            c.destroy(force);
         });
         this.components.clear();
+        this.entityChildren.forEach((c) => {
+            c.destroy(force);
+        })
+        this.transform.parent = null;
     }
 }

@@ -1,4 +1,5 @@
 
+import { Engine3D, zSorterUtil } from '../../..';
 import { ILight } from '../../../components/lights/ILight';
 import { RenderNode } from '../../../components/renderer/RenderNode';
 import { Scene3D } from '../../../core/Scene3D';
@@ -144,9 +145,15 @@ export class EntityCollect {
         if (!this._sceneLights.has(root)) {
             this._sceneLights.set(root, [light]);
         } else {
-            let hasLight = this._sceneLights.get(root).indexOf(light) != -1;
-            if (!hasLight)
-                this._sceneLights.get(root).push(light);
+            let lights = this._sceneLights.get(root)
+            if (lights.length >= Engine3D.setting.light.maxLight) {
+                console.warn('Alreay meet maxmium light number:', Engine3D.setting.light.maxLight)
+                return
+            }
+            let hasLight = lights.indexOf(light) != -1;
+            if (!hasLight) {
+                lights.push(light);
+            }
         }
     }
 
@@ -164,6 +171,38 @@ export class EntityCollect {
         return list ? list : [];
     }
 
+    // sort renderers by renderOrder and camera depth
+    public autoSortRenderNodes(scene: Scene3D): this {
+        let renderList: RenderNode[] = this._source_transparentRenderNodes.get(scene);
+        if (!renderList)
+            return;
+        let needSort = false;
+        for (const renderNode of renderList) {
+            if (renderNode.isRenderOrderChange || renderNode.needSortOnCameraZ) {
+                needSort = true;
+                break;
+            }
+        }
+        if (needSort) {
+            for (const renderNode of renderList) {
+                let __renderOrder = renderNode.renderOrder;
+                if (renderNode.needSortOnCameraZ) {
+                    let cameraDepth = zSorterUtil.worldToCameraDepth(renderNode.object3D);
+                    cameraDepth = 1 - Math.max(0, Math.min(1, cameraDepth));//clamp to [0, 1]
+                    __renderOrder += cameraDepth;
+                }
+                renderNode['__renderOrder'] = __renderOrder;
+                //resume unchange status
+                renderNode.isRenderOrderChange = false;
+            }
+            renderList.sort((a: RenderNode, b: RenderNode) => {
+                return a['__renderOrder'] > b['__renderOrder'] ? 1 : -1;
+            });
+        }
+        return this;
+    }
+
+
     public getRenderNodes(scene: Scene3D): CollectInfo {
         this._collectInfo.clean();
         this._collectInfo.sky = this.sky;
@@ -177,8 +216,10 @@ export class EntityCollect {
         if (list5) {
             this._collectInfo.transparentList = list5.concat();
         }
+
         return this._collectInfo;
     }
+
 
     public getOpRenderGroup(scene: Scene3D): EntityBatchCollect {
         return this._op_renderGroup.get(scene);

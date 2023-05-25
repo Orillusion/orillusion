@@ -10,6 +10,7 @@ import { Vector3 } from '../../math/Vector3';
  * @group Core
  */
 export class BoundingBox implements IBound {
+
     /**
      * The center of the bounding box.
      */
@@ -166,5 +167,15 @@ export class BoundingBox implements IBound {
 
     public updateBound() {
 
+    }
+
+    public destroy(force?: boolean) {
+        this.center = null;
+        this.extents = null;
+        this.min = null;
+        this.max = null;
+        this.size = null;
+        this.worldMax = null;
+        this.worldMin = null;
     }
 }

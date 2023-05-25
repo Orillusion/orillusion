@@ -27,6 +27,7 @@ import { GPUBufferType } from "../core/buffer/GPUBufferType";
 
 import { MaterialDataUniformGPUBuffer } from "../core/buffer/MaterialDataUniformGPUBuffer";
 import { ShaderUtil } from "./util/ShaderUtil";
+import { Reference } from "../../../..";
 
 export class RenderShader extends ShaderBase {
     public useRz: boolean = false;
@@ -428,7 +429,34 @@ export class RenderShader extends ShaderBase {
     /**
      * Destroy and release render shader related resources
      */
-    public destroy() {
+    public destroy(force?: boolean) {
+        for (const key in this.textures) {
+            if (Object.prototype.hasOwnProperty.call(this.textures, key)) {
+                const texture = this.textures[key];
+                Reference.getInstance().detached(texture, this);
+                if (force && !Reference.getInstance().hasReference(texture)) {
+                    texture.destroy(force);
+                    console.log("destroy");
+                } else {
+                    texture.destroy(false);
+                    console.log("has use , cant destroy",
+                        Reference.getInstance().getReferenceCount(texture),
+                    );
+                    let table = Reference.getInstance().getReference(texture);
+                    let list = [];
+                    table.forEach((v, k) => {
+                        if (`name` in v) {
+                            list.push(v[`name`]);
+                        } else {
+                            list.push(`NaN`);
+                        }
+                    });
+                    console.log("ref", list);
+                }
+            }
+        }
+
+
         this.bindGroups.length = 0;
         this._passShaderCache.clear();
         this.shaderState = null;
@@ -441,7 +469,7 @@ export class RenderShader extends ShaderBase {
         this._destFS = null;
         this._vsShaderModule = null;
         this._fsShaderModule = null;
-        this.materialDataUniformBuffer.destroy();;
+        this.materialDataUniformBuffer.destroy(force);;
         this.materialDataUniformBuffer = null;
     }
 
@@ -599,6 +627,7 @@ export class RenderShader extends ShaderBase {
                             // if(info.binding == 8){
                             //     console.log(info.binding, entry );
                             // }
+                            Reference.getInstance().attached(texture, this);
                         }
                         break;
                     case `texture_external`:
@@ -612,6 +641,7 @@ export class RenderShader extends ShaderBase {
                             entries.push(entry);
                             this._textureGroup = index;
                             // console.log(info.binding, entry );
+                            Reference.getInstance().attached(texture, this);
                         }
                         break;
                     default:
@@ -625,6 +655,7 @@ export class RenderShader extends ShaderBase {
                             entries.push(entry);
                             this._textureGroup = index;
                             // console.log(info.binding, entry );
+                            Reference.getInstance().attached(texture, this);
                         }
                         break;
                 }
@@ -716,6 +747,7 @@ export class RenderShader extends ShaderBase {
                                 resource: texture.gpuSampler_comparison
                             }
                             entries.push(entry);
+
                             // console.log(refs.binding, entry );
                         } else {
                             console.error(`shader${this.vsName}-${this.fsName}`, `texture ${refs.varName} is missing! `);

@@ -1,6 +1,6 @@
 {
     "name": "@orillusion/core",
-    "version": "0.6.1",
+    "version": "0.6.2",
     "author": "Orillusion",
     "description": "Orillusion WebGPU Engine",
     "main": "./dist/orillusion.umd.js",
@@ -42,7 +42,7 @@
     },
     "optionalDependencies": {
         "conventional-changelog-cli": "^2.2.2",
-        "electron": "25.0.0-beta.1",
+        "electron": "25.0.0-beta.8",
         "uglify-js": "^3.17.4",
         "xvfb-maybe": "^0.2.1"
     }

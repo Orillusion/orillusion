@@ -113,6 +113,7 @@ export class ComponentBase implements IComponent {
     public onBeforeUpdate?(view?: View3D);
     public onCompute?(view?: View3D, command?: GPUCommandEncoder);
     public onGraphic?(view?: View3D);
+    public onParentChange?(lastParent?: Object3D, currentParent?: Object3D);
 
     /**
      *
@@ -152,9 +153,9 @@ export class ComponentBase implements IComponent {
      */
     private _onBeforeUpdate(call: Function) {
         if (call != null) {
-            ComponentCollect.bindLateUpdate(this.transform.view3D, this, call);
+            ComponentCollect.bindBeforeUpdate(this.transform.view3D, this, call);
         } else {
-            ComponentCollect.unBindLateUpdate(this.transform.view3D, this);
+            ComponentCollect.unBindBeforeUpdate(this.transform.view3D, this);
         }
     }
 
@@ -186,7 +187,7 @@ export class ComponentBase implements IComponent {
     /**
      * release this component
      */
-    public destroy() {
+    public destroy(force?: boolean) {
         this.enable = false;
         this.stop();
         this._onBeforeUpdate(null);

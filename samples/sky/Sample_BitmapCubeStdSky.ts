@@ -1,40 +1,22 @@
-import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, Texture, SkyRenderer } from "@orillusion/core";
+import { createExampleScene } from "@samples/utils/ExampleScene";
+import { Engine3D, Scene3D, SkyRenderer, Object3DUtil } from "@orillusion/core";
 
 // sample to replace standard sky map
 class Sample_BitmapCubeStdSky {
-    private _scene: Scene3D;
     async run() {
         // init engine
         await Engine3D.init({});
-
         // init scene
-        this._scene = new Scene3D();
+        let scene: Scene3D = createExampleScene().scene;
+        let sky = scene.getOrAddComponent(SkyRenderer);
+        sky.map = await Engine3D.res.loadTextureCubeStd('sky/StandardCubeMap-2.jpg');
 
-        // init camera3D
-        let mainCamera = CameraUtil.createCamera3D(null, this._scene);
-        mainCamera.perspective(60, Engine3D.aspect, 1, 2000.0);
-
-        // camera controller
-        let hoverCameraController = mainCamera.object3D.addComponent(HoverCameraController);
-        hoverCameraController.setCamera(45, -10, 10);
-
-        // init view3D
-        let view = new View3D();
-        view.scene = this._scene;
-        view.camera = mainCamera;
+        // create a basic cube
+        scene.addChild(Object3DUtil.GetSingleCube(10, 10, 10, 0.6, 0.6, 0.6));
 
         // start renderer
-        Engine3D.startRenderView(view);
-
-        // load standard sky texture
-        let url = 'sky/StandardCubeMap-2.jpg';
-        
-        let sky = this._scene.addComponent(SkyRenderer)
-        sky.map = await Engine3D.res.loadTextureCubeStd(url);
-        this._scene.envMap = sky.map
+        Engine3D.startRenderView(scene.view);
     }
-
 }
 
 new Sample_BitmapCubeStdSky().run();

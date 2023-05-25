@@ -30,6 +30,7 @@ export class SubGeometry {
  * @group Geometry
  */
 export class GeometryBase {
+
     public uuid: string;
     public name: string;
     public subGeometries: SubGeometry[] = [];
@@ -262,5 +263,24 @@ export class GeometryBase {
 
     public isPrimitive(): boolean {
         return false;// this.geometrySource != null && this.geometrySource.type != 'none';
+    }
+
+    destroy(force?: boolean) {
+        this.uuid = null;
+        this.name = null;
+        this.subGeometries = null;
+        this.morphTargetDictionary = null;
+
+        this._bounds.destroy();
+        this._bounds = null;
+
+        this._attributeMap = null;
+        this._attributes = null;
+
+        this._indicesBuffer.destroy();
+        this._vertexBuffer.destroy();
+
+        this._indicesBuffer = null;
+        this._vertexBuffer = null;
     }
 }

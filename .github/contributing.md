@@ -78,7 +78,7 @@ After install all dependenceies of the project, just run `pnpm run dev` to boot 
 ```bash
 $ pnpm run dev
 ```
-After executing the above command, visit http://localhost:3000 and try live samples from `/samples`
+After executing the above command, visit http://localhost:8000 and try live samples from `/samples`
 
 ### Build production libs
 To build a production package:

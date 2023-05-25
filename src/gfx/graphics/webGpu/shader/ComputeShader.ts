@@ -3,6 +3,10 @@ import { webGPUContext } from '../Context3D';
 import { ShaderBase } from './ShaderBase';
 import { ShaderReflection, ShaderReflectionVarInfo } from './value/ShaderReflectionInfo';
 import { Preprocessor } from './util/Preprocessor';
+import { Reference, Struct } from '../../../..';
+import { StorageGPUBuffer } from '../core/buffer/StorageGPUBuffer';
+import { StructStorageGPUBuffer } from '../core/buffer/StructStorageGPUBuffer';
+import { UniformGPUBuffer } from '../core/buffer/UniformGPUBuffer';
 
 /**
  * @internal
@@ -37,6 +41,7 @@ export class ComputeShader extends ShaderBase {
     private _storageTextureDic: Map<string, Texture>;
     private _sampleTextureDic: Map<string, Texture>;
     private _groupsShaderReflectionVarInfos: ShaderReflectionVarInfo[][];
+    private _groupCache: { [name: string]: { groupIndex: number, infos: any } } = {};
 
     /**
      *
@@ -67,10 +72,7 @@ export class ComputeShader extends ShaderBase {
      * @param texture
      */
     public setSamplerTexture(name: string, texture: Texture) {
-        // if (!this.sampleTextureDic.has(name)) {
         this._sampleTextureDic.set(name, texture);
-        // this.useSampler.set(name, useSampler);
-        // }
     }
 
     /**
@@ -96,7 +98,28 @@ export class ComputeShader extends ShaderBase {
         }
     }
 
-    public readHeap() {
+    private createBufferBindGroup(groupIndex: number, varName: string, binding: number, entries: GPUBindGroupEntry[]) {
+        let buffer = this._bufferDic.get(varName);
+        if (buffer) {
+            let entry: GPUBindGroupEntry = {
+                binding: binding,
+                resource: {
+                    buffer: buffer.buffer,
+                    offset: 0,//buffer.memory.shareFloat32Array.byteOffset,
+                    size: buffer.memory.shareDataBuffer.byteLength,
+                },
+            }
+            entries.push(entry);
+        } else {
+            console.error(`ComputeShader(${this.instanceID})`, `buffer ${varName} is missing!`);
+        }
+    }
+
+    protected noticeBufferChange(name: string) {
+        let bindGroupCache = this._groupCache[name];
+        if (bindGroupCache) {
+            this.genGroups(bindGroupCache.groupIndex, bindGroupCache.infos, true);
+        }
     }
 
     protected genGroups(groupIndex: number, infos: ShaderReflectionVarInfo[][], force: boolean = false) {
@@ -110,40 +133,11 @@ export class ComputeShader extends ShaderBase {
 
                 switch (refs.varType) {
                     case `uniform`:
-                        {
-                            let buffer = this._bufferDic.get(refs.varName);
-                            if (buffer) {
-                                let entry: GPUBindGroupEntry = {
-                                    binding: refs.binding,
-                                    resource: {
-                                        buffer: buffer.buffer,
-                                        offset: 0, //buffer.memory.shareFloat32Array.byteOffset,
-                                        size: buffer.memory.shareDataBuffer.byteLength,
-                                    },
-                                }
-                                entries.push(entry);
-                            } else {
-                                console.error(`ComputeShader(${this.instanceID})`, `buffer ${refs.varName} is missing!`);
-                            }
-                        }
-                        break;
                     case `storage-read`:
                     case `storage-read_write`:
                         {
-                            let buffer = this._bufferDic.get(refs.varName);
-                            if (buffer) {
-                                let entry: GPUBindGroupEntry = {
-                                    binding: refs.binding,
-                                    resource: {
-                                        buffer: buffer.buffer,
-                                        offset: 0,//buffer.memory.shareFloat32Array.byteOffset,
-                                        size: buffer.memory.shareDataBuffer.byteLength,
-                                    },
-                                }
-                                entries.push(entry);
-                            } else {
-                                console.error(`ComputeShader(${this.instanceID})`, `buffer ${refs.varName} is missing!`);
-                            }
+                            this.createBufferBindGroup(groupIndex, refs.varName, refs.binding, entries);
+                            this._groupCache[refs.varName] = { groupIndex: groupIndex, infos: infos };
                         }
                         break;
                     case `var`:
@@ -180,6 +174,7 @@ export class ComputeShader extends ShaderBase {
                                         resource: texture.getGPUView(),
                                     }
                                     entries.push(entry);
+                                    Reference.getInstance().attached(texture, this);
                                 } else {
                                     console.error(`ComputeShader(${this.instanceID})`, `texture ${refs.varName} is missing! `);
                                 }
@@ -191,6 +186,7 @@ export class ComputeShader extends ShaderBase {
                                         resource: texture.getGPUView(),
                                     }
                                     entries.push(entry);
+                                    Reference.getInstance().attached(texture, this);
                                 } else {
                                     console.error(`ComputeShader(${this.instanceID})`, `texture ${refs.varName} is missing! `);
                                 }
@@ -207,6 +203,7 @@ export class ComputeShader extends ShaderBase {
                 layout: this._computePipeline.getBindGroupLayout(groupIndex),
                 entries: entries
             });
+
             this.bindGroups[groupIndex] = gpubindGroup;
         }
     }

@@ -72,7 +72,6 @@ export class PassGenerate {
             shadowMaterialPass.baseMap = renderNode.materials[0].baseMap;
             shadowMaterialPass.alphaCutoff = renderNode.materials[0].alphaCutoff;
             shadowMaterialPass.setDefine("USE_ALPHACUT", renderNode.materials[0].alphaCutoff < 1.0);
-            // shadowMaterialPass.doubleSide = false ;
             for (let j = 0; j < 1; j++) {
                 const renderShader = shadowMaterialPass.renderShader;
                 if (useTangent) {
@@ -87,8 +86,14 @@ export class PassGenerate {
                 if (useMorphNormals) {
                     renderShader.setDefine(`USE_MORPHNORMALS`, useMorphNormals);
                 }
-                // renderShader.shaderState.cullMode = baseMat.getShader().cullMode ;
-                renderShader.shaderState.cullMode = `front`;
+                // renderShader.shaderState.cullMode = material.getShader().cullMode;
+                if (material.getShader().cullMode == `none`) {
+                    renderShader.shaderState.cullMode = `none`;
+                } else if (material.getShader().cullMode == `back`) {
+                    renderShader.shaderState.cullMode = `front`;
+                } else if (material.getShader().cullMode == `front`) {
+                    renderShader.shaderState.cullMode = `back`;
+                }
                 renderShader.preCompile(renderNode.geometry);
             }
             material.renderShader.setPassShader(RendererType.SHADOW, shadowMaterialPass);

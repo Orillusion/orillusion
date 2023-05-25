@@ -27,8 +27,8 @@ assignees: ''
 
 ## 本机系统 (请填写完整):
  - OS: [e.g. win, mac, android]
- - Browser [e.g. chrome]
- - Version [e.g. 113]
+ - Browser: [e.g. chrome]
+ - Version: [e.g. 113]
 
 ## 代码示例
 如果有sandbox/codepen的代码示例链接，请提供  

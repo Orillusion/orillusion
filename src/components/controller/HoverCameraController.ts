@@ -1,3 +1,4 @@
+import { View3D } from "../..";
 import { Engine3D } from "../../Engine3D";
 import { Camera3D } from "../../core/Camera3D";
 import { Object3D } from "../../core/entities/Object3D";
@@ -221,8 +222,9 @@ export class HoverCameraController extends ComponentBase {
         }
     }
 
-    public onUpdate(): void {
-        if (!this.enable) return;
+    public onBeforeUpdate(view?: View3D) {
+        if (!this.enable)
+            return;
 
         let dt = clamp(Time.delta, 0.0, 0.016);
         if (this.smooth) {
@@ -261,12 +263,12 @@ export class HoverCameraController extends ComponentBase {
     /**
      * @internal
      */
-    public destroy() {
-        this.camera = null;
+    public destroy(force?: boolean) {
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_DOWN, this.onMouseDown, this);
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_MOVE, this.onMouseMove, this);
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_UP, this.onMouseUp, this);
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_WHEEL, this.onMouseWheel, this);
-        super.destroy();
+        super.destroy(force);
+        this.camera = null;
     }
 }

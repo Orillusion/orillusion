@@ -53,23 +53,13 @@ export class Object3D extends Entity {
             instance.object3D = this;
             instance[`__init`](param);
             this.components.set(className, instance);
-            this.appendLateStart(instance);
+            ComponentCollect.appendWaitStart(this, instance);
             return instance;
         }
         return null;
     }
 
-    private appendLateStart(component: IComponent) {
-        let arr = ComponentCollect.waitStartComponent.get(this);
-        if (!arr) {
-            ComponentCollect.waitStartComponent.set(this, [component]);
-        } else {
-            let index = arr.indexOf(component);
-            if (index == -1) {
-                arr.push(component);
-            }
-        }
-    }
+
 
     /**
      *
@@ -502,8 +492,8 @@ export class Object3D extends Entity {
      *
      * Release self
      */
-    public destroy(): void {
-        super.destroy();
+    public destroy(force?: boolean): void {
+        super.destroy(force);
     }
 
 }

@@ -76,10 +76,16 @@ export class LightBase extends ComponentBase implements ILight {
     }
 
     public start(): void {
+        this.transform.onPositionChange = () => this.onPositionChange();
         this.transform.onScaleChange = () => this.onScaleChange();
         this.transform.onRotationChange = () => this.onRotChange();
+        this.onPositionChange();
         this.onRotChange();
         this.onScaleChange();
+    }
+
+    protected onPositionChange() {
+        this.lightData.lightPosition.copyFrom(this.transform.worldPosition);
     }
 
     protected onRotChange() {
@@ -190,12 +196,20 @@ export class LightBase extends ComponentBase implements ILight {
         this.lightData.intensity = value;
         this.onChange();
     }
+
     /**
-     * get cast shadow
-     * @return boolean
+     * Cast Light Shadow
+     * @param value 
      *  */
+    public set castShadow(value: boolean) {
+        if (value != this._castShadow) {
+            this._castShadow = value;
+            this.onChange();
+        }
+    }
+
     public get castShadow(): boolean {
-        return this.lightData.castShadowIndex as number >= 0;
+        return this._castShadow;
     }
 
     /**
@@ -204,13 +218,7 @@ export class LightBase extends ComponentBase implements ILight {
     public get shadowIndex(): number {
         return this.lightData.castShadowIndex as number;
     }
-    /**
-     * set cast shadow 
-     * @param value is true , that can cast shadow
-     *  */
-    public set castShadow(value: boolean) {
-        if (value) this.onChange();
-    }
+
 
     /**
     * get gi is enable 
@@ -241,11 +249,11 @@ export class LightBase extends ComponentBase implements ILight {
         return this.lightData.direction;
     }
 
-    public destroy(): void {
+    public destroy(force?: boolean): void {
         this.bindOnChange = null;
         this.transform.eventDispatcher.removeEventListener(Transform.ROTATION_ONCHANGE, this.onRotChange, this);
         this.transform.eventDispatcher.removeEventListener(Transform.SCALE_ONCHANGE, this.onScaleChange, this);
-        super.destroy();
+        super.destroy(force);
     }
 
 }

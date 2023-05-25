@@ -271,13 +271,13 @@ export class FlyCameraController extends ComponentBase {
     /**
      * @internal
      */
-    public destroy(): void {
+    public destroy(force?: boolean): void {
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_WHEEL, this.mouseWheel, this);
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_UP, this.mouseUp, this);
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_DOWN, this.mouseDown, this);
 
         Engine3D.inputSystem.removeEventListener(KeyEvent.KEY_UP, this.keyUp, this);
         Engine3D.inputSystem.removeEventListener(KeyEvent.KEY_DOWN, this.keyDown, this);
-        super.destroy();
+        super.destroy(force);
     }
 }

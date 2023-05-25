@@ -21,9 +21,9 @@ class Sample_OutlineEffectPick {
         Engine3D.setting.pick.enable = true;
         Engine3D.setting.pick.mode = `pixel`;
 
-        Engine3D.setting.render.postProcessing.outline.outlinePixel = 1;
-        Engine3D.setting.render.postProcessing.outline.fadeOutlinePixel = 4;
-        Engine3D.setting.render.postProcessing.outline.strength = 0.25;
+        Engine3D.setting.render.postProcessing.outline.outlinePixel = 2;
+        Engine3D.setting.render.postProcessing.outline.fadeOutlinePixel = 1;
+        Engine3D.setting.render.postProcessing.outline.strength = 0.5;
 
         // init Engine3D
         await Engine3D.init({});

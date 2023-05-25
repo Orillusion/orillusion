@@ -11,6 +11,7 @@ import { ILight } from '../../../../components/lights/ILight';
 import { ClusterLightingBuffer } from './ClusterLightingBuffer';
 import { ClusterBoundsSource_cs } from '../../../../assets/shader/cluster/ClusterBoundsSource_cs';
 import { ClusterLighting_cs } from '../../../../assets/shader/cluster/ClusterLighting_cs';
+import { Camera3D } from '../../../..';
 /**
  * @internal
  * @group Post
@@ -20,13 +21,14 @@ export class ClusterLightingRender extends RendererBase {
     public clusterTileY = 9;
     public clusterTileZ = 16;
     public maxNumLights = 128;
-    public maxNumLightsPerCluster = 100;
+    public maxNumLightsPerCluster = 1024;
     public clusterPix = 1;
     public clusterLightingBuffer: ClusterLightingBuffer;
 
     private _currentLightCount = 0;
     private _clusterGenerateCompute: ComputeShader;
     private _clusterLightingCompute: ComputeShader;
+    private _useCamera: Camera3D;
     constructor(view: View3D) {
         super();
 
@@ -48,9 +50,9 @@ export class ClusterLightingRender extends RendererBase {
         this.clusterLightingBuffer = new ClusterLightingBuffer(numClusters, this.maxNumLightsPerCluster);
         this.clusterLightingBuffer.update(size[0], size[1], this.clusterPix, this.clusterTileX, this.clusterTileY, this.clusterTileZ, this.maxNumLights, this.maxNumLightsPerCluster, near, far);
 
-        let standBindGroup = GlobalBindGroup.getCameraGroup(camera);
-        this._clusterGenerateCompute.setUniformBuffer(`globalUniform`, standBindGroup.uniformGPUBuffer);
-        this._clusterLightingCompute.setUniformBuffer(`globalUniform`, standBindGroup.uniformGPUBuffer);
+        // let standBindGroup = GlobalBindGroup.getCameraGroup(camera);
+        // this._clusterGenerateCompute.setUniformBuffer(`globalUniform`, standBindGroup.uniformGPUBuffer);
+        // this._clusterLightingCompute.setUniformBuffer(`globalUniform`, standBindGroup.uniformGPUBuffer);
         this._clusterGenerateCompute.setUniformBuffer(`clustersUniform`, this.clusterLightingBuffer.clustersUniformBuffer);
         this._clusterGenerateCompute.setStorageBuffer(`clusterBuffer`, this.clusterLightingBuffer.clusterBuffer);
 
@@ -67,8 +69,16 @@ export class ClusterLightingRender extends RendererBase {
         let scene = view.scene;
         let lights: ILight[] = EntityCollect.instance.getLights(scene);
 
+        if (this._useCamera != view.camera) {
+            this._useCamera = view.camera;
+            let standBindGroup = GlobalBindGroup.getCameraGroup(this._useCamera);
+            this._clusterGenerateCompute.setUniformBuffer(`globalUniform`, standBindGroup.uniformGPUBuffer);
+            this._clusterLightingCompute.setUniformBuffer(`globalUniform`, standBindGroup.uniformGPUBuffer);
+        }
+
         if (this._currentLightCount != lights.length) {
             this._currentLightCount = lights.length;
+
             this.clusterLightingBuffer.clustersUniformBuffer.setFloat('numLights', lights.length);
             this.clusterLightingBuffer.clustersUniformBuffer.apply();
 

@@ -345,10 +345,17 @@ export class PhysicMaterial extends MaterialBase {
         return this.renderShader.uniforms[`clearcoatColor`].color;
     }
 
+    public destroy(force?: boolean): void {
+        // if (this.baseMap || (this.baseMap.name != "" && this.baseMap.name.indexOf("defaultOri") == -1)) {
+        //     this.baseMap.destroy(force);
+        // }
 
-    public debug() {
-
+        // if (this.normalMap || (this.normalMap.name != "" && this.normalMap.name.indexOf("defaultOri") == -1)) {
+        //     this.normalMap.destroy(force);
+        // }
+        super.destroy(force);
     }
+
 }
 
 registerMaterial("PhysicMaterial", PhysicMaterial);
