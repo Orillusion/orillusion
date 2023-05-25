@@ -137,6 +137,13 @@ export class UITransform extends ComponentBase {
         }
     }
 
+    public setXY(x: number, y: number) {
+        let pos = this.object3D.localPosition;
+        pos.set(x, y, pos.z);
+        this.object3D.localPosition = pos;
+        this.onChange = true;
+    }
+
     public get z() {
         return this.object3D.z;
     }

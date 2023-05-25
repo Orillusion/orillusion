@@ -19,6 +19,7 @@ export class GUIMaterial extends MaterialBase {
 
         shader.setUniformVector2('screen', new Vector2(1024, 1024));
         shader.setUniformVector2('mipmapRange', new Vector2(0, 10));
+        shader.setUniformFloat('limitVertex', 0);//count: (quadCount + 1) * QuadStruct.vertexCount
 
         let shaderState = shader.shaderState;
         // shaderState.useZ = false;
@@ -31,14 +32,22 @@ export class GUIMaterial extends MaterialBase {
         this.receiveEnv = false;
     }
 
+    /**
+    * Write effective vertex count (vertex index < vertexCount)
+    */
+    public setLimitVertex(vertexCount: number) {
+        this.renderShader.setUniformFloat('limitVertex', vertexCount);
+    }
+
     private _screenSizeVec2: Vector2 = new Vector2();
 
     /**
      * Write screen size to the shader
      */
-    public setScreenSize(width: number, height: number) {
+    public setScreenSize(width: number, height: number): this {
         this._screenSizeVec2.set(width, height);
         this.renderShader.setUniformVector2('screen', this._screenSizeVec2);
+        return this;
     }
 
     /**

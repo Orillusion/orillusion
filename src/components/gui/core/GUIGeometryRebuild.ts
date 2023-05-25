@@ -1,4 +1,4 @@
-import { Texture } from "../../..";
+import { GUIQuadAttrEnum, Texture } from "../../..";
 import { UITransform } from "../uiComponents/UITransform";
 import { GUIMesh } from "./GUIMesh";
 import { GUITexture } from "./GUITexture";
@@ -52,11 +52,15 @@ export class GUIGeometryRebuild {
           }
         }
 
-        if (needUpdateQuads || quad.onChange || isGeometryDirty) {
-          quad.transformQuad(transform);
+        let updateAllAttr = needUpdateQuads || isGeometryDirty;
+        if (updateAllAttr) {
+          quad.changeAttr = GUIQuadAttrEnum.MAX;
         }
-        if (quad.onChange) {
-          quad.updateGeometryBuffer(guiMesh.geometry, transform);
+        if (quad.changeAttr & GUIQuadAttrEnum.POSITION) {
+          quad.applyTransform(transform);
+        }
+        if (quad.changeAttr) {
+          quad.writeToGeometry(guiMesh.geometry, transform);
           isGeometryDirty = true;
         }
         if (quadIndex == zMax) {
@@ -66,9 +70,10 @@ export class GUIGeometryRebuild {
     }
 
     guiMesh['_setTextures'](this._textureList);
-    if (isGeometryDirty) {
-      guiMesh.geometry.reset(quadIndex + 1);
-    }
+    guiMesh.limitVertexCount = (quadIndex + 1) * 4;
+    // if (isGeometryDirty) {
+    //   guiMesh.geometry.cutOff(quadIndex + 1);
+    // }
     return true;
   }
 }

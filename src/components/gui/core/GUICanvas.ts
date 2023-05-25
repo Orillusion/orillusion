@@ -1,13 +1,11 @@
 import { Object3D } from "../../../core/entities/Object3D";
 import { webGPUContext } from "../../../gfx/graphics/webGpu/Context3D";
-import { Ctor } from "../../../util/Global";
 import { ComponentBase } from "../../ComponentBase";
 import { GUIConfig } from "../GUIConfig";
 import { UIPanel } from "../uiComponents/UIPanel";
 import { UITransform } from "../uiComponents/UITransform";
-import { ViewPanel } from "../uiComponents/ViewPanel";
-import { WorldPanel } from "../uiComponents/WorldPanel";
 import { GUIGeometryRebuild } from "./GUIGeometryRebuild";
+import { GUIMaterial } from "./GUIMaterial";
 import { GUIMesh } from "./GUIMesh";
 
 export class GUICanvas extends ComponentBase {
@@ -44,18 +42,13 @@ export class GUICanvas extends ComponentBase {
     }
 
     private rebuildGUIMesh() {
-        this.buildGUIMesh(WorldPanel);
-        this.buildGUIMesh(ViewPanel);
-    }
+        let panelList: UIPanel[] = this.object3D.getComponentsByProperty('isUIPanel', true, true);
 
-    private buildGUIMesh(ctor: Ctor<UIPanel>): void {
         let camera = this.object3D?.transform?.view3D?.camera;
 
         let screenWidth = webGPUContext.canvas.clientWidth;
         let screenHeight = webGPUContext.canvas.clientHeight;
-        let panelList = this.object3D.getComponentsExt(ctor);
-
-        panelList.forEach(panel => {
+        for (let panel of panelList) {
             let guiMesh: GUIMesh = panel.guiMesh;
             let transforms: UITransform[] = panel.object3D.getComponents(UITransform);
             if (transforms.length > 0) {
@@ -69,8 +62,9 @@ export class GUICanvas extends ComponentBase {
             guiMesh.uiRenderer.enable = transforms.length > 0;
             guiMesh.uiRenderer.renderOrder = GUIConfig.SortOrderStart + panel.panelOrder;
             guiMesh.uiRenderer.needSortOnCameraZ = panel.needSortOnCameraZ;
+            (guiMesh.uiRenderer.material as GUIMaterial).setLimitVertex(guiMesh.limitVertexCount);
             panel.needUpdateGeometry = false;
-        });
+        }
     }
 
     public cloneTo(obj: Object3D) {

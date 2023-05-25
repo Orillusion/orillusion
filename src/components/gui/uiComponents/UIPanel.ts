@@ -11,7 +11,7 @@ export class UIPanel extends UIComponentBase {
     public panelOrder: number = 0;
     public needSortOnCameraZ?: boolean;
     protected _mesh: GUIMesh;
-
+    public readonly isUIPanel = true;
     public get guiMesh(): GUIMesh {
         return this._mesh;
     }

@@ -54,8 +54,7 @@ export class UIImage extends UIComponentBase {
     }
 
     public set color(value: Color) {
-        this._quad.color.copyFrom(value);
-        this._quad.onChange = true;
+        this._quad.color = value;
     }
 
     public get imageType() {
@@ -63,10 +62,7 @@ export class UIImage extends UIComponentBase {
     }
 
     public set imageType(value: ImageType) {
-        if (this._quad.imageType != value) {
-            this._quad.imageType = value;
-            this._quad.onChange = true;
-        }
+        this._quad.imageType = value;
     }
 
 }
