@@ -52,7 +52,7 @@ export class GUIGeometryRebuild {
           }
         }
 
-        let updateAllAttr = needUpdateQuads || isGeometryDirty;
+        let updateAllAttr = needUpdateQuads || forceUpdate;
         if (updateAllAttr) {
           quad.changeAttr = GUIQuadAttrEnum.MAX;
         }
