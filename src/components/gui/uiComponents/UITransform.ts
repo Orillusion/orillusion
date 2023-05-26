@@ -107,7 +107,7 @@ export class UITransform extends ComponentBase {
             this._width = width;
             this._height = height;
             this.onChange = true;
-            for (let component of this.object3D.components) {
+            for (let component of this.object3D.components.values()) {
                 component['onTransformResize']?.();
             }
             return true;

@@ -48,6 +48,13 @@ export class UIImage extends UIComponentBase {
         value ||= Engine3D.res.defaultGUISprite;
         for (let quad of this._exlusiveQuads) {
             quad.sprite = value;
+            quad.setSize(this._uiTransform.width, this._uiTransform.height);
+        }
+    }
+
+    protected onTransformResize(): void {
+        for (let quad of this._exlusiveQuads) {
+            quad.setSize(this._uiTransform.width, this._uiTransform.height);
         }
     }
 

@@ -145,11 +145,11 @@ export class GUIQuad {
             this._globalX = _worldMatrix.tx + item.offsetSize.x * matrixScaleX;
             this._globalY = _worldMatrix.ty + item.offsetSize.y * matrixScaleY;
         } else {
-            let transformScaleX = transform.width / item.offsetSize.z;
-            let transformScaleY = transform.height / item.offsetSize.w;
+            let transformScaleX = this.width / item.offsetSize.z;
+            let transformScaleY = this.height / item.offsetSize.w;
 
-            this._globalWidth = matrixScaleX * item.trimSize.x * transformScaleX * this.width;
-            this._globalHeight = matrixScaleY * item.trimSize.y * transformScaleY * this.height;
+            this._globalWidth = matrixScaleX * item.trimSize.x * transformScaleX;
+            this._globalHeight = matrixScaleY * item.trimSize.y * transformScaleY;
 
             this._globalX = _worldMatrix.tx + item.offsetSize.x * transformScaleX * matrixScaleX;
             this._globalY = _worldMatrix.ty + item.offsetSize.y * transformScaleY * matrixScaleY;
