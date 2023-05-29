@@ -110,8 +110,7 @@ export class UITextField extends UIComponentBase {
     public set color(value: Color) {
         this._color.copyFrom(value);
         for (let quad of this._exlusiveQuads) {
-            quad.color.copyFrom(value);
-            quad.onChange = true;
+            quad.color = value;
         }
     }
 
@@ -135,11 +134,6 @@ export class UITextField extends UIComponentBase {
             this._lineSpacing = value;
             this.layoutText();
         }
-    }
-
-    public destroy(): void {
-        this.detachQuads();
-        super.destroy();
     }
 }
 

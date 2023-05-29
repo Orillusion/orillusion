@@ -13,6 +13,7 @@ export class GUIMesh extends Object3D {
     public geometry: GUIGeometry;
     public readonly space: GUISpace;
 
+    public limitVertexCount: number = 0;
     private readonly _maxCount: number = 128;
 
     private _billboard: BillboardComponent;

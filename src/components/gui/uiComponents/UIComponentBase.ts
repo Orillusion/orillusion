@@ -45,17 +45,9 @@ export class UIComponentBase extends ComponentBase {
     }
 
     protected detachQuads(): this {
-        let allQuads = this._uiTransform.quads;
         while (this._exlusiveQuads.length > 0) {
             let quad = this._exlusiveQuads.shift();
-            if (quad) {
-                quad.sprite = null;
-                GUIQuad.quadPool.pushBack(quad);
-                let index = allQuads.indexOf(quad);
-                if (index >= 0) {
-                    allQuads.splice(index, 1);
-                }
-            }
+            this._uiTransform.recycleQuad(quad);
         }
         return this;
     }

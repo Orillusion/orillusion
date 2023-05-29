@@ -4,6 +4,8 @@ import { UIPanel } from './UIPanel';
 
 // UI component container for view/screen space
 export class ViewPanel extends UIPanel {
+  public readonly isViewPanel = true;
+
   constructor() {
     super();
     this.space = GUISpace.View;

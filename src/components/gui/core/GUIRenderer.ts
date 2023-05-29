@@ -49,14 +49,16 @@ export class GUIRenderer extends MeshRenderer {
         for (let i = 0; i < this.materials.length; i++) {
             const material = this.materials[i];
             let passes = material.renderPasses.get(rendererType);
-            let vp = this._guiGeometry.vPositionBuffer;
-            let vu = this._guiGeometry.vUniformBuffer;
+            let vPosition = this._guiGeometry.vPositionBuffer;
+            let vSprite = this._guiGeometry.vSpriteBuffer;
+            let vColor = this._guiGeometry.vColorBuffer;
             if (passes) {
                 for (let j = 0; j < passes.length; j++) {
                     const renderShader = passes[j].renderShader;
                     if (!renderShader.pipeline) {
-                        renderShader.setStorageBuffer('vPositionBuffer', vp);
-                        renderShader.setStorageBuffer('vUniformBuffer', vu);
+                        renderShader.setStorageBuffer('vPositionBuffer', vPosition);
+                        renderShader.setStorageBuffer('vSpriteBuffer', vSprite);
+                        renderShader.setStorageBuffer('vColorBuffer', vColor);
                     }
                 }
             }

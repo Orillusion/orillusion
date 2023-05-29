@@ -1,5 +1,6 @@
-import { Texture } from "../../..";
+import { Texture } from "../../../gfx/graphics/webGpu/core/texture/Texture";
 import { UITransform } from "../uiComponents/UITransform";
+import { GUIQuadAttrEnum } from "./GUIGeometry";
 import { GUIMesh } from "./GUIMesh";
 import { GUITexture } from "./GUITexture";
 
@@ -8,7 +9,6 @@ import { GUITexture } from "./GUITexture";
  * @group GUI
  */
 export class GUIGeometryRebuild {
-
   private _textureMap: Map<number, GUITexture> = new Map<number, GUITexture>();
   private _textureList: Texture[] = [];
 
@@ -21,7 +21,6 @@ export class GUIGeometryRebuild {
    * @returns Return the build result (the maximum number of textures supported by GUIMaterials for a single UIPanel is limited and cannot exceed the limit)
    */
   public build(transforms: UITransform[], guiMesh: GUIMesh, forceUpdate: boolean): boolean {
-    //
     let quadIndex = -1;
     let texIndex = -1;
 
@@ -29,8 +28,7 @@ export class GUIGeometryRebuild {
     this._textureList.length = 0;
 
     let zMax: number = guiMesh.quadMaxCount - 1;
-    let isGeometryDirty = forceUpdate;
-
+    let needBreak: boolean;
     for (let transform of transforms) {
       transform.guiMesh = guiMesh;
       let needUpdateQuads = transform.needUpdateQuads;
@@ -52,23 +50,31 @@ export class GUIGeometryRebuild {
           }
         }
 
-        if (needUpdateQuads || quad.onChange || isGeometryDirty) {
-          quad.transformQuad(transform);
+        let updateAllAttr = needUpdateQuads || forceUpdate;
+        if (updateAllAttr) {
+          quad.dirtyAttributes = GUIQuadAttrEnum.MAX;
         }
-        if (quad.onChange) {
-          quad.updateGeometryBuffer(guiMesh.geometry, transform);
-          isGeometryDirty = true;
+        if (quad.dirtyAttributes & GUIQuadAttrEnum.POSITION) {
+          quad.applyTransform(transform);
+        }
+        if (quad.dirtyAttributes) {
+          quad.writeToGeometry(guiMesh.geometry, transform);
         }
         if (quadIndex == zMax) {
-          return false;
+          needBreak = true;
+          break;
         }
+      }
+      if (needBreak) {
+        break;
       }
     }
 
     guiMesh['_setTextures'](this._textureList);
-    if (isGeometryDirty) {
-      guiMesh.geometry.reset(quadIndex + 1);
-    }
-    return true;
+    guiMesh.limitVertexCount = (quadIndex + 1) * 4;
+    // if (isGeometryDirty) {
+    //   guiMesh.geometry.cutOff(quadIndex + 1);
+    // }
+    return !needBreak;
   }
 }

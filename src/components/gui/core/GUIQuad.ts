@@ -1,5 +1,5 @@
 import { UITransform } from "../uiComponents/UITransform";
-import { GUIGeometry } from "./GUIGeometry";
+import { GUIGeometry, GUIQuadAttrEnum } from "./GUIGeometry";
 import { GUISprite } from "./GUISprite";
 import { ImageType } from "../GUIConfig";
 import { Engine3D } from "../../../Engine3D";
@@ -25,18 +25,49 @@ export class GUIQuad {
     private _offsetX: number = 0;
     private _offsetY: number = 0;
     protected _sprite: GUISprite = Engine3D.res.defaultGUISprite;
-    public readonly color: Color = new Color(1, 1, 1, 1);
-    public imageType: ImageType = ImageType.Simple;
-    public onChange: boolean = true;
+    private _color: Color = new Color(1, 1, 1, 1);
+    private _imageType: ImageType = ImageType.Simple;
+    public dirtyAttributes: GUIQuadAttrEnum = GUIQuadAttrEnum.MAX;
 
     private static textPool: PoolNode<GUIQuad>;
 
     static get quadPool(): PoolNode<GUIQuad> {
-        if (this.textPool == null) {
-            this.textPool = new PoolNode<GUIQuad>();
-        }
+        this.textPool ||= new PoolNode<GUIQuad>();
         return this.textPool;
     }
+
+    static recycleQuad(quad: GUIQuad): void {
+        quad.sprite = null;
+        quad.dirtyAttributes = GUIQuadAttrEnum.MAX;
+        quad.x = 0;
+        quad.y = 0;
+        quad.z = -1;
+        GUIQuad.quadPool.pushBack(quad);
+    }
+
+    static spawnQuad(): GUIQuad {
+        let quad = GUIQuad.quadPool.getOne(GUIQuad);
+        return quad;
+    }
+
+    public get imageType(): ImageType {
+        return this._imageType;
+    }
+
+    public set imageType(value: ImageType) {
+        this._imageType = value;
+        this.setAttrChange(GUIQuadAttrEnum.SPRITE | GUIQuadAttrEnum.POSITION);
+    }
+
+    public get color(): Color {
+        return this._color;
+    }
+
+    public set color(value: Color) {
+        this._color.copyFrom(value);
+        this.setAttrChange(GUIQuadAttrEnum.COLOR);
+    }
+
 
     public get visible(): boolean {
         return this._visible;
@@ -45,7 +76,7 @@ export class GUIQuad {
     public set visible(value: boolean) {
         if (value != this._visible) {
             this._visible = value;
-            this.onChange = true;
+            this.setAttrChange(GUIQuadAttrEnum.SPRITE);
         }
     }
 
@@ -56,7 +87,7 @@ export class GUIQuad {
     public set sprite(value: GUISprite) {
         if (this._sprite != value) {
             this._sprite = value;
-            this.onChange = true;
+            this.setAttrChange(GUIQuadAttrEnum.SPRITE | GUIQuadAttrEnum.POSITION);
         }
     }
 
@@ -76,8 +107,24 @@ export class GUIQuad {
         return this.top + this._globalHeight;
     }
 
-    public transformQuad(transform: UITransform): this {
-        this.onChange = true;
+    public setSize(width: number, height: number) {
+        this.width = width;
+        this.height = height;
+        this.setAttrChange(GUIQuadAttrEnum.POSITION);
+    }
+
+    public setXY(x: number, y: number) {
+        this.x = x;
+        this.y = y;
+        this.setAttrChange(GUIQuadAttrEnum.POSITION);
+    }
+
+    public setAttrChange(attr: GUIQuadAttrEnum) {
+        this.dirtyAttributes = this.dirtyAttributes | attr;
+    }
+    public applyTransform(transform: UITransform): this {
+        this.setAttrChange(GUIQuadAttrEnum.POSITION);
+
         let item: GUISprite = this._sprite;
         let _worldMatrix = transform.getWorldMatrix();
         if (this.x != 0 || this.y != 0) {
@@ -85,7 +132,7 @@ export class GUIQuad {
         }
         let matrixScaleX = _worldMatrix.getScaleX();
         let matrixScaleY = _worldMatrix.getScaleY();
-        let isSliced = item.isSliced && this.imageType == ImageType.Sliced;
+        let isSliced = item.isSliced && this._imageType == ImageType.Sliced;
         //计算trim图偏移量
         this._offsetX = transform.width * 0.5 * matrixScaleX;
         this._offsetY = transform.height * 0.5 * matrixScaleY;
@@ -98,11 +145,11 @@ export class GUIQuad {
             this._globalX = _worldMatrix.tx + item.offsetSize.x * matrixScaleX;
             this._globalY = _worldMatrix.ty + item.offsetSize.y * matrixScaleY;
         } else {
-            let transformScaleX = transform.width / item.offsetSize.z;
-            let transformScaleY = transform.height / item.offsetSize.w;
+            let transformScaleX = this.width / item.offsetSize.z;
+            let transformScaleY = this.height / item.offsetSize.w;
 
-            this._globalWidth = matrixScaleX * item.trimSize.x * transformScaleX * this.width;
-            this._globalHeight = matrixScaleY * item.trimSize.y * transformScaleY * this.height;
+            this._globalWidth = matrixScaleX * item.trimSize.x * transformScaleX;
+            this._globalHeight = matrixScaleY * item.trimSize.y * transformScaleY;
 
             this._globalX = _worldMatrix.tx + item.offsetSize.x * transformScaleX * matrixScaleX;
             this._globalY = _worldMatrix.ty + item.offsetSize.y * transformScaleY * matrixScaleY;
@@ -120,9 +167,9 @@ export class GUIQuad {
         return gui_help_mtx3;
     }
 
-    public updateGeometryBuffer(guiGeometry: GUIGeometry, transform: UITransform): this {
-        this.onChange = false;
-        guiGeometry.updateQuad(this, transform);
+    public writeToGeometry(guiGeometry: GUIGeometry, transform: UITransform): this {
+        guiGeometry.fillQuad(this, transform);
+        this.dirtyAttributes = GUIQuadAttrEnum.NONE;
         return this;
     }
 }

@@ -5,6 +5,7 @@ import { UIPanel } from "./UIPanel";
 // UI component container for world space
 export class WorldPanel extends UIPanel {
   public depthTest: boolean = false;
+  public readonly isWorldPanel = true;
 
   constructor() {
     super();

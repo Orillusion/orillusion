@@ -98,8 +98,6 @@ export class TextFieldLayout {
     let maxTextWidthReal = transform.width / realSize;
     let maxTextHeightReal = transform.height / realSize;
 
-    let transformScaleX = 1 / transform.width;
-    let transformScaleY = 1 / transform.height;
     let transformOffsetX = 0;
     let transformOffsetY = transform.height;
 
@@ -119,12 +117,12 @@ export class TextFieldLayout {
       let charSprite = fonts.getFnt(fontName, originSize, code);
       let quad: GUIQuad = null;
       if (charSprite) {
-        quad = GUIQuad.quadPool.getOne(GUIQuad);
+        quad = GUIQuad.spawnQuad();
         quad.sprite = charSprite;
         quad.x = (offsetX + charSprite.xoffset) * realSize - transformOffsetX;
         quad.y = (fontData.base - charSprite.height - charSprite.yoffset - fontData.base) * realSize + transformOffsetY;
-        quad.width = charSprite.offsetSize.width * realSize * transformScaleX;
-        quad.height = charSprite.offsetSize.height * realSize * transformScaleY;
+        quad.width = charSprite.offsetSize.width * realSize;
+        quad.height = charSprite.offsetSize.height * realSize;
         offsetX += charSprite.xadvance;
       } else {
         if (char == '\n') {

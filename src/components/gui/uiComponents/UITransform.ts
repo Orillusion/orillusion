@@ -107,7 +107,7 @@ export class UITransform extends ComponentBase {
             this._width = width;
             this._height = height;
             this.onChange = true;
-            for (let component of this.object3D.components) {
+            for (let component of this.object3D.components.values()) {
                 component['onTransformResize']?.();
             }
             return true;
@@ -135,6 +135,13 @@ export class UITransform extends ComponentBase {
             this.object3D.y = value;
             this.onChange = true;
         }
+    }
+
+    public setXY(x: number, y: number) {
+        let pos = this.object3D.localPosition;
+        pos.set(x, y, pos.z);
+        this.object3D.localPosition = pos;
+        this.onChange = true;
     }
 
     public get z() {
@@ -173,6 +180,19 @@ export class UITransform extends ComponentBase {
 
     private _onChange: boolean = true;
     public needUpdateQuads = true;
+
+    public recycleQuad(quad?: GUIQuad): GUIQuad {
+        if (quad) {
+            let index = this.quads.indexOf(quad);
+            if (index >= 0) {
+                this.quads.splice(index, 1);
+                GUIQuad.recycleQuad(quad);
+            } else {
+                quad = null;
+            }
+        }
+        return quad;
+    }
 
     public get onChange() {
         return this._onChange;

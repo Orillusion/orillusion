@@ -192,15 +192,36 @@ export class Object3D extends Entity {
      * @memberof ELPObject3D
      */
     public getComponentsExt<T extends IComponent>(c: Ctor<T>, ret?: T[], includeInactive?: boolean): T[] {
-        if (!ret) ret = [];
-        let className = c.name;
-        let component = this.components.get(className);
+        ret ||= [];
+        let component = this.components.get(c.name);
         if (component && (component.enable || includeInactive)) {
             ret.push(component as T);
         } else {
             for (const node of this.entityChildren) {
                 if (node instanceof Object3D) {
                     node.getComponentsExt(c, ret, includeInactive);
+                }
+            }
+        }
+        return ret;
+    }
+
+    public getComponentsByProperty<T extends IComponent>(key: string, value: any, findedAndBreak: boolean = true, ret?: T[], includeInactive?: boolean): T[] {
+        ret ||= [];
+        let findComponent;
+        for (const component of this.components.values()) {
+            if (component && (component.enable || includeInactive)) {
+                if (component[key] == value) {
+                    ret.push(component as T);
+                    findComponent = true;
+                }
+            }
+        }
+        if (!(findComponent && findedAndBreak)) {
+            //keep find in child
+            for (const node of this.entityChildren) {
+                if (node instanceof Object3D) {
+                    node.getComponentsByProperty(key, value, findedAndBreak, ret, includeInactive);
                 }
             }
         }

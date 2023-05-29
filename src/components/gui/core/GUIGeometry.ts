@@ -6,6 +6,23 @@ import { ImageType } from '../GUIConfig';
 import { UITransform } from '../uiComponents/UITransform';
 import { GUIQuad } from './GUIQuad';
 
+export enum GUIQuadAttrEnum {
+    NONE = 0,
+    POSITION = 1 << 0,
+    SPRITE = 1 << 1,
+    COLOR = 1 << 2,
+    MAX = POSITION + COLOR + SPRITE
+}
+
+class GUIAttribute {
+    public array: Float32Array;
+    public buffer: StorageGPUBuffer;
+    constructor(count: number) {
+        this.buffer = new StorageGPUBuffer(count, 0);
+        this.array = new Float32Array(this.buffer.memory.shareDataBuffer);
+    }
+}
+
 export class GUIGeometry extends GeometryBase {
     private _attributeUV: Float32Array;
     private _attributeVIndex: Float32Array;
@@ -14,14 +31,12 @@ export class GUIGeometry extends GeometryBase {
     private _uvSize: number = 2;
     private _vIndexSize: number = 1;
 
-    private _vPosition: StorageGPUBuffer;//Position data per vertex
-    private _vUniform: StorageGPUBuffer;//data per quad: Color, and texture id...
-
-    private _positionArray: Float32Array;
-    private _uniformArray: Float32Array;
-
+    private _posAttribute: GUIAttribute;//Position data per vertex
+    private _spriteAttribute: GUIAttribute;//data per quad,texture id...
+    private _colorAttribute: GUIAttribute;//data per quad: Color
     private _onPositionChange: boolean = true;
-    private _onUniformChange: boolean = true;
+    private _onSpriteChange: boolean = true;
+    private _onColorChange: boolean = true;
 
     public readonly maxQuadCount: number;
 
@@ -49,18 +64,26 @@ export class GUIGeometry extends GeometryBase {
 
     public get vPositionBuffer(): StorageGPUBuffer {
         if (this._onPositionChange) {
-            this._vPosition.apply();
+            this._posAttribute.buffer.apply();
             this._onPositionChange = false;
         }
-        return this._vPosition;
+        return this._posAttribute.buffer;
     }
 
-    public get vUniformBuffer(): StorageGPUBuffer {
-        if (this._onUniformChange) {
-            this._vUniform.apply();
-            this._onUniformChange = false;
+    public get vSpriteBuffer(): StorageGPUBuffer {
+        if (this._onSpriteChange) {
+            this._spriteAttribute.buffer.apply();
+            this._onSpriteChange = false;
         }
-        return this._vUniform;
+        return this._spriteAttribute.buffer;
+    }
+
+    public get vColorBuffer(): StorageGPUBuffer {
+        if (this._onColorChange) {
+            this._colorAttribute.buffer.apply();
+            this._onColorChange = false;
+        }
+        return this._colorAttribute.buffer;
     }
 
     public create(): this {
@@ -114,39 +137,55 @@ export class GUIGeometry extends GeometryBase {
         let quadNum: number = this.maxQuadCount;
         //Each quad has 4 vertices, and each vertex has 2 data points
         let sizePositionArray = quadNum * 4 * 2;
-        this._vPosition = new StorageGPUBuffer(sizePositionArray, 0);
-        this._positionArray = new Float32Array(this._vPosition.memory.shareDataBuffer);
-        //Each quad has : color/uvRec_size/uvBorder_size/uvSlice_size/textureID/visible
-        let sizeUniformArray = quadNum * (4 + 4 + 4 + 2 + 2);
-        this._vUniform = new StorageGPUBuffer(sizeUniformArray, 0);
-        this._uniformArray = new Float32Array(this._vUniform.memory.shareDataBuffer);
+        this._posAttribute = new GUIAttribute(sizePositionArray);
+
+        //Each quad has : uvRec_size/uvBorder_size/uvSlice_size/textureID/visible
+        let sizeSpriteArray = quadNum * (4 + 4 + 2 + 2);
+        this._spriteAttribute = new GUIAttribute(sizeSpriteArray);
+
+        this._colorAttribute = new GUIAttribute(quadNum * 4);
     }
 
-    public updateQuad(quad: GUIQuad, transform: UITransform) {
-        this.updateQuadVertex(quad, transform);
-
-        this.updateQuadUniform(quad, transform);
+    public fillQuad(quad: GUIQuad, transform: UITransform) {
+        if (quad.dirtyAttributes & GUIQuadAttrEnum.POSITION) {
+            this.fillQuadPosition(quad, transform);
+        }
+        if (quad.dirtyAttributes & GUIQuadAttrEnum.COLOR) {
+            this.fillQuadColor(quad, transform);
+        }
+        if (quad.dirtyAttributes & GUIQuadAttrEnum.SPRITE) {
+            this.fillQuadSprite(quad, transform);
+        }
     }
 
-    private updateQuadVertex(quad: GUIQuad, transform: UITransform): void {
+    private fillQuadPosition(quad: GUIQuad, transform: UITransform): void {
         let qi = quad.z * QuadStruct.vertexCount;
 
+        let array = this._posAttribute.array;
         let vi = 0;
-        SetBufferDataV2.setXY(this._positionArray, qi + vi, quad.left, quad.top);
+        SetBufferDataV2.setXY(array, qi + vi, quad.left, quad.top);
 
         vi = 1;
-        SetBufferDataV2.setXY(this._positionArray, qi + vi, quad.right, quad.top);
+        SetBufferDataV2.setXY(array, qi + vi, quad.right, quad.top);
 
         vi = 2;
-        SetBufferDataV2.setXY(this._positionArray, qi + vi, quad.right, quad.bottom);
+        SetBufferDataV2.setXY(array, qi + vi, quad.right, quad.bottom);
 
         vi = 3;
-        SetBufferDataV2.setXY(this._positionArray, qi + vi, quad.left, quad.bottom);
+        SetBufferDataV2.setXY(array, qi + vi, quad.left, quad.bottom);
 
         this._onPositionChange = true;
     }
 
-    private updateQuadUniform(quad: GUIQuad, transform: UITransform) {
+    private fillQuadColor(quad: GUIQuad, transform: UITransform): void {
+        let color = quad.color;
+        let array = this._colorAttribute.array;
+        SetBufferDataV4.setXYZW(array, quad.z, color.r, color.g, color.b, color.a);
+
+        this._onColorChange = true;
+    }
+
+    private fillQuadSprite(quad: GUIQuad, transform: UITransform) {
         let texture = quad.sprite;
 
         let uvSliceWidth: number = 0;
@@ -162,43 +201,39 @@ export class GUIGeometry extends GeometryBase {
 
         let i = quad.z;
         let textureID = texture.guiTexture.dynamicId;
-        let color = quad.color;
         let uvRec = texture.uvRec;
         let uvBorder = texture.uvBorder;
-        //Each quad has: color/uvRec_size/uvBorder_size/uvSlice_size/textureID/visible
+        //Each quad has: uvRec_size/uvBorder_size/uvSlice_size/textureID/visible
 
-        let offset = (4 + 4 + 4 + 2 + 2) * i;
-        this._uniformArray[offset + 0] = color.r;
-        this._uniformArray[offset + 1] = color.g;
-        this._uniformArray[offset + 2] = color.b;
-        this._uniformArray[offset + 3] = color.a;
+        let spriteArray = this._spriteAttribute.array;
+        let offset = (4 + 4 + 2 + 2) * i;
 
-        this._uniformArray[offset + 4] = uvRec.x;
-        this._uniformArray[offset + 5] = uvRec.y;
-        this._uniformArray[offset + 6] = uvRec.z;
-        this._uniformArray[offset + 7] = uvRec.w;
+        spriteArray[offset + 0] = uvRec.x;
+        spriteArray[offset + 1] = uvRec.y;
+        spriteArray[offset + 2] = uvRec.z;
+        spriteArray[offset + 3] = uvRec.w;
 
-        this._uniformArray[offset + 8] = uvBorder.w;
-        this._uniformArray[offset + 9] = uvBorder.y;
-        this._uniformArray[offset + 10] = uvBorder.z;
-        this._uniformArray[offset + 11] = uvBorder.w;
+        spriteArray[offset + 4] = uvBorder.w;
+        spriteArray[offset + 5] = uvBorder.y;
+        spriteArray[offset + 6] = uvBorder.z;
+        spriteArray[offset + 7] = uvBorder.w;
 
-        this._uniformArray[offset + 12] = uvSliceWidth;
-        this._uniformArray[offset + 13] = uvSliceHeight;
-        this._uniformArray[offset + 14] = textureID;
-        this._uniformArray[offset + 15] = quad.visible ? 1 : 0;
+        spriteArray[offset + 8] = uvSliceWidth;
+        spriteArray[offset + 9] = uvSliceHeight;
+        spriteArray[offset + 10] = textureID;
+        spriteArray[offset + 11] = quad.visible ? 1 : 0;
 
-        this._onUniformChange = true;
+        this._onSpriteChange = true;
     }
 
-    reset(z: number) {
-        let qi = z * QuadStruct.vertexCount;
-        let max = this.maxQuadCount * QuadStruct.vertexCount;
-        for (let i = qi; i < max; i++) {
-            SetBufferDataV2.setXY(this._positionArray, i, 0, 0);
-        }
-        this._onPositionChange = true;
-    }
+    // cutOff(z: number) {
+    //     let qi = z * QuadStruct.vertexCount;
+    //     let max = this.maxQuadCount * QuadStruct.vertexCount;
+    //     for (let i = qi; i < max; i++) {
+    //         SetBufferDataV2.setXY(this._posAttribute.array, i, 0, 0);
+    //     }
+    //     this._onPositionChange = true;
+    // }
 
 }
 
