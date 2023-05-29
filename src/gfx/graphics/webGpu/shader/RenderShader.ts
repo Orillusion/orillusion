@@ -790,7 +790,9 @@ export class RenderShader extends ShaderBase {
         let targets = renderPassState.outAttachments;
         if (renderPassState.outColor != -1) {
             let target = targets[renderPassState.outColor];
-            target.blend = BlendFactor.getBlend(shaderState.blendMode);
+            if (shaderState.blendMode != BlendMode.NONE) {
+                target.blend = BlendFactor.getBlend(shaderState.blendMode);
+            }
         }
 
         let renderPipelineDescriptor: GPURenderPipelineDescriptor = {
