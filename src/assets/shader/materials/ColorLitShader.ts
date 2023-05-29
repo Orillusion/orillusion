@@ -1,5 +1,5 @@
 export class ColorLitShader {
-    public static Ori_AllShader:string = /*wgsl*/`
+    public static Ori_AllShader: string = /*wgsl*/`
         #include "Common_vert"
         #include "Common_frag"
         #include "BxDF_frag"
@@ -20,8 +20,7 @@ export class ColorLitShader {
             ORI_ShadingInput.Normal = ORI_VertexVarying.vWorldNormal.rgb ;
 
             #if USE_SHADOWMAPING
-                directShadowMaping(globalUniform.shadowBias);
-                pointShadowMapCompare(globalUniform.pointShadowBias);
+                useShadow();
             #endif
 
             BxDFShading();

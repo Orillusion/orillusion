@@ -45,7 +45,7 @@ fn directLighting( albedo:vec3<f32>, N:vec3<f32>, V:vec3<f32>,  roughness:f32 , 
 
 fn pointLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, roughness:f32 , light:LightData ) -> vec3<f32> {
     var color = vec3<f32>(0.0) ;
-    let lightPos = models.matrix[u32(light.lightMatrixIndex)][3].xyz;
+    let lightPos = light.position.xyz;
     var dir = lightPos.xyz - WP ;
     let dist = length(dir);
     if(dist != 0.0){
@@ -85,7 +85,7 @@ fn getDistanceAtten(  light:LightData , dist : f32 ) -> f32 {
 }
 
 fn spotLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, roughness:f32 , light:LightData ) -> vec3<f32> {
-    let lightPos = models.matrix[u32(light.lightMatrixIndex)][3].xyz;
+    let lightPos = light.position.xyz;
     var dir = lightPos.xyz - WP ;
     let dist = length(dir) ;
     if(dist != 0.0){

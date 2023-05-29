@@ -61,7 +61,7 @@ var<private> clusterTileX:f32 ;
 var<private> clusterTileY:f32 ;
 var<private> clusterTileZ:f32 ;
 
-@group(0) @binding(1) var<storage, read> models : Uniforms;
+// @group(0) @binding(1) var<storage, read> models : Uniforms;
 @group(0) @binding(2) var<uniform> clustersUniform : ClustersUniform;
 @group(0) @binding(3) var<storage,read> clusterBuffer : array<ClusterBox>;
 @group(0) @binding(4) var<storage,read> lightBuffer : array<Light>;
@@ -97,7 +97,7 @@ fn GetSqdisPointAABB( pos:vec3<f32>,  clusterIndex:u32 ) -> f32
 fn TestSphereAABB( lightIndex:i32 ,  clusterIndex : u32 ) -> bool
 {
     let light = lightBuffer[lightIndex];
-    let lightPos = models.matrix[u32(light.lightMatrixIndex)][3].xyz;
+    let lightPos = light.position.xyz;
     var radius = light.range * 2.0 ;
     let spherePos =  globalUniform.viewMat * vec4<f32>(lightPos.xyz, 1.0) ;
     let sqDistance = GetSqdisPointAABB(spherePos.xyz , clusterIndex);

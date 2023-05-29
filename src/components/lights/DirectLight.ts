@@ -62,24 +62,24 @@ export class DirectLight extends LightBase {
         this.onChange();
     }
 
-    /**
-     * Set cast shadow
-     * @param value
-     **/
-    public set castShadow(value: boolean) {
-        if (value != this._castShadow) {
-            this.onChange();
-        }
-        this._castShadow = value;
-    }
+    // /**
+    //  * Set cast shadow
+    //  * @param value
+    //  **/
+    // public set castShadow(value: boolean) {
+    //     if (value != this._castShadow) {
+    //         this.onChange();
+    //     }
+    //     this._castShadow = value;
+    // }
 
-    /**
-     * get cast shadow
-     * @return boolean
-     * */
-    public get castShadow(): boolean {
-        return this.lightData.castShadowIndex as number >= 0;
-    }
+    // /**
+    //  * get cast shadow
+    //  * @return boolean
+    //  * */
+    // public get castShadow(): boolean {
+    //     return this.lightData.castShadowIndex as number >= 0;
+    // }
 
     /**
      * enable light debug gui

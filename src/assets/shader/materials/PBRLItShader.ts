@@ -57,10 +57,8 @@ export let PBRLItShader: string = /*wgsl*/ `
         // #endif
 
         #if USE_SHADOWMAPING
-            directShadowMaping(globalUniform.shadowBias);
-            pointShadowMapCompare(globalUniform.pointShadowBias);
+            useShadow();
         #endif
-
 
         // ORI_ShadingInput.BaseColor = vec4<f32>(sRGBToLinear(ORI_ShadingInput.BaseColor.xyz),ORI_ShadingInput.BaseColor.w);
     

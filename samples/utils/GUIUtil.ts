@@ -49,6 +49,7 @@ export class GUIUtil {
         GUIHelp.addColor(light, 'lightColor');
         GUIHelp.add(light, 'intensity', 0.0, 160.0, 0.01);
         GUIHelp.add(light, 'indirect', 0.0, 10.0, 0.01);
+        GUIHelp.add(light, 'castShadow');
 
         open && GUIHelp.open();
         GUIHelp.endFolder();
@@ -71,6 +72,7 @@ export class GUIUtil {
         GUIHelp.add(light, 'radius', 0.0, 1000.0, 0.001);
         GUIHelp.add(light, 'range', 0.0, 1000.0, 0.001);
         GUIHelp.add(light, 'quadratic', 0.0, 2.0, 0.001);
+        GUIHelp.add(light, 'castShadow');
 
         GUIHelp.open();
         GUIHelp.endFolder();
@@ -94,6 +96,7 @@ export class GUIUtil {
         GUIHelp.add(light, 'range', 0.0, 1000.0, 0.001);
         GUIHelp.add(light, 'outerAngle', 0.0, 180.0, 0.001);
         GUIHelp.add(light, 'innerAngle', 0.0, 100.0, 0.001);
+        GUIHelp.add(light, 'castShadow');
 
         GUIHelp.open();
         GUIHelp.endFolder();
