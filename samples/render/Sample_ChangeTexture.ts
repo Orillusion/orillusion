@@ -5,14 +5,7 @@ class Sample_ChangeTexture {
     scene: Scene3D;
 
     async run() {
-
-        Engine3D.setting.material.materialChannelDebug = true;
-        Engine3D.setting.material.materialDebug = true;
-        Engine3D.setting.shadow.autoUpdate = true;
-        Engine3D.setting.shadow.debug = true;
-        Engine3D.setting.shadow.shadowBound = 100
-        Engine3D.setting.shadow.shadowBias = 0.00192;
-        await Engine3D.init({});
+        await Engine3D.init();
 
         this.scene = new Scene3D();
         this.scene.addComponent(AtmosphericComponent);
@@ -29,7 +22,6 @@ class Sample_ChangeTexture {
         view.camera = mainCamera;
 
         this.initLight();
-        // 
         Engine3D.startRenderView(view);
     }
 
@@ -43,7 +35,6 @@ class Sample_ChangeTexture {
         this.lightObj.rotationZ = 360;
         let lc = this.lightObj.addComponent(DirectLight);
         lc.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
-        lc.castShadow = false;
         lc.intensity = 20;
         this.scene.addChild(this.lightObj);
     }
@@ -51,6 +42,7 @@ class Sample_ChangeTexture {
     async initScene() {
         //create first box
         let box1 = new Object3D();
+        box1.transform.z = -2
         this.scene.addChild(box1);
 
         let render1 = box1.addComponent(MeshRenderer);
@@ -60,7 +52,7 @@ class Sample_ChangeTexture {
 
         //create second box
         let box2 = new Object3D();
-        box2.transform.z = 4;
+        box2.transform.z = 2;
         this.scene.addChild(box2);
 
         let render2 = box2.addComponent(MeshRenderer);

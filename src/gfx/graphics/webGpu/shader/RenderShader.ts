@@ -436,12 +436,10 @@ export class RenderShader extends ShaderBase {
                 Reference.getInstance().detached(texture, this);
                 if (force && !Reference.getInstance().hasReference(texture)) {
                     texture.destroy(force);
-                    console.log("destroy");
+                    // console.log("destroy");
                 } else {
                     texture.destroy(false);
-                    console.log("has use , cant destroy",
-                        Reference.getInstance().getReferenceCount(texture),
-                    );
+                    // console.log("has use , cant destroy", Reference.getInstance().getReferenceCount(texture));
                     let table = Reference.getInstance().getReference(texture);
                     let list = [];
                     table.forEach((v, k) => {
@@ -451,7 +449,7 @@ export class RenderShader extends ShaderBase {
                             list.push(`NaN`);
                         }
                     });
-                    console.log("ref", list);
+                    // console.log("ref", list);
                 }
             }
         }

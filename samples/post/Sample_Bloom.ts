@@ -11,8 +11,6 @@ class Sample_Bloom {
 	scene: Scene3D;
 
 	async run() {
-		// Engine3D.setting.shadow.enable = false;
-		// Engine3D.setting.shadow.debug = true;
 		Engine3D.setting.shadow.shadowSize = 2048
 		Engine3D.setting.shadow.shadowBound = 500;
 		Engine3D.setting.shadow.shadowBias = 0.0002;
@@ -51,7 +49,7 @@ class Sample_Bloom {
 			let lc = this.lightObj.addComponent(DirectLight);
 			lc.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
 			lc.castShadow = true;
-			lc.intensity = 3;
+			lc.intensity = 10;
 			this.scene.addChild(this.lightObj);
 		}
 
@@ -136,12 +134,6 @@ class Sample_Bloom {
 		GUIHelp.init();
 		let postProcessing = this.scene.getComponent(PostProcessingComponent);
 		let post = postProcessing.getPost(HDRBloomPost);
-
-		post.blurX
-		post.blurY
-		post.luminosityThreshold
-		post.radius
-		post.strength
 
 		GUIHelp.addFolder("Bloom");
 		GUIHelp.add(post, "blurX", 0.0, 5, 1);

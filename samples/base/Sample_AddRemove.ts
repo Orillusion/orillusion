@@ -36,9 +36,9 @@ class Sample_AddRemove {
         GUIHelp.addButton("add", async () => {
             /******** player1 *******/
             let clone = player.clone()
-            clone.transform.x = Math.random() * 100;
-            clone.transform.y = Math.random() * 100;
-            clone.transform.z = Math.random() * 100;
+            clone.transform.x = Math.random() * 100 - 50;
+            clone.transform.y = Math.random() * 100 - 50;
+            clone.transform.z = Math.random() * 100 - 50;
             clone.transform.localScale.set(20, 20, 20)
 
             this.view.scene.addChild(clone);
@@ -55,7 +55,7 @@ class Sample_AddRemove {
             }
         });
 
-        GUIHelp.endFolder();
+        GUIHelp.open();
     }
 }
 

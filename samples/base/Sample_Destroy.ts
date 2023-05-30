@@ -67,7 +67,7 @@ class Sample_Destroy {
                     obj.destroy(true);
                 }
             });
-
+            GUIHelp.open()
         }
         // create a view with target scene and camera
         let view = new View3D()

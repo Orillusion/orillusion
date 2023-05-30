@@ -1,7 +1,7 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { createExampleScene } from "@samples/utils/ExampleScene";
-import { AtmosphericComponent, Engine3D, LitMaterial, MeshRenderer, Object3D, Object3DUtil, PlaneGeometry, Scene3D, UnLitMaterial } from "@orillusion/core";
+import { AtmosphericComponent, Engine3D, GPUCullMode, LitMaterial, MeshRenderer, Object3D, Object3DUtil, PlaneGeometry, Scene3D, UnLitMaterial, Vector3 } from "@orillusion/core";
 
 // sample of AtmosphericSky
 class Sample_AtmosphericSky {
@@ -14,23 +14,22 @@ class Sample_AtmosphericSky {
         Engine3D.startRenderView(scene.view);
         // add atmospheric sky
         let component = scene.getComponent(AtmosphericComponent);
+
+        let texture = component['_atmosphericScatteringSky'];
+        let ulitMaterial = new UnLitMaterial();
+        ulitMaterial.baseMap = texture.texture2D;
+        ulitMaterial.cullMode = GPUCullMode.none;
+        let obj = new Object3D();
+        scene.addChild(obj);
+        let r = obj.addComponent(MeshRenderer);
+        r.material = ulitMaterial;
+        r.geometry = new PlaneGeometry(100, 50, 1, 1, Vector3.Z_AXIS);
+        scene.addChild(obj);
+
         // gui
         GUIHelp.init();
         GUIUtil.renderAtomosphericSky(component);
-
-        setTimeout(() => {
-            let texture = component['_atmosphericScatteringSky'];
-            let ulitMaterial = new UnLitMaterial();
-            ulitMaterial.baseMap = texture.texture2D;
-            let obj = new Object3D();
-            scene.addChild(obj);
-            let r = obj.addComponent(MeshRenderer);
-            r.material = ulitMaterial;
-            r.geometry = new PlaneGeometry(200, 100);
-            scene.addChild(obj);
-        }, 2000);
     }
-
 }
 
 new Sample_AtmosphericSky().run();

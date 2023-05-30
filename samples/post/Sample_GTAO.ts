@@ -11,8 +11,6 @@ class Sample_GTAO {
 	scene: Scene3D;
 
 	async run() {
-		// Engine3D.setting.shadow.enable = false;
-		// Engine3D.setting.shadow.debug = true;
 		Engine3D.setting.shadow.shadowSize = 2048
 		Engine3D.setting.shadow.shadowBound = 500;
 		Engine3D.setting.shadow.shadowBias = 0.0002;
