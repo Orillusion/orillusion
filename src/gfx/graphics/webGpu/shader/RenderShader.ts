@@ -792,6 +792,8 @@ export class RenderShader extends ShaderBase {
             let target = targets[renderPassState.outColor];
             if (shaderState.blendMode != BlendMode.NONE) {
                 target.blend = BlendFactor.getBlend(shaderState.blendMode);
+            } else {
+                target.blend = undefined;
             }
         }
 
