@@ -2,29 +2,16 @@
 import { Color } from '../../../math/Color';
 import { GUIQuad } from '../core/GUIQuad';
 import { GUISprite } from '../core/GUISprite';
-import { UIComponentBase } from './UIComponentBase';
 import { ImageType } from '../GUIConfig';
 import { Engine3D } from '../../../Engine3D';
-
-export enum UIImageShadow {
-    NONE = '',
-    LOW = 'LOW',
-    MEDIUM = 'MEDIUM',
-    HIGH = 'HIGH'
-}
+import { UIRenderAble } from './UIRenderAble';
 
 // A UI component to display image/sprite/video
-export class UIImage extends UIComponentBase {
-    constructor() {
-        super();
-    }
-
-    private _shadow: UIImageShadow;
+export class UIImage extends UIRenderAble {
 
     init(param?: any): void {
-        super.init();
-        let quad = GUIQuad.spawnQuad();
-        this.attachQuad(quad);
+        super.init?.(param);
+        this.attachQuad(GUIQuad.spawnQuad());
     }
 
     public cloneTo(obj: Object3D) {
@@ -35,31 +22,28 @@ export class UIImage extends UIComponentBase {
         component.imageType = this.imageType;
     }
 
-    public set shadow(value: UIImageShadow) {
-        if (this._shadow != value) {
-            this._shadow = value;
-        }
-    }
-    public get shadow() {
-        return this._shadow;
-    }
-
     public set sprite(value: GUISprite) {
         value ||= Engine3D.res.defaultGUISprite;
-        for (let quad of this._exlusiveQuads) {
+        for (let quad of this._mainQuads) {
             quad.sprite = value;
             quad.setSize(this._uiTransform.width, this._uiTransform.height);
         }
+        this.setShadowDirty();
     }
 
     protected onTransformResize(): void {
-        for (let quad of this._exlusiveQuads) {
+        this.applyTransformSize();
+    }
+
+    private applyTransformSize(): void {
+        for (let quad of this._mainQuads) {
             quad.setSize(this._uiTransform.width, this._uiTransform.height);
         }
+        this.setShadowDirty();
     }
 
     public get sprite(): GUISprite {
-        return this._exlusiveQuads[0].sprite;
+        return this._mainQuads[0].sprite;
     }
 
     protected onUIComponentVisible(visible: boolean): void {
@@ -72,28 +56,32 @@ export class UIImage extends UIComponentBase {
 
     private applyComponentVisible(): void {
         let isHidden = !this._visible || !this._uiTransform.globalVisible;
-        for (let item of this._exlusiveQuads) {
+        for (let item of this._mainQuads) {
             item.visible = !isHidden;
         }
+        this.setShadowDirty();
     }
 
     public get color() {
-        return this._exlusiveQuads[0].color;
+        return this._mainQuads[0].color;
     }
 
     public set color(value: Color) {
-        this._exlusiveQuads[0].color = value;
+        for (let item of this._mainQuads) {
+            item.color = value;
+        }
+        this.setShadowDirty();
     }
 
     public get imageType() {
-        return this._exlusiveQuads[0].imageType;
+        return this._mainQuads[0].imageType;
     }
 
     public set imageType(value: ImageType) {
-        for (let item of this._exlusiveQuads) {
+        for (let item of this._mainQuads) {
             item.imageType = value;
         }
+        this.setShadowDirty();
     }
-
 }
 

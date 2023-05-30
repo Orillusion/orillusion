@@ -148,12 +148,16 @@ export class Sample_UIPerformance2 {
 
         let sprite = Engine3D.res.getGUISprite('00065');
 
+        let size = 64;
+        let halfSize = size * 0.5;
         let imgGroup = root.addComponent(UIImageGroup, { count: 5000 });
         for (let i = 0; i < 5000; i++) {
             imgGroup.setColor(i, color);
             imgGroup.setSprite(i, sprite);
-            imgGroup.setSize(i, 64, 64);
-            imgGroup.setXY(i, (Math.random() - 0.5) * width * 0.7, (Math.random() - 0.5) * width * 0.7);
+            imgGroup.setSize(i, size, size);
+            imgGroup.setXY(i,
+                (Math.random() - 0.5) * width * 0.7 - halfSize,
+                (Math.random() - 0.5) * height * 0.7 - halfSize);
             let sheet: SpriteSheet = new SpriteSheet(imgGroup, i, this.keyFrames, bound);
             this.spriteSheets.push(sheet);
         }

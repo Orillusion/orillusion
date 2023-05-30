@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AtmosphericComponent, DirectLight, PointLight, SpotLight, Transform } from "@orillusion/core";
+import { AtmosphericComponent, Color, DirectLight, PointLight, SpotLight, Transform, UIImage, UIShadow } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
@@ -112,6 +112,26 @@ export class GUIUtil {
         GUIHelp.add(component.speed, 'w', 0.1, 10, 0.01);
         GUIHelp.add(component, 'enable');
 
+        open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
+
+    public static renderUIShadow(image: UIShadow, open: boolean, name?: string) {
+        name ||= 'Image Shadow';
+        GUIHelp.addFolder(name);
+        GUIHelp.add(image, 'shadowQuality', 0, 4, 1);
+
+        GUIHelp.add(image, 'shadowRadius', 0.00, 10, 0.01);
+        //shadow color
+        image.shadowColor = new Color(0.1, 0.1, 0.1, 0.6);
+        GUIHelp.addColor(image, 'shadowColor');
+
+        let changeOffset = () => {
+            image.shadowOffset = image.shadowOffset;
+        }
+        GUIHelp.add(image.shadowOffset, 'x', -100, 100, 0.01).onChange(v => changeOffset());
+        GUIHelp.add(image.shadowOffset, 'y', -100, 100, 0.01).onChange(v => changeOffset());
+        GUIHelp.addButton('Destroy', () => { image.object3D.removeComponent(UIShadow); })
         open && GUIHelp.open();
         GUIHelp.endFolder();
     }

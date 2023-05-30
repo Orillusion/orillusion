@@ -4,15 +4,8 @@ import { StorageGPUBuffer } from '../../../gfx/graphics/webGpu/core/buffer/Stora
 import { Vector3 } from '../../../math/Vector3';
 import { ImageType } from '../GUIConfig';
 import { UITransform } from '../uiComponents/UITransform';
+import { GUIQuadAttrEnum } from './GUIDefine';
 import { GUIQuad } from './GUIQuad';
-
-export enum GUIQuadAttrEnum {
-    NONE = 0,
-    POSITION = 1 << 0,
-    SPRITE = 1 << 1,
-    COLOR = 1 << 2,
-    MAX = POSITION + COLOR + SPRITE
-}
 
 class GUIAttribute {
     public array: Float32Array;

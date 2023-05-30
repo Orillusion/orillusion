@@ -2,7 +2,6 @@ import { Object3D } from "../../../core/entities/Object3D";
 import { Matrix3 } from "../../../math/Matrix3";
 import { ComponentBase } from "../../ComponentBase";
 import { GUIMesh } from "../core/GUIMesh";
-import { GUIQuad } from "../core/GUIQuad";
 import { IUIInteractive } from "./IUIInteractive";
 import { UIPanel } from "./UIPanel";
 import { ViewPanel } from "./ViewPanel";
@@ -173,26 +172,11 @@ export class UITransform extends ComponentBase {
         this.object3D.scaleY = value;
     }
 
-    public quads: GUIQuad[] = [];
-
     private _localMatrix: Matrix3;
     private _worldMatrix: Matrix3;
 
     private _onChange: boolean = true;
     public needUpdateQuads = true;
-
-    public recycleQuad(quad?: GUIQuad): GUIQuad {
-        if (quad) {
-            let index = this.quads.indexOf(quad);
-            if (index >= 0) {
-                this.quads.splice(index, 1);
-                GUIQuad.recycleQuad(quad);
-            } else {
-                quad = null;
-            }
-        }
-        return quad;
-    }
 
     public get onChange() {
         return this._onChange;

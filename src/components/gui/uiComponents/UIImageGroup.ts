@@ -2,19 +2,20 @@
 import { Color } from '../../../math/Color';
 import { GUIQuad } from '../core/GUIQuad';
 import { GUISprite } from '../core/GUISprite';
-import { UIComponentBase } from './UIComponentBase';
 import { ImageType } from '../GUIConfig';
 import { Engine3D } from '../../../Engine3D';
+import { UIRenderAble } from './UIRenderAble';
+import { Vector2 } from '../../..';
 
 // A UI component to display a group images/sprites/videos
-export class UIImageGroup extends UIComponentBase {
+export class UIImageGroup extends UIRenderAble {
     private _count: number = 0;
     constructor() {
         super();
     }
 
     init(param?: any): void {
-        super.init();
+        super.init?.(param);
         this._count = param ? param.count : 1;
         for (let i = 0; i < this._count; i++) {
             this.attachQuad(GUIQuad.spawnQuad());
@@ -22,7 +23,7 @@ export class UIImageGroup extends UIComponentBase {
     }
 
     public getQuad(index: number) {
-        return this._exlusiveQuads[index];
+        return this._mainQuads[index];
     }
 
     public cloneTo(obj: Object3D) {
@@ -36,11 +37,12 @@ export class UIImageGroup extends UIComponentBase {
     }
 
     public setSprite(index: number, value: GUISprite) {
-        this._exlusiveQuads[index].sprite = value || Engine3D.res.defaultGUISprite;
+        this._mainQuads[index].sprite = value || Engine3D.res.defaultGUISprite;
+        this.setShadowDirty();
     }
 
     public getSprite(index: number): GUISprite {
-        return this._exlusiveQuads[index].sprite;
+        return this._mainQuads[index].sprite;
     }
 
     protected onUIComponentVisible(visible: boolean): void {
@@ -53,33 +55,46 @@ export class UIImageGroup extends UIComponentBase {
 
     private applyComponentVisible(): void {
         let isHidden = !this._visible || !this._uiTransform.globalVisible;
-        for (let item of this._exlusiveQuads) {
+        for (let item of this._mainQuads) {
             item.visible = !isHidden;
         }
+        this.setShadowDirty();
     }
 
     public getColor(index: number) {
-        return this._exlusiveQuads[index].color;
+        return this._mainQuads[index].color;
     }
 
     public setColor(index: number, value: Color) {
-        this._exlusiveQuads[index].color = value;
+        this._mainQuads[index].color = value;
+        this.setShadowDirty();
     }
 
     public getImageType(index: number) {
-        return this._exlusiveQuads[index].imageType;
+        return this._mainQuads[index].imageType;
     }
 
     public setImageType(index: number, value: ImageType) {
-        this._exlusiveQuads[index].imageType = value;
+        this._mainQuads[index].imageType = value;
+        this.setShadowDirty();
     }
 
     public setSize(index: number, width: number, height: number) {
-        this._exlusiveQuads[index].setSize(width, height);
+        this._mainQuads[index].setSize(width, height);
+        this.setShadowDirty();
     }
 
     public setXY(index: number, x: number, y: number) {
-        this._exlusiveQuads[index].setXY(x, y);
+        this._mainQuads[index].setXY(x, y);
+        this.setShadowDirty();
+    }
+
+    public getXY(index: number, ret?: Vector2) {
+        ret ||= new Vector2();
+        let quad = this._mainQuads[index];
+        ret.x = quad.x;
+        ret.y = quad.y;
+        return ret;
     }
 
 }
