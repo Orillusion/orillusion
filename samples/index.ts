@@ -3,7 +3,7 @@
     // find all demos in /sample
     const modules = import.meta.glob(['./*/*.ts', '!./*/_*.ts'])
     // create menu
-    let title = '', list = ''
+    let title = '', list = `<svg onclick="document.body.classList.remove('show')" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" class="close"><path fill="currentColor" d="M764.288 214.592 512 466.88 259.712 214.592a31.936 31.936 0 0 0-45.12 45.12L466.752 512 214.528 764.224a31.936 31.936 0 1 0 45.12 45.184L512 557.184l252.288 252.288a31.936 31.936 0 0 0 45.12-45.12L557.12 512.064l252.288-252.352a31.936 31.936 0 1 0-45.12-45.184z"></path></svg>`
     for (const path in modules) {
         if (!path.includes('Sample_')) continue
         const arr = path.split('/')
@@ -54,7 +54,7 @@
     function addIframe() {
         const iframe = document.createElement('iframe') as HTMLIFrameElement
         iframe.srcdoc = `
-        <style>html,body{margin:0;padding:0;overflow:hidden}canvas{touch-action:none}.stats{margin-left:190px}</style>
+        <style>html,body{margin:0;padding:0;overflow:hidden}canvas{touch-action:none}</style>
         <script>
             let target = sessionStorage.target
             if(target)

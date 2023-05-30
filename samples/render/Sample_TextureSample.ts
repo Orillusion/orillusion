@@ -8,10 +8,6 @@ class Sample_TextureSample {
     scene: Scene3D;
 
     async run() {
-        Engine3D.setting.material.materialChannelDebug = true;
-        Engine3D.setting.shadow.shadowBound = 5;
-        Engine3D.setting.shadow.shadowBias = 0.001;
-
         await Engine3D.init();
 
         this.scene = new Scene3D();
@@ -26,7 +22,6 @@ class Sample_TextureSample {
         view.camera = camera;
 
         Engine3D.startRenderView(view);
-
         await this.initScene();
     }
 
@@ -65,7 +60,6 @@ class Sample_TextureSample {
 
             let component = plane.addComponent(UVMoveComponent);
             GUIUtil.renderUVMove(component);
-
 
             this.scene.addChild(Object3DUtil.GetSingleCube(10, 10, 10, 1, 0.5, 0.5));
 
@@ -121,7 +115,6 @@ class Sample_TextureSample {
             GUIHelp.endFolder();
         }
     }
-
 }
 
 new Sample_TextureSample().run();

@@ -95,16 +95,7 @@ export class PointLight extends LightBase {
         this.onChange();
     }
 
-    /**
-     * Cast Light Shadow
-     * @param value 
-     *  */
-    public set castShadow(value: boolean) {
-        if (value != this._castShadow) {
-            this.onChange();
-        }
-        this._castShadow = value;
-    }
+
 
     public start(): void {
         this.transform.rotationX = 90;

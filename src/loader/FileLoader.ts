@@ -48,7 +48,7 @@ export class FileLoader extends LoaderBase {
                                 parser.baseUrl = this.baseUrl;
                                 parser.initUrl = url;
                                 parser.loaderFunctions = loaderFunctions;
-                                await parser.parserJson(ret);
+                                await parser.parseJson(ret);
                                 succ(parser);
                             })
                             .catch((e) => {
@@ -70,7 +70,7 @@ export class FileLoader extends LoaderBase {
                                 if (!ret[`data`]) {
                                     fail(`text load is empty!`);
                                 } else {
-                                    await parser.parserString(ret[`data`]);
+                                    await parser.parseString(ret[`data`]);
                                     succ(parser);
                                 }
                             })

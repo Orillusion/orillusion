@@ -1,48 +1,35 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, Texture, AtmosphericScatteringSky, BoxGeometry, LitMaterial, MeshRenderer, Object3D } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
+import { createExampleScene } from "@samples/utils/ExampleScene";
+import { AtmosphericComponent, Engine3D, GPUCullMode, LitMaterial, MeshRenderer, Object3D, Object3DUtil, PlaneGeometry, Scene3D, UnLitMaterial, Vector3 } from "@orillusion/core";
 
 // sample of AtmosphericSky
 class Sample_AtmosphericSky {
-    private _scene: Scene3D;
-
     async run() {
         // init engine
         await Engine3D.init({});
-
         // init scene
-        this._scene = new Scene3D();
-        // add atmospheric sky
-        let component = this._scene.addComponent(AtmosphericComponent);
-
-        // init camera3D
-        let mainCamera = CameraUtil.createCamera3D(null, this._scene);
-        mainCamera.perspective(60, Engine3D.aspect, 1, 2000.0);
-
-        // camera controller
-        mainCamera.object3D.addComponent(HoverCameraController).setCamera(45, -10, 10);
-
-        // create a basic cube
-        let cubeObj = new Object3D();
-        let mr = cubeObj.addComponent(MeshRenderer);
-        mr.geometry = new BoxGeometry();
-        let mat = new LitMaterial();
-        mr.material = mat;
-        this._scene.addChild(cubeObj);
-        
-        // init view3D
-        let view = new View3D();
-        view.scene = this._scene;
-        view.camera = mainCamera;
-
+        let scene: Scene3D = createExampleScene().scene;
         // start renderer
-        Engine3D.startRenderView(view);
+        Engine3D.startRenderView(scene.view);
+        // add atmospheric sky
+        let component = scene.getComponent(AtmosphericComponent);
+
+        let texture = component['_atmosphericScatteringSky'];
+        let ulitMaterial = new UnLitMaterial();
+        ulitMaterial.baseMap = texture.texture2D;
+        ulitMaterial.cullMode = GPUCullMode.none;
+        let obj = new Object3D();
+        scene.addChild(obj);
+        let r = obj.addComponent(MeshRenderer);
+        r.material = ulitMaterial;
+        r.geometry = new PlaneGeometry(100, 50, 1, 1, Vector3.Z_AXIS);
+        scene.addChild(obj);
 
         // gui
         GUIHelp.init();
         GUIUtil.renderAtomosphericSky(component);
     }
-
 }
 
 new Sample_AtmosphericSky().run();

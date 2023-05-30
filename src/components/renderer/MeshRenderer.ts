@@ -8,6 +8,7 @@ import { RendererType } from '../../gfx/renderJob/passRenderer/state/RendererTyp
 import { MaterialBase } from '../../materials/MaterialBase';
 import { MorphTargetData } from '../anim/morphAnim/MorphTargetData';
 import { RenderNode } from './RenderNode';
+import { Reference } from '../..';
 
 /**
  * The mesh renderer component is a component used to render the mesh
@@ -40,7 +41,8 @@ export class MeshRenderer extends RenderNode {
     }
 
     public set geometry(value: GeometryBase) {
-        this._geometry = value;
+        //this must use super geometry has reference in super
+        super.geometry = value;
         let isMorphTarget = value.morphTargetDictionary != null;
         if (isMorphTarget) {
             this.morphData ||= new MorphTargetData();
@@ -55,8 +57,7 @@ export class MeshRenderer extends RenderNode {
             this.onCompute = null;
         }
 
-        this.object3D.bound = this._geometry.bounds;
-
+        this.object3D.bound = this._geometry.bounds.clone();
         if (this._readyPipeline) {
             this.initPipeline();
         }
@@ -121,18 +122,11 @@ export class MeshRenderer extends RenderNode {
                 }
             }
         }
-
         super.nodeUpdate(view, passType, renderPassState, clusterLightingBuffer);
     }
 
     public destroy(force?: boolean): void {
-        if (force) {
-            this.geometry.destroy(force);
-            this.materials.forEach(mat => {
-                mat.destroy(force);
-            });
-        }
-        super.destroy();
+        super.destroy(force);
     }
 
     cloneTo(obj: Object3D) {

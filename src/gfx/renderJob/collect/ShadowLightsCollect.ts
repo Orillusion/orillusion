@@ -27,7 +27,6 @@ export class ShadowLightsCollect {
 
         this.shadowBuffer = new Map<Scene3D, StorageGPUBuffer>;
         this.shadowLights = new Map<Scene3D, Uint32Array>;
-        // this.shadowBuffer.visibility = GPUShaderStage.FRAGMENT;
     }
 
     public static createBuffer(scene: Scene3D) {
@@ -121,7 +120,7 @@ export class ShadowLightsCollect {
                 list = [];
                 this.directionLightList.set(scene, list);
             }
-            if (light.lightData.lightType == LightType.DirectionLight && !light['shadowCamera']) {
+            if (!light['shadowCamera']) {
                 light['shadowCamera'] = CameraUtil.createCamera3DObject(null, 'shadowCamera');
                 light['shadowCamera'].name = UUID();
                 light['shadowCamera'].isShadowCamera = true;
@@ -142,21 +141,7 @@ export class ShadowLightsCollect {
                 list.push(light);
             }
             return list;
-        } else if (light.lightData.lightType == LightType.PointLight) {
-            let list = this.pointLightList.get(scene);
-            if (!list) {
-                list = [];
-                this.pointLightList.set(scene, list);
-            }
-            let has = list.indexOf(light) == -1;
-            if (has) {
-                if (list.length < 8) {
-                    light.lightData.castShadowIndex = list.length;
-                }
-                list.push(light);
-            }
-            return list;
-        } else if (light.lightData.lightType == LightType.SpotLight) {
+        } else if (light.lightData.lightType == LightType.PointLight || light.lightData.lightType == LightType.SpotLight) {
             let list = this.pointLightList.get(scene);
             if (!list) {
                 list = [];
@@ -184,7 +169,7 @@ export class ShadowLightsCollect {
                 }
             }
             return list;
-        } else if (light.lightData.lightType == LightType.PointLight) {
+        } else if (light.lightData.lightType == LightType.PointLight || light.lightData.lightType == LightType.SpotLight) {
             let list = this.pointLightList.get(light.transform.view3D.scene);
             if (list) {
                 let index = list.indexOf(light);

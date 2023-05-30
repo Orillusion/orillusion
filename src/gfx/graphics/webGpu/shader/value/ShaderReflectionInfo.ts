@@ -105,16 +105,18 @@ export class ShaderReflection {
             if (shaderReflection.groups[iterator.group][iterator.binding]) {
                 let aInfo = shaderReflection.groups[iterator.group][iterator.binding];
                 let bInfo = iterator;
-                if (aInfo.varName != bInfo.varName)
-                    console.warn(`shader reflection var not match! var name vs : ${aInfo.varName} , fs : ${bInfo.varName}`);
-                if (aInfo.varType != bInfo.varType)
-                    console.error(`shader reflection varType not match! var varType vs : ${aInfo.varType} , fs : ${bInfo.varType}`);
-                if (aInfo.dataType != bInfo.dataType)
-                    console.warn(`shader reflection dataType not match! var dataType vs : ${aInfo.dataType} , fs : ${bInfo.dataType}`);
-                if (aInfo.dataIsBuiltinType != bInfo.dataIsBuiltinType)
-                    console.error(`shader reflection dataIsBuiltinType not match! var dataIsBuiltinType vs : ${aInfo.dataIsBuiltinType} , fs : ${bInfo.dataType}`);
-                if (!aInfo.dataFields || !bInfo.dataFields) {
-                    console.warn(`shader reflection dataFields is empty! var dataFields vs : ${aInfo.dataFields} , fs : ${bInfo.dataFields}`);
+                if(import.meta.env.DEV){
+                    if (aInfo.varName != bInfo.varName)
+                        console.warn(`shader reflection var not match! var name vs : ${aInfo.varName} , fs : ${bInfo.varName}`);
+                    if (aInfo.varType != bInfo.varType)
+                        console.error(`shader reflection varType not match! var varType vs : ${aInfo.varType} , fs : ${bInfo.varType}`);
+                    if (aInfo.dataType != bInfo.dataType)
+                        console.warn(`shader reflection dataType not match! var dataType vs : ${aInfo.dataType} , fs : ${bInfo.dataType}`);
+                    if (aInfo.dataIsBuiltinType != bInfo.dataIsBuiltinType)
+                        console.error(`shader reflection dataIsBuiltinType not match! var dataIsBuiltinType vs : ${aInfo.dataIsBuiltinType} , fs : ${bInfo.dataType}`);
+                    if (!aInfo.dataFields || !bInfo.dataFields) {
+                        console.warn(`shader reflection dataFields is empty! var dataFields vs : ${aInfo.dataFields} , fs : ${bInfo.dataFields}`);
+                    }
                 }
                 // if (aInfo.dataFields.length != bInfo.dataFields.length)
                 //     console.warn(`shader reflection dataFields lenth not match! var dataFields vs : ${aInfo.dataFields} , fs : ${bInfo.dataFields}`);

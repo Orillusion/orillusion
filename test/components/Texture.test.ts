@@ -1,8 +1,10 @@
 import { test, expect, end } from '../util'
 import { Camera3D, Color, Engine3D, Float16ArrayTexture, Float32ArrayTexture, Object3D, Scene3D, SolidColorSky } from '@orillusion/core';
 
+await Engine3D.init();
+Engine3D.frameRate = 10;
+    
 await test('textue2D create Uint8Texture', async () => {
-    await Engine3D.init();
     let texture2D = Engine3D.res.createTexture(32, 64, 255, 255, 0, 255, 'uint8Texture')
     let success = (texture2D.gpuSampler && texture2D.getGPUTexture() && texture2D.getGPUView()) ? true : false;
     expect(success).toEqual(true);

@@ -76,10 +76,16 @@ export class LightBase extends ComponentBase implements ILight {
     }
 
     public start(): void {
+        this.transform.onPositionChange = () => this.onPositionChange();
         this.transform.onScaleChange = () => this.onScaleChange();
         this.transform.onRotationChange = () => this.onRotChange();
+        this.onPositionChange();
         this.onRotChange();
         this.onScaleChange();
+    }
+
+    protected onPositionChange() {
+        this.lightData.lightPosition.copyFrom(this.transform.worldPosition);
     }
 
     protected onRotChange() {
@@ -99,20 +105,11 @@ export class LightBase extends ComponentBase implements ILight {
     public onEnable(): void {
         this.onChange();
         EntityCollect.instance.addLight(this.transform.scene3D, this);
-
-        if (this._castShadow) {
-            this.needUpdateShadow = true;
-            ShadowLightsCollect.addShadowLight(this);
-        }
     }
 
     public onDisable(): void {
         this.onChange();
         EntityCollect.instance.removeLight(this.transform.scene3D, this);
-
-        if (this._castShadow) {
-            ShadowLightsCollect.removeShadowLight(this);
-        }
     }
 
     public set iesProfiles(iesProfiles: IESProfiles) {
@@ -199,12 +196,20 @@ export class LightBase extends ComponentBase implements ILight {
         this.lightData.intensity = value;
         this.onChange();
     }
+
     /**
-     * get cast shadow
-     * @return boolean
+     * Cast Light Shadow
+     * @param value 
      *  */
+    public set castShadow(value: boolean) {
+        if (value != this._castShadow) {
+            this._castShadow = value;
+            this.onChange();
+        }
+    }
+
     public get castShadow(): boolean {
-        return this.lightData.castShadowIndex as number >= 0;
+        return this._castShadow;
     }
 
     /**
@@ -213,13 +218,7 @@ export class LightBase extends ComponentBase implements ILight {
     public get shadowIndex(): number {
         return this.lightData.castShadowIndex as number;
     }
-    /**
-     * set cast shadow 
-     * @param value is true , that can cast shadow
-     *  */
-    public set castShadow(value: boolean) {
-        if (value) this.onChange();
-    }
+
 
     /**
     * get gi is enable 

@@ -3,7 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@webgpu/types': ^0.1.30
   conventional-changelog-cli: ^2.2.2
-  electron: 25.0.0-beta.1
+  electron: 25.0.0-beta.8
   typedoc: ^0.24.4
   typedoc-plugin-markdown: ^3.15.1
   typescript: ^5.0.4
@@ -13,7 +13,7 @@ specifiers:
 
 optionalDependencies:
   conventional-changelog-cli: 2.2.2
-  electron: 25.0.0-beta.1
+  electron: 25.0.0-beta.8
   uglify-js: 3.17.4
   xvfb-maybe: 0.2.1
 
@@ -775,8 +775,8 @@ packages:
     dev: false
     optional: true
 
-  /electron/25.0.0-beta.1:
-    resolution: {integrity: sha512-iUEuOKtjzzENNv+wvpvaMR9iRTjribFAttBTAEvd0Aemvoy8WH1P0UAxe4GxTLkoEpMQUToxqIHZnpN3K2Qcnw==}
+  /electron/25.0.0-beta.8:
+    resolution: {integrity: sha512-o3X0pkg1PyR/yawlSJzTXrh5GG8sH7jjtOzr74f0Zb4PnInzI3MIr8NopyhcGCW0JmOwFu+DLZX4bDlaLmtyGQ==}
     engines: {node: '>= 12.20.55'}
     hasBin: true
     requiresBuild: true

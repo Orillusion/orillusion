@@ -17,6 +17,13 @@ import { HDRTexture } from '../textures/HDRTexture';
 import { LDRTextureCube } from '../textures/LDRTextureCube';
 import { BRDFLUTGenerate } from '../gfx/generate/BrdfLUTGenerate';
 import { Uint8ArrayTexture } from '../textures/Uint8ArrayTexture';
+import { GUISprite } from '../components/gui/core/GUISprite';
+import { GUITexture } from '../components/gui/core/GUITexture';
+import { GUIAtlasTexture } from '../components/gui/core/GUIAtlasTexture';
+import { FontParser, FontInfo } from '../loader/parser/FontParser';
+import { fonts } from './Fonts';
+import { AtlasParser } from '../loader/parser/AtlasParser';
+import { Reference } from '../util/Reference';
 
 /**
  * Resource management classes for textures, materials, models, and preset bodies.
@@ -28,6 +35,8 @@ export class Res {
     private _prefabPool: Map<string, Object3D>;
     // private _prefabLoaderPool: Map<string, PrefabLoader>;
     private _gltfPool: Map<string, GLTF_Info>;
+    private _atlasList: Map<string, GUIAtlasTexture>;
+
 
     /**
      * @constructor
@@ -38,6 +47,7 @@ export class Res {
         this._prefabPool = new Map<string, Object3D>();
         // this._prefabLoaderPool = new Map<string, PrefabLoader>;
         this._gltfPool = new Map<string, GLTF_Info>;
+        this._atlasList = new Map<string, GUIAtlasTexture>();
 
         this.initDefault();
     }
@@ -98,6 +108,25 @@ export class Res {
      */
     public getPrefab(name: string) {
         return this._prefabPool.get(name).instantiate();
+    }
+
+
+    public addAtlas(name: string, atlas: GUIAtlasTexture) {
+        atlas.name = name;
+        this._atlasList.set(name, atlas);
+    }
+
+    public getAtlas(name: string) {
+        return this._atlasList.get(name);
+    }
+
+    public getGUISprite(id: string): GUISprite {
+        for (let item of this._atlasList.values()) {
+            let sprite = item.getSprite(id);
+            if (sprite)
+                return sprite;
+        }
+        return null;
     }
 
     /**
@@ -300,6 +329,33 @@ export class Res {
             });
     }
 
+
+    /**
+     * load font file by url
+     * @param url font file url
+     * @param loaderFunctions callback
+     * @returns
+     */
+    public async loadFont(url: string, loaderFunctions?: LoaderFunctions, userData?: any): Promise<FontInfo> {
+        let loader = new FileLoader();
+        let parser = await loader.load(url, FontParser, loaderFunctions, userData);
+        let data = parser.data as FontInfo;
+        fonts.addFontData(data.face, data.size, data)
+        return parser.data;
+    }
+
+    /**
+     * load a atlas file by url
+     * @param url file path
+     * @param loaderFunctions callback
+     * @returns
+     */
+    public async loadAtlas(url: string, loaderFunctions?: LoaderFunctions): Promise<FontInfo> {
+        let loader = new FileLoader();
+        let parser = await loader.load(url, AtlasParser, loaderFunctions, url);
+        return parser.data;
+    }
+
     /**
      * normal texture
      */
@@ -314,6 +370,9 @@ export class Res {
     public grayTexture: Uint8ArrayTexture;
 
     public defaultSky: HDRTextureCube;
+
+    public defaultGUITexture: GUITexture;
+    public defaultGUISprite: GUISprite;
 
     /**
      * create a texture
@@ -377,11 +436,27 @@ export class Res {
         this.grayTexture = this.createTexture(32, 32, 128, 128, 128, 255.0, 'default-grayTexture');
 
         let brdf = new BRDFLUTGenerate();
-        let texture = brdf.generateBRDFLUTTexture();
-        let BRDFLUT = texture.name = 'BRDFLUT';
-        this.addTexture(BRDFLUT, texture);
+        let brdf_texture = brdf.generateBRDFLUTTexture();
+        let BRDFLUT = brdf_texture.name = 'BRDFLUT';
+        this.addTexture(BRDFLUT, brdf_texture);
 
         this.defaultSky = new HDRTextureCube();
         this.defaultSky.createFromTexture(128, this.blackTexture);
+
+        Reference.getInstance().attached(this.defaultSky, this);
+        Reference.getInstance().attached(brdf_texture, this);
+
+        Reference.getInstance().attached(this.normalTexture, this);
+        Reference.getInstance().attached(this.maskTexture, this);
+        Reference.getInstance().attached(this.whiteTexture, this);
+        Reference.getInstance().attached(this.blackTexture, this);
+        Reference.getInstance().attached(this.redTexture, this);
+        Reference.getInstance().attached(this.blueTexture, this);
+        Reference.getInstance().attached(this.greenTexture, this);
+        Reference.getInstance().attached(this.yellowTexture, this);
+        Reference.getInstance().attached(this.grayTexture, this);
+        this.defaultGUITexture = new GUITexture(this.whiteTexture);
+        this.defaultGUISprite = new GUISprite(this.defaultGUITexture);
+        this.defaultGUISprite.trimSize.set(4, 4)
     }
 }

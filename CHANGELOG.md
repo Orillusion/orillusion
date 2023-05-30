@@ -1,4 +1,30 @@
-## [0.6.2](https://github.com/Orillusion/orillusion/compare/v0.6.0...v0.6.2) (2023-05-15)
+## [0.6.3](https://github.com/Orillusion/orillusion/compare/v0.6.2...v0.6.3) (2023-05-30)
+
+### Bug Fixes
+
+* **android:** reslove webgpu errors ([#170](https://github.com/Orillusion/orillusion/issues/170)) ([a867ea7](https://github.com/Orillusion/orillusion/commit/a867ea7d6188f9b458189e2d5b6d8ea4e7d27a27))
+* **blend:** fix blend mode ([#181](https://github.com/Orillusion/orillusion/issues/181)) ([e65cbb9](https://github.com/Orillusion/orillusion/commit/e65cbb9161a5947687f8b51972f416b542125dfd)) ([#178](https://github.com/Orillusion/orillusion/issues/178)) ([62ba7ce](https://github.com/Orillusion/orillusion/commit/62ba7cea188ff4f7d81a86505a554eebb6eee565))
+* **canvas:** refine context3d init process ([#163](https://github.com/Orillusion/orillusion/issues/163)) ([8d7cde8](https://github.com/Orillusion/orillusion/commit/8d7cde8be4dc64acd5f4515ccd374f025966df7c))
+* **ComponentCollect:** break component dependency for engine3D ([#161](https://github.com/Orillusion/orillusion/issues/161)) ([5c69be1](https://github.com/Orillusion/orillusion/commit/5c69be1f60edbb4c4ca9a9584554128e4182a95a))
+* **destory:** fix object destory ([#164](https://github.com/Orillusion/orillusion/issues/164)) ([071ac16](https://github.com/Orillusion/orillusion/commit/071ac16d2eb82aa79a85244140a76d390543973a))
+* **sky:** fix LDR skybox texture color ([#171](https://github.com/Orillusion/orillusion/issues/171)) ([9a89d2b](https://github.com/Orillusion/orillusion/commit/9a89d2b5058c7a3584106032a649faa1084c16ca))
+* **sky:** fix AtmosphericSky color ([#179](https://github.com/Orillusion/orillusion/issues/179)) ([eb6ef48](https://github.com/Orillusion/orillusion/commit/eb6ef48cf3e8b4f183abba56b2e9aa1c5d777694))
+* **light:** fix shader light position ([#175](https://github.com/Orillusion/orillusion/issues/175)) ([b2ba00f](https://github.com/Orillusion/orillusion/commit/b2ba00f6c95d2f1965aa8af7c7ab682f809c828b))
+* **PropertyAnimation:** space conversion ([#162](https://github.com/Orillusion/orillusion/issues/162)) ([4dd34a3](https://github.com/Orillusion/orillusion/commit/4dd34a3a0bdacb39fcd0337c7fed9e759766b077))
+* **renderOpt:** fix poor performance in handling shadow ([#143](https://github.com/Orillusion/orillusion/issues/143)) ([93d8a1c](https://github.com/Orillusion/orillusion/commit/93d8a1ce097102563ee67e0d016c499e4689ef19))
+* **sample:** fix propertyAnimation. ([#173](https://github.com/Orillusion/orillusion/issues/173)) ([c35e838](https://github.com/Orillusion/orillusion/commit/c35e8383554f55c13bd73bdc2cb91b57e80ba3ce))
+* **sample:** update shadowRameRate ([#132](https://github.com/Orillusion/orillusion/issues/132)) ([30e92d6](https://github.com/Orillusion/orillusion/commit/30e92d603b9d6bade008403a6abca47a3f6379fc))
+* **shadow:** fix shadow cullmode ([#147](https://github.com/Orillusion/orillusion/issues/147)) ([2083b40](https://github.com/Orillusion/orillusion/commit/2083b40fd622d4baf4509e1819ff8dd25afd1e8d))
+
+
+### Features
+
+* **GUI:** add GUI feature ([#157](https://github.com/Orillusion/orillusion/issues/157)) ([016fdd9](https://github.com/Orillusion/orillusion/commit/016fdd9cb974f0c76e222b09cb2950c75bae32fb)) ([#166](https://github.com/Orillusion/orillusion/issues/166)) ([5caee15](https://github.com/Orillusion/orillusion/commit/5caee157365844b4a59d67237a725602df2755dc)) ([#172](https://github.com/Orillusion/orillusion/issues/172)) ([5c7c6ef](https://github.com/Orillusion/orillusion/commit/5c7c6ef1fd9642d578b109bdb9e740c52b892523)) ([#174](https://github.com/Orillusion/orillusion/issues/174)) ([58ad344](https://github.com/Orillusion/orillusion/commit/58ad3441d4ce6bb2a472a8232b37360d18b34f3d)) ([#182](https://github.com/Orillusion/orillusion/issues/182)) ([7797b86](https://github.com/Orillusion/orillusion/commit/7797b86d769565c7451e9b8707181c8addc463db))
+* **sample:** add new POST samples ([#183](https://github.com/Orillusion/orillusion/issues/183)) ([328bf72](https://github.com/Orillusion/orillusion/commit/328bf7218a8f59b751b3f943ef4015b72e95a3f1))
+* **sample:** add property animation sample ([#146](https://github.com/Orillusion/orillusion/issues/146)) ([8c0adf9](https://github.com/Orillusion/orillusion/commit/8c0adf904b9ab6f275b2bfa6d152d3452444abed))
+
+
+## [0.6.2](https://github.com/Orillusion/orillusion/compare/v0.6.1...v0.6.2) (2023-05-15)
 
 ### Bug Fixes
 

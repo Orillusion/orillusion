@@ -37,7 +37,6 @@ class Sample_UseComponent {
         GUIHelp.init();
         GUIHelp.add(component, 'enable');
         GUIHelp.open();
-        GUIHelp.endFolder();
     }
 }
 

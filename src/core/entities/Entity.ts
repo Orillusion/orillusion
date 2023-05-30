@@ -80,7 +80,7 @@ export class Entity extends CEventDispatcher {
      *
      * The bounding box of an object
      */
-    private _bound: IBound;
+    protected _bound: IBound;
     private _dispose: boolean = false;
     // private _visible: boolean = true;
 

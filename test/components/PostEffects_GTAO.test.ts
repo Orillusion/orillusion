@@ -3,7 +3,7 @@ import { Camera3D, CameraUtil, Engine3D, GTAOPost, Object3D, PostProcessingCompo
 
 await test('Post GTAOPost test', async () => {
     await Engine3D.init();
-    Engine3D.frameRate = 10;
+    Engine3D.frameRate = 2;
 
     let view = new View3D();
     view.scene = new Scene3D();
@@ -11,7 +11,10 @@ await test('Post GTAOPost test', async () => {
     Engine3D.startRenderViews([view]);
 
     let postProcessing = view.scene.addComponent(PostProcessingComponent);
-    postProcessing.addPost(GTAOPost);
+    let gtao = postProcessing.addPost(GTAOPost);
+    await delay(500)
+    expect(gtao.gtaoTexture?.width).tobe(window.innerWidth)
+    Engine3D.pause()
 })
 
 

@@ -2,6 +2,7 @@ import { Scene3D } from "../core/Scene3D";
 import { View3D } from "../core/View3D";
 import { Object3D } from "../core/entities/Object3D";
 import { CEvent } from "../event/CEvent";
+import { ComponentCollect } from "../gfx/renderJob/collect/ComponentCollect";
 import { MathUtil } from "../math/MathUtil";
 import { Matrix4, makeMatrix44, append } from "../math/Matrix4";
 import { Orientation3D } from "../math/Orientation3D";
@@ -111,6 +112,9 @@ export class Transform extends ComponentBase {
     }
 
     public set parent(value: Transform) {
+        //why don't it need to compare the data
+        //if (this._parent !== value){}
+        let lastParent = this._parent?.object3D;
         this._parent = value;
         let hasRoot = value ? value.scene3D : null;
         if (!hasRoot) {
@@ -120,12 +124,21 @@ export class Transform extends ComponentBase {
         } else {
             this._scene3d = hasRoot;
             this.object3D.components.forEach((c) => {
-                this.object3D[`appendLateStart`](c);
+                ComponentCollect.appendWaitStart(this.object3D, c);
             });
         }
 
         this.object3D.entityChildren.forEach((v) => {
             v.transform.parent = value ? this : null;
+        });
+
+        if (value) {
+            this.transform.updateWorldMatrix();
+        }
+
+        //notify parent change
+        this.object3D.components.forEach((c) => {
+            c.onParentChange?.(lastParent, this._parent?.object3D);
         });
     }
 

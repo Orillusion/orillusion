@@ -2,6 +2,7 @@ import { test, expect, end, delay } from '../util'
 import { Camera3D, Engine3D, Object3D, Scene3D } from '@orillusion/core';
 
 await Engine3D.init();
+Engine3D.frameRate = 10;
 
 await test('Transform not repeat', async () => {
     let objA = new Object3D();
