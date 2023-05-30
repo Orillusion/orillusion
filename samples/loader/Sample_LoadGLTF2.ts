@@ -2,7 +2,7 @@ import { Engine3D, Object3D, Object3DUtil, Scene3D } from "@orillusion/core";
 import { createExampleScene } from "@samples/utils/ExampleScene";
 
 //Samples to show models, they are using PBR material
-class Sample_LoadGLTF {
+class Sample_LoadGLTF2 {
     lightObj3D: Object3D;
     scene: Scene3D;
     async run() {
@@ -32,4 +32,4 @@ class Sample_LoadGLTF {
     }
 }
 
-new Sample_LoadGLTF().run();
+new Sample_LoadGLTF2().run();
