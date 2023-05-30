@@ -4,7 +4,7 @@ import { createExampleScene } from "@samples/utils/ExampleScene";
 import { Stats } from "@orillusion/stats";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
-export class Sample_UIPerformance2 {
+export class Sample_UIImageGroup {
     scene: Scene3D;
     imageGroup: UIImageGroup;
 
