@@ -18,7 +18,7 @@ export class BoundUtil {
         let tempPoints = this.genMeshVectorList8;
 
         bound ||= new BoundingBox(Vector3.ZERO, Vector3.ZERO);
-        bound.setFromMinMax(tempMin, tempMax);
+        bound.setFromMinMax(tempMax, tempMin);
 
         let cmpts = obj.getComponents(MeshRenderer);
         for (const cmpt of cmpts) {
@@ -58,7 +58,7 @@ export class BoundUtil {
         let tempPoints = this.genMeshVectorList8;
 
         bound ||= new BoundingBox(Vector3.ZERO, Vector3.ZERO);
-        bound.setFromMinMax(tempMin, tempMax);
+        bound.setFromMinMax(tempMax, tempMin);
 
         tempPoints[0].set(tempMin.x, tempMin.y, tempMin.z); // 000
         tempPoints[1].set(tempMin.x, tempMin.y, tempMax.z); // 001
