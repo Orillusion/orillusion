@@ -5,8 +5,10 @@ import { MeshRenderer } from '../components/renderer/MeshRenderer';
 import { Matrix4 } from '../math/Matrix4';
 
 export class BoundUtil {
-    private static readonly genMeshMinVector = Vector3.ZERO.clone();
+    private static readonly maxVector = new Vector3(Number.MAX_VALUE * 0.1, Number.MAX_VALUE * 0.1, Number.MAX_VALUE * 0.1);
+    private static readonly minVector = this.maxVector.clone().multiplyScalar(-1);
     private static readonly genMeshMaxVector = Vector3.ZERO.clone();
+    private static readonly genMeshMinVector = Vector3.ZERO.clone();
     private static readonly genMeshVectorList8: Vector3[] = [new Vector3(), new Vector3(), new Vector3(), new Vector3(), new Vector3(), new Vector3(), new Vector3(), new Vector3()];
 
     /**
@@ -18,7 +20,7 @@ export class BoundUtil {
         let tempPoints = this.genMeshVectorList8;
 
         bound ||= new BoundingBox(Vector3.ZERO, Vector3.ZERO);
-        bound.setFromMinMax(tempMax, tempMin);
+        bound.setFromMinMax(this.maxVector, this.minVector);
 
         let cmpts = obj.getComponents(MeshRenderer);
         for (const cmpt of cmpts) {
@@ -58,7 +60,7 @@ export class BoundUtil {
         let tempPoints = this.genMeshVectorList8;
 
         bound ||= new BoundingBox(Vector3.ZERO, Vector3.ZERO);
-        bound.setFromMinMax(tempMax, tempMin);
+        bound.setFromMinMax(this.maxVector, this.minVector);
 
         tempPoints[0].set(tempMin.x, tempMin.y, tempMin.z); // 000
         tempPoints[1].set(tempMin.x, tempMin.y, tempMax.z); // 001
