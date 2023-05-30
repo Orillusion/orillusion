@@ -1,9 +1,9 @@
 import { Object3D } from '../../../core/entities/Object3D';
 import { Color } from '../../../math/Color';
+import { UIRenderAble } from './UIRenderAble';
 import { TextAnchor, TextFieldLayout, TextFieldLine } from './TextFieldLayout';
-import { UIComponentBase } from './UIComponentBase';
 
-export class UITextField extends UIComponentBase {
+export class UITextField extends UIRenderAble {
     private _font: string = '微软雅黑';
     private _fontSize: number = 14;
     private _originSize: number = 42;
@@ -81,7 +81,8 @@ export class UITextField extends UIComponentBase {
         //refresh color;
         this.color = this._color;
         this._uiTransform.setNeedUpdateUIPanel();
-        this.onUIComponentVisible && this.onUIComponentVisible(this._visible);
+        this.onUIComponentVisible(this._visible);
+        this.setShadowDirty();
     }
 
     protected onUIComponentVisible(visible: boolean): void {
@@ -94,9 +95,10 @@ export class UITextField extends UIComponentBase {
 
     private applyComponentVisible(): void {
         let isHidden = !this._visible || !this._uiTransform.globalVisible;
-        for (let quad of this._exlusiveQuads) {
+        for (let quad of this._mainQuads) {
             quad && (quad.visible = !isHidden);
         }
+        this.setShadowDirty();
     }
 
     protected onTransformResize() {
@@ -109,9 +111,10 @@ export class UITextField extends UIComponentBase {
 
     public set color(value: Color) {
         this._color.copyFrom(value);
-        for (let quad of this._exlusiveQuads) {
+        for (let quad of this._mainQuads) {
             quad.color = value;
         }
+        this.setShadowDirty();
     }
 
     public get alignment(): TextAnchor {

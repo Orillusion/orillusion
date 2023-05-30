@@ -1,6 +1,6 @@
 ﻿import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { createExampleScene } from "@samples/utils/ExampleScene";
-import { Engine3D, Object3DUtil, Object3D, ViewPanel, UIImage, ImageType, UIPanel, makeAloneSprite, Color, Time, UITransform } from "@orillusion/core";
+import { Engine3D, Object3DUtil, Object3D, ViewPanel, UIImage, ImageType, UIPanel, makeAloneSprite, Color, Time, UITransform, BitmapTexture2D } from "@orillusion/core";
 
 export class Sample_UIChangeParent {
     async run() {
@@ -35,8 +35,10 @@ export class Sample_UIChangeParent {
             panelRoot.addChild(logoObject);
 
             let image1: UIImage = logoObject.addComponent(UIImage);
-            let logoTexture = await Engine3D.res.loadTexture('png/logo.png');
-            image1.sprite = makeAloneSprite('logo', logoTexture);
+            let bitmapTexture2D = new BitmapTexture2D();
+            bitmapTexture2D.flipY = true;
+            await bitmapTexture2D.load('png/logo.png');
+            image1.sprite = makeAloneSprite('logo', bitmapTexture2D);
             image1.uiTransform.resize(100, 100);
         }
 

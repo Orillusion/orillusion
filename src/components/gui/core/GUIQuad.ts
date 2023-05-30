@@ -1,11 +1,12 @@
 import { UITransform } from "../uiComponents/UITransform";
-import { GUIGeometry, GUIQuadAttrEnum } from "./GUIGeometry";
+import { GUIGeometry } from "./GUIGeometry";
 import { GUISprite } from "./GUISprite";
 import { ImageType } from "../GUIConfig";
 import { Engine3D } from "../../../Engine3D";
 import { Matrix3 } from "../../../math/Matrix3";
 import { Color } from "../../../math/Color";
 import { PoolNode } from "../../../core/pool/ObjectPool";
+import { GUIQuadAttrEnum } from "./GUIDefine";
 
 let gui_help_mtx3: Matrix3;
 

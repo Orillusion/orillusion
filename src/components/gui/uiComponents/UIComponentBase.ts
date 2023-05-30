@@ -1,11 +1,13 @@
 import { ComponentBase } from "../../ComponentBase";
-import { GUIQuad } from "../core/GUIQuad";
 import { UITransform } from "./UITransform";
 
 export class UIComponentBase extends ComponentBase {
     protected _uiTransform: UITransform;
     protected _visible: boolean = true;
-    protected readonly _exlusiveQuads: GUIQuad[] = [];
+    public destroy() {
+        this._uiTransform.setNeedUpdateUIPanel();
+        super.destroy();
+    }
 
     public get uiTransform() {
         return this._uiTransform;
@@ -18,12 +20,12 @@ export class UIComponentBase extends ComponentBase {
     public set visible(value: boolean) {
         if (this._visible != value) {
             this._visible = value;
-            this.onUIComponentVisible && this.onUIComponentVisible(this._visible);
+            this.onUIComponentVisible?.(this._visible);
         }
     }
 
     init(param?: any) {
-        super.init(param);
+        super.init?.(param);
         this._uiTransform = this.object3D.getOrAddComponent(UITransform);
         this._uiTransform.setNeedUpdateUIPanel();
     }
@@ -31,26 +33,6 @@ export class UIComponentBase extends ComponentBase {
     protected onUITransformVisible?(visible: boolean): void;
     protected onUIComponentVisible?(visible: boolean): void;
     protected onTransformResize?(): void;
-
-    public destroy() {
-        this.detachQuads();
-        this._uiTransform.setNeedUpdateUIPanel();
-        super.destroy();
-    }
-
-    protected attachQuad(quad: GUIQuad): this {
-        this._exlusiveQuads.push(quad);
-        this._uiTransform.quads.push(quad);
-        return this;
-    }
-
-    protected detachQuads(): this {
-        while (this._exlusiveQuads.length > 0) {
-            let quad = this._exlusiveQuads.shift();
-            this._uiTransform.recycleQuad(quad);
-        }
-        return this;
-    }
 
     public copyComponent(from: this): this {
         this.visible = from.visible;

@@ -1,6 +1,7 @@
 ﻿import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { createExampleScene } from "@samples/utils/ExampleScene";
-import { Object3D, Engine3D, GUISpace, WorldPanel, ViewPanel, UITextField, TextAnchor, Object3DUtil, UIPanel, UIImage } from "@orillusion/core";
+import { Object3D, Engine3D, GUISpace, WorldPanel, ViewPanel, UITextField, TextAnchor, Object3DUtil, UIPanel, UIImage, UIShadow } from "@orillusion/core";
+import { GUIUtil } from "@samples/utils/GUIUtil";
 
 export class Sample_UITextField {
 
@@ -41,8 +42,10 @@ export class Sample_UITextField {
         {
             let textQuad = new Object3D();
             panelRoot.addChild(textQuad);
+            let backGround = textQuad.addComponent(UIImage);
+            backGround.color.a = 0.2;
+            backGround.isShadowless = true;
             this.text = textQuad.addComponent(UITextField);
-            textQuad.addComponent(UIImage).color.a = 0.2;
             this.text.uiTransform.resize(400, 60);
             this.text.uiTransform.y = 100;
 
@@ -53,6 +56,8 @@ export class Sample_UITextField {
             let changeSize = () => {
                 this.text.uiTransform.resize(size.width, size.height);
             }
+            let shadow = textQuad.addComponent(UIShadow);
+            GUIUtil.renderUIShadow(shadow, true);
             GUIHelp.add(size, 'width', 100, 200, 1).onChange(() => {
                 changeSize();
             });
