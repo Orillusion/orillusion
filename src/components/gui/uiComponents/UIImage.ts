@@ -6,18 +6,25 @@ import { UIComponentBase } from './UIComponentBase';
 import { ImageType } from '../GUIConfig';
 import { Engine3D } from '../../../Engine3D';
 
+export enum UIImageShadow {
+    NONE = '',
+    LOW = 'LOW',
+    MEDIUM = 'MEDIUM',
+    HIGH = 'HIGH'
+}
+
 // A UI component to display image/sprite/video
 export class UIImage extends UIComponentBase {
-    private _quad: GUIQuad;
-
     constructor() {
         super();
     }
 
-    public init() {
+    private _shadow: UIImageShadow;
+
+    init(param?: any): void {
         super.init();
-        this._quad = GUIQuad.quadPool.getOne(GUIQuad);
-        this.attachQuad(this._quad);
+        let quad = GUIQuad.spawnQuad();
+        this.attachQuad(quad);
     }
 
     public cloneTo(obj: Object3D) {
@@ -28,12 +35,31 @@ export class UIImage extends UIComponentBase {
         component.imageType = this.imageType;
     }
 
+    public set shadow(value: UIImageShadow) {
+        if (this._shadow != value) {
+            this._shadow = value;
+        }
+    }
+    public get shadow() {
+        return this._shadow;
+    }
+
     public set sprite(value: GUISprite) {
-        this._quad.sprite = value || Engine3D.res.defaultGUISprite;
+        value ||= Engine3D.res.defaultGUISprite;
+        for (let quad of this._exlusiveQuads) {
+            quad.sprite = value;
+            quad.setSize(this._uiTransform.width, this._uiTransform.height);
+        }
+    }
+
+    protected onTransformResize(): void {
+        for (let quad of this._exlusiveQuads) {
+            quad.setSize(this._uiTransform.width, this._uiTransform.height);
+        }
     }
 
     public get sprite(): GUISprite {
-        return this._quad.sprite;
+        return this._exlusiveQuads[0].sprite;
     }
 
     protected onUIComponentVisible(visible: boolean): void {
@@ -46,26 +72,26 @@ export class UIImage extends UIComponentBase {
 
     private applyComponentVisible(): void {
         let isHidden = !this._visible || !this._uiTransform.globalVisible;
-        this._quad.visible = !isHidden;
+        for (let item of this._exlusiveQuads) {
+            item.visible = !isHidden;
+        }
     }
 
     public get color() {
-        return this._quad.color;
+        return this._exlusiveQuads[0].color;
     }
 
     public set color(value: Color) {
-        this._quad.color.copyFrom(value);
-        this._quad.onChange = true;
+        this._exlusiveQuads[0].color = value;
     }
 
     public get imageType() {
-        return this._quad.imageType;
+        return this._exlusiveQuads[0].imageType;
     }
 
     public set imageType(value: ImageType) {
-        if (this._quad.imageType != value) {
-            this._quad.imageType = value;
-            this._quad.onChange = true;
+        for (let item of this._exlusiveQuads) {
+            item.imageType = value;
         }
     }
 

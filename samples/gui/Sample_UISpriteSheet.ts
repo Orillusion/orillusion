@@ -57,7 +57,7 @@ export class Sample_UISpriteSheet {
     private frameStart = 65;//65~77
     private frameCount = 13;
     loopTextureSheet(): void {
-        let newIndex = Math.floor(this.frame * 0.05) % this.frameCount;
+        let newIndex = Math.floor(this.frame * 0.2) % this.frameCount;
         if (newIndex != this.lastIndex) {
             this.lastIndex = newIndex;
             let frameKey = (this.lastIndex + this.frameStart).toString().padStart(5, '0');

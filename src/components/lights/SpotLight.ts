@@ -112,17 +112,6 @@ export class SpotLight extends LightBase {
         this.onChange();
     }
 
-    /**
-     * Cast Light Shadow
-     * @param value  
- *  */
-    public set castShadow(value: boolean) {
-        if (value != this._castShadow) {
-            this.onChange();
-        }
-        this._castShadow = value;
-    }
-
     public start(): void {
         super.start();
         this.lightData.lightType = LightType.SpotLight;

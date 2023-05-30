@@ -28,7 +28,7 @@ export class AtmosphericScatteringSky_shader {
 
       var<private> PI:f32 = 3.1415926535;
       var<private> PI_2:f32 = 0.0;
-      var<private> EPSILON:f32 = 0.00001;
+      var<private> EPSILON:f32 = 0.0000001;
       var<private> SAMPLES_NUMS:i32 = 16;
 
       var<private> transmittance:vec3<f32>;
@@ -302,10 +302,10 @@ export class AtmosphericScatteringSky_shader {
         var sky0:vec4<f32> = ComputeSkyInscattering(setting, eye, V, L);
         var sky = vec3<f32>(sky0.rgb);
 
-        // sky = TonemapACES(sky.rgb * 2.0);
+        sky = TonemapACES(sky.rgb * 2.0);
         sky = pow(sky.rgb, vec3<f32>(1.0/1.2)); // gamma
 
-        var fragColor:vec4<f32> = vec4<f32>((sky.rgb  ), 1.0);
+        var fragColor:vec4<f32> = vec4<f32>((sky.rgb), 1.0);
         return fragColor;
       }
     `;

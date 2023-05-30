@@ -1,6 +1,6 @@
 ﻿import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { createExampleScene } from "@samples/utils/ExampleScene";
-import { Object3D, Engine3D, GUISpace, WorldPanel, ViewPanel, UITextField, TextAnchor, Object3DUtil, UIPanel } from "@orillusion/core";
+import { Object3D, Engine3D, GUISpace, WorldPanel, ViewPanel, UITextField, TextAnchor, Object3DUtil, UIPanel, UIImage } from "@orillusion/core";
 
 export class Sample_UITextField {
 
@@ -42,13 +42,26 @@ export class Sample_UITextField {
             let textQuad = new Object3D();
             panelRoot.addChild(textQuad);
             this.text = textQuad.addComponent(UITextField);
+            textQuad.addComponent(UIImage).color.a = 0.2;
             this.text.uiTransform.resize(400, 60);
             this.text.uiTransform.y = 100;
 
             this.text.text = 'Hello，Orillusion！';
             this.text.fontSize = 32;
             this.text.alignment = TextAnchor.MiddleCenter;
+            let size = { width: this.text.uiTransform.width, height: this.text.uiTransform.height };
+            let changeSize = () => {
+                this.text.uiTransform.resize(size.width, size.height);
+            }
+            GUIHelp.add(size, 'width', 100, 200, 1).onChange(() => {
+                changeSize();
+            });
+            GUIHelp.open();
+            GUIHelp.endFolder();
+
         }
+
+
     }
 
     private text: UITextField;
