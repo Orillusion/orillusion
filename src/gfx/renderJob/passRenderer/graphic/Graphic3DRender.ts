@@ -7,11 +7,11 @@ import { BoundingBox } from "../../../../core/bound/BoundingBox";
 import { Camera3D } from "../../../../core/Camera3D";
 import { CameraType } from "../../../../core/CameraType";
 import { Object3D } from "../../../../core/entities/Object3D";
-import { Object3DUtil } from "../../../../util/Object3DUtil";
 import { Graphics3DShape } from "./Graphics3DShape";
 import { GraphicConfig } from "./GraphicConfig";
 import { Graphic3DFillRenderer } from "./Graphic3DFillRenderer";
 import { Graphic3DLineBatchRenderer } from "./Graphic3DLineBatchRenderer";
+import { BoundUtil } from "../../../..";
 
 export class Graphic3D extends Object3D {
 
@@ -426,7 +426,7 @@ export class Graphic3D extends Object3D {
      * @param color The color of the bounding box
      */
     public drawObjectBoundingBox(obj: Object3D, color: Color = Color.COLOR_WHITE) {
-        let boundingBox = Object3DUtil.genMeshBounds(obj);
+        let boundingBox = BoundUtil.genMeshBounds(obj);
         this.drawBox(`Bounds_${obj.uuid}`, boundingBox.min, boundingBox.max, color);
     }
 

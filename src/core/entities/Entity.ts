@@ -1,4 +1,3 @@
-import { Matrix4 } from '../..';
 import { IComponent } from '../../components/IComponent';
 import { RenderNode } from '../../components/renderer/RenderNode';
 import { Transform } from '../../components/Transform';
@@ -6,6 +5,7 @@ import { CEventDispatcher } from '../../event/CEventDispatcher';
 import { ComponentCollect } from '../../gfx/renderJob/collect/ComponentCollect';
 import { RenderLayer } from '../../gfx/renderJob/config/RenderLayer';
 import { Vector3 } from '../../math/Vector3';
+import { BoundUtil } from '../../util/BoundUtil';
 import { UUID } from '../../util/Global';
 import { BoundingBox } from '../bound/BoundingBox';
 import { IBound } from '../bound/IBound';
@@ -81,6 +81,7 @@ export class Entity extends CEventDispatcher {
      * The bounding box of an object
      */
     protected _bound: IBound;
+    protected _boundWorld: IBound;
     private _dispose: boolean = false;
     // private _visible: boolean = true;
 
@@ -318,49 +319,21 @@ export class Entity extends CEventDispatcher {
         if (!this._bound) {
             this.updateBound();
         }
-        return this._bound;
+        return this._boundWorld;
     }
 
     public set bound(value: IBound) {
         this._bound = value;
+        this._boundWorld = this._bound.clone();
         this.updateBound();
-    }
-
-    /**
-     * Returns a bounding box that defines the display area of the specified layer.
-     * @returns
-     */
-    public genBounds() {
-        if (!this._bound) {
-            this._bound = new BoundingBox(Vector3.ZERO.clone(), Vector3.ONE.clone());
-        }
-        for (const children of this.entityChildren) {
-            // if (children._bound) {
-            this._bound.merge(children.genBounds());
-            // }
-        }
-        return this._bound;
     }
 
     public updateBound() {
         if (!this._bound) {
             this._bound = new BoundingBox(Vector3.ZERO.clone(), Vector3.ONE.clone());
-            // this.genBounds();
+            this._boundWorld = this._bound.clone();
         }
-        let worldMatrix = this.transform.worldMatrix;
-        worldMatrix.transformPoint(this._bound.min, this.bound.worldMin);
-        worldMatrix.transformPoint(this._bound.max, this.bound.worldMax);
-
-        let sizeX = this._bound.max.x - this._bound.min.x;
-        let sizeY = this._bound.max.y - this._bound.min.y;
-        let sizeZ = this._bound.max.z - this._bound.min.z;
-
-        this._bound.size.set(sizeX, sizeY, sizeZ);
-        this._bound.center.set(
-            sizeX + this._bound.worldMin.x,
-            sizeY + this._bound.worldMin.y,
-            sizeZ + this._bound.worldMin.z,
-        );
+        BoundUtil.transformBound(this.transform.worldMatrix, this._bound as BoundingBox, this._boundWorld as BoundingBox);
     }
 
 
