@@ -7,10 +7,10 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
     @group(1) @binding(auto) var pointShadowMapSampler: sampler;
     @group(1) @binding(auto) var pointShadowMap: texture_depth_cube_array;
 
-            struct ShadowStruct{
+    struct ShadowStruct{
       directShadowVisibility: array<f32, 8>,
-        pointShadows: array<f32, 8>,
-            }
+      pointShadows: array<f32, 8>,
+    }
 
     var<private>shadowStrut: ShadowStruct;
 
@@ -23,6 +23,13 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
     }
 
     @group(2) @binding(5) var<storage,read> shadowBuffer: ShadowBuffer;
+
+    fn useShadow(){
+        shadowStrut.directShadowVisibility = array<f32, 8>( 1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0) ;
+        shadowStrut.pointShadows = array<f32, 8>( 1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0) ;
+        directShadowMaping(globalUniform.shadowBias);
+        pointShadowMapCompare(globalUniform.pointShadowBias);
+    }
 
     fn directShadowMaping(shadowBias: f32)  {
         for (var i: i32 = shadowBuffer.nDirShadowStart; i < shadowBuffer.nDirShadowEnd ; i = i + 1) {
@@ -66,7 +73,7 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
       }
     }
 
-            fn pointShadowMapCompare(shadowBias: f32){
+    fn pointShadowMapCompare(shadowBias: f32){
       let worldPos = ORI_VertexVarying.vWorldPos.xyz;
       let offset = 0.1;
       // let lightIndex = getCluster(ORI_VertexVarying.fragCoord);
@@ -80,7 +87,7 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
         shadowStrut.pointShadows[light.castShadow] = 1.0;
 
         #if USE_SHADOWMAPING
-        let lightPos = models.matrix[u32(light.lightMatrixIndex)][3].xyz;
+        let lightPos = light.position.xyz;
         var shadow = 0.0;
         let frgToLight = worldPos - lightPos.xyz;
         var dir: vec3<f32> = normalize(frgToLight);

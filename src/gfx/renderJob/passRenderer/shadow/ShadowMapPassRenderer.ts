@@ -20,6 +20,7 @@ import { RendererPassState } from "../state/RendererPassState";
 import { RendererType } from "../state/RendererType";
 import { RendererBase } from "../RendererBase";
 import { ClusterLightingBuffer } from "../cluster/ClusterLightingBuffer";
+import { Reference } from "../../../../util/Reference";
 
 /**
  * @internal
@@ -28,7 +29,7 @@ import { ClusterLightingBuffer } from "../cluster/ClusterLightingBuffer";
 export class ShadowMapPassRenderer extends RendererBase {
     // public shadowCamera: Camera3D;
     public shadowPassCount: number;
-    public depth2DTextureArray: Depth2DTextureArray;
+    public depth2DArrayTexture: Depth2DTextureArray;
     public rendererPassStates: RendererPassState[];
     private _forceUpdate = false;
     constructor() {
@@ -45,7 +46,8 @@ export class ShadowMapPassRenderer extends RendererBase {
 
     setShadowMap(size: number) {
         this.rendererPassStates = [];
-        this.depth2DTextureArray = new Depth2DTextureArray(size, size);
+        this.depth2DArrayTexture = new Depth2DTextureArray(size, size);
+        Reference.getInstance().attached(this.depth2DArrayTexture, this);
 
         for (let i = 0; i < 8; i++) {
             let rtFrame = new RTFrame([], []);
@@ -115,7 +117,7 @@ export class ShadowMapPassRenderer extends RendererBase {
                     origin: { x: 0, y: 0, z: 0 },
                 },
                 {
-                    texture: this.depth2DTextureArray.getGPUTexture(),
+                    texture: this.depth2DArrayTexture.getGPUTexture(),
                     mipLevel: 0,
                     origin: { x: 0, y: 0, z: light.shadowIndex },
                 },

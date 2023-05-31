@@ -1,5 +1,4 @@
 import { ErpImage2CubeMap } from '../gfx/generate/convert/ErpImage2CubeMap';
-import { IBLEnvMapCreator } from '../gfx/generate/convert/IBLEnvMapCreator';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
 import { TextureCube } from '../gfx/graphics/webGpu/core/texture/TextureCube';
 import { GPUTextureFormat } from '../gfx/graphics/webGpu/WebGPUConst';
@@ -8,23 +7,25 @@ import { VirtualTexture } from './VirtualTexture';
 import { FileLoader } from '../loader/FileLoader';
 import { LoaderFunctions } from '../loader/LoaderFunctions';
 import { RGBEParser } from '../loader/parser/RGBEParser';
+import { TextureCubeFaceData } from './TextureCubeFaceData';
 
 /**
  * HDR TextureCube
  * @group Texture
  */
 export class HDRTextureCube extends TextureCube {
-    private faceTextureRef: { [key: string]: { t: GPUTexture; v: GPUTextureView } };
 
     private _url: string;
+    protected _faceData: TextureCubeFaceData;
     /**
      * create a cube texture, it's high dynamic range texture
      */
     constructor() {
         super();
-        this.faceTextureRef = {};
         this.useMipmap = true;
         this.format = GPUTextureFormat.rgba16float;
+        this.isHDRTexture = true;
+        this._faceData = new TextureCubeFaceData(this);
     }
 
     /**
@@ -64,85 +65,8 @@ export class HDRTextureCube extends TextureCube {
         this.textureDescriptor.dimension = '2d';
         this.gpuSampler = webGPUContext.device.createSampler(this);
 
-        this.uploadErpTexture(texture);
+        this._faceData.uploadErpTexture(texture);
         return this;
-    }
-
-    /**
-     * fill this texture by a texture2D, which is a 360 panorama image
-     * @param texture a panorama image
-     * @returns
-     */
-    public uploadErpTexture(texture: Texture): this {
-        let gpuSource = this.getGpuSource(0);
-        ErpImage2CubeMap.makeTextureCube(texture, this.width, gpuSource.v);
-        // this.uploadMipmap(0, maxSize, faceTextures);
-        // this.generateMipmap();
-        this.generateMipmap(texture);
-        return this;
-    }
-
-    /**
-     * fill this texture by a texture2D, which is a 360 panorama image
-     * assign mipmap level
-     * @param mip mipmap level
-     * @param texture a panorama image
-     * @returns
-     */
-    public uploadTexture(mip: number, texture: Texture): this {
-        let gpuSource = this.getGpuSource(mip);
-        ErpImage2CubeMap.makeTextureCube(texture, this.width, gpuSource.v);
-        return this;
-    }
-
-    /**
-     * get GPU texture raw data
-     * @param mip mipmap level
-     * @returns GPU texture raw data, including t: GPUTexture and v: GPUTextureView
-     */
-    private getGpuSource(mip: number): { t: GPUTexture; v: GPUTextureView } {
-        let source: { t: GPUTexture; v: GPUTextureView } = this.faceTextureRef[mip];
-        if (!source) {
-            source = {
-                t: this.getGPUTexture(),
-                v: this.getGPUTexture().createView({
-                    format: this.format,
-                    dimension: '2d-array',
-                    baseMipLevel: mip,
-                    mipLevelCount: 1,
-                    arrayLayerCount: 6,
-                }),
-            };
-            this.faceTextureRef[mip] = source;
-        }
-        return source;
-    }
-
-    /**
-     * Generate Mipmap
-     * @param texture
-     */
-    private generateMipmap(texture: Texture) {
-        let mipmap: number = 1;
-        while (mipmap < this.mipmapCount) {
-            this.generateMipmapAtLevel(mipmap, texture);
-            mipmap++;
-        }
-    }
-
-    /**
-     * Generate a specified level of Mipmap
-     * @param mipmap mipmap level
-     * @param erpTexture ERP Texture Object
-     * @param pow power
-     */
-    private generateMipmapAtLevel(mipmap: number, erpTexture: Texture, pow: number = 3.0): void {
-        let mipFaceSize = this.width / Math.pow(2, mipmap);
-        let image = { width: mipFaceSize, height: mipFaceSize, erpTexture: erpTexture };
-        let roughness = (mipmap + 1) / this.mipmapCount;
-        roughness = Math.pow(roughness, pow);
-        let gpuSource = this.getGpuSource(mipmap);
-        IBLEnvMapCreator.importantSample(image, mipFaceSize, roughness, gpuSource.v);
     }
 
 

@@ -13,6 +13,7 @@ export class HDRTexture extends Texture {
 
     constructor() {
         super(32, 32, null);
+        this.isHDRTexture = true;
     }
 
     /**

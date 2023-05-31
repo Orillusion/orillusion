@@ -51,7 +51,7 @@ export function createSceneParam(): ExampleSceneParam {
             far: 5000,
             distance: 100,
             fov: 60,
-            pitch: -30,
+            pitch: -15,
             roll: -30,
         },
 

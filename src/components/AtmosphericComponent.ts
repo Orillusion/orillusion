@@ -112,7 +112,7 @@ export class AtmosphericComponent extends SkyRenderer {
 
     public onUpdate(view?: View3D) {
         if (this._onChange) {
-            console.log("change sky");
+            // console.log("change sky");
 
             this._onChange = false;
             this._atmosphericScatteringSky.apply();

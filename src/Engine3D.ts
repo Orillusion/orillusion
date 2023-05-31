@@ -263,8 +263,6 @@ export class Engine3D {
 
         await webGPUContext.init(descriptor.canvasConfig);
 
-        ComponentCollect.init();
-
         ShaderLib.init();
 
         ShaderUtil.init();
