@@ -1,7 +1,9 @@
-import { IBound } from "../../..";
 import { Camera3D } from "../../../core/Camera3D";
+import { BoundingBox } from "../../../core/bound/BoundingBox";
+import { IBound } from "../../../core/bound/IBound";
 import { Object3D } from "../../../core/entities/Object3D";
 import { Texture } from "../../../gfx/graphics/webGpu/core/texture/Texture";
+import { Vector3 } from "../../../math/Vector3";
 import { BillboardComponent } from "../../BillboardComponent";
 import { GUISpace, GUIConfig, BillboardType } from "../GUIConfig";
 import { GUIGeometry } from "./GUIGeometry";
@@ -40,10 +42,11 @@ export class GUIMesh extends Object3D {
 
     public set bound(value: IBound) {
         this._bound = value;
+        this._boundWorld ||= new BoundingBox(new Vector3(), new Vector3(1, 1, 1).multiplyScalar(Number.MAX_VALUE * 0.1));
     }
 
     public get bound(): IBound {
-        return this._bound;
+        return this._boundWorld;
     }
 
     private create(param?) {
