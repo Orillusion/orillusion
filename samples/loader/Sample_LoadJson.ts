@@ -1,5 +1,5 @@
-import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, View3D, Object3D, MeshRenderer, BoxGeometry, LitMaterial, PropertyAnimation, PropertyAnimClip, WrapMode, HoverCameraController } from "@orillusion/core";
-import { GUIHelp } from "@orillusion/debug/GUIHelp";
+import { Scene3D, Engine3D, BoxGeometry, LitMaterial, MeshRenderer, Object3D, PropertyAnimClip, PropertyAnimation, WrapMode } from "@orillusion/core";
+import { createExampleScene, createSceneParam } from "@samples/utils/ExampleScene";
 
 // Sample to load json file
 export class Sample_LoadJson {
@@ -7,25 +7,18 @@ export class Sample_LoadJson {
 
     async run() {
         await Engine3D.init();
+        let param = createSceneParam();
+        param.camera.distance = 10;
+        let exampleScene = createExampleScene(param);
 
-        this.scene = new Scene3D();
-        this.scene.addComponent(AtmosphericComponent);
-
-        let camera = CameraUtil.createCamera3DObject(this.scene);
-        camera.perspective(60, Engine3D.aspect, 1, 5000.0);
-        camera.object3D.addComponent(HoverCameraController).setCamera(25, -15, 10);
-
-        let view = new View3D();
-        view.scene = this.scene;
-        view.camera = camera;
-
-        Engine3D.startRenderView(view);
+        this.scene = exampleScene.scene;
+        Engine3D.startRenderView(exampleScene.view);
 
         let json = await Engine3D.res.loadJSON('json/anim_0.json', { onProgress: this.onLoadProgress, onComplete: this.onComplete });
         console.log('[loaded]', json);
 
         let box = new Object3D()
-        let mr = box.addComponent(MeshRenderer)
+        let mr = box.addComponent(MeshRenderer);
         mr.geometry = new BoxGeometry()
         mr.material = new LitMaterial()
         this.scene.addChild(box)

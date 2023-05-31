@@ -56,11 +56,16 @@ export class BoundingBox implements IBound {
     }
 
     public setFromMinMax(min: Vector3, max: Vector3) {
-        this.size = max.subtract(min);
-        this.center = this.size.div(2.0).add(min);
-        this.extents = new Vector3(this.size.x / 2, this.size.y / 2, this.size.z / 2);
-        this.min = min;
-        this.max = max;
+        this.min ||= new Vector3();
+        this.max ||= new Vector3();
+        this.size ||= new Vector3();
+        this.center ||= new Vector3();
+        this.extents ||= new Vector3();
+        this.size.set(max.x - min.x, max.y - min.y, max.z - min.z);
+        this.extents.copyFrom(this.size).multiplyScalar(0.5);
+        this.center.copyFrom(this.min).add(this.extents, this.center);
+        this.min.copyFrom(min);
+        this.max.copyFrom(max);
     }
 
     public setFromCenterAndSize(center: Vector3, size: Vector3) {
