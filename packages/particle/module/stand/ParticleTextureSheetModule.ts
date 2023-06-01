@@ -24,6 +24,16 @@ export class ParticleTextureSheetModule extends ParticleModuleBase {
     public playRate: number = 1.0;
 
     /**
+     * Texture width
+     */
+    public textureWidth: number = 1;
+
+    /**
+     * Texture Height
+     */
+    public textureHeight: number = 1;
+
+    /**
      * play mode
      */
     public playMode: number = 0;
@@ -38,5 +48,7 @@ export class ParticleTextureSheetModule extends ParticleModuleBase {
         globalMemory.setUint32(`textureSheet_ClipCol`, this.clipCol);
         globalMemory.setUint32(`textureSheet_TotalClip`, this.totalClip);
         globalMemory.setFloat(`textureSheet_PlayRate`, this.playRate);
+        globalMemory.setUint32(`textureSheet_TextureWidth`, this.textureWidth);
+        globalMemory.setUint32(`textureSheet_TextureHeight`, this.textureHeight);
     }
 }

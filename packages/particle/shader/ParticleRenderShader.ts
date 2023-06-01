@@ -63,7 +63,7 @@ export let ParticleRenderShader = /* wgsl */ `
         var viewPosition = ORI_MATRIX_V * worldPos;
         var clipPosition = ORI_MATRIX_P * viewPosition;
 
-        let size = vec2<u32>(512, 512); //textureDimensions(baseMap).xy;
+        let size = vec2<u32>(particleGlobalData.textureSheet_TextureWidth, particleGlobalData.textureSheet_TextureHeight);
         let frame: u32 = particle.textureSheet_Frame;
         let clipW: u32 = u32(size.x) / particleGlobalData.textureSheet_ClipCol;
         let ratioW: f32 = f32(clipW) / f32(size.x);

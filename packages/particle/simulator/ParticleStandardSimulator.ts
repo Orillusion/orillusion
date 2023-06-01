@@ -49,7 +49,11 @@ export class ParticleStandardSimulator extends ParticleSimulator {
             globalData.setUint32(`textureSheet_ClipCol`, 1);
             globalData.setUint32(`textureSheet_TotalClip`, 1);
             globalData.setFloat(`textureSheet_PlayRate`, 1.0);
+            globalData.setUint32(`textureSheet_TextureWidth`, 1);
+            globalData.setUint32(`textureSheet_TextureHeight`, 1);
             globalData.setFloat(`textureSheet_retain0`, 0);
+            globalData.setFloat(`textureSheet_retain1`, 0);
+            globalData.setFloat(`textureSheet_retain2`, 0);
 
             globalData.apply();
         }

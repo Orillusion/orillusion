@@ -31,7 +31,11 @@ export let ParticleDataStructShader = /* wgsl */ `
         textureSheet_ClipCol: u32,
         textureSheet_TotalClip: u32,
         textureSheet_PlayRate: f32,
+        textureSheet_TextureWidth: u32,
+        textureSheet_TextureHeight: u32,
         textureSheet_retain0: f32,
+        textureSheet_retain1: f32,
+        textureSheet_retain2: f32,
     };
 
     struct ParticleData {
