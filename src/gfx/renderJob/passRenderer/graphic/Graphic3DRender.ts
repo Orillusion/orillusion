@@ -352,11 +352,11 @@ export class Graphic3D extends Object3D {
     /**
      * Draw bounding box
      * @param uuid Graphic identification ID
-     * @param boundingBox Bounding box object
+     * @param boundingBox Bounding box object, please use world boundingbox
      * @param color The color of the bounding box
      */
     public drawBoundingBox(uuid: string, boundingBox: BoundingBox, color: Color = Color.COLOR_WHITE) {
-        this.drawBox(uuid, boundingBox.worldMin, boundingBox.worldMax, color);
+        this.drawBox(uuid, boundingBox.min, boundingBox.max, color);
     }
 
     /**
