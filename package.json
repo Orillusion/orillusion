@@ -25,12 +25,13 @@
         "minify:es": "uglifyjs dist/orillusion.es.js -o dist/orillusion.es.js -c -m",
         "test": "electron test/ci/main.js",
         "test:ci": "xvfb-maybe -- electron --enable-unsafe-webgpu --enable-features=Vulkan --use-vulkan=swiftshader --use-webgpu-adapter=swiftshader --no-sandbox test/ci/main.js",
-        "docs": "npm run docs:core && npm run docs:physics && npm run docs:media && npm run docs:stats",
+        "docs": "npm run docs:core && npm run docs:physics && npm run docs:media && npm run docs:stats && npm run docs:particle",
         "docs:typedoc": "npx typedoc --plugin typedoc-plugin-markdown --plugin ./script/typedoc-plugin-not-exported.js --tsconfig tsconfig.build.json --gitRevision main --hideBreadcrumbs true --allReflectionsHaveOwnDocument true --readme none --excludeInternal --excludePrivate --excludeProtected --sort source-order --out",
         "docs:core": "npm run docs:typedoc docs/api src/index.ts",
         "docs:physics": "cd packages/physics && npm run docs",
         "docs:media": "cd packages/media-extention && npm run docs",
         "docs:stats": "cd packages/stats && npm run docs",
+        "docs:particle": "cd packages/particle && npm run docs",
         "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s"
     },
     "devDependencies": {
