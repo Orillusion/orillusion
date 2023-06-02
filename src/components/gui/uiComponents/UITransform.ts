@@ -9,14 +9,18 @@ import { WorldPanel } from "./WorldPanel";
 
 let help_matrix3: Matrix3;
 
+/**
+ * The component for gui, holding information such as size, scaling, position, etc
+ * @group GPU GUI
+ */
 export class UITransform extends ComponentBase {
     public useParentPivot: boolean = false;
     public parent: UITransform;
     public pivotX: number = 0.5;
     public pivotY: number = 0.5;
 
-    private _width: number = 1;
-    private _height: number = 1;
+    private _width: number = 100;
+    private _height: number = 100;
     private _localVisible: boolean = true;
     private _globalVisible: boolean = true;
     public guiMesh: GUIMesh;

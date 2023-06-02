@@ -5,7 +5,11 @@ import { Ray } from '../../../math/Ray';
 import { GUIPickHelper } from '../GUIPickHelper';
 import { Object3D } from '../../../core/entities/Object3D';
 import { Vector3 } from '../../../math/Vector3';
-// basic class of interactive GUI component
+
+/**
+ * The basic class of interactive GUI component
+ * @group GPU GUI
+ */
 export class UIInteractive extends UIComponentBase implements IUIInteractive {
     protected _style: UIInteractiveStyle = UIInteractiveStyle.NORMAL;
     protected _interactive: boolean = false;

@@ -6,7 +6,10 @@ import { ImageType } from '../GUIConfig';
 import { Engine3D } from '../../../Engine3D';
 import { UIRenderAble } from './UIRenderAble';
 
-// A UI component to display image/sprite/video
+/**
+ * A GUI component to display image/sprite/video
+ * @group GPU GUI
+ */
 export class UIImage extends UIRenderAble {
 
     init(param?: any): void {

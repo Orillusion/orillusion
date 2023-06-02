@@ -1,6 +1,6 @@
 ﻿import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { createExampleScene } from "@samples/utils/ExampleScene";
-import { Object3D, Engine3D, GUISpace, WorldPanel, ViewPanel, UITextField, TextAnchor, Object3DUtil, UIPanel, UIImage, UIShadow } from "@orillusion/core";
+import { Object3D, Engine3D, GUISpace, WorldPanel, ViewPanel, UITextField, TextAnchor, Object3DUtil, UIPanel, UIImage, UIShadow, BillboardType, GPUCullMode } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
 export class Sample_UITextField {
@@ -32,7 +32,8 @@ export class Sample_UITextField {
 
         if (space == GUISpace.World) {
             panelRoot.scaleX = panelRoot.scaleY = panelRoot.scaleZ = 0.2;
-            panel = panelRoot.addComponent(WorldPanel, { billboard: true });
+            panel = panelRoot.addComponent(WorldPanel);
+            panel.billboard = BillboardType.BillboardY;
         } else {
             panelRoot.scaleX = panelRoot.scaleY = panelRoot.scaleZ = 1;
             panel = panelRoot.addComponent(ViewPanel);

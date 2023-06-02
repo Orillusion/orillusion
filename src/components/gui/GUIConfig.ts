@@ -2,7 +2,9 @@ export class GUIConfig {
   public static readonly vertexScale: number = 1;
   public static quadMaxCountForWorld: number = 256;
   public static quadMaxCountForView: number = 2048;
-  public static readonly SortOrderStart: number = 8000;
+  public static readonly SortOrderStartWorld: number = 7000;
+  public static readonly SortOrderStartView: number = 8000;
+  public static readonly SortOrderCanvasSpan: number = 10000;
 }
 
 export enum GUISpace {
@@ -19,7 +21,7 @@ export enum ImageType {
 }
 
 export enum BillboardType {
-  Normal = 0,
+  None = 0,
   BillboardY = 9,
   BillboardXYZ = 10,
 }

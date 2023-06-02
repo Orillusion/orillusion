@@ -5,9 +5,12 @@ import { GUISprite } from '../core/GUISprite';
 import { ImageType } from '../GUIConfig';
 import { Engine3D } from '../../../Engine3D';
 import { UIRenderAble } from './UIRenderAble';
-import { Vector2 } from '../../..';
+import { Vector2 } from '../../../math/Vector2';
 
-// A UI component to display a group images/sprites/videos
+/**
+ * A UI component to display a group images/sprites/videos
+ * @group GPU GUI
+ */
 export class UIImageGroup extends UIRenderAble {
     private _count: number = 0;
     constructor() {
@@ -20,6 +23,7 @@ export class UIImageGroup extends UIRenderAble {
         for (let i = 0; i < this._count; i++) {
             this.attachQuad(GUIQuad.spawnQuad());
         }
+        this._uiTransform.resize(0, 0);
     }
 
     public getQuad(index: number) {

@@ -1,7 +1,15 @@
-import { Color, Object3D, UIRenderAble, View3D, clamp } from "../../..";
+import { View3D } from "../../../core/View3D";
+import { Object3D } from "../../../core/entities/Object3D";
+import { Color } from "../../../math/Color";
+import { clamp } from "../../../math/MathUtil";
 import { Vector2 } from "../../../math/Vector2";
 import { GUIQuad } from "../core/GUIQuad";
+import { UIRenderAble } from "./UIRenderAble";
 
+/**
+ * The shadow component for gui
+ * @group GPU GUI
+ */
 export class UIShadow extends UIRenderAble {
     private _shadowQuality: number = 1;
     private _shadowOffset: Vector2;
