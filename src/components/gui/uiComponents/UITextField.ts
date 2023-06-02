@@ -3,6 +3,10 @@ import { Color } from '../../../math/Color';
 import { UIRenderAble } from './UIRenderAble';
 import { TextAnchor, TextFieldLayout, TextFieldLine } from './TextFieldLayout';
 
+/**
+ * The textField component for gui
+ * @group GPU GUI
+ */
 export class UITextField extends UIRenderAble {
     private _font: string = '微软雅黑';
     private _fontSize: number = 14;

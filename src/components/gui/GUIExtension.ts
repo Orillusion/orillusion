@@ -1,49 +1,4 @@
 
-// export function GUIBindImage(target: ELPObject3D, texture: GUISubTexture): UIImg {
-//   let img: UIImg = target.addComponent(UIImg);
-//   img.texture = texture;
-//   return img;
-// }
-//
-// export function GUIBindText(
-//   target: ELPObject3D,
-//   text: string,
-//   fontSize?: number,
-//   width?: number,
-//   height?: number,
-//   color?: Vector4,
-//   font?: string,
-//   alignment?: number,
-//   lineSpacing?: number,
-// ): UITextField {
-//   let uiText: UITextField = target.addComponent(UITextField);
-//   if (fontSize) uiText.fontSize = fontSize;
-//   if (font) uiText.font = font;
-//   if (color) uiText.color = color;
-//   if (alignment) uiText.alignment = alignment;
-//   if (lineSpacing) uiText.lineSpacing = lineSpacing;
-//   if (text) uiText.text = text;
-//
-//   return uiText;
-// }
-//
-// export function GUIBindPanel(obj: ELPObject3D, rendMode: GUISpace, order?: number) {
-//   let panel: UIPanel = null;
-//   if (rendMode == GUISpace.World) panel = obj.addComponent(WorldPanel);
-//   else panel = obj.addComponent(ViewPanel);
-//   if (order) panel.order = order;
-//   return panel;
-// }
-//
-// export function GUICreateImage(texture: GUISubTexture, panel: ViewPanel): UIImg {
-//   let obj = new ELPObject3D();
-//   let img = obj.addComponent(UIImg);
-//   img.texture = texture;
-//   obj.uiTransform.resize(texture.width, texture.height);
-//   panel.object.add(obj);
-//   return img;
-// }
-
 import { Texture } from "../../gfx/graphics/webGpu/core/texture/Texture";
 import { GUISprite } from "./core/GUISprite";
 import { GUITexture } from "./core/GUITexture";

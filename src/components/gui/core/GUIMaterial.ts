@@ -4,7 +4,7 @@ import { GUIShader } from "./GUIShader";
 
 /** 
  * material used in rendering GUI
- * @group GUI
+ * @group GUI GPU
  */
 export class GUIMaterial extends MaterialBase {
     constructor(space: GUISpace) {

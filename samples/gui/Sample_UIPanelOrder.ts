@@ -1,6 +1,6 @@
 ﻿import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { createExampleScene } from "@samples/utils/ExampleScene";
-import { Engine3D, Object3DUtil, Object3D, UIImage, ImageType, Color, WorldPanel, UIPanel, GUICanvas } from "@orillusion/core";
+import { Engine3D, Object3DUtil, Object3D, UIImage, ImageType, Color, WorldPanel, UIPanel, GUICanvas, BillboardType } from "@orillusion/core";
 
 export class Sample_UIPanelOrder {
 
@@ -48,7 +48,8 @@ export class Sample_UIPanelOrder {
     }
 
     private createPanel(panelRoot: Object3D, canvas: GUICanvas, color: Color): UIPanel {
-        let panel = panelRoot.addComponent(WorldPanel, { billboard: true });
+        let panel = panelRoot.addComponent(WorldPanel);
+        panel.billboard = BillboardType.BillboardXYZ;
         canvas.addChild(panel.object3D);
         // create image
         let obj3D = new Object3D();

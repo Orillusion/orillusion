@@ -5,6 +5,10 @@ import { UIInteractiveStyle } from './IUIInteractive';
 import { UIImage } from './UIImage';
 import { UIInteractive } from './UIInteractive';
 
+/**
+ * The basic components used in the GUI to respond to user interaction behavior and have an image component
+ * @group GPU GUI
+ */
 export class UIButton extends UIInteractive {
     protected _spriteMap: Map<UIInteractiveStyle, GUISprite>;
     protected _image: UIImage;

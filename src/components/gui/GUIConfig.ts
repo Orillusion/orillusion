@@ -2,7 +2,8 @@ export class GUIConfig {
   public static readonly vertexScale: number = 1;
   public static quadMaxCountForWorld: number = 256;
   public static quadMaxCountForView: number = 2048;
-  public static readonly SortOrderStart: number = 8000;
+  public static readonly SortOrderStartWorld: number = 7000;
+  public static readonly SortOrderStartView: number = 8000;
 }
 
 export enum GUISpace {

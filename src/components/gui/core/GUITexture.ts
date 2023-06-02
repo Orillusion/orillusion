@@ -1,6 +1,10 @@
 import { Engine3D } from "../../../Engine3D";
 import { Texture } from "../../../gfx/graphics/webGpu/core/texture/Texture";
 
+/**
+ * @internal
+ * @group GPU GUI
+ */
 export class GUITexture {
     private static _maxUid: number = -1;
     //Self increasing number, starting from 0

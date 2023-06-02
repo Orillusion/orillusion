@@ -10,6 +10,10 @@ import { GUIQuadAttrEnum } from "./GUIDefine";
 
 let gui_help_mtx3: Matrix3;
 
+/**
+ * The smallest unit in the GUI, basic information required for rendering a plane
+ * @group GPU GUI
+ */
 export class GUIQuad {
     public x: number = 0;
     public y: number = 0;

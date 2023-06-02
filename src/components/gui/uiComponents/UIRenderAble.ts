@@ -1,6 +1,10 @@
 import { UIComponentBase } from "./UIComponentBase";
 import { GUIQuad } from "../core/GUIQuad";
 
+/**
+ * The basic class of render able GUI component
+ * @group GPU GUI
+ */
 export class UIRenderAble extends UIComponentBase {
     protected _mainQuads: GUIQuad[];
     protected _shadowRender: UIRenderAble;

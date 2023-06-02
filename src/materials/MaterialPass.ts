@@ -100,7 +100,12 @@ export class MaterialPass {
      * Set whether use double side to render object
      */
     public set doubleSide(value: boolean) {
-        this.renderShader.cullMode = value ? GPUCullMode.none : this.renderShader.cullMode;
+        if (value) this.renderShader.cullMode = GPUCullMode.none;
+        else {
+            if (this.renderShader.cullMode == GPUCullMode.none) {
+                this.renderShader.cullMode = GPUCullMode.back;
+            }
+        }
     }
 
     /**

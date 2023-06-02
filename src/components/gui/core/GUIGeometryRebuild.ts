@@ -8,7 +8,7 @@ import { GUITexture } from "./GUITexture";
 
 /**
  * This class is responsible for performing the Geometry reconstruction work of the GUI
- * @group GUI
+ * @group GPU GUI
  */
 export class GUIGeometryRebuild {
   private _textureMap: Map<number, GUITexture> = new Map<number, GUITexture>();

@@ -4,12 +4,15 @@ import { IBound } from "../../../core/bound/IBound";
 import { Object3D } from "../../../core/entities/Object3D";
 import { Texture } from "../../../gfx/graphics/webGpu/core/texture/Texture";
 import { Vector3 } from "../../../math/Vector3";
-import { BillboardComponent } from "../../BillboardComponent";
-import { GUISpace, GUIConfig, BillboardType } from "../GUIConfig";
+import { GUISpace, GUIConfig } from "../GUIConfig";
 import { GUIGeometry } from "./GUIGeometry";
 import { GUIMaterial } from "./GUIMaterial";
 import { GUIRenderer } from "./GUIRenderer";
 
+/**
+ * A object3D for GUI, holding material/geometry/renderer
+ * @group GPU GUI
+ */
 export class GUIMesh extends Object3D {
     public uiRenderer: GUIRenderer;
     public geometry: GUIGeometry;
@@ -18,7 +21,6 @@ export class GUIMesh extends Object3D {
     public limitVertexCount: number = 0;
     private readonly _maxCount: number = 128;
 
-    private _billboard: BillboardComponent;
     private _uiMaterial: GUIMaterial;
 
     constructor(space: GUISpace, param?) {
@@ -55,13 +57,7 @@ export class GUIMesh extends Object3D {
         this.geometry = this.uiRenderer.geometry as GUIGeometry;
         this._uiMaterial = this.uiRenderer.material as GUIMaterial;
 
-        let useBillboard = param && param.billboard;
-        if (this.space == GUISpace.World && useBillboard) {
-            this._billboard = this.addComponent(BillboardComponent);
-            this._billboard.type = BillboardType.BillboardXYZ;
-        }
-
-        this.uiRenderer.renderOrder = GUIConfig.SortOrderStart;
+        this.uiRenderer.renderOrder = GUIConfig.SortOrderStartWorld;
     }
 
     private _setTextures(textures: Texture[]): this {
@@ -71,19 +67,5 @@ export class GUIMesh extends Object3D {
 
     public updateGUIData(screenWidth: number, screenHeight: number, camera: Camera3D) {
         this._uiMaterial.setScreenSize(screenWidth, screenHeight);
-        // this.transform.localPosition.copy(worldPanel.worldPosition);
-        // if (this.billboard) {
-        //     this.billboard.enable = worldPanel.rotation == null;
-        // }
-        // if (worldPanel.rotation) {
-        //     if (worldPanel.rotation instanceof Quaternion) {
-        //         this.transform.localRotQuat.copyFrom(worldPanel.rotation);
-        //     } else if (worldPanel.rotation instanceof Vector3) {
-        //         this.transform.localRotation.copyFrom(worldPanel.rotation);
-        //         // this.transform.localRotation.order = 'YZX';
-        //     } else {
-        //         this.transform.localRotQuat.copyFrom(worldPanel.rotation.localRotation);
-        //     }
-        // }
     }
 }
