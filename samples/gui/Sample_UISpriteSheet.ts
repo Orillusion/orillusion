@@ -18,7 +18,7 @@ export class Sample_UISpriteSheet {
         Engine3D.startRenderView(exampleScene.view);
         await Engine3D.res.loadAtlas('atlas/Sheet_atlas.json');
 
-        // enable ui canvas 0
+        // enable ui canvas at index 0
         let canvas = exampleScene.view.enableUICanvas();
 
         //create UI root

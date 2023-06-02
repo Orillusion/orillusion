@@ -116,7 +116,7 @@ export class GUIUtil {
         GUIHelp.endFolder();
     }
 
-    public static renderUIShadow(image: UIShadow, open: boolean, name?: string) {
+    public static renderUIShadow(image: UIShadow, open: boolean = true, name?: string) {
         name ||= 'Image Shadow';
         GUIHelp.addFolder(name);
         GUIHelp.add(image, 'shadowQuality', 0, 4, 1);
@@ -136,7 +136,7 @@ export class GUIUtil {
         GUIHelp.endFolder();
     }
 
-    public static renderUIPanel(panel: UIPanel, open: boolean, name?: string) {
+    public static renderUIPanel(panel: UIPanel, open: boolean = true, name?: string) {
         name ||= 'GUI Panel';
         GUIHelp.addFolder(name);
         //cull mode
@@ -155,13 +155,16 @@ export class GUIUtil {
         billboard['None'] = BillboardType.None;
         billboard['Y'] = BillboardType.BillboardY;
         billboard['XYZ'] = BillboardType.BillboardXYZ;
-        // change cull mode by click dropdown box
+
+        // change billboard by click dropdown box
         GUIHelp.add({ billboard: panel.billboard }, 'billboard', billboard).onChange((v) => {
             panel.billboard = v;
         });
 
         //depth test
-        GUIHelp.add(panel, 'depthTest');
+        if (panel['isWorldPanel']) {
+            GUIHelp.add(panel, 'depthTest');
+        }
 
         open && GUIHelp.open();
         GUIHelp.endFolder();

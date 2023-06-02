@@ -101,7 +101,7 @@ export class Sample_UIPerformance2 {
     }
 
     addLotOfSprite() {
-        // enable ui canvas i
+        // enable ui canvas at index 0
         let canvas = this.scene.view.enableUICanvas(0);
         //create UI root
         let panelRoot: Object3D = new Object3D();

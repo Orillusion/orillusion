@@ -29,7 +29,7 @@ class Sample_UIMultiCanvas {
 
     private createPanel(scene: Scene3D, index: number, size: Vector2): UIPanel {
         let panelRoot: Object3D = new Object3D();
-        // enable ui canvas 0
+        // enable ui canvas at index
         let canvas = scene.view.enableUICanvas(index);
         let panel = panelRoot.addComponent(ViewPanel);
         canvas.addChild(panel.object3D);

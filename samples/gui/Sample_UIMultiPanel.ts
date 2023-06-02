@@ -24,7 +24,7 @@ export class Sample_UIMultiPanel {
         this.scene = exampleScene.scene;
         this.camera = exampleScene.camera;
         this.view = exampleScene.view;
-        // enable ui canvas 0
+        // enable ui canvas at index 0
         let canvas = exampleScene.view.enableUICanvas();
 
         let car = await Engine3D.res.loadGltf('gltfs/pbrCar/pbrCar.gltf');

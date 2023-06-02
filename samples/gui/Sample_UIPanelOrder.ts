@@ -20,7 +20,7 @@ export class Sample_UIPanelOrder {
         exampleScene.scene.addChild(floor);
         floor.y = -40;
 
-        // enable ui canvas 0
+        // enable ui canvas at index 0
         let canvas = exampleScene.view.enableUICanvas();
         //create UI root
         let panelRoot: Object3D = new Object3D();

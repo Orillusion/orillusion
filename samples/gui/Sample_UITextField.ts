@@ -19,7 +19,7 @@ export class Sample_UITextField {
         let floor = Object3DUtil.GetSingleCube(100, 20, 50, 0.5, 0.5, 0.5);
         exampleScene.scene.addChild(floor);
 
-        // enable ui canvas 0
+        // enable ui canvas at index 0
         let canvas = exampleScene.view.enableUICanvas();
 
         //create UI root

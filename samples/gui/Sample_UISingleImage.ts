@@ -1,6 +1,7 @@
 ﻿import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { createExampleScene } from "@samples/utils/ExampleScene";
 import { Engine3D, Object3DUtil, Object3D, BitmapTexture2D, UIImage, makeAloneSprite, WorldPanel, GPUCullMode } from "@orillusion/core";
+import { GUIUtil } from "@samples/utils/GUIUtil";
 
 export class Sample_UISingleImage {
     private img: UIImage;
@@ -34,18 +35,7 @@ export class Sample_UISingleImage {
         let panel = panelRoot.addComponent(WorldPanel);
         panel.cullMode = GPUCullMode.none;
 
-        //cull mode
-        let cullMode = {};
-        cullMode[GPUCullMode.none] = GPUCullMode.none;
-        cullMode[GPUCullMode.front] = GPUCullMode.front;
-        cullMode[GPUCullMode.back] = GPUCullMode.back;
-
-        // change cull mode by click dropdown box
-        GUIHelp.add({ cullMode: GPUCullMode.none }, 'cullMode', cullMode).onChange((v) => {
-            panel.cullMode = v;
-        });
-        GUIHelp.open();
-        GUIHelp.endFolder();
+        GUIUtil.renderUIPanel(panel, true);
 
         canvas.addChild(panel.object3D);
 
