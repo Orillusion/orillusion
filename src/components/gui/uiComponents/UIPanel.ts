@@ -2,6 +2,7 @@ import { View3D } from "../../../core/View3D";
 import { webGPUContext } from "../../../gfx/graphics/webGpu/Context3D";
 import { BillboardComponent } from "../../BillboardComponent";
 import { BillboardType, GUIConfig, GUISpace } from "../GUIConfig";
+import { GUICanvas } from "../core/GUICanvas";
 import { GUIGeometryRebuild } from "../core/GUIGeometryRebuild";
 import { GUIMaterial } from "../core/GUIMaterial";
 import { GUIMesh } from "../core/GUIMesh";
@@ -72,7 +73,7 @@ export class UIPanel extends UIComponentBase {
 
     public set billboard(type: BillboardType) {
         if (this.space == GUISpace.View) {
-            type = BillboardType.Normal;
+            type = BillboardType.None;
         } else {
             console.warn('Cannot enable billboard in view space');
         }
@@ -112,6 +113,8 @@ export class UIPanel extends UIComponentBase {
         let screenHeight = webGPUContext.canvas.clientHeight;
         let camera = view?.camera;
 
+        let canvas: GUICanvas = this.object3D.getComponentFromParent(GUICanvas);
+
         let mesh: GUIMesh = this.guiMesh;
         this._childrenTransfrom ||= [];
         this._childrenTransfrom.length = 0;
@@ -124,9 +127,13 @@ export class UIPanel extends UIComponentBase {
             }
         }
         mesh.uiRenderer.enable = transforms.length > 0;
+        //calc render order
         let start = this['isViewPanel'] ? GUIConfig.SortOrderStartView : GUIConfig.SortOrderStartWorld;
+        let canvasIndex = canvas ? canvas.index : 0;
+        start += canvasIndex * GUIConfig.SortOrderCanvasSpan;
         mesh.uiRenderer.renderOrder = start + this.panelOrder;
         mesh.uiRenderer.needSortOnCameraZ = this.needSortOnCameraZ;
+        //
         (this.guiMesh.uiRenderer.material as GUIMaterial).setLimitVertex(mesh.limitVertexCount);
         this.needUpdateGeometry = false;
     }

@@ -19,8 +19,8 @@ export class UITransform extends ComponentBase {
     public pivotX: number = 0.5;
     public pivotY: number = 0.5;
 
-    private _width: number = 1;
-    private _height: number = 1;
+    private _width: number = 100;
+    private _height: number = 100;
     private _localVisible: boolean = true;
     private _globalVisible: boolean = true;
     public guiMesh: GUIMesh;

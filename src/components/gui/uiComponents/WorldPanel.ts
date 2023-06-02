@@ -1,3 +1,4 @@
+import { GPUCompareFunction, View3D } from "../../..";
 import { Object3D } from "../../../core/entities/Object3D";
 import { GUISpace } from "../GUIConfig";
 import { UIPanel } from "./UIPanel";
@@ -7,9 +8,10 @@ import { UIPanel } from "./UIPanel";
  * @group GPU GUI
  */
 export class WorldPanel extends UIPanel {
-  public depthTest: boolean = false;
   public readonly isWorldPanel = true;
   public readonly space: GUISpace = GUISpace.World;
+  private _depthTest: boolean = true;
+
   constructor() {
     super();
   }
@@ -19,4 +21,17 @@ export class WorldPanel extends UIPanel {
     component.copyComponent(this);
     component.depthTest = this.depthTest;
   }
+
+  public get depthTest() {
+    return this._depthTest;
+  }
+
+  public set depthTest(value: boolean) {
+    if (this._depthTest != value) {
+      this._depthTest = value;
+      let compare = this.depthTest ? GPUCompareFunction.less_equal : GPUCompareFunction.always;
+      this.guiMesh.uiRenderer.material.depthCompare = compare;
+    }
+  }
+
 }

@@ -4,6 +4,7 @@ export class GUIConfig {
   public static quadMaxCountForView: number = 2048;
   public static readonly SortOrderStartWorld: number = 7000;
   public static readonly SortOrderStartView: number = 8000;
+  public static readonly SortOrderCanvasSpan: number = 10000;
 }
 
 export enum GUISpace {
@@ -20,7 +21,7 @@ export enum ImageType {
 }
 
 export enum BillboardType {
-  Normal = 0,
+  None = 0,
   BillboardY = 9,
   BillboardXYZ = 10,
 }

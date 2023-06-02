@@ -6,6 +6,7 @@ import { ComponentBase } from "../../ComponentBase";
  * @group GPU GUI
  */
 export class GUICanvas extends ComponentBase {
+    public index: number = 0;
 
     /**
      *
