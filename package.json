@@ -38,9 +38,7 @@
         "typedoc": "^0.24.7",
         "typedoc-plugin-markdown": "^3.15.3",
         "typescript": "^5.0.4",
-        "vite": "^4.3.9"
-    },
-    "optionalDependencies": {
+        "vite": "^4.3.9",
         "conventional-changelog-cli": "^2.2.2",
         "electron": "^25.0.1",
         "uglify-js": "^3.17.4",
