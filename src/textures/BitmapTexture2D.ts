@@ -9,7 +9,7 @@ import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
  * @group Texture
  */
 export class BitmapTexture2D extends Texture {
-    private _source: HTMLCanvasElement | ImageBitmap | OffscreenCanvas;
+    private _source: HTMLCanvasElement | ImageBitmap | OffscreenCanvas | HTMLImageElement;
 
     /**
      * @constructor
@@ -23,14 +23,14 @@ export class BitmapTexture2D extends Texture {
     /**
      * get raw data of this texture
      */
-    public get source(): HTMLCanvasElement | ImageBitmap | OffscreenCanvas {
+    public get source(): HTMLCanvasElement | ImageBitmap | OffscreenCanvas | HTMLImageElement {
         return this._source;
     }
 
     /**
      * set raw data of this texture
      */
-    public set source(value: HTMLCanvasElement | ImageBitmap | OffscreenCanvas) {
+    public set source(value: HTMLCanvasElement | ImageBitmap | OffscreenCanvas | HTMLImageElement) {
         this._source = value;
 
         if (this._source instanceof HTMLImageElement) {

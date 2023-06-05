@@ -13,6 +13,7 @@ export enum VertexAttributeName {
     joints1 = 'joints1',
     weights0 = 'weights0',
     weights1 = 'weights1',
+    weight = 'weight',
     indices = `indices`,
     vIndex = 'vIndex',
     a_morphPositions_0 = 'a_morphPositions_0',

@@ -35,6 +35,7 @@ import { BxdfDebug_frag } from './materials/program/BxdfDebug_frag';
 import { Quad_depth2d_frag_wgsl, Quad_depthCube_frag_wgsl, Quad_frag_wgsl, Quad_vert_wgsl } from './quad/Quad_shader';
 import { ColorUtil } from './utils/ColorUtil';
 import { GenerayRandomDir } from './utils/GenerayRandomDir';
+import { MatrixShader } from '../..';
 
 /**
  * @internal
@@ -44,6 +45,7 @@ export class ShaderLib {
     public static init() {
         ShaderLib.register('MathShader', MathShader);
         ShaderLib.register('FastMathShader', FastMathShader);
+        ShaderLib.register('MatrixShader', MatrixShader);
 
         ShaderLib.register('GlobalUniform', GlobalUniform);
         ShaderLib.register('WorldMatrixUniform', WorldMatrixUniform);

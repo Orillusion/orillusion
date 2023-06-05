@@ -125,6 +125,46 @@ export class GlobalUniformGroup {
         this.uniformGPUBuffer.setMatrix(`_projectionMatrix`, camera.projectionMatrix);
         this.uniformGPUBuffer.setMatrix(`_viewMatrix`, camera.viewMatrix);
         this.uniformGPUBuffer.setMatrix(`_pvMatrix`, camera.pvMatrix);
+
+        this.uniformGPUBuffer.setMatrix(`_projectionMatrixInv`, camera.projectionMatrixInv);
+        let raw = new Float32Array(8 * 16);
+        for (let i = 0; i < 8; i++) {
+            let shadowLightList = ShadowLightsCollect.getDirectShadowLightWhichScene(camera.transform.scene3D);
+            if (i < shadowLightList.length) {
+                let mat = shadowLightList[i].shadowCamera.pvMatrix.rawData;
+                raw.set(mat, i * 16);
+            } else {
+                raw.set(camera.transform.worldMatrix.rawData, i * 16);
+            }
+        }
+        this.uniformGPUBuffer.setFloat32Array(`_shadowCamera`, raw);
+        this.uniformGPUBuffer.setVector3(`CameraPos`, camera.transform.worldPosition);
+
+        this.uniformGPUBuffer.setFloat(`frame`, Time.frame);
+        this.uniformGPUBuffer.setFloat(`time`, Time.time);
+        this.uniformGPUBuffer.setFloat(`delta`, Time.delta);
+        this.uniformGPUBuffer.setFloat(`EngineSetting.Shadow.shadowBias`, Engine3D.setting.shadow.shadowBias);
+        this.uniformGPUBuffer.setFloat(`skyExposure`, Engine3D.setting.sky.skyExposure);
+        this.uniformGPUBuffer.setFloat(`EngineSetting.Render.renderPassState`, Engine3D.setting.render.renderPassState);
+        this.uniformGPUBuffer.setFloat(`EngineSetting.Render.quadScale`, Engine3D.setting.render.quadScale);
+        this.uniformGPUBuffer.setFloat(`EngineSetting.Render.hdrExposure`, Engine3D.setting.render.hdrExposure);
+
+        this.uniformGPUBuffer.setInt32(`renderState_left`, Engine3D.setting.render.renderState_left);
+        this.uniformGPUBuffer.setInt32(`renderState_right`, Engine3D.setting.render.renderState_right);
+        this.uniformGPUBuffer.setFloat(`renderState_split`, Engine3D.setting.render.renderState_split);
+
+        let mouseX = Engine3D.inputSystem.mouseX * webGPUContext.pixelRatio;
+        let mouseY = Engine3D.inputSystem.mouseY * webGPUContext.pixelRatio;
+        this.uniformGPUBuffer.setFloat(`mouseX`, mouseX);
+        this.uniformGPUBuffer.setFloat(`mouseY`, mouseY);
+        this.uniformGPUBuffer.setFloat(`windowWidth`, webGPUContext.windowWidth);
+        this.uniformGPUBuffer.setFloat(`windowHeight`, webGPUContext.windowHeight);
+        this.uniformGPUBuffer.setFloat(`near`, camera.near);
+        this.uniformGPUBuffer.setFloat(`far`, camera.far);
+
+        this.uniformGPUBuffer.setFloat(`EngineSetting.Shadow.pointShadowBias`, Engine3D.setting.shadow.pointShadowBias);
+        this.uniformGPUBuffer.setFloat(`shadowMapSize`, Engine3D.setting.shadow.shadowSize);
+        this.uniformGPUBuffer.setFloat(`shadowSoft`, Engine3D.setting.shadow.shadowSoft);
         this.uniformGPUBuffer.apply();
     }
 

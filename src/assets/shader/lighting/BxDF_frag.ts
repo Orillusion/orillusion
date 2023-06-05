@@ -91,7 +91,7 @@ export let BxDF_frag: string = /*wgsl*/ `
           // color += skyLight ;
       #endif
 
-      var envRef = kS * approximateSpecularIBL( fragData.SpecularColor , fragData.Roughness , fragData.R ) ;//* (materialUniform.ior - 1.0) ;
+      var envRef = kS * approximateSpecularIBL( fragData.SpecularColor , fragData.Roughness , fragData.R , fragData.NoV) ;//* (materialUniform.ior - 1.0) ;
       var irradiance = diffuseIrradiance ;
       #if USEGI
           irradiance += getIrradiance().rgb ;

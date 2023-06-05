@@ -29,7 +29,7 @@ export class MatrixBindGroup {
     }
 
     writeBuffer() {
-        const matBytes = Matrix4.matrixBytes;
+        const matBytes = Matrix4.dynamicMatrixBytes;
         let totalBytes = matBytes.byteLength;
         let offsetBytes = 0;
 
