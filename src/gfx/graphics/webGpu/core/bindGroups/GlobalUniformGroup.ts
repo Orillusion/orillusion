@@ -92,9 +92,9 @@ export class GlobalUniformGroup {
         this.uniformGPUBuffer.setFloat32Array(`_shadowCamera`, raw);
         this.uniformGPUBuffer.setVector3(`CameraPos`, camera.transform.worldPosition);
 
-        this.uniformGPUBuffer.setFloat(`Time.frame`, Time.frame);
-        this.uniformGPUBuffer.setFloat(`Time.time`, Time.frame);
-        this.uniformGPUBuffer.setFloat(`Time.detail`, Time.delta);
+        this.uniformGPUBuffer.setFloat(`frame`, Time.frame);
+        this.uniformGPUBuffer.setFloat(`time`, Time.frame);
+        this.uniformGPUBuffer.setFloat(`detail`, Time.delta);
         this.uniformGPUBuffer.setFloat(`EngineSetting.Shadow.shadowBias`, Engine3D.setting.shadow.shadowBias);
         this.uniformGPUBuffer.setFloat(`skyExposure`, Engine3D.setting.sky.skyExposure);
         this.uniformGPUBuffer.setFloat(`EngineSetting.Render.renderPassState`, Engine3D.setting.render.renderPassState);
@@ -125,7 +125,6 @@ export class GlobalUniformGroup {
         this.uniformGPUBuffer.setMatrix(`_projectionMatrix`, camera.projectionMatrix);
         this.uniformGPUBuffer.setMatrix(`_viewMatrix`, camera.viewMatrix);
         this.uniformGPUBuffer.setMatrix(`_pvMatrix`, camera.pvMatrix);
-
         this.uniformGPUBuffer.setMatrix(`_projectionMatrixInv`, camera.projectionMatrixInv);
         let raw = new Float32Array(8 * 16);
         for (let i = 0; i < 8; i++) {
@@ -141,8 +140,8 @@ export class GlobalUniformGroup {
         this.uniformGPUBuffer.setVector3(`CameraPos`, camera.transform.worldPosition);
 
         this.uniformGPUBuffer.setFloat(`frame`, Time.frame);
-        this.uniformGPUBuffer.setFloat(`time`, Time.time);
-        this.uniformGPUBuffer.setFloat(`delta`, Time.delta);
+        this.uniformGPUBuffer.setFloat(`time`, Time.frame);
+        this.uniformGPUBuffer.setFloat(`detail`, Time.delta);
         this.uniformGPUBuffer.setFloat(`EngineSetting.Shadow.shadowBias`, Engine3D.setting.shadow.shadowBias);
         this.uniformGPUBuffer.setFloat(`skyExposure`, Engine3D.setting.sky.skyExposure);
         this.uniformGPUBuffer.setFloat(`EngineSetting.Render.renderPassState`, Engine3D.setting.render.renderPassState);

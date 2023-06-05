@@ -45,21 +45,8 @@ export let GrassShader = /* wgsl */`
     @vertex
     fn VertMain( vertex:VertexAttributes ) -> VertexOutput {
         var vertexData = vertex ;
-
         vertex_inline(vertexData);
-        
         vert(vertexData);
-
-        let a = ORI_VertexOut.varying_WPos.w ;
-
-        var far = ORI_VertexOut.varying_Clip.w / 256.0 ;
-
-        far = far * 0.5 + 1.0 ;
-
-        far = far * 1.5 ;
-
-        // ORI_VertexOut.varying_Color = clamp( vec4<f32>(0.5) , vec4<f32>(0.95) , vec4<f32>(vertexData.weight ) ) * far ;
-
         return ORI_VertexOut ;
     }
 

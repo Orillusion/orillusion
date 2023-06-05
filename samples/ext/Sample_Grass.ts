@@ -53,6 +53,7 @@ class Sample_Grass {
         let terrainSize = 1000;
         let size = 1000;
         let grassCount = 13500;
+        // let grassCount = 10;
         let des = 2;
         let space = 4;
         let terrainGeometry: TerrainGeometry;
@@ -74,7 +75,7 @@ class Sample_Grass {
             grassCom = grass.addComponent(GrassComponent);
             grassCom.setGrassTexture(Engine3D.res.whiteTexture);
             grassCom.setWindNoiseTexture(gustNoiseTexture);
-            grassCom.setGrass(4, 1, 8, 1, grassCount);
+            grassCom.setGrass(5, 1, 8, 1, grassCount);
 
             let tsw = terrainSize / terrainGeometry.segmentW;
             let tsh = terrainSize / terrainGeometry.segmentH;

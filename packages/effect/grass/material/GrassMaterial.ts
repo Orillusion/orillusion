@@ -39,8 +39,8 @@ export class GrassMaterial extends MaterialBase {
         shader.setUniformColor("baseColor", new Color(0.0, 1.0, 0.0, 1.0));
         shader.setUniformColor("grassBottomColor", new Color(39 / 255, 87 / 255, 36 / 255));
         shader.setUniformColor("grassTopColor", new Color(74 / 255, 163 / 255, 93 / 255, 1.0));
-        shader.setUniformVector2("windDirection", new Vector2(1, 0));
         shader.setUniformVector4("windBound", new Vector4(0, 0, 2000, 2000));
+        shader.setUniformVector2("windDirection", new Vector2(1, 0));
         shader.setUniformFloat("windPower", 1.1);
         shader.setUniformFloat("windSpeed", 1.1);
         shader.setUniformFloat("translucent", 0.35);
@@ -53,14 +53,14 @@ export class GrassMaterial extends MaterialBase {
         shadowShader.setUniformColor("baseColor", new Color(0.0, 1.0, 0.0, 1.0));
         shadowShader.setUniformColor("grassBottomColor", new Color(39 / 255, 87 / 255, 36 / 255));
         shadowShader.setUniformColor("grassTopColor", new Color(74 / 255, 163 / 255, 93 / 255, 1.0));
-        shadowShader.setUniformVector2("windDirection", new Vector2(1, 0));
         shadowShader.setUniformVector4("windBound", new Vector4(0, 0, 2000, 2000));
+        shadowShader.setUniformVector2("windDirection", new Vector2(1, 0));
         shadowShader.setUniformFloat("windPower", 1.1);
         shadowShader.setUniformFloat("windSpeed", 1.1);
         shadowShader.setUniformFloat("translucent", 0.35);
+        shadowShader.setUniformFloat("roughness", 0.35);
         shadowShader.setUniformFloat("curvature", 0.4068);
         shadowShader.setUniformFloat("grassHeight", 5);
-        shadowShader.setUniformFloat("roughness", 0.35);
         shadowShader.setUniformFloat("soft", 5);
         shadowShader.setUniformFloat("specular", 1);
 
