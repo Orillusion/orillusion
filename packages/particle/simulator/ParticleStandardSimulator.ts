@@ -1,5 +1,5 @@
 import { View3D, ComputeShader, Vector3, Vector4 } from "@orillusion/core";
-import { ParticleEmitModule } from "../module/stand/ParticleEmitModule";
+import { ParticleEmitterModule } from "../module/stand/ParticleEmitterModule";
 import { ParticleComputeShader } from "../shader/Particle_shader";
 import { ParticleSimulator } from "./ParticleSimulator";
 
@@ -9,11 +9,11 @@ import { ParticleSimulator } from "./ParticleSimulator";
  */
 export class ParticleStandardSimulator extends ParticleSimulator {
 
-    protected _emitterModule: ParticleEmitModule;
+    protected _emitterModule: ParticleEmitterModule;
 
     constructor() {
         super();
-        this._emitterModule = this.addModule(ParticleEmitModule);
+        this._emitterModule = this.addModule(ParticleEmitterModule);
     }
 
     /**

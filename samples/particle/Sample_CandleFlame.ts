@@ -1,9 +1,9 @@
 import {
-    AtmosphericComponent, BoxGeometry, CameraUtil, Color, Engine3D, HoverCameraController, LitMaterial, MeshRenderer, Object3D, PlaneGeometry, PointLight, Scene3D, SphereGeometry, Vector3, View3D, webGPUContext, Camera3D, Time
+    AtmosphericComponent, BoxGeometry, CameraUtil, Color, Engine3D, HoverCameraController, LitMaterial, MeshRenderer, Object3D, PlaneGeometry, PointLight, Scene3D, SphereGeometry, Vector3, View3D, webGPUContext, Camera3D, Time, DEGREES_TO_RADIANS
 } from '@orillusion/core';
 
 import {
-    ParticleSystem, ParticleMaterial, ParticleStandardSimulator, EmitLocation, ParticleEmitModule, ParticleGravityModifierModule, ParticleOverLifeColorModule, ShapeType, SimulatorSpace
+    ParticleSystem, ParticleMaterial, ParticleStandardSimulator, EmitLocation, ParticleEmitterModule, ParticleGravityModifierModule, ParticleOverLifeColorModule, ShapeType, SimulatorSpace
 } from '@orillusion/particle';
 
 export class Sample_CandleFlame {
@@ -64,7 +64,7 @@ export class Sample_CandleFlame {
         let simulator = particleSystem.useSimulator(ParticleStandardSimulator);
         simulator.simulatorSpace = SimulatorSpace.Local;
 
-        let emitter = simulator.addModule(ParticleEmitModule);
+        let emitter = simulator.addModule(ParticleEmitterModule);
         emitter.maxParticle = 1 * 10000;
         emitter.duration = 10;
         emitter.emissionRate = 100;
