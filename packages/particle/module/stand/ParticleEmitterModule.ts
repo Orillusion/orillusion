@@ -66,7 +66,7 @@ export enum EmitLocation {
  * Particle module of emit
  * @group Particle 
  */
-export class ParticleEmitModule extends ParticleModuleBase {
+export class ParticleEmitterModule extends ParticleModuleBase {
 
   /**
    * Set shape type of emitter
