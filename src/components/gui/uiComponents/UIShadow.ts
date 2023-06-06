@@ -22,6 +22,7 @@ export class UIShadow extends UIRenderAble {
     public init(param?: any): void {
         super.init?.(param);
         this._shadowRadius = 2;
+        this._shadowQuality = 1;
         this._shadowOffset = new Vector2(4, -4);
         this._shadowColor = new Color(0.1, 0.1, 0.1, 0.8);
         this._subShadowColor = this._shadowColor.clone();
@@ -31,11 +32,15 @@ export class UIShadow extends UIRenderAble {
     public cloneTo(obj: Object3D) {
         let component = obj.getOrAddComponent(UIShadow);
         component.copyComponent(this);
-        //shadow
-        component._shadowColor = this._shadowColor;
-        component._shadowOffset = this._shadowOffset;
-        component._shadowRadius = this._shadowRadius;
-        component._shadowQuality = this.shadowQuality;
+    }
+
+    public copyComponent(from: this): this {
+        super.copyComponent(this);
+        this._shadowColor = from._shadowColor;
+        this._shadowOffset = from._shadowOffset;
+        this._shadowRadius = from._shadowRadius;
+        this._shadowQuality = from.shadowQuality;
+        return this;
     }
 
     public get shadowColor(): Color {

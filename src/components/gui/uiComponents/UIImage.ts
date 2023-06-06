@@ -15,14 +15,20 @@ export class UIImage extends UIRenderAble {
     init(param?: any): void {
         super.init?.(param);
         this.attachQuad(GUIQuad.spawnQuad());
+        this.sprite = Engine3D.res.defaultGUISprite;
     }
 
     public cloneTo(obj: Object3D) {
         let component = obj.getOrAddComponent(UIImage);
         component.copyComponent(this);
-        component.sprite = this.sprite;
-        component.color = this.color;
-        component.imageType = this.imageType;
+    }
+
+    public copyComponent(from: this): this {
+        super.copyComponent(from);
+        this.sprite = from.sprite;
+        this.color = from.color;
+        this.imageType = from.imageType;
+        return this;
     }
 
     public set sprite(value: GUISprite) {

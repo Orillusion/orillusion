@@ -4,8 +4,6 @@ import { Engine3D, Object3DUtil, Object3D, BitmapTexture2D, UIImage, makeAloneSp
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
 export class Sample_UISingleImage {
-    private img: UIImage;
-
     async run() {
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.shadowBias = 0.002;
@@ -39,11 +37,9 @@ export class Sample_UISingleImage {
 
         canvas.addChild(panel.object3D);
 
-        let imageQuad = new Object3D();
-        panelRoot.addChild(imageQuad);
-        this.img = imageQuad.addComponent(UIImage);
-        this.img.sprite = makeAloneSprite('KB3D_NTT_Ads_basecolor', bitmapTexture2D);
-        this.img.uiTransform.resize(600, 400);
+        panel.sprite = makeAloneSprite('KB3D_NTT_Ads_basecolor', bitmapTexture2D);
+        panel.uiTransform.resize(600, 400);
+        panel.visible = true;
     }
 
 }

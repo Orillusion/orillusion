@@ -18,4 +18,5 @@ export class ViewPanel extends UIPanel {
     let component: ViewPanel = obj.getOrAddComponent(ViewPanel);
     component.copyComponent(this);
   }
+
 }

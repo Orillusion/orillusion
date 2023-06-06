@@ -1,14 +1,14 @@
-import { View3D } from "../../../core/View3D";
+import { Object3D, UITransform, View3D } from "../../..";
 import { BillboardComponent } from "../../BillboardComponent";
 import { BillboardType, GUISpace } from "../GUIConfig";
 import { GUIMesh } from "../core/GUIMesh";
-import { UIComponentBase } from "./UIComponentBase";
+import { UIImage } from "./UIImage";
 
 /**
  * Container for UI components
  * @group GPU GUI
  */
-export class UIPanel extends UIComponentBase {
+export class UIPanel extends UIImage {
     public order: number;
     public readonly space: number = GUISpace.World;
     public needUpdateGeometry: boolean = true;
@@ -22,34 +22,13 @@ export class UIPanel extends UIComponentBase {
         return this._mesh;
     }
 
-    start() {
-        // throw new Error("Method not implemented.");
-    }
-    stop() {
-        // throw new Error("Method not implemented.");
-    }
-    onEnable?(view?: View3D) {
-        // throw new Error("Method not implemented.");
-    }
-    onDisable?(view?: View3D) {
-        // throw new Error("Method not implemented.");
+    public cloneTo(obj: Object3D): void {
+        let component = obj.addComponent(UIPanel);
+        component.copyComponent(this);
     }
 
-    onBeforeUpdate?(view?: View3D) {
-        // throw new Error("Method not implemented.");
-    }
-    onCompute?(view?: View3D, command?: GPUCommandEncoder) {
-        // throw new Error("Method not implemented.");
-    }
-    onGraphic?(view?: View3D) {
-        // throw new Error("Method not implemented.");
-    }
-
-    destroy(force?: boolean) {
-        // throw new Error("Method not implemented.");
-    }
     public copyComponent(from: this): this {
-        this.visible = from.visible;
+        super.copyComponent(from);
         this.order = from.order;
         this.panelOrder = from.panelOrder;
         this.needSortOnCameraZ = from.needSortOnCameraZ;
@@ -62,6 +41,7 @@ export class UIPanel extends UIComponentBase {
         super.init(param);
         this._mesh = new GUIMesh(this.space, param);
         this.object3D.addChild(this._mesh);
+        this.visible = false;
     }
 
     public set billboard(type: BillboardType) {
@@ -80,7 +60,7 @@ export class UIPanel extends UIComponentBase {
     }
 
     public get billboard() {
-        return this._billboard?.type;
+        return this._billboard ? this._billboard.type : BillboardType.None;
     }
 
     public set cullMode(value: GPUCullMode) {

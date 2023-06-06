@@ -45,11 +45,16 @@ export class UIInteractive extends UIComponentBase implements IUIInteractive {
         return GUIPickHelper.rayPick(ray, screenPos, screenSize, mesh.space, this._uiTransform, mesh.transform.worldMatrix)
     }
 
-    cloneTo(obj: Object3D) {
+    public cloneTo(obj: Object3D) {
         let component = obj.getOrAddComponent(UIInteractive);
         component.copyComponent(this);
-        component.enable = this.enable;
-        component.interactive = this.interactive;
-        component.mouseStyle = this._style;
+    }
+
+    public copyComponent(from: this): this {
+        super.copyComponent(from);
+        this.enable = from._enable;
+        this.interactive = from._interactive;
+        this.mouseStyle = from._style;
+        return this;
     }
 }

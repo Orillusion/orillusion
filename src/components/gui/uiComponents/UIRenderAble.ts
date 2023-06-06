@@ -118,6 +118,7 @@ export class UIRenderAble extends UIComponentBase {
     }
 
     public copyComponent(from: this): this {
+        super.copyComponent(from);
         this.isUIShadow = from.isUIShadow;
         this.isShadowless = from.isShadowless;
         return this;

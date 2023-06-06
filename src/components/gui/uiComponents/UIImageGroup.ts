@@ -33,11 +33,16 @@ export class UIImageGroup extends UIRenderAble {
     public cloneTo(obj: Object3D) {
         let component = obj.addComponent(UIImageGroup, { count: this._count });
         component.copyComponent(this);
-        for (let i = 0; i < this._count; i++) {
-            component.setSprite(i, this.getSprite(i));
-            component.setColor(i, this.getColor(i));
-            component.setImageType(this.getImageType(i), i);
+    }
+
+    public copyComponent(from: this): this {
+        super.copyComponent(from);
+        for (let i = 0; i < from._count; i++) {
+            this.setSprite(i, from.getSprite(i));
+            this.setColor(i, from.getColor(i));
+            this.setImageType(from.getImageType(i), i);
         }
+        return this;
     }
 
     public setSprite(index: number, value: GUISprite) {

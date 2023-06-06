@@ -92,15 +92,19 @@ export class UIButton extends UIInteractive {
         }
     }
 
-    cloneTo(obj: Object3D) {
+    public cloneTo(obj: Object3D) {
         let component = obj.getOrAddComponent(UIButton);
         component.copyComponent(this);
-        component.downSprite = this.downSprite;
-        component.normalSprite = this.normalSprite;
-        component.disableSprite = this.disableSprite;
-        component.overSprite = this.overSprite;
-        component.mouseStyle = this.mouseStyle;
-        component.enable = this.enable;
+    }
+
+    public copyComponent(from: this): this {
+        super.copyComponent(from);
+        this.downSprite = from.downSprite;
+        this.normalSprite = from.normalSprite;
+        this.disableSprite = from.disableSprite;
+        this.overSprite = from.overSprite;
+        this.mouseStyle = from.mouseStyle;
+        return this;
     }
 
     public destroy(): void {

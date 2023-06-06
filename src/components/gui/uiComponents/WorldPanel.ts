@@ -19,7 +19,12 @@ export class WorldPanel extends UIPanel {
   public cloneTo(obj: Object3D) {
     let component: WorldPanel = obj.getOrAddComponent(WorldPanel);
     component.copyComponent(this);
-    component.depthTest = this.depthTest;
+  }
+
+  public copyComponent(from: this): this {
+    super.copyComponent(from);
+    this.depthTest = from.depthTest;
+    return this;
   }
 
   public get depthTest() {
