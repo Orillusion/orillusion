@@ -40,7 +40,7 @@ export class UIImageGroup extends UIRenderAble {
         for (let i = 0; i < from._count; i++) {
             this.setSprite(i, from.getSprite(i));
             this.setColor(i, from.getColor(i));
-            this.setImageType(from.getImageType(i), i);
+            this.setImageType(i, from.getImageType(i));
         }
         return this;
     }
