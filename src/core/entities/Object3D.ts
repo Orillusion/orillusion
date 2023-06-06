@@ -189,7 +189,7 @@ export class Object3D extends Entity {
      * @param ret List of incoming T
      * @param includeInactive Whether to include invisible objects, default to false
      * @return {*}  {T}
-     * @memberof ELPObject3D
+     * @memberof Object3D
      */
     public getComponentsExt<T extends IComponent>(c: Ctor<T>, ret?: T[], includeInactive?: boolean): T[] {
         ret ||= [];
