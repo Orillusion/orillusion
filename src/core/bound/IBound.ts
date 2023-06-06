@@ -13,9 +13,6 @@ export interface IBound {
     min: Vector3;
     size: Vector3;
 
-    worldMax: Vector3;
-    worldMin: Vector3;
-
     calculateTransform(obj: Object3D): void;
     clone(): IBound;
 
