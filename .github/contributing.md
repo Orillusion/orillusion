@@ -58,8 +58,7 @@ $ git submodule update --init # init /public assets folder, it may take a long t
 After cloning the repo, run:
 
 ```bash
-$ pnpm i # install dev and optional deps of the project
-$ pnpn i --no-optional # skip optional deps, install dev deps only if you don't need run ci tests
+$ pnpm i # install dev deps of the project
 ```
 
 A high level overview of main tools used:

@@ -94,6 +94,7 @@ export class View3D extends CEventListener {
             let obj = new Object3D();
             obj.name = 'Canvas ' + index;
             canvas = obj.addComponent(GUICanvas);
+            canvas.index = index;
             this.canvasList[index] = canvas;
         }
 

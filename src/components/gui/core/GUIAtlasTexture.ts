@@ -3,6 +3,10 @@ import { GUITexture } from './GUITexture';
 import { Vector2 } from '../../../math/Vector2';
 import { makeGUISprite } from '../GUIExtension';
 
+/**
+ * Atlas data
+ * @group GPU GUI
+ */
 export class GUIAtlasTexture {
     private _spriteMap: Map<string, GUISprite> = new Map<string, GUISprite>();
     private _spriteList: GUISprite[] = [];

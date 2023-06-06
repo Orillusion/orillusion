@@ -16,6 +16,10 @@ class GUIAttribute {
     }
 }
 
+/**
+ * composite geometry of gui, holding and updating attribute data
+ * @group GPU GUI
+ */
 export class GUIGeometry extends GeometryBase {
     private _attributeUV: Float32Array;
     private _attributeVIndex: Float32Array;

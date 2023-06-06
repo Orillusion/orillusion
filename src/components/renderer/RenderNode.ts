@@ -1,4 +1,3 @@
-import { Reference, ShadowLightsCollect } from "../..";
 import { Engine3D } from "../../Engine3D";
 import { View3D } from "../../core/View3D";
 import { GeometryBase } from "../../core/geometry/GeometryBase";
@@ -8,6 +7,7 @@ import { RenderShader } from "../../gfx/graphics/webGpu/shader/RenderShader";
 import { ShaderReflection } from "../../gfx/graphics/webGpu/shader/value/ShaderReflectionInfo";
 import { GPUContext } from "../../gfx/renderJob/GPUContext";
 import { EntityCollect } from "../../gfx/renderJob/collect/EntityCollect";
+import { ShadowLightsCollect } from "../../gfx/renderJob/collect/ShadowLightsCollect";
 import { RTResourceMap } from "../../gfx/renderJob/frame/RTResourceMap";
 import { RenderContext } from "../../gfx/renderJob/passRenderer/RenderContext";
 import { ClusterLightingBuffer } from "../../gfx/renderJob/passRenderer/cluster/ClusterLightingBuffer";
@@ -16,6 +16,7 @@ import { RendererPassState } from "../../gfx/renderJob/passRenderer/state/Render
 import { RendererType } from "../../gfx/renderJob/passRenderer/state/RendererType";
 import { MaterialBase } from "../../materials/MaterialBase";
 import { UUID } from "../../util/Global";
+import { Reference } from "../../util/Reference";
 import { ComponentBase } from "../ComponentBase";
 import { IESProfiles } from "../lights/IESProfiles";
 

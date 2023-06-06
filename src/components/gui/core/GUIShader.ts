@@ -2,6 +2,10 @@
 import { WorldMatrixUniform } from "../../../assets/shader/core/common/WorldMatrixUniform";
 import { ColorPassFragmentOutput } from "../../../assets/shader/core/struct/ColorPassFragmentOutput";
 
+/**
+ * shader code
+ * @group GPU GUI
+ */
 export class GUIShader {
     private static bindTextureArray() {
         let value = ``;

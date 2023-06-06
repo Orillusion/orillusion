@@ -1,5 +1,5 @@
-import { View3D } from "../../..";
 import { IComponent } from "../../../components/IComponent";
+import { View3D } from "../../../core/View3D";
 import { Object3D } from "../../../core/entities/Object3D";
 
 export class ComponentCollect {

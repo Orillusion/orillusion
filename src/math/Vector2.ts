@@ -164,6 +164,17 @@ export class Vector2 {
     }
 
     /**
+     * Let's multiply the x and y values of this vector by a.
+     * @param a 
+     * @param target 
+     * @returns 
+     */
+    public multiplyScaler(a: number): this {
+        this.x *= a;
+        this.y *= a;
+        return this;
+    }
+    /**
      * We're going to divide the x and y values of this vector by v.
      * @param v 
      * @param target 

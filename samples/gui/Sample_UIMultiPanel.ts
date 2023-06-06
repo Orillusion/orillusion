@@ -1,7 +1,7 @@
 ﻿import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { createExampleScene, createSceneParam } from "@samples/utils/ExampleScene";
 import { GUIPanelBinder, sampleUIPanelDispatcher, sampleUIPanelClick } from "./panel/GUIBinder";
-import { Camera3D, Scene3D, View3D, Engine3D, Object3DUtil, Object3D, Vector3, WorldPanel, Time, zSorterUtil } from "@orillusion/core";
+import { Camera3D, Scene3D, View3D, Engine3D, Object3DUtil, Object3D, Vector3, WorldPanel, Time, zSorterUtil, BillboardType } from "@orillusion/core";
 
 export class Sample_UIMultiPanel {
     camera: Camera3D;
@@ -24,7 +24,7 @@ export class Sample_UIMultiPanel {
         this.scene = exampleScene.scene;
         this.camera = exampleScene.camera;
         this.view = exampleScene.view;
-        // enable ui canvas 0
+        // enable ui canvas at index 0
         let canvas = exampleScene.view.enableUICanvas();
 
         let car = await Engine3D.res.loadGltf('gltfs/pbrCar/pbrCar.gltf');
@@ -51,7 +51,8 @@ export class Sample_UIMultiPanel {
         for (let i = 0; i < 50; i++) {
             //panel
             let panelRoot: Object3D = new Object3D();
-            let panel = panelRoot.addComponent(WorldPanel, { billboard: true });
+            let panel = panelRoot.addComponent(WorldPanel);
+            panel.billboard = BillboardType.BillboardXYZ;
             panel.needSortOnCameraZ = true;
             canvas.addChild(panel.object3D);
 

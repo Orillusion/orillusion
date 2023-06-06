@@ -51,8 +51,8 @@ export class Object3D extends Entity {
         if (!this.components.has(className)) {
             let instance: T = new c() as T;
             instance.object3D = this;
-            instance[`__init`](param);
             this.components.set(className, instance);
+            instance[`__init`](param);
             ComponentCollect.appendWaitStart(this, instance);
             return instance;
         }

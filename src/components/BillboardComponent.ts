@@ -24,11 +24,10 @@ export class BillboardComponent extends ComponentBase {
         let camera = this.transform.view3D.camera;
         this._cameraDirection.copyFrom(camera.transform.back);
         if (this.type == BillboardType.BillboardXYZ) {
-            this._cameraDirection.normalize().multiplyScalar(100);
         } else if (this.type == BillboardType.BillboardY) {
             this._cameraDirection.y = 0;
-            this._cameraDirection.normalize().multiplyScalar(100);
         }
+        this._cameraDirection.normalize();
         this.transform.lookAt(Vector3.ZERO, this._cameraDirection, camera.transform.up);
     }
 
