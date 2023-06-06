@@ -11,7 +11,7 @@ import { Graphics3DShape } from "./Graphics3DShape";
 import { GraphicConfig } from "./GraphicConfig";
 import { Graphic3DFillRenderer } from "./Graphic3DFillRenderer";
 import { Graphic3DLineBatchRenderer } from "./Graphic3DLineBatchRenderer";
-import { BoundUtil } from "../../../..";
+import { BoundUtil } from "../../../../util/BoundUtil";
 
 export class Graphic3D extends Object3D {
 

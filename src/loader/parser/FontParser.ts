@@ -1,4 +1,4 @@
-import { Engine3D } from "../..";
+import { Engine3D } from "../../Engine3D";
 import { fonts } from "../../assets/Fonts";
 import { GUISprite } from "../../components/gui/core/GUISprite";
 import { GUITexture } from "../../components/gui/core/GUITexture";

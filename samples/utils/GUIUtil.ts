@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AtmosphericComponent, Color, DirectLight, PointLight, SpotLight, Transform, UIImage, UIShadow } from "@orillusion/core";
+import { AtmosphericComponent, BillboardType, Color, DirectLight, GPUCullMode, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
@@ -116,7 +116,7 @@ export class GUIUtil {
         GUIHelp.endFolder();
     }
 
-    public static renderUIShadow(image: UIShadow, open: boolean, name?: string) {
+    public static renderUIShadow(image: UIShadow, open: boolean = true, name?: string) {
         name ||= 'Image Shadow';
         GUIHelp.addFolder(name);
         GUIHelp.add(image, 'shadowQuality', 0, 4, 1);
@@ -136,5 +136,38 @@ export class GUIUtil {
         GUIHelp.endFolder();
     }
 
+    public static renderUIPanel(panel: UIPanel, open: boolean = true, name?: string) {
+        name ||= 'GUI Panel';
+        GUIHelp.addFolder(name);
+        //cull mode
+        let cullMode = {};
+        cullMode[GPUCullMode.none] = GPUCullMode.none;
+        cullMode[GPUCullMode.front] = GPUCullMode.front;
+        cullMode[GPUCullMode.back] = GPUCullMode.back;
+
+        // change cull mode by click dropdown box
+        GUIHelp.add({ cullMode: GPUCullMode.none }, 'cullMode', cullMode).onChange((v) => {
+            panel.cullMode = v;
+        });
+
+        //billboard
+        let billboard = {};
+        billboard['None'] = BillboardType.None;
+        billboard['Y'] = BillboardType.BillboardY;
+        billboard['XYZ'] = BillboardType.BillboardXYZ;
+
+        // change billboard by click dropdown box
+        GUIHelp.add({ billboard: panel.billboard }, 'billboard', billboard).onChange((v) => {
+            panel.billboard = v;
+        });
+
+        //depth test
+        if (panel['isWorldPanel']) {
+            GUIHelp.add(panel, 'depthTest');
+        }
+
+        open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
 
 }

@@ -24,7 +24,7 @@ export class Sample_UIImageColor {
         exampleScene.scene.addChild(floor);
         floor.y = -40;
 
-        // enable ui canvas 0
+        // enable ui canvas at index 0
         let canvas = exampleScene.view.enableUICanvas();
 
         //create UI root

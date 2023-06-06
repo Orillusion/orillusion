@@ -9,14 +9,18 @@ import { WorldPanel } from "./WorldPanel";
 
 let help_matrix3: Matrix3;
 
+/**
+ * The component for gui, holding information such as size, scaling, position, etc
+ * @group GPU GUI
+ */
 export class UITransform extends ComponentBase {
     public useParentPivot: boolean = false;
     public parent: UITransform;
     public pivotX: number = 0.5;
     public pivotY: number = 0.5;
 
-    private _width: number = 1;
-    private _height: number = 1;
+    private _width: number = 100;
+    private _height: number = 100;
     private _localVisible: boolean = true;
     private _globalVisible: boolean = true;
     public guiMesh: GUIMesh;
@@ -30,6 +34,11 @@ export class UITransform extends ComponentBase {
         super();
         this._localMatrix = new Matrix3();
         this._worldMatrix = new Matrix3();
+    }
+
+    public init(param?: any): void {
+        super.init(param);
+        this.onParentChange(null, this.object3D.parent?.object3D);
     }
 
     public addUIInteractive(item: IUIInteractive): this {
@@ -172,6 +181,15 @@ export class UITransform extends ComponentBase {
         this.object3D.scaleY = value;
     }
 
+    public get scaleZ(): number {
+        return this.object3D.scaleZ;
+    }
+
+    public set scaleZ(value: number) {
+        this.onChange = true;
+        this.object3D.scaleZ = value;
+    }
+
     private _localMatrix: Matrix3;
     private _worldMatrix: Matrix3;
 
@@ -239,7 +257,12 @@ export class UITransform extends ComponentBase {
     public matrix(): Matrix3 {
         let mtx = this._localMatrix;
         let rot = this.object3D.rotationZ;
-        mtx.updateScaleAndRotation(this.object3D.scaleX, this.object3D.scaleY, rot, rot);
+        if (this.parent) {
+            mtx.updateScaleAndRotation(this.object3D.scaleX, this.object3D.scaleY, rot, rot);
+        } else {
+            //it's ui panel root
+            mtx.updateScaleAndRotation(1, 1, rot, rot);
+        }
         mtx.tx = this.object3D.x;
         mtx.ty = this.object3D.y;
 

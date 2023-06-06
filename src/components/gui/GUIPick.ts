@@ -17,7 +17,7 @@ import { zSorterUtil } from '../../util/ZSorterUtil';
 
 /**
  * Pickup logic for GUI interactive components
- * @group GUI/IO
+ * @group GPU GUI
  */
 export class GUIPick {
     // The ray used for bounding box pickup

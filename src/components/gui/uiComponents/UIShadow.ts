@@ -1,7 +1,15 @@
-import { Color, Object3D, UIRenderAble, View3D, clamp } from "../../..";
+import { View3D } from "../../../core/View3D";
+import { Object3D } from "../../../core/entities/Object3D";
+import { Color } from "../../../math/Color";
+import { clamp } from "../../../math/MathUtil";
 import { Vector2 } from "../../../math/Vector2";
 import { GUIQuad } from "../core/GUIQuad";
+import { UIRenderAble } from "./UIRenderAble";
 
+/**
+ * The shadow component for gui
+ * @group GPU GUI
+ */
 export class UIShadow extends UIRenderAble {
     private _shadowQuality: number = 1;
     private _shadowOffset: Vector2;
@@ -14,6 +22,7 @@ export class UIShadow extends UIRenderAble {
     public init(param?: any): void {
         super.init?.(param);
         this._shadowRadius = 2;
+        this._shadowQuality = 1;
         this._shadowOffset = new Vector2(4, -4);
         this._shadowColor = new Color(0.1, 0.1, 0.1, 0.8);
         this._subShadowColor = this._shadowColor.clone();
@@ -23,11 +32,15 @@ export class UIShadow extends UIRenderAble {
     public cloneTo(obj: Object3D) {
         let component = obj.getOrAddComponent(UIShadow);
         component.copyComponent(this);
-        //shadow
-        component._shadowColor = this._shadowColor;
-        component._shadowOffset = this._shadowOffset;
-        component._shadowRadius = this._shadowRadius;
-        component._shadowQuality = this.shadowQuality;
+    }
+
+    public copyComponent(from: this): this {
+        super.copyComponent(this);
+        this._shadowColor = from._shadowColor;
+        this._shadowOffset = from._shadowOffset;
+        this._shadowRadius = from._shadowRadius;
+        this._shadowQuality = from.shadowQuality;
+        return this;
     }
 
     public get shadowColor(): Color {

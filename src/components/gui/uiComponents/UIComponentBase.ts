@@ -1,6 +1,10 @@
 import { ComponentBase } from "../../ComponentBase";
 import { UITransform } from "./UITransform";
 
+/**
+ * The basic component for all GUI component
+ * @group GPU GUI
+ */
 export class UIComponentBase extends ComponentBase {
     protected _uiTransform: UITransform;
     protected _visible: boolean = true;

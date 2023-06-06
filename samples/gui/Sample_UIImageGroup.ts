@@ -28,12 +28,12 @@ export class Sample_UIImageGroup {
     }
 
     async createImageGroup() {
-        // enable ui canvas i
-        let canvas = this.scene.view.enableUICanvas(0);
+        // enable ui canvas
+        let canvas = this.scene.view.enableUICanvas();
         //create UI root
         let panelRoot: Object3D = new Object3D();
         //create panel
-        let panel = panelRoot.addComponent(ViewPanel, { billboard: true });
+        let panel = panelRoot.addComponent(ViewPanel);
         canvas.addChild(panel.object3D);
 
         let bitmapTexture2D = new BitmapTexture2D();

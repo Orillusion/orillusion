@@ -1,10 +1,9 @@
 ﻿import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { createExampleScene } from "@samples/utils/ExampleScene";
-import { Engine3D, Object3DUtil, Object3D, BitmapTexture2D, UIImage, makeAloneSprite, WorldPanel } from "@orillusion/core";
+import { Engine3D, Object3DUtil, Object3D, BitmapTexture2D, UIImage, makeAloneSprite, WorldPanel, GPUCullMode } from "@orillusion/core";
+import { GUIUtil } from "@samples/utils/GUIUtil";
 
 export class Sample_UISingleImage {
-    private img: UIImage;
-
     async run() {
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.shadowBias = 0.002;
@@ -32,13 +31,15 @@ export class Sample_UISingleImage {
         await bitmapTexture2D.load('textures/KB3D_NTT_Ads_basecolor.png');
 
         let panel = panelRoot.addComponent(WorldPanel);
+        panel.cullMode = GPUCullMode.none;
+
+        GUIUtil.renderUIPanel(panel, true);
+
         canvas.addChild(panel.object3D);
 
-        let imageQuad = new Object3D();
-        panelRoot.addChild(imageQuad);
-        this.img = imageQuad.addComponent(UIImage);
-        this.img.sprite = makeAloneSprite('KB3D_NTT_Ads_basecolor', bitmapTexture2D);
-        this.img.uiTransform.resize(600, 400);
+        panel.sprite = makeAloneSprite('KB3D_NTT_Ads_basecolor', bitmapTexture2D);
+        panel.uiTransform.resize(600, 400);
+        panel.visible = true;
     }
 
 }
