@@ -93,8 +93,8 @@ export class GUIPanelPOI {
         {
             let iconNode = uiChild.addChild(new Object3D()) as Object3D;
             let icon = this.addImage(iconNode, '', 100, 100, 1, 1, 1);
-            icon.uiTransform.x = 30;
-            icon.uiTransform.y = -30;
+            icon.uiTransform.x = -75;
+            icon.uiTransform.y = 25;
             this._icon = icon;
             this.updateFrame();
         }

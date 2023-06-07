@@ -1,9 +1,16 @@
-﻿import { Object3D } from '../../../core/entities/Object3D';
+﻿import { Color } from '../../..';
+import { Object3D } from '../../../core/entities/Object3D';
 import { ImageType } from '../GUIConfig';
 import { GUISprite } from '../core/GUISprite';
 import { UIInteractiveStyle } from './IUIInteractive';
 import { UIImage } from './UIImage';
 import { UIInteractive } from './UIInteractive';
+
+export enum UIButtonTransition {
+    NONE = 0,
+    COLOR = 1 << 0,
+    SPRITE = 1 << 1,
+}
 
 /**
  * The basic components used in the GUI to respond to user interaction behavior and have an image component
@@ -11,17 +18,22 @@ import { UIInteractive } from './UIInteractive';
  */
 export class UIButton extends UIInteractive {
     protected _spriteMap: Map<UIInteractiveStyle, GUISprite>;
+    protected _colorMap: Map<UIInteractiveStyle, Color>;
     protected _image: UIImage;
     private _isCreateImage: boolean;
+    private _transition: UIButtonTransition = UIButtonTransition.SPRITE;
+
     init(param?: any) {
         super.init(param);
         this._interactive = true;
         this._spriteMap = new Map<UIInteractiveStyle, GUISprite>();
+        this._colorMap = new Map<UIInteractiveStyle, Color>();
         this._image = this.object3D.getComponent(UIImage);
         this._isCreateImage = this._image == null;
         if (!this._image) {
             this._image = this.object3D.addComponent(UIImage);
         }
+        this.imageType = ImageType.Sliced;
     }
 
     onEnable() {
@@ -30,6 +42,37 @@ export class UIButton extends UIInteractive {
 
     onDisable() {
         this.mouseStyle = UIInteractiveStyle.DISABLE;
+    }
+
+    public set transition(value: UIButtonTransition) {
+        if (this._transition != value) {
+            this._transition = value;
+            this.validateStyle(this._style, true);
+        }
+    }
+
+    public get transition() {
+        return this._transition;
+    }
+
+    public get imageType() {
+        return this._image.imageType;
+    }
+
+    public set imageType(value: ImageType) {
+        this._image.imageType = value;
+    }
+
+    public setStyleColor(style: UIInteractiveStyle, color: Color): this {
+        this._colorMap.set(style, color);
+        if (this._style == style) {
+            this.validateStyle(this._style, true);
+        }
+        return this;
+    }
+
+    public getStyleColor(style: UIInteractiveStyle): Color {
+        return this._colorMap.get(style);
     }
 
     public set mouseStyle(value: UIInteractiveStyle) {
@@ -82,13 +125,14 @@ export class UIButton extends UIInteractive {
     }
 
     protected validateStyle(style: UIInteractiveStyle, force?: boolean) {
-        if (this._style != style || force) {
-            if (!this._image) {
-                this._image = this.object3D.getComponent(UIImage);
-                this._image && (this._image.imageType = ImageType.Sliced);
-            }
+        if (this._transition & UIButtonTransition.SPRITE) {
             let texture = this._spriteMap.get(style);
-            this._image && (this._image.sprite = texture);
+            this._image.sprite = texture;
+        }
+
+        if (this._transition & UIButtonTransition.COLOR) {
+            let color = this._colorMap.get(style);
+            color && (this._image.color = color);
         }
     }
 
@@ -99,10 +143,18 @@ export class UIButton extends UIInteractive {
 
     public copyComponent(from: this): this {
         super.copyComponent(from);
-        this.downSprite = from.downSprite;
-        this.normalSprite = from.normalSprite;
-        this.disableSprite = from.disableSprite;
-        this.overSprite = from.overSprite;
+
+        this.imageType = from.imageType;
+        this.transition = from.transition;
+        //clone sprite map
+        from._spriteMap.forEach((v, k) => {
+            v && this._spriteMap.set(k, v);
+        })
+        //clone color map
+        from._colorMap.forEach((v, k) => {
+            v && this._colorMap.set(k, v.clone());
+        })
+        //
         this.mouseStyle = from.mouseStyle;
         return this;
     }

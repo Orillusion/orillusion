@@ -280,6 +280,20 @@ export class Color {
         return this;
     }
 
+
+    /**
+     * copy color from vector3 or vector4
+     * @param value { x: number, y: number, z: number, w?: number }
+     * @returns 
+     */
+    public copyFromVector(value: { x: number, y: number, z: number, w?: number }): this {
+        this.r = value.x;
+        this.g = value.y;
+        this.b = value.z;
+        this.a = value.w;
+        return this;
+    }
+
     /**
      * update this color rgb from hexadecimal no alpha
      * @param hexColor rgb color
