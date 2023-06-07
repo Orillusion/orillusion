@@ -6,6 +6,10 @@ import { Vector3 } from "../../math/Vector3";
 import { UITransform } from "./uiComponents/UITransform";
 import { GUISpace } from "./GUIConfig";
 
+/**
+ * @internal
+ * @group GPU GUI
+ */
 export class GUIPickHelper {
     private static _pt0: Vector3;
     private static _pt1: Vector3;

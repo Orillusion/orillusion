@@ -11,7 +11,7 @@ import { Graphics3DShape } from "./Graphics3DShape";
 import { GraphicConfig } from "./GraphicConfig";
 import { Graphic3DFillRenderer } from "./Graphic3DFillRenderer";
 import { Graphic3DLineBatchRenderer } from "./Graphic3DLineBatchRenderer";
-import { BoundUtil } from "../../../..";
+import { BoundUtil } from "../../../../util/BoundUtil";
 
 export class Graphic3D extends Object3D {
 
@@ -352,11 +352,11 @@ export class Graphic3D extends Object3D {
     /**
      * Draw bounding box
      * @param uuid Graphic identification ID
-     * @param boundingBox Bounding box object
+     * @param boundingBox Bounding box object, please use world boundingbox
      * @param color The color of the bounding box
      */
     public drawBoundingBox(uuid: string, boundingBox: BoundingBox, color: Color = Color.COLOR_WHITE) {
-        this.drawBox(uuid, boundingBox.worldMin, boundingBox.worldMax, color);
+        this.drawBox(uuid, boundingBox.min, boundingBox.max, color);
     }
 
     /**

@@ -1,6 +1,10 @@
 import { UIComponentBase } from "./UIComponentBase";
 import { GUIQuad } from "../core/GUIQuad";
 
+/**
+ * The basic class of render able GUI component
+ * @group GPU GUI
+ */
 export class UIRenderAble extends UIComponentBase {
     protected _mainQuads: GUIQuad[];
     protected _shadowRender: UIRenderAble;
@@ -114,6 +118,7 @@ export class UIRenderAble extends UIComponentBase {
     }
 
     public copyComponent(from: this): this {
+        super.copyComponent(from);
         this.isUIShadow = from.isUIShadow;
         this.isShadowless = from.isShadowless;
         return this;

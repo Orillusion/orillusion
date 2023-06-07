@@ -1,4 +1,4 @@
-﻿import { Engine3D, Object3D, Object3DUtil, WorldPanel } from "@orillusion/core";
+﻿import { BillboardType, Engine3D, Object3D, Object3DUtil, WorldPanel } from "@orillusion/core";
 import { UIImage } from "../../src/components/gui/uiComponents/UIImage";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { createExampleScene } from "@samples/utils/ExampleScene";
@@ -18,14 +18,15 @@ export class Sample_UISpriteSheet {
         Engine3D.startRenderView(exampleScene.view);
         await Engine3D.res.loadAtlas('atlas/Sheet_atlas.json');
 
-        // enable ui canvas 0
+        // enable ui canvas at index 0
         let canvas = exampleScene.view.enableUICanvas();
 
         //create UI root
         let panelRoot: Object3D = new Object3D();
         panelRoot.scaleX = panelRoot.scaleY = panelRoot.scaleZ = 0.4;
         //create panel
-        let panel = panelRoot.addComponent(WorldPanel, { billboard: true });
+        let panel = panelRoot.addComponent(WorldPanel);
+        panel.billboard = BillboardType.BillboardY;
         canvas.addChild(panel.object3D);
 
         //

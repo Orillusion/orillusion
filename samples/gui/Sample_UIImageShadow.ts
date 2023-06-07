@@ -3,7 +3,7 @@ import { createExampleScene } from "@samples/utils/ExampleScene";
 import { Engine3D, Object3DUtil, Object3D, BitmapTexture2D, UIImage, makeAloneSprite, WorldPanel, UIShadow } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
-export class Sample_UIImageShadow {
+class Sample_UIImageShadow {
     private img: UIImage;
 
     async run() {
@@ -24,8 +24,7 @@ export class Sample_UIImageShadow {
         let panelRoot: Object3D = new Object3D();
         panelRoot.scaleX = panelRoot.scaleY = panelRoot.scaleZ = 0.1;
 
-        // enable ui canvas 0
-
+        // enable ui canvas
         let canvas = exampleScene.view.enableUICanvas();
 
         let panel = panelRoot.addComponent(WorldPanel);
@@ -50,3 +49,5 @@ export class Sample_UIImageShadow {
     }
 
 }
+
+new Sample_UIImageShadow().run();

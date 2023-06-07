@@ -97,12 +97,12 @@ export class Sample_UISpriteSheet {
     }
 
     addLotOfSprite() {
-        // enable ui canvas i
+        // enable ui canvas at index 0
         let canvas = this.scene.view.enableUICanvas(0);
         //create UI root
         let panelRoot: Object3D = new Object3D();
         //create panel
-        let panel = panelRoot.addComponent(ViewPanel, { billboard: true });
+        let panel = panelRoot.addComponent(ViewPanel);
         canvas.addChild(panel.object3D);
         //create sprite sheet list
         this.createSpriteSheets(panelRoot);
@@ -113,7 +113,7 @@ export class Sample_UISpriteSheet {
         //create UI root
         let panelRoot: Object3D = new Object3D();
         //create panel
-        let panel = panelRoot.addComponent(ViewPanel, { billboard: true });
+        let panel = panelRoot.addComponent(ViewPanel);
         panel.panelOrder = 10000;
         canvas.addChild(panel.object3D);
         let textQuad = new Object3D();
