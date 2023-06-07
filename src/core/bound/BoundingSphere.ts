@@ -30,9 +30,6 @@ export class BoundingSphere implements IBound {
     public worldCenter: Vector3;
     public worldSize: Vector3;
 
-    public worldMax: Vector3;
-    public worldMin: Vector3;
-
     /**
      * @internal
      */

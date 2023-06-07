@@ -3,6 +3,10 @@ import { Color } from '../../../math/Color';
 import { UIRenderAble } from './UIRenderAble';
 import { TextAnchor, TextFieldLayout, TextFieldLine } from './TextFieldLayout';
 
+/**
+ * The textField component for gui
+ * @group GPU GUI
+ */
 export class UITextField extends UIRenderAble {
     private _font: string = '微软雅黑';
     private _fontSize: number = 14;
@@ -19,13 +23,18 @@ export class UITextField extends UIRenderAble {
     cloneTo(obj: Object3D) {
         let component = obj.getOrAddComponent(UITextField);
         component.copyComponent(this);
-        component._font = this._font;
-        component._fontSize = this._fontSize;
-        component._originSize = this._originSize;
-        component._alignment = this._alignment;
-        component._lineSpacing = this._lineSpacing;
-        component._color.copyFrom(this._color);
-        component.text = this.text;
+    }
+
+    public copyComponent(from: this): this {
+        super.copyComponent(from);
+        this._font = from._font;
+        this._fontSize = from._fontSize;
+        this._originSize = from._originSize;
+        this._alignment = from._alignment;
+        this._lineSpacing = from._lineSpacing;
+        this._color.copyFrom(from._color);
+        this.text = this.text;
+        return this;
     }
 
     public get originSize(): number {

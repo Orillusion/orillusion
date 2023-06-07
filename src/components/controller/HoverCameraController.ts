@@ -1,12 +1,12 @@
-import { View3D } from "../..";
 import { Engine3D } from "../../Engine3D";
 import { Camera3D } from "../../core/Camera3D";
+import { View3D } from "../../core/View3D";
 import { Object3D } from "../../core/entities/Object3D";
 import { PointerEvent3D } from "../../event/eventConst/PointerEvent3D";
 import { clamp } from "../../math/MathUtil";
 import { Quaternion } from "../../math/Quaternion";
 import { Vector3 } from "../../math/Vector3";
-import { Object3DUtil } from "../../util/Object3DUtil";
+import { BoundUtil } from "../../util/BoundUtil";
 import { Time } from "../../util/Time";
 import { Vector3Ex } from "../../util/Vector3Ex";
 import { ComponentBase } from "../ComponentBase";
@@ -143,10 +143,8 @@ export class HoverCameraController extends ComponentBase {
     }
 
     public focusByBounds(obj: Object3D) {
-        let bounds = Object3DUtil.genMeshBounds(obj);
+        let bounds = BoundUtil.genMeshBounds(obj);
         this.target = bounds.center;
-        console.log(bounds.size);
-        console.log(bounds.center);
     }
 
     /**

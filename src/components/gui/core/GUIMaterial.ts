@@ -1,10 +1,17 @@
-import { MaterialBase, ShaderLib, Vector2, BlendMode, GPUCompareFunction, GPUCullMode, Texture, Engine3D, registerMaterial } from "../../..";
+import { Engine3D } from "../../../Engine3D";
+import { ShaderLib } from "../../../assets/shader/ShaderLib";
+import { GPUCompareFunction, GPUCullMode } from "../../../gfx/graphics/webGpu/WebGPUConst";
+import { Texture } from "../../../gfx/graphics/webGpu/core/texture/Texture";
+import { BlendMode } from "../../../materials/BlendMode";
+import { MaterialBase } from "../../../materials/MaterialBase";
+import { registerMaterial } from "../../../materials/MaterialRegister";
+import { Vector2 } from "../../../math/Vector2";
 import { GUISpace } from "../GUIConfig";
 import { GUIShader } from "./GUIShader";
 
 /** 
  * material used in rendering GUI
- * @group GUI
+ * @group GPU GUI
  */
 export class GUIMaterial extends MaterialBase {
     constructor(space: GUISpace) {

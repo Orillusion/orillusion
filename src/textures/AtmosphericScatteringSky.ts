@@ -17,7 +17,7 @@ export class AtmosphericScatteringSkySetting {
     public mieG: number = 0.76;
     public mieHeight: number = 1200;
     public eyePos: number = 1500;
-    public sunX: number = 0.55;
+    public sunX: number = 0.71;
     public sunY: number = 0.56;
     public sunBrightness: number = 1.0;
     public displaySun: boolean = true;

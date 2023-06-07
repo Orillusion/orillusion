@@ -1,3 +1,21 @@
+## [0.6.4](https://github.com/Orillusion/orillusion/compare/v0.6.3...v0.6.4) (2023-06-06)
+
+
+### Bug Fixes
+
+* **culling:** fix camera frustum culling ([#198](https://github.com/Orillusion/orillusion/issues/198)) ([8cfd1ab](https://github.com/Orillusion/orillusion/commit/8cfd1ab90401580a91c62f2249d30035df0e2aec))
+* **GUI:** fix setImageType of ImageGroup ([#208](https://github.com/Orillusion/orillusion/issues/208)) ([ed4f248](https://github.com/Orillusion/orillusion/commit/ed4f248340c31be5c625f276ce8483115ffd8e30))
+* **memory:** remove not use floatArray ([#201](https://github.com/Orillusion/orillusion/issues/201)) ([6ee2b2f](https://github.com/Orillusion/orillusion/commit/6ee2b2fe629cdc42722e34319d3131ea6ae945c0))
+
+
+### Features
+
+* **fog:** add fog sample ([#202](https://github.com/Orillusion/orillusion/issues/202)) ([27233d0](https://github.com/Orillusion/orillusion/commit/27233d0bfea4b780bbb18766ba62e4f37670eb61))
+* **GUI:** add new GUI sample ([#206](https://github.com/Orillusion/orillusion/issues/206)) ([661a7f9](https://github.com/Orillusion/orillusion/commit/661a7f950b037549cdb379c16adaf893ee2aadb1))
+* **particle:** Add GPU particle system ([#204](https://github.com/Orillusion/orillusion/issues/204)) ([1cc2567](https://github.com/Orillusion/orillusion/commit/1cc256720b95b2e34a6af702bf44c405ff7fe4ce))
+
+
+
 ## [0.6.3](https://github.com/Orillusion/orillusion/compare/v0.6.2...v0.6.3) (2023-05-30)
 
 ### Bug Fixes

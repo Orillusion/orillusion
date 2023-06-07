@@ -1,6 +1,6 @@
 ﻿import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { createExampleScene } from "@samples/utils/ExampleScene";
-import { Engine3D, Object3DUtil, Object3D, UIImage, ImageType, Color, WorldPanel, UIPanel, GUICanvas } from "@orillusion/core";
+import { Engine3D, Object3DUtil, Object3D, Color, WorldPanel, UIPanel, GUICanvas, BillboardType } from "@orillusion/core";
 
 export class Sample_UIPanelOrder {
 
@@ -20,7 +20,7 @@ export class Sample_UIPanelOrder {
         exampleScene.scene.addChild(floor);
         floor.y = -40;
 
-        // enable ui canvas 0
+        // enable ui canvas at index 0
         let canvas = exampleScene.view.enableUICanvas();
         //create UI root
         let panelRoot: Object3D = new Object3D();
@@ -33,7 +33,6 @@ export class Sample_UIPanelOrder {
 
         let panel1 = this.createPanel(panelRoot, canvas, new Color(1.0, 0, 0.0, 0.8));
         let panel2 = this.createPanel(panelRoot2, canvas, new Color(0, 0, 1, 0.8));
-
         panel1.needSortOnCameraZ = true;
         panel2.needSortOnCameraZ = true;
 
@@ -48,15 +47,13 @@ export class Sample_UIPanelOrder {
     }
 
     private createPanel(panelRoot: Object3D, canvas: GUICanvas, color: Color): UIPanel {
-        let panel = panelRoot.addComponent(WorldPanel, { billboard: true });
+        let panel = panelRoot.addComponent(WorldPanel);
+        panel.billboard = BillboardType.BillboardXYZ;
         canvas.addChild(panel.object3D);
-        // create image
-        let obj3D = new Object3D();
-        panelRoot.addChild(obj3D);
-        let image = obj3D.addComponent(UIImage);
-        image.imageType = ImageType.Sliced;
-        image.uiTransform.resize(400, 300);
-        image.color = color;
+        panel.uiTransform.resize(400, 300);
+        panel.visible = true;
+        panel.color = color;
+
         return panel;
     }
 

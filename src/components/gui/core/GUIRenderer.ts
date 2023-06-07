@@ -10,7 +10,7 @@ import { GUIMaterial } from "./GUIMaterial";
 /**
  * GUI Renderer
  * Used to update Geometry and Buffer.
- * @group GUI
+ * @group GPU GUI
  */
 export class GUIRenderer extends MeshRenderer {
 

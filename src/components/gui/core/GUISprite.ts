@@ -3,6 +3,10 @@ import { Vector2 } from "../../../math/Vector2";
 import { Vector4 } from "../../../math/Vector4";
 import { GUITexture } from "./GUITexture";
 
+/**
+ * Sprites are simple 2D objects with graphical images
+ * @group GPU GUI
+ */
 export class GUISprite {
     public id: string;
     public guiTexture: GUITexture;

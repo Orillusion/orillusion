@@ -27,7 +27,7 @@ import { GPUBufferType } from "../core/buffer/GPUBufferType";
 
 import { MaterialDataUniformGPUBuffer } from "../core/buffer/MaterialDataUniformGPUBuffer";
 import { ShaderUtil } from "./util/ShaderUtil";
-import { Reference } from "../../../..";
+import { Reference } from "../../../../util/Reference";
 
 export class RenderShader extends ShaderBase {
     public useRz: boolean = false;

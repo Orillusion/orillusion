@@ -51,8 +51,8 @@ export class Object3D extends Entity {
         if (!this.components.has(className)) {
             let instance: T = new c() as T;
             instance.object3D = this;
-            instance[`__init`](param);
             this.components.set(className, instance);
+            instance[`__init`](param);
             ComponentCollect.appendWaitStart(this, instance);
             return instance;
         }
@@ -189,7 +189,7 @@ export class Object3D extends Entity {
      * @param ret List of incoming T
      * @param includeInactive Whether to include invisible objects, default to false
      * @return {*}  {T}
-     * @memberof ELPObject3D
+     * @memberof Object3D
      */
     public getComponentsExt<T extends IComponent>(c: Ctor<T>, ret?: T[], includeInactive?: boolean): T[] {
         ret ||= [];

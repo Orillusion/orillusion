@@ -5,6 +5,10 @@ import { UIInteractiveStyle } from './IUIInteractive';
 import { UIImage } from './UIImage';
 import { UIInteractive } from './UIInteractive';
 
+/**
+ * The basic components used in the GUI to respond to user interaction behavior and have an image component
+ * @group GPU GUI
+ */
 export class UIButton extends UIInteractive {
     protected _spriteMap: Map<UIInteractiveStyle, GUISprite>;
     protected _image: UIImage;
@@ -88,15 +92,19 @@ export class UIButton extends UIInteractive {
         }
     }
 
-    cloneTo(obj: Object3D) {
+    public cloneTo(obj: Object3D) {
         let component = obj.getOrAddComponent(UIButton);
         component.copyComponent(this);
-        component.downSprite = this.downSprite;
-        component.normalSprite = this.normalSprite;
-        component.disableSprite = this.disableSprite;
-        component.overSprite = this.overSprite;
-        component.mouseStyle = this.mouseStyle;
-        component.enable = this.enable;
+    }
+
+    public copyComponent(from: this): this {
+        super.copyComponent(from);
+        this.downSprite = from.downSprite;
+        this.normalSprite = from.normalSprite;
+        this.disableSprite = from.disableSprite;
+        this.overSprite = from.overSprite;
+        this.mouseStyle = from.mouseStyle;
+        return this;
     }
 
     public destroy(): void {
