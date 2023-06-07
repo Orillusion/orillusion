@@ -29,7 +29,7 @@ class Sample_Grass {
         Engine3D.startRenderView(this.view);
 
         let post = this.view.scene.addComponent(PostProcessingComponent);
-        post.addPost(TAAPost);
+        // post.addPost(TAAPost);
 
         this.createScene(this.view.scene);
     }
@@ -52,10 +52,10 @@ class Sample_Grass {
 
         let terrainSize = 1000;
         let size = 1000;
-        let grassCount = 13500;
+        let grassCount = 10000;
         // let grassCount = 10;
         let des = 2;
-        let space = 4;
+        let space = 2;
         let terrainGeometry: TerrainGeometry;
         {
             let mat = new LitMaterial();
@@ -74,8 +74,9 @@ class Sample_Grass {
             let grass = new Object3D();
             grassCom = grass.addComponent(GrassComponent);
             grassCom.setGrassTexture(Engine3D.res.whiteTexture);
+            // grassCom.setGrassTexture(grassTexture);
             grassCom.setWindNoiseTexture(gustNoiseTexture);
-            grassCom.setGrass(5, 1, 8, 1, grassCount);
+            grassCom.setGrass(8, 1, 5, 1, grassCount);
 
             let tsw = terrainSize / terrainGeometry.segmentW;
             let tsh = terrainSize / terrainGeometry.segmentH;
@@ -110,26 +111,26 @@ class Sample_Grass {
         }
 
         GUIHelp.addFolder("grass-wind");
-        GUIHelp.add(grassCom.grassMaterial.windBound, "x", -terrainSize * 0.5, terrainSize * 0.5, 0.0001).onChange((v) => {
-            let bound = grassCom.grassMaterial.windBound;
-            bound.x = v;
-            grassCom.grassMaterial.windBound = bound;
-        });
-        GUIHelp.add(grassCom.grassMaterial.windBound, "y", -terrainSize * 0.5, terrainSize * 0.5, 0.0001).onChange((v) => {
-            let bound = grassCom.grassMaterial.windBound;
-            bound.y = v;
-            grassCom.grassMaterial.windBound = bound;
-        });
-        GUIHelp.add(grassCom.grassMaterial.windBound, "z", 0, terrainSize, 0.0001).onChange((v) => {
-            let bound = grassCom.grassMaterial.windBound;
-            bound.z = v;
-            grassCom.grassMaterial.windBound = bound;
-        });
-        GUIHelp.add(grassCom.grassMaterial.windBound, "w", 0, terrainSize, 0.0001).onChange((v) => {
-            let bound = grassCom.grassMaterial.windBound;
-            bound.w = v;
-            grassCom.grassMaterial.windBound = bound;
-        });
+        // GUIHelp.add(grassCom.grassMaterial.windBound, "x", -terrainSize * 0.5, terrainSize * 0.5, 0.0001).onChange((v) => {
+        //     let bound = grassCom.grassMaterial.windBound;
+        //     bound.x = v;
+        //     grassCom.grassMaterial.windBound = bound;
+        // });
+        // GUIHelp.add(grassCom.grassMaterial.windBound, "y", -terrainSize * 0.5, terrainSize * 0.5, 0.0001).onChange((v) => {
+        //     let bound = grassCom.grassMaterial.windBound;
+        //     bound.y = v;
+        //     grassCom.grassMaterial.windBound = bound;
+        // });
+        // GUIHelp.add(grassCom.grassMaterial.windBound, "z", 0, terrainSize, 0.0001).onChange((v) => {
+        //     let bound = grassCom.grassMaterial.windBound;
+        //     bound.z = v;
+        //     grassCom.grassMaterial.windBound = bound;
+        // });
+        // GUIHelp.add(grassCom.grassMaterial.windBound, "w", 0, terrainSize, 0.0001).onChange((v) => {
+        //     let bound = grassCom.grassMaterial.windBound;
+        //     bound.w = v;
+        //     grassCom.grassMaterial.windBound = bound;
+        // });
 
         GUIHelp.addColor(grassCom.grassMaterial, "grassBaseColor");
         GUIHelp.addColor(grassCom.grassMaterial, "grassTopColor");

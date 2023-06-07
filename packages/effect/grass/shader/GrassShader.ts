@@ -79,8 +79,8 @@ export let GrassShader = /* wgsl */`
         let weight = ( 1.0 - uv.y )  ;
         let limitAngle = 90.0 / 8.0 * DEGREES_TO_RADIANS + PI * 0.35 ;
         if(uv.y < 1.0 ){
-            for (var index:i32 = 1; index <= 8 ; index+=1) {
-                let bios = f32(index) / 8.0 ;
+            for (var index:i32 = 1; index <= 5 ; index+=1) {
+                let bios = f32(index) / 5.0 ;
                 if(uv.y <= bios){
                     // let bios2 = f32(index) / 8.0 ;
 
@@ -139,9 +139,9 @@ export let GrassShader = /* wgsl */`
         //get main light at first lightBuffer
         let sunLight = lightBuffer[0] ;
         let sunDir = sunLight.direction.xyz ;
-        let H = normalize(viewDir.xyz + sunDir); 
+        // let H = normalize(viewDir.xyz + sunDir); 
         let R = 2.0 * dot( viewDir , normal ) * normal - viewDir ; 
-        let NoH = max(dot(normal,H),0.0);
+        // let NoH = max(dot(normal,H),0.0);
         let reflectDir = reflect(sunDir, normal);  
         let NoV = max(dot(normal,viewDir),0.0);
 
@@ -151,15 +151,15 @@ export let GrassShader = /* wgsl */`
         let grassColor = mix(materialUniform.grassBottomColor,materialUniform.grassTopColor * att * vec4<f32>(mainLightColor,1.0) , 1.0 - uv.y );
 
         //faker translucent back color
-        var backAtt = NoV ;
-        var backColor = vec3<f32>(0.0);
-        if(backAtt<0.0){
-            backAtt = abs(backAtt) * materialUniform.translucent ;
-            backColor = materialUniform.grassTopColor.rgb * backAtt * mainLightColor;
-            backColor = backColor ;
-        }
+        // var backAtt = NoV ;
+        // var backColor = vec3<f32>(0.0);
+        // if(backAtt<0.0){
+        //     backAtt = abs(backAtt) * materialUniform.translucent ;
+        //     backColor = materialUniform.grassTopColor.rgb * backAtt * mainLightColor;
+        //     backColor = backColor ;
+        // }
 
-        var f0 = 0.04 * materialUniform.grassTopColor.rgb ;
+        var f0 = 0.14 * materialUniform.grassTopColor.rgb ;
         var roughness = materialUniform.roughness ;
         // var kS = FresnelSchlickRoughness(NoV, f0 , roughness );
         var envRef = approximateSpecularIBL( materialUniform.grassTopColor.rgb , roughness + 0.35 , R ,NoV ) * f0 ;
@@ -169,7 +169,6 @@ export let GrassShader = /* wgsl */`
         var finalColor = diffuse + specular + envRef ;//+ backColor;
 
         // finalColor = pow(finalColor,vec3<f32>(1.0/2.2));
-
         // ORI_ShadingInput.BaseColor = vec4<f32>(att,att,att,1.0) ;
         ORI_ShadingInput.BaseColor = vec4<f32>(finalColor.rgb,1.0) ;
         UnLit();
