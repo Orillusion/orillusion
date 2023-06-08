@@ -293,7 +293,6 @@ export let BRDF_frag: string = /*wgsl*/ `
         let clearcoatRoughnessFactor = clamp(materialUniform.clearcoatRoughnessFactor,0.084,1.0);
         var clearcoatAlpha = clearcoatRoughnessFactor * clearcoatRoughnessFactor + fragData.ClearcoatRoughness;
 
-        // var lightColor = getHDRColor( lightCC.rgb , light.linear )  ;
         var att = light.intensity ;
         let l = light.direction ;
    

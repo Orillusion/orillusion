@@ -294,6 +294,7 @@ export class PhysicMaterial extends MaterialBase {
      */
     public set clearcoatFactor(value: number) {
         this.renderShader.setUniformFloat(`clearcoatFactor`, value);
+        this.useCleanCoat();
     }
 
     /**
@@ -308,6 +309,7 @@ export class PhysicMaterial extends MaterialBase {
      */
     public set clearcoatRoughnessFactor(value: number) {
         this.renderShader.setUniformFloat(`clearcoatRoughnessFactor`, value);
+        this.useCleanCoat();
     }
 
     /**
@@ -322,6 +324,7 @@ export class PhysicMaterial extends MaterialBase {
      */
     public set clearcoatWeight(value: number) {
         this.renderShader.setUniformFloat(`clearcoatWeight`, value);
+        this.useCleanCoat();
     }
 
     /**
@@ -336,6 +339,7 @@ export class PhysicMaterial extends MaterialBase {
      */
     public set clearcoatColor(value: Color) {
         this.renderShader.setUniformColor(`clearcoatColor`, value);
+        this.useCleanCoat();
     }
 
     /**

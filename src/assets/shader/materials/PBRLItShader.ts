@@ -43,10 +43,10 @@ export let PBRLItShader: string = /*wgsl*/ `
 
         var uv = transformUV1.zw * ORI_VertexVarying.fragUV0 + transformUV1.xy; 
 
-        ORI_ShadingInput.BaseColor = textureSample(baseMap, baseMapSampler, uv ) * materialUniform.baseColor ;
-    
-        // #if USE_ALPHACUT
-            // ORI_ShadingInput.BaseColor.a = clamp(ORI_ShadingInput.BaseColor.a, 0.001 , 1.0 );
+        ORI_ShadingInput.BaseColor = textureSample(baseMap, baseMapSampler, uv ) ;
+        ORI_ShadingInput.BaseColor = vec4<f32>(gammaToLiner(ORI_ShadingInput.BaseColor.rgb/ORI_ShadingInput.BaseColor.w ) * materialUniform.baseColor.rgb,ORI_ShadingInput.BaseColor.w*materialUniform.baseColor.a)  ;
+        #if USE_ALPHACUT
+            // // ORI_ShadingInput.BaseColor.a = clamp(ORI_ShadingInput.BaseColor.a, 0.001 , 1.0 );
             if( (ORI_ShadingInput.BaseColor.a - materialUniform.alphaCutoff) <= 0.0 ){
                 ORI_FragmentOutput.color = vec4<f32>(0.0,0.0,0.0,1.0);
                 ORI_FragmentOutput.worldPos = vec4<f32>(0.0,0.0,0.0,1.0);
@@ -54,7 +54,7 @@ export let PBRLItShader: string = /*wgsl*/ `
                 ORI_FragmentOutput.material = vec4<f32>(0.0,0.0,0.0,1.0);
                 discard;
             }
-        // #endif
+        #endif
 
         #if USE_SHADOWMAPING
             useShadow();
@@ -63,9 +63,12 @@ export let PBRLItShader: string = /*wgsl*/ `
         // ORI_ShadingInput.BaseColor = vec4<f32>(sRGBToLinear(ORI_ShadingInput.BaseColor.xyz),ORI_ShadingInput.BaseColor.w);
     
         #if USE_ARMC
+            uv = ORI_VertexVarying.fragUV0 ; 
+
             var maskTex = textureSample(maskMap, maskMapSampler, uv ) ;
 
-            ORI_ShadingInput.AmbientOcclusion = maskTex.r * materialUniform.ao ; 
+            // ORI_ShadingInput.AmbientOcclusion = maskTex.r * materialUniform.ao ; 
+            ORI_ShadingInput.AmbientOcclusion = materialUniform.ao ; 
 
             #if USE_AOTEX
                 var aoMap = textureSample(aomapMap, aoMapSampler, uv );

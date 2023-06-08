@@ -33,6 +33,8 @@ export class LitMaterial extends PhysicMaterial {
         let bdrflutTex = Engine3D.res.getTexture(`BRDFLUT`);
         this.brdfLUT = bdrflutTex;
 
+        this.envIntensity = 0.75;
+        this.materialF0 = new Vector4(0.04, 0.04, 0.04, 1.0 - 0.04);
         this.baseMap = Engine3D.res.whiteTexture;
         this.normalMap = Engine3D.res.normalTexture;
         // this.aoMap = defaultTexture.whiteTexture;
