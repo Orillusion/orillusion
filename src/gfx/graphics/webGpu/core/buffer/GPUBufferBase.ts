@@ -352,7 +352,6 @@ export class GPUBufferBase {
             this.apply();
         }
 
-        this.outFloat32Array = new Float32Array(size);
     }
 
     protected createBufferByStruct<T extends Struct>(usage: GPUBufferUsageFlags, struct: { new(): T }, count: number) {
@@ -381,6 +380,8 @@ export class GPUBufferBase {
 
     private _readFlag: boolean = false;
     public readBuffer() {
+        this.outFloat32Array ||= new Float32Array(this.memory.shareDataBuffer.byteLength / 4);
+
         if (!this._readBuffer) {
             this._readBuffer = webGPUContext.device.createBuffer({
                 size: this.memory.shareDataBuffer.byteLength,

@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AtmosphericComponent, DirectLight, PointLight, SpotLight, Transform } from "@orillusion/core";
+import { AtmosphericComponent, BillboardType, Color, DirectLight, GPUCullMode, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
@@ -49,6 +49,7 @@ export class GUIUtil {
         GUIHelp.addColor(light, 'lightColor');
         GUIHelp.add(light, 'intensity', 0.0, 160.0, 0.01);
         GUIHelp.add(light, 'indirect', 0.0, 10.0, 0.01);
+        GUIHelp.add(light, 'castShadow');
 
         open && GUIHelp.open();
         GUIHelp.endFolder();
@@ -71,6 +72,7 @@ export class GUIUtil {
         GUIHelp.add(light, 'radius', 0.0, 1000.0, 0.001);
         GUIHelp.add(light, 'range', 0.0, 1000.0, 0.001);
         GUIHelp.add(light, 'quadratic', 0.0, 2.0, 0.001);
+        GUIHelp.add(light, 'castShadow');
 
         GUIHelp.open();
         GUIHelp.endFolder();
@@ -94,6 +96,7 @@ export class GUIUtil {
         GUIHelp.add(light, 'range', 0.0, 1000.0, 0.001);
         GUIHelp.add(light, 'outerAngle', 0.0, 180.0, 0.001);
         GUIHelp.add(light, 'innerAngle', 0.0, 100.0, 0.001);
+        GUIHelp.add(light, 'castShadow');
 
         GUIHelp.open();
         GUIHelp.endFolder();
@@ -113,5 +116,58 @@ export class GUIUtil {
         GUIHelp.endFolder();
     }
 
+    public static renderUIShadow(image: UIShadow, open: boolean = true, name?: string) {
+        name ||= 'Image Shadow';
+        GUIHelp.addFolder(name);
+        GUIHelp.add(image, 'shadowQuality', 0, 4, 1);
+
+        GUIHelp.add(image, 'shadowRadius', 0.00, 10, 0.01);
+        //shadow color
+        image.shadowColor = new Color(0.1, 0.1, 0.1, 0.6);
+        GUIHelp.addColor(image, 'shadowColor');
+
+        let changeOffset = () => {
+            image.shadowOffset = image.shadowOffset;
+        }
+        GUIHelp.add(image.shadowOffset, 'x', -100, 100, 0.01).onChange(v => changeOffset());
+        GUIHelp.add(image.shadowOffset, 'y', -100, 100, 0.01).onChange(v => changeOffset());
+        GUIHelp.addButton('Destroy', () => { image.object3D.removeComponent(UIShadow); })
+        open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
+
+    public static renderUIPanel(panel: UIPanel, open: boolean = true, name?: string) {
+        name ||= 'GUI Panel';
+        GUIHelp.addFolder(name);
+        //cull mode
+        let cullMode = {};
+        cullMode[GPUCullMode.none] = GPUCullMode.none;
+        cullMode[GPUCullMode.front] = GPUCullMode.front;
+        cullMode[GPUCullMode.back] = GPUCullMode.back;
+
+        // change cull mode by click dropdown box
+        GUIHelp.add({ cullMode: GPUCullMode.none }, 'cullMode', cullMode).onChange((v) => {
+            panel.cullMode = v;
+        });
+
+        //billboard
+        let billboard = {};
+        billboard['None'] = BillboardType.None;
+        billboard['Y'] = BillboardType.BillboardY;
+        billboard['XYZ'] = BillboardType.BillboardXYZ;
+
+        // change billboard by click dropdown box
+        GUIHelp.add({ billboard: panel.billboard }, 'billboard', billboard).onChange((v) => {
+            panel.billboard = v;
+        });
+
+        //depth test
+        if (panel['isWorldPanel']) {
+            GUIHelp.add(panel, 'depthTest');
+        }
+
+        open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
 
 }

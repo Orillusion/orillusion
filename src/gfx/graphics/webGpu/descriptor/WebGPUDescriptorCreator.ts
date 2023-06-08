@@ -46,7 +46,7 @@ export class WebGPUDescriptorCreator {
             // if(!rps.customSize){
             rps.outAttachments = [
                 {
-                    format: GPUTextureFormat.bgra8unorm,
+                    format: webGPUContext.presentationFormat,
                 },
             ];
             // }

@@ -10,16 +10,9 @@ class Context3D {
     public presentationSize: number[] = [0, 0];
     public presentationFormat: GPUTextureFormat;
     public canvas: HTMLCanvasElement;
-
     public windowWidth: number;
     public windowHeight: number;
-
-
-    public sourceWidth: number;
-    public sourceHeight: number;
-
     public canvasConfig: CanvasConfig;
-
     public super: number = 1.0;
     // initSize: number[];
     public get pixelRatio() {
@@ -36,6 +29,15 @@ class Context3D {
             this.canvas = canvasConfig.canvas;
             if (this.canvas === null)
                 throw new Error('no Canvas')
+            
+            // check if external canvas has initial with and height style
+            const _width = this.canvas.clientWidth, _height = this.canvas.clientHeight
+            this.resize(this.canvas.clientWidth, this.canvas.clientHeight)
+            // set a initial style if size changed
+            if(_width != this.canvas.clientWidth)
+                this.canvas.style.width = _width + 'px'
+            if(_height != this.canvas.clientHeight)
+                this.canvas.style.width = _height + 'px'
         } else {
             this.canvas = document.createElement('canvas');
             // this.canvas.style.position = 'fixed';
@@ -44,60 +46,48 @@ class Context3D {
             this.canvas.style.left = '0px';
             this.canvas.style.width = '100%';
             this.canvas.style.height = '100%';
-
-            // this.canvas.style.width = canvasConfig.width ? `${canvasConfig.width}px` : '100%';
-            // this.canvas.style.height = canvasConfig.height ? `${canvasConfig.height}px` : '100%';
-
             this.canvas.style.zIndex = canvasConfig?.zIndex ? canvasConfig.zIndex.toString() : '0';
             document.body.appendChild(this.canvas);
         }
-
-        this.resize(this.canvas.clientWidth, this.canvas.clientHeight)
+        // set canvas bg
         if (canvasConfig && canvasConfig.backgroundImage) {
             this.canvas.style.background = `url(${canvasConfig.backgroundImage})`
             this.canvas.style['background-size'] = 'cover'
             this.canvas.style['background-position'] = 'center'
         } else
             this.canvas.style.background = 'transparent';
+        // prevent touch scroll
         this.canvas.style['touch-action'] = 'none'
         this.canvas.style['object-fit'] = 'cover'
 
-        this.context = this.canvas.getContext('webgpu');
-
-        this.sourceWidth = Math.floor(this.canvas.clientWidth * this.pixelRatio * this.super)
-        this.sourceHeight = Math.floor(this.canvas.clientHeight * this.pixelRatio * this.super)
-
-        if (`gpu` in navigator) {
-            //TODO add webgpu event
-            // console.log( `${navigator.platform} this chrom not support webgpu!` );
+        // check webgpu support
+        if (navigator.gpu === undefined) {
+            throw new Error( `Your browser is not support webgpu!` );
         }
-
+        // request adapter
         this.adapter = await navigator.gpu.requestAdapter({
             powerPreference: 'high-performance',
             // powerPreference: 'low-power',
         });
-
         if (this.adapter == null) {
-            //TODO add webgpu event
-            // console.log( `${navigator.platform} this chrom not support webgpu!` );
+            throw new Error( `Your browser is not support webgpu!` );
         }
-
+        // request device
         this.device = await this.adapter.requestDevice({
-            requiredFeatures: [`texture-compression-bc`],
+            //requiredFeatures: [`texture-compression-bc`],
             requiredLimits: {
                 minUniformBufferOffsetAlignment: 256,
                 maxStorageBufferBindingSize: this.adapter.limits.maxStorageBufferBindingSize
             }
         });
-
         if (this.device == null) {
-            //TODO add webgpu event
-            // console.log( `${navigator.platform} this chrom not support webgpu!` );
+            throw new Error( `Your browser is not support webgpu!` );
         }
 
-
+        // configure webgpu context
         this.device.label = 'device';
-        this.presentationFormat = navigator.gpu.getPreferredCanvasFormat(); //this.context.getPreferredFormat(this.adapter);
+        this.presentationFormat = navigator.gpu.getPreferredCanvasFormat();
+        this.context = this.canvas.getContext('webgpu');
         this.context.configure({
             device: this.device,
             format: this.presentationFormat,
@@ -105,8 +95,9 @@ class Context3D {
             alphaMode: 'premultiplied',
             colorSpace: `display-p3`
         });
-        this.resize(this.canvas.clientWidth, this.canvas.clientHeight)
 
+        // resize canvas size, aspect
+        this.resize(this.canvas.clientWidth, this.canvas.clientHeight)
         let timer: any
         const resizeObserver = new ResizeObserver(() => {
             clearTimeout(timer)
@@ -115,17 +106,12 @@ class Context3D {
             }, 50)
         });
         resizeObserver.observe(this.canvas);
-
         return true;
     }
 
     public resize(width: number, height: number) {
         this.canvas.width = this.windowWidth = Math.floor(width * this.pixelRatio * this.super)
         this.canvas.height = this.windowHeight = Math.floor(height * this.pixelRatio * this.super)
-
-        // this.canvas.width = this.windowWidth = Math.floor(this.canvasConfig.width ? this.canvasConfig.width : width * this.pixelRatio)
-        // this.canvas.height = this.windowHeight = Math.floor(this.canvasConfig.height ? this.canvasConfig.height : height * this.pixelRatio)
-
         this.presentationSize[0] = this.windowWidth;
         this.presentationSize[1] = this.windowHeight;
         this.aspect = this.windowWidth / this.windowHeight;

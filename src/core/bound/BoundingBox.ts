@@ -35,9 +35,6 @@ export class BoundingBox implements IBound {
      * The total size of the box. This is always twice as much as extensions.
      */
     public size: Vector3;
-    public worldMax: Vector3;
-    public worldMin: Vector3;
-
     /**
      *
      * Create a new Bounds.
@@ -50,17 +47,19 @@ export class BoundingBox implements IBound {
         this.size = size;
         this.max = this.center.add(this.extents);
         this.min = this.center.subtract(this.extents);
-
-        this.worldMin = new Vector3();
-        this.worldMax = new Vector3();
     }
 
     public setFromMinMax(min: Vector3, max: Vector3) {
-        this.size = max.subtract(min);
-        this.center = this.size.div(2.0).add(min);
-        this.extents = new Vector3(this.size.x / 2, this.size.y / 2, this.size.z / 2);
-        this.min = min;
-        this.max = max;
+        this.min ||= new Vector3();
+        this.max ||= new Vector3();
+        this.size ||= new Vector3();
+        this.center ||= new Vector3();
+        this.extents ||= new Vector3();
+        this.size.set(max.x - min.x, max.y - min.y, max.z - min.z);
+        this.extents.copyFrom(this.size).multiplyScalar(0.5);
+        this.center.copyFrom(this.min).add(this.extents, this.center);
+        this.min.copyFrom(min);
+        this.max.copyFrom(max);
     }
 
     public setFromCenterAndSize(center: Vector3, size: Vector3) {
@@ -175,7 +174,5 @@ export class BoundingBox implements IBound {
         this.min = null;
         this.max = null;
         this.size = null;
-        this.worldMax = null;
-        this.worldMin = null;
     }
 }

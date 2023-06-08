@@ -1,4 +1,5 @@
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, BitmapTexture2D, PointLight, Texture, LambertMaterial, Color, PlaneGeometry, MeshRenderer, Object3DUtil, UnLitMaterial } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, BitmapTexture2D, Color, PlaneGeometry, MeshRenderer, UnLitMaterial, SphereGeometry, LitMaterial } from "@orillusion/core";
+import { GUIHelp } from "@orillusion/debug/GUIHelp";
 
 class Sample_UnlitMaterial {
     lightObj3D: Object3D;
@@ -35,44 +36,54 @@ class Sample_UnlitMaterial {
             this.lightObj3D.rotationZ = 0;
             let directLight = this.lightObj3D.addComponent(DirectLight);
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
-            directLight.castShadow = true;
             directLight.intensity = 20;
             scene.addChild(this.lightObj3D);
         }
 
         // create a unlit plane
-        let texture = new BitmapTexture2D();
-        await texture.load('gltfs/Demonstration/T_Rollets_BC.jpg');
-        this.createObject(scene, texture);
-        
-        // add a lit sphere
         {
-            let sphere = Object3DUtil.Sphere;
+            let texture = new BitmapTexture2D();
+            await texture.load('gltfs/Demonstration/T_Rollets_BC.jpg');
+            let mat = new UnLitMaterial();
+            mat.baseMap = texture;
+            mat.baseColor = new Color(1, 1, 1, 1);
+
+            let obj: Object3D = new Object3D();
+
+            let render = obj.addComponent(MeshRenderer);
+            render.material = mat;
+            render.geometry = new PlaneGeometry(100, 100);
+            obj.y = 1;
+            scene.addChild(obj);
+        }
+        // add a unlit sphere
+        {
+            let sphere = new Object3D();
+            let renderer = sphere.addComponent(MeshRenderer);
+            renderer.geometry = new SphereGeometry(1,32,32);
+            renderer.material = new UnLitMaterial()
             sphere.scaleX = 5;
             sphere.scaleY = 5;
             sphere.scaleZ = 5;
             sphere.y = 10;
+            sphere.x = -10;
+            this.scene.addChild(sphere);
+        }
+        // add a lit sphere
+        {
+            let sphere = new Object3D();
+            let renderer = sphere.addComponent(MeshRenderer);
+            renderer.geometry = new SphereGeometry(1,32,32);
+            renderer.material = new LitMaterial()
+            sphere.scaleX = 5;
+            sphere.scaleY = 5;
+            sphere.scaleZ = 5;
+            sphere.y = 10;
+            sphere.x = 10;
             this.scene.addChild(sphere);
         }
         return true;
     }
-
-    private createObject(scene: Scene3D, texture: Texture): Object3D {
-        let mat = new UnLitMaterial();
-        mat.baseMap = texture;
-        mat.baseColor = new Color(1, 1, 1, 1);
-
-        let obj: Object3D = new Object3D();
-
-        let render = obj.addComponent(MeshRenderer);
-        render.material = mat;
-        render.geometry = new PlaneGeometry(200, 200);
-        obj.y = 1;
-        scene.addChild(obj);
-
-        return obj;
-    }
-
 }
 
 new Sample_UnlitMaterial().run();

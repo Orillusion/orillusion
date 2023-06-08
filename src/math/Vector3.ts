@@ -507,9 +507,7 @@ export class Vector3 {
      * @returns result
     */
     public add(a: Vector3, target: Vector3 = null): Vector3 {
-        if (!target) {
-            target = new Vector3();
-        }
+        target ||= new Vector3();
 
         var a0x: number = this.x;
         var a0y: number = this.y;
@@ -524,9 +522,8 @@ export class Vector3 {
     }
 
     public addXYZW(x: number, y: number, z: number, w: number, target: Vector3 = null): Vector3 {
-        if (!target) {
-            target = new Vector3();
-        }
+        target ||= new Vector3();
+
         var a0x: number = this.x;
         var a0y: number = this.y;
         var a0z: number = this.z;

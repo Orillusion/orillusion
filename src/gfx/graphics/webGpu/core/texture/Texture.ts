@@ -12,10 +12,12 @@ export class Texture implements GPUSamplerDescriptor {
      * name of texture
      */
     public name: string;
+
     /**
      * source url
      */
     public url: string;
+
     /**
      * gpu texture
      */
@@ -45,38 +47,47 @@ export class Texture implements GPUSamplerDescriptor {
      * GPUTextureFormat
      */
     public format: GPUTextureFormat;
+
     /**
      * GPUTextureUsage
      */
     public usage: number;
+
     /**
      * texture width
      */
     public width: number = 4;
+
     /**
      * texture height
      */
     public height: number = 4;
+
     /**
      * depth or layers, default value is 1
      */
     public depthOrArrayLayers: number = 1;
+
     /**
      * depth or layers, default value is 1
      */
     public numberLayer: number = 1;
+
     /**
      * GPUTextureViewDescriptor
      */
     public viewDescriptor: GPUTextureViewDescriptor;
+
     /**
      * GPUTextureDescriptor
      */
     public textureDescriptor: GPUTextureDescriptor;
+
     /**
      * GPUShaderStage
      */
     public visibility: number = GPUShaderStage.COMPUTE | GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT;
+
 
     /**
      * GPUTextureBindingLayout, contains viewDimension and multisampled
@@ -85,29 +96,34 @@ export class Texture implements GPUSamplerDescriptor {
         viewDimension: `2d`,
         multisampled: false,
     };
+
     /**
      * GPUSamplerBindingLayout
      */
     public samplerBindingLayout: GPUSamplerBindingLayout = {
         type: `filtering`,
     };
+
     /**
      * GPUSamplerBindingLayout
      */
     public sampler_comparisonBindingLayout: GPUSamplerBindingLayout = {
         type: `comparison`,
     };
+
     /**
      * whether to flip the image on the y-axis
      */
-
     public flipY: boolean;
+
     /**
      *  whether is video texture
      */
     public isVideoTexture?: boolean;
+    public isHDRTexture?: boolean;
 
     private _useMipmap: boolean = false;
+
     private _sourceImageData: HTMLCanvasElement | ImageBitmap | OffscreenCanvas;
 
     //****************************************/
@@ -177,11 +193,11 @@ export class Texture implements GPUSamplerDescriptor {
 
     /**
      * Create a texture2D
-    * @param width size of texture width
-    * @param height height of texture width
-    * @param numberLayer number layer of texture
-    * @returns
-    */
+     * @param width size of texture width
+     * @param height height of texture width
+     * @param numberLayer number layer of texture
+     * @returns
+     */
     constructor(width: number = 32, height: number = 32, numberLayer: number = 1) {
         this.width = width;
         this.height = height;
@@ -390,8 +406,12 @@ export class Texture implements GPUSamplerDescriptor {
      */
     public destroy(force?: boolean) {
         if (force && this.gpuTexture instanceof GPUTexture) {
+            this.gpuSampler = null;
+            this.gpuSampler_comparison = null;
+            this.textureBindingLayout = null;
+            this.textureDescriptor = null;
             this.gpuTexture.destroy();
-            this.view = null;
+            this.gpuTexture = null;
         }
         this._stateChangeRef.clear();
     }

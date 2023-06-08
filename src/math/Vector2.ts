@@ -99,9 +99,10 @@ export class Vector2 {
      * @param x The x component of the vector, which defaults to 0.
      * @param y The y component of the vector, which defaults to 0.
      */
-    public set(x: number = 0, y: number = 0) {
+    public set(x: number = 0, y: number = 0): this {
         this.x = x;
         this.y = y;
+        return this;
     }
 
     /**
@@ -143,9 +144,10 @@ export class Vector2 {
      * Let's multiply the x and y values of this vector times v.
      * @param v 
      */
-    public scale(v: number) {
+    public scale(v: number): this {
         this.x = this.x * v;
         this.y = this.y * v;
+        return this;
     }
 
     /**
@@ -161,6 +163,17 @@ export class Vector2 {
         return target;
     }
 
+    /**
+     * Let's multiply the x and y values of this vector by a.
+     * @param a 
+     * @param target 
+     * @returns 
+     */
+    public multiplyScaler(a: number): this {
+        this.x *= a;
+        this.y *= a;
+        return this;
+    }
     /**
      * We're going to divide the x and y values of this vector by v.
      * @param v 
@@ -270,10 +283,11 @@ export class Vector2 {
     /**
      * Convert this vector to a unit vector.
      */
-    public normalize() {
+    public normalize(): this {
         let d = this.abs();
         this.x = this.x / d;
         this.y = this.y / d;
+        return this;
     }
 
     /**
@@ -281,7 +295,7 @@ export class Vector2 {
      * @param otherVector Additive vector
      * @returns 
      */
-    public addInPlace(otherVector: Vector2): Vector2 {
+    public addInPlace(otherVector: Vector2): this {
         this.x += otherVector.x;
         this.y += otherVector.y;
         return this;
@@ -292,7 +306,7 @@ export class Vector2 {
      * @param s Additive scalar
      * @returns 
      */
-    public addScalar(s: number) {
+    public addScalar(s: number): this {
         this.x += s;
         this.y += s;
 

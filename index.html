@@ -19,16 +19,11 @@
         }
 
         .menu {
-            position: fixed;
-            z-index: 10000;
-            left: 0;
-            top: 0;
-            bottom: 0;
             width: 150px;
             padding: 20px;
             overflow: overlay;
             border-right: 1px solid #fff;
-            background: rgba(0, 0, 0, .6);
+            background: #000;
         }
 
         .menu>p {
@@ -67,12 +62,64 @@
             border: none;
             width: 100%;
             height: 100%;
+            flex: 1;
+        }
+        .toggle{
+            display: none;
+            align-items: center;
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+            left: 10px;
+            top: 10px;
+            cursor: pointer;
+        }
+        .close{
+            display: none;
+            position: fixed;
+            top: 5px;
+            left: 155px;
+            padding: 5px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        svg{
+            transition: transform 0.15s;
+        }
+        svg:hover{
+            transform: scale(1.2);
+        }
+        @media screen and (max-width:599px) {
+            .menu{
+                display: none;
+                position: fixed;
+                z-index: 1111;
+                left: 0;
+                top: 0;
+                bottom: 0;
+            }
+            .toggle{
+                display: flex;
+            }
+            body.show > .menu{
+                display: block;
+            }
+            body.show > iframe{
+                pointer-events: none;
+            }
+            .close{
+                display: inline-block;
+            }
         }
     </style>
 </head>
 
 <body>
+    <svg class="toggle" onclick="document.body.classList.add('show')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M17,11H3c-0.6,0-1-0.4-1-1s0.4-1,1-1h14c0.6,0,1,0.4,1,1S17.6,11,17,11z"></path><path d="M21,7H3C2.4,7,2,6.6,2,6s0.4-1,1-1h18c0.6,0,1,0.4,1,1S21.6,7,21,7z"></path><path d="M21,15H3c-0.6,0-1-0.4-1-1s0.4-1,1-1h18c0.6,0,1,0.4,1,1S21.6,15,21,15z"></path><path d="M17,19H3c-0.6,0-1-0.4-1-1s0.4-1,1-1h14c0.6,0,1,0.4,1,1S17.6,19,17,19z"></path>
+    </svg>
     <script type="module" src="/samples/index.ts"></script>
 </body>
-
 </html>

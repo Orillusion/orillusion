@@ -1,7 +1,5 @@
 import { Matrix4 } from '../../../../../math/Matrix4';
 import { UUID } from '../../../../../util/Global';
-import { Time } from '../../../../../util/Time';
-import { WebGPUDescriptorCreator } from '../../descriptor/WebGPUDescriptorCreator';
 import { webGPUContext } from '../../Context3D';
 import { StorageGPUBuffer } from '../buffer/StorageGPUBuffer';
 /**

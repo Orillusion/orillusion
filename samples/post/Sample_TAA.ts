@@ -33,7 +33,7 @@ class Sample_TAA {
 		Engine3D.startRenderView(view);
 
 		let postProcessing = this.scene.addComponent(PostProcessingComponent);
-		// postProcessing.addPost(TAAPost);
+		postProcessing.addPost(TAAPost);
 	}
 
 	async initScene() {
