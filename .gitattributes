@@ -1,0 +1,7 @@
+# Excluded from language stats
+packages/ammo/* linguist-generated
+packages/draco/* linguist-generated
+docs/* linguist-documentation
+script/* linguist-generated
+dist/* linguist-vendored
+public/* linguist-vendored
