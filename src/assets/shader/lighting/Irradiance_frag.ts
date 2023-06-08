@@ -2,8 +2,7 @@ export let Irradiance_frag: string = /*wgsl*/ `
 #include "IrradianceVolumeData_frag"
     fn pow3(  x : f32 ) -> f32
     {
-        var xx = x*x;
-        return x * xx;
+        return x*x*x;
     }
 
     struct IrradianceField {
@@ -58,7 +57,7 @@ export let Irradiance_frag: string = /*wgsl*/ `
         var irradiance = sampleIrradianceField();
         var outerVolumeFactor:f32 = getOuterVolume(irradianceFieldSurface, ORI_VertexVarying.vWorldPos.xyz);
         irradiance *= outerVolumeFactor;
-        return irradiance ;
+       return irradiance ;
     }
     
     fn debugProbe(id:i32) -> vec4<f32>{
@@ -270,7 +269,8 @@ export let Irradiance_frag: string = /*wgsl*/ `
         irradiance *= (1.0 / accumulatedWeights);   
         irradiance *= irradiance;                   
 
-        irradiance *= 6.2831853071795864;     
+        //irradiance *= 6.2831853071795864;
+        irradiance *= PI;
         irradiance *= irradianceData.indirectIntensity;
         return vec4<f32>(irradiance,1.0) ;
     }

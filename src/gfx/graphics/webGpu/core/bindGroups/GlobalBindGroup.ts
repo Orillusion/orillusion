@@ -1,7 +1,9 @@
 import { Camera3D } from "../../../../../core/Camera3D";
 import { Scene3D } from "../../../../../core/Scene3D";
+import { Probe } from "../../../../renderJob/passRenderer/ddgi/Probe";
 import { GlobalUniformGroup } from "./GlobalUniformGroup";
 import { LightEntries } from "./groups/LightEntries";
+import { ProbeEntries } from "./groups/ProbeEntries";
 import { MatrixBindGroup } from "./MatrixBindGroup";
 
 /**
@@ -12,7 +14,7 @@ import { MatrixBindGroup } from "./MatrixBindGroup";
 export class GlobalBindGroup {
     private static _cameraBindGroups: Map<Camera3D, GlobalUniformGroup>;
     private static _lightEntriesMap: Map<Scene3D, LightEntries>;
-    // public static probeEntries: ProbeEntries;
+    private static _probeEntries: ProbeEntries;
     public static modelMatrixBindGroup: MatrixBindGroup;
 
     public static init() {
@@ -49,12 +51,11 @@ export class GlobalBindGroup {
         return this._lightEntriesMap.get(scene);
     }
 
-    // static updateProbes(probes: Probe[]) {
-    //     if (!this.probeEntries) {
-    //         this.probeEntries = new ProbeEntries();
-    //         this.probeEntries.initDataUniform(probes);
-    //     }
-    // }
-
+    public static updateProbes(probes: Probe[]) {
+        if (!this._probeEntries) {
+            this._probeEntries = new ProbeEntries();
+            this._probeEntries.initDataUniform(probes);
+        }
+    }
 
 }
