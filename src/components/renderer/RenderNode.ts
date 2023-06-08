@@ -43,6 +43,7 @@ export class RenderNode extends ComponentBase {
     protected _combineShaderRefection: ShaderReflection;
     protected _ignoreEnvMap?: boolean;
     protected _ignorePrefilterMap?: boolean;
+    private __renderOrder: number = 0;//cameraDepth + _renderOrder
     private _renderOrder: number = 0;
     public isRenderOrderChange?: boolean;
     public needSortOnCameraZ?: boolean;
@@ -60,6 +61,7 @@ export class RenderNode extends ComponentBase {
         if (value != this._renderOrder) {
             this.isRenderOrderChange = true;
             this._renderOrder = value;
+            this.__renderOrder = value;
         }
     }
 

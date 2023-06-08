@@ -34,7 +34,6 @@ export class GUIGeometryRebuild {
     let zMax: number = guiMesh.quadMaxCount - 1;
     let needBreak: boolean;
     for (let transform of transforms) {
-      transform.guiMesh = guiMesh;
       let needUpdateQuads = transform.needUpdateQuads;
       collectQuads.length = 0;
       const quads = this.collectQuads(transform.object3D, collectQuads);

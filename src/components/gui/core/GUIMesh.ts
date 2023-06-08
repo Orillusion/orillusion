@@ -16,18 +16,15 @@ import { GUIRenderer } from "./GUIRenderer";
 export class GUIMesh extends Object3D {
     public uiRenderer: GUIRenderer;
     public geometry: GUIGeometry;
-    public readonly space: GUISpace;
-
     public limitVertexCount: number = 0;
     private readonly _maxCount: number = 128;
 
     private _uiMaterial: GUIMaterial;
 
-    constructor(space: GUISpace, param?) {
+    constructor(space: GUISpace) {
         super();
-        this.space = space;
         this._maxCount = space == GUISpace.World ? GUIConfig.quadMaxCountForWorld : GUIConfig.quadMaxCountForView;
-        this.create(param);
+        this.create(space);
     }
 
     /**
@@ -51,11 +48,10 @@ export class GUIMesh extends Object3D {
         return this._boundWorld;
     }
 
-    private create(param?) {
-        this.uiRenderer = this.addComponent(GUIRenderer, { count: this._maxCount, space: this.space });
-
-        this.geometry = this.uiRenderer.geometry as GUIGeometry;
-        this._uiMaterial = this.uiRenderer.material as GUIMaterial;
+    private create(space: GUISpace) {
+        this.uiRenderer = this.addComponent(GUIRenderer);
+        this.geometry = this.uiRenderer.geometry = new GUIGeometry(this._maxCount).create();
+        this._uiMaterial = this.uiRenderer.material = new GUIMaterial(space);
 
         this.uiRenderer.renderOrder = GUIConfig.SortOrderStartWorld;
     }
