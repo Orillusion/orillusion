@@ -149,24 +149,13 @@ export let GrassShader = /* wgsl */`
 
         let grassColor = mix(materialUniform.grassBottomColor,materialUniform.grassTopColor * att * vec4<f32>(mainLightColor,1.0) , 1.0 - uv.y );
 
-        //faker translucent back color
-        // var backAtt = NoV ;
-        // var backColor = vec3<f32>(0.0);
-        // if(backAtt<0.0){
-        //     backAtt = abs(backAtt) * materialUniform.translucent ;
-        //     backColor = materialUniform.grassTopColor.rgb * backAtt * mainLightColor;
-        //     backColor = backColor ;
-        // }
-
         var roughness = materialUniform.roughness ;
-        // var envRef = approximateSpecularIBL( materialUniform.materialF0.rgb , roughness + 0.35 , R ,NoV ) ;
         let MAX_REFLECTION_LOD  = f32(textureNumLevels(prefilterMap)) ;
         var irradiance = LinearToGammaSpace(globalUniform.skyExposure * textureSampleLevel(prefilterMap, prefilterMapSampler, fragData.N.xyz, 0.8 * (MAX_REFLECTION_LOD) ).rgb);
         let specular = vec3<f32>( pow(max(dot(viewDir, reflectDir), 0.0), (1.0 - roughness + 0.001) * 200.0 ) ) * mainLightColor * materialUniform.specular;
 
         var diffuse = color.rgb / PI * grassColor.rgb * shadowStrut.directShadowVisibility[0] ;
         var finalColor = diffuse + specular + irradiance * grassColor.rgb * sunLight.quadratic;//+ backColor;
-        // var finalColor = irradiance * grassColor.rgb * sunLight.quadratic;//+ backColor;
 
         ORI_ShadingInput.BaseColor = vec4<f32>(finalColor.rgb,1.0) ;
         UnLit();
