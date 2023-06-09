@@ -195,17 +195,18 @@ export let BRDF_frag: string = /*wgsl*/ `
         return rcp( Vis_SmithV * Vis_SmithL );
     }
 
-    fn simpleBRDF( albedo:vec3<f32>, N:vec3<f32>, V:vec3<f32>,L:vec3<f32>,att:f32,lightColor:vec3<f32>,roughness:f32 )-> vec3<f32>{
+    fn simpleBRDF( albedo:vec3<f32>, N:vec3<f32>, V:vec3<f32>,L:vec3<f32>,att:f32,lightColor:vec3<f32>,roughness:f32 ,metallic:f32)-> vec3<f32>{
         let H = normalize(V + L);
         let Context:BxDFContext = getContext(N,V,H,L);
 
+        let F0 = mix(vec3<f32>(materialUniform.materialF0.rgb), albedo , metallic);
         let D = DistributionGGX( Context.NoH , roughness);
         let G = GeometrySmith(Context.NoV,Context.NoL, roughness );
-        let F = FresnelSchlick(Context.VoH, vec3<f32>(fragData.F0));
+        let F = FresnelSchlick(Context.VoH, vec3<f32>(F0));
         let specular = ( D * G * F ) / (4.0 * Context.NoV * Context.NoL + 0.001);
         let kS = F;
         var kd = 1.0 - kS ;
-        kd *= 1.0 - fragData.Metallic ;
+        kd *= 1.0 - metallic ;
         var diffuse = kd * (albedo.rgb / PI ) ;
         let ambient = specular.rgb ;
 
@@ -225,8 +226,7 @@ export let BRDF_frag: string = /*wgsl*/ `
         return mix (N, R, lerpFactor );
     }
 
-    fn approximateSpecularIBL( specularColor:vec3<f32> , roughness:f32 , R:vec3<f32>) -> vec3<f32> {
-        let NoV = fragData.NoV ;
+    fn approximateSpecularIBL( specularColor:vec3<f32> , roughness:f32 , R:vec3<f32>,NoV:f32) -> vec3<f32> {
         let MAX_REFLECTION_LOD  = i32(textureNumLevels(prefilterMap)) ;
         let mip = roughnessToMipmapLevel(roughness,MAX_REFLECTION_LOD);
         var prefilteredColor: vec3<f32> = (textureSampleLevel(prefilterMap, prefilterMapSampler, getSpecularDominantDir(fragData.N,R,roughness) , mip ).rgb);

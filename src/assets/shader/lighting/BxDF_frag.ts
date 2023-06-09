@@ -44,9 +44,9 @@ export let BxDF_frag: string = /*wgsl*/ `
       fragData.DiffuseColor = fragData.Albedo.rgb * (1.0 - fragData.Metallic);
       fragData.SpecularColor = mix(vec3<f32>(1.0), fragData.Albedo.rgb, fragData.Metallic);
 
-      fragData.ClearcoatRoughness = 0.0 ;
+      fragData.ClearcoatRoughness = materialUniform.clearcoatRoughnessFactor ;
       #if USE_CLEARCOAT_ROUGHNESS
-        fragData.ClearcoatRoughness = getClearcoatRoughnees() ;
+        fragData.ClearcoatRoughness = getClearcoatRoughnees() * materialUniform.clearcoatRoughnessFactor;
       #endif
   }
 
@@ -73,13 +73,13 @@ export let BxDF_frag: string = /*wgsl*/ `
 
         switch (light.lightType) {
           case PointLightType: {
-            specColor += pointLighting( fragData.Albedo.rgb,ORI_VertexVarying.vWorldPos.xyz,fragData.N,fragData.V,fragData.Roughness , light ) ;
+            specColor += pointLighting( fragData.Albedo.rgb,ORI_VertexVarying.vWorldPos.xyz,fragData.N,fragData.V,fragData.Roughness,fragData.Metallic,light) ;
           }
           case DirectLightType: {
-            specColor += directLighting( fragData.Albedo.rgb ,fragData.N,fragData.V,fragData.Roughness , light , globalUniform.shadowBias) ;
+            specColor += directLighting( fragData.Albedo.rgb ,fragData.N,fragData.V,fragData.Roughness ,fragData.Metallic, light , globalUniform.shadowBias) ;
           }
           case SpotLightType: {
-            specColor += spotLighting( fragData.Albedo.rgb,ORI_VertexVarying.vWorldPos.xyz,fragData.N,fragData.V,fragData.Roughness , light ) ;
+            specColor += spotLighting( fragData.Albedo.rgb,ORI_VertexVarying.vWorldPos.xyz,fragData.N,fragData.V,fragData.Roughness,fragData.Metallic , light ) ;
           }
           default: {
           }
@@ -90,7 +90,7 @@ export let BxDF_frag: string = /*wgsl*/ `
       var kS = F;
       var kD = vec3(1.0) - kS;
       kD = kD * (1.0 - fragData.Metallic);
-      let env =  materialUniform.envIntensity * approximateSpecularIBL( F , fragData.Roughness , fragData.R ) ;
+      let env =  materialUniform.envIntensity * approximateSpecularIBL( F , fragData.Roughness , fragData.R , fragData.NoV ) ;
 
       //***********indirect-specular part********* 
       var surfaceReduction = 1.0/(fragData.Roughness*fragData.Roughness+1.0);            //压暗非金属的反射
@@ -130,29 +130,33 @@ export let BxDF_frag: string = /*wgsl*/ `
       var color = specColor + indirectResult ;
       color += fragData.Emissive.xyz ;
 
+      var clearCoatColor = vec3<f32>(0.0);
       #if USE_CLEARCOAT
-        var clearCoatColor = vec3<f32>(0.0);
-        // for(var i:i32 = i32(start) ; i < i32(end); i = i + 1 )
-        // {
-        //     let light = getLight(i);
-        //     switch (light.lightType) {
-        //         case PointLightType: {
-        //           clearCoatColor += pointLighting( fragData.Albedo.rgb ,ORI_VertexVarying.vWorldPos.xyz,fragData.N,fragData.V,fragData.ClearcoatRoughness , light ) ;
-        //         }
-        //         case DirectLightType: {
-        //           clearCoatColor += directLighting( fragData.Albedo.rgb ,fragData.N,fragData.V,fragData.ClearcoatRoughness , light , globalUniform.shadowBias) ;
-        //         }
-        //         case SpotLightType: {
-        //           clearCoatColor += spotLighting( fragData.Albedo.rgb,ORI_VertexVarying.vWorldPos.xyz,fragData.N,fragData.V,fragData.ClearcoatRoughness , light ) ;
-        //         }
-        //         default: {
-        //         }
-        //     }
-        // }
-        color = approximate_coating(color,clearCoatColor,-fragData.N,fragData.V,sunLight);
+        let clearCoatBaseColor = vec3<f32>(1.0) * materialUniform.baseColor.rgb ;
+        for(var i:i32 = i32(start) ; i < i32(end); i = i + 1 )
+        {
+            let light = getLight(i32(i));
+            switch (light.lightType) {
+                case PointLightType: {
+                  clearCoatColor += pointLighting( clearCoatBaseColor ,ORI_VertexVarying.vWorldPos.xyz,fragData.N,fragData.V,fragData.ClearcoatRoughness , 0.0, light ) ;
+                }
+                case DirectLightType: {
+                  clearCoatColor += directLighting( clearCoatBaseColor ,fragData.N,fragData.V,fragData.ClearcoatRoughness ,0.0,light , globalUniform.shadowBias) ;
+                }
+                case SpotLightType: {
+                  clearCoatColor += spotLighting( clearCoatBaseColor,ORI_VertexVarying.vWorldPos.xyz,fragData.N,fragData.V,fragData.ClearcoatRoughness ,0.0, light ) ;
+                }
+                default: {
+                }
+            }
+        }
+        clearCoatColor += approximate_coating(color,clearCoatColor,-fragData.N,fragData.V,sunLight);
+        // clearCoatColor /= fragData.Albedo.a ;
+        color += clearCoatColor.rgb ; 
       #endif
    
       ORI_FragmentOutput.color = vec4<f32>(LinearToGammaSpace(color.rgb),fragData.Albedo.a) ;
+      // ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(clearCoatColor),fragData.Albedo.a) ;
   }
 
   fn clearCoat(){
