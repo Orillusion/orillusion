@@ -20,6 +20,13 @@ export let PBRLItShader: string = /*wgsl*/ `
     var maskMap: texture_2d<f32>;
     #endif
 
+    #if USE_MR
+    @group(1) @binding(auto)
+    var maskMapSampler: sampler;
+    @group(1) @binding(auto)
+    var maskMap: texture_2d<f32>;
+    #endif
+
     #if USE_AOTEX
     @group(1) @binding(auto)
     var aoMapSampler: sampler;
@@ -43,10 +50,10 @@ export let PBRLItShader: string = /*wgsl*/ `
 
         var uv = transformUV1.zw * ORI_VertexVarying.fragUV0 + transformUV1.xy; 
 
-        ORI_ShadingInput.BaseColor = textureSample(baseMap, baseMapSampler, uv ) * materialUniform.baseColor ;
-    
-        // #if USE_ALPHACUT
-            // ORI_ShadingInput.BaseColor.a = clamp(ORI_ShadingInput.BaseColor.a, 0.001 , 1.0 );
+        ORI_ShadingInput.BaseColor = textureSample(baseMap, baseMapSampler, uv ) ;
+        ORI_ShadingInput.BaseColor = vec4<f32>(gammaToLiner(ORI_ShadingInput.BaseColor.rgb/ORI_ShadingInput.BaseColor.w ) * materialUniform.baseColor.rgb,ORI_ShadingInput.BaseColor.w*materialUniform.baseColor.a)  ;
+        #if USE_ALPHACUT
+            // // ORI_ShadingInput.BaseColor.a = clamp(ORI_ShadingInput.BaseColor.a, 0.001 , 1.0 );
             if( (ORI_ShadingInput.BaseColor.a - materialUniform.alphaCutoff) <= 0.0 ){
                 ORI_FragmentOutput.color = vec4<f32>(0.0,0.0,0.0,1.0);
                 ORI_FragmentOutput.worldPos = vec4<f32>(0.0,0.0,0.0,1.0);
@@ -54,7 +61,7 @@ export let PBRLItShader: string = /*wgsl*/ `
                 ORI_FragmentOutput.material = vec4<f32>(0.0,0.0,0.0,1.0);
                 discard;
             }
-        // #endif
+        #endif
 
         #if USE_SHADOWMAPING
             useShadow();
@@ -75,6 +82,18 @@ export let PBRLItShader: string = /*wgsl*/ `
             ORI_ShadingInput.Roughness = maskTex.g * materialUniform.roughness ;
             ORI_ShadingInput.Metallic =  maskTex.b * materialUniform.metallic ;
 
+        #elseif USE_MR
+            uv = transformUV2.zw * ORI_VertexVarying.fragUV1 + transformUV2.xy; 
+            var maskTex = textureSample(maskMap, maskMapSampler, uv ) ;
+            #if USE_AOTEX
+                var aoMap = textureSample(aomapMap, aoMapSampler, uv );
+                ORI_ShadingInput.AmbientOcclusion = mix(0.0,aoMap.r,materialUniform.ao) ;
+            #else
+                ORI_ShadingInput.AmbientOcclusion = maskTex.b * materialUniform.ao ; 
+            #endif
+
+            ORI_ShadingInput.Roughness = maskTex.g * materialUniform.roughness ;
+            ORI_ShadingInput.Metallic =  maskTex.r * materialUniform.metallic ;
         #else
             ORI_ShadingInput.Roughness = materialUniform.roughness ;
             ORI_ShadingInput.Metallic = materialUniform.metallic ;

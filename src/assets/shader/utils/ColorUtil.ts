@@ -32,20 +32,20 @@ export let ColorUtil: string = /*wgsl*/ `
         return color2;
     }
 
-    fn gammaToLiner(color: vec4<f32>) -> vec4 < f32 > {
+    fn gammaToLiner(color: vec3<f32>) -> vec3 < f32 > {
         let gammaCorrect = 2.4;
-        var color2 = pow(color, vec4<f32>(gammaCorrect));
+        var color2 = pow(color, vec3<f32>(gammaCorrect));
         return color2 ;
     }
 
     fn linerToGamma4(color: vec4<f32>) -> vec4 < f32 > {
-        let gammaCorrect = 1.0 / 2.4;
+        let gammaCorrect = 0.416666667;
         var color2 = pow(color, vec4<f32>(gammaCorrect));
         return color2 ;
     }
 
     fn linerToGamma3(color: vec3<f32>) -> vec3 < f32 > {
-        let gammaCorrect = 1.0 / 2.4;
+        let gammaCorrect = 0.416666667;
         var color2 = pow(color, vec3<f32>(gammaCorrect));
         return color2 ;
     }
@@ -83,7 +83,7 @@ export let ColorUtil: string = /*wgsl*/ `
     fn LinearToSrgbBranchless(lin: vec3<f32>) -> vec3<f32>
     {
         var lin2 = max(vec3<f32>(6.10352e-5), lin);
-        return min(lin2 * 12.92, pow(max(lin2, vec3<f32>(0.00313067)), vec3<f32>(1.0 / 2.4)) * vec3<f32>(1.055) - vec3<f32>(0.055));
+        return min(lin2 * 12.92, pow(max(lin2, vec3<f32>(0.00313067)), vec3<f32>(0.416666667)) * vec3<f32>(1.055) - vec3<f32>(0.055));
     }
 
     fn sRGBToLinear(color : vec3<f32>) -> vec3<f32>

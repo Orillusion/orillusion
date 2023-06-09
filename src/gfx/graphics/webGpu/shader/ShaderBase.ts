@@ -132,8 +132,13 @@ export class ShaderBase {
      * @param value 
      */
     public setDefine(defineName: string, value: any) {
+        if (this.defineValue[defineName] == null || this.defineValue[defineName] != value) {
+            this.defineValue[defineName] = value;
+            this.noticeStateChange();
+            this.noticeShaderChange();
+            console.log("USE_CLEARCOAT");
+        }
         this.defineValue[defineName] = value;
-        this.noticeShaderChange();
     }
 
     /**
