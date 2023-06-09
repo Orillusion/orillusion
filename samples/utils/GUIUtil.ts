@@ -1,8 +1,9 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AtmosphericComponent, BillboardType, Color, DirectLight, GPUCullMode, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow } from "@orillusion/core";
+import { AtmosphericComponent, BillboardType, Color, DirectLight, GPUCullMode, GlobalFog, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
+
 
     //render AtmosphericComponent
     public static renderAtomosphericSky(component: AtmosphericComponent, open: boolean = true, name?: string) {
@@ -167,6 +168,17 @@ export class GUIUtil {
         }
 
         open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
+
+
+    static renderFog(globalFog: GlobalFog) {
+        GUIHelp.addFolder("GlobalFog");
+        GUIHelp.addColor(globalFog, "fogColor");
+        GUIHelp.add(globalFog, "density", 0.0, 10.0, 0.001);
+        GUIHelp.add(globalFog, "start", 0, 1000, 0.001);
+        GUIHelp.add(globalFog, "height", -100, 1000, 0.001);
+        GUIHelp.add(globalFog, "ins", 0, 1, 0.001);
         GUIHelp.endFolder();
     }
 

@@ -1,11 +1,12 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Engine3D, View3D, Scene3D, CameraUtil, AtmosphericComponent, webGPUContext, HoverCameraController, Object3D, DirectLight, KelvinUtil, PlaneGeometry, VertexAttributeName, LitMaterial, MeshRenderer, Vector4, Vector3, Matrix3, PostProcessingComponent, TAAPost, BitmapTexture2D } from "@orillusion/core";
+import { Engine3D, View3D, Scene3D, CameraUtil, AtmosphericComponent, webGPUContext, HoverCameraController, Object3D, DirectLight, KelvinUtil, PlaneGeometry, VertexAttributeName, LitMaterial, MeshRenderer, Vector4, Vector3, Matrix3, PostProcessingComponent, TAAPost, BitmapTexture2D, GlobalFog, Color } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { GrassComponent, TerrainGeometry } from "@orillusion/effect";
 
 // An sample of custom vertex attribute of geometry
 class Sample_Grass {
     view: View3D;
+    post: PostProcessingComponent;
     async run() {
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.updateFrameRate = 1;
@@ -28,7 +29,12 @@ class Sample_Grass {
 
         Engine3D.startRenderView(this.view);
 
-        let post = this.view.scene.addComponent(PostProcessingComponent);
+        this.post = this.view.scene.addComponent(PostProcessingComponent);
+        let fog = this.post.addPost(GlobalFog);
+        fog.fogColor = new Color(136 / 255, 215 / 255, 236 / 255, 1);
+        fog.start = 1000;
+        fog.height = 480;
+        fog.ins = 0.473;
         // post.addPost(TAAPost);
 
         this.createScene(this.view.scene);
@@ -39,7 +45,7 @@ class Sample_Grass {
         let bitmapTexture = await Engine3D.res.loadTexture('terrain/test01/bitmap.png');
         let heightTexture = await Engine3D.res.loadTexture('terrain/test01/height.png');
         let grassTexture = await Engine3D.res.loadTexture('terrain/grass/GrassThick.png');
-        let gustNoiseTexture = await Engine3D.res.loadTexture('terrain/grass/GustNoise.png');
+        let gustNoiseTexture = await Engine3D.res.loadTexture('terrain/grass/displ_noise_curl_1.png');
         let sunObj = new Object3D();
         let sunLight = sunObj.addComponent(DirectLight);
         sunLight.lightColor = KelvinUtil.color_temperature_to_rgb(6553);
@@ -52,9 +58,9 @@ class Sample_Grass {
 
         let terrainSize = 1000;
         let size = 1000;
-        let grassCount = 10000;
+        let grassCount = 6795;
         // let grassCount = 10;
-        let des = 2;
+        let des = 1;
         let space = 2;
         let terrainGeometry: TerrainGeometry;
         {
@@ -76,7 +82,7 @@ class Sample_Grass {
             grassCom.setGrassTexture(Engine3D.res.whiteTexture);
             // grassCom.setGrassTexture(grassTexture);
             grassCom.setWindNoiseTexture(gustNoiseTexture);
-            grassCom.setGrass(8, 1, 5, 1, grassCount);
+            grassCom.setGrass(18, 1, 5, 1, grassCount);
 
             let tsw = terrainSize / terrainGeometry.segmentW;
             let tsh = terrainSize / terrainGeometry.segmentH;
@@ -147,7 +153,7 @@ class Sample_Grass {
         GUIHelp.add(grassCom.grassMaterial, "windPower", 0.0, 20, 0.0001);
         GUIHelp.add(grassCom.grassMaterial, "windSpeed", 0.0, 20, 0.0001);
         GUIHelp.add(grassCom.grassMaterial, "curvature", 0.0, 1, 0.0001);
-        GUIHelp.add(grassCom.grassMaterial, "grassHeight", 0.0, 10, 0.0001);
+        GUIHelp.add(grassCom.grassMaterial, "grassHeight", 0.0, 100, 0.0001);
         GUIHelp.add(grassCom.grassMaterial, "roughness", 0.0, 1, 0.0001);
         GUIHelp.add(grassCom.grassMaterial, "translucent", 0.0, 1, 0.0001);
         GUIHelp.add(grassCom.grassMaterial, "soft", 0.0, 10, 0.0001);
@@ -158,6 +164,9 @@ class Sample_Grass {
         GUIHelp.add(Engine3D.setting.shadow, "shadowBound", 0.0, 3000, 0.0001);
         GUIHelp.add(Engine3D.setting.shadow, "shadowBias", 0.0, 1, 0.0001);
         GUIHelp.endFolder();
+
+        let globalFog = this.post.getPost(GlobalFog);
+        GUIUtil.renderFog(globalFog);
     }
 
 }
