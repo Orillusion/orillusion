@@ -20,6 +20,13 @@ export let PBRLItShader: string = /*wgsl*/ `
     var maskMap: texture_2d<f32>;
     #endif
 
+    #if USE_MR
+    @group(1) @binding(auto)
+    var maskMapSampler: sampler;
+    @group(1) @binding(auto)
+    var maskMap: texture_2d<f32>;
+    #endif
+
     #if USE_AOTEX
     @group(1) @binding(auto)
     var aoMapSampler: sampler;
@@ -63,12 +70,9 @@ export let PBRLItShader: string = /*wgsl*/ `
         // ORI_ShadingInput.BaseColor = vec4<f32>(sRGBToLinear(ORI_ShadingInput.BaseColor.xyz),ORI_ShadingInput.BaseColor.w);
     
         #if USE_ARMC
-            uv = ORI_VertexVarying.fragUV0 ; 
-
             var maskTex = textureSample(maskMap, maskMapSampler, uv ) ;
 
-            // ORI_ShadingInput.AmbientOcclusion = maskTex.r * materialUniform.ao ; 
-            ORI_ShadingInput.AmbientOcclusion = materialUniform.ao ; 
+            ORI_ShadingInput.AmbientOcclusion = maskTex.r * materialUniform.ao ; 
 
             #if USE_AOTEX
                 var aoMap = textureSample(aomapMap, aoMapSampler, uv );
@@ -78,6 +82,18 @@ export let PBRLItShader: string = /*wgsl*/ `
             ORI_ShadingInput.Roughness = maskTex.g * materialUniform.roughness ;
             ORI_ShadingInput.Metallic =  maskTex.b * materialUniform.metallic ;
 
+        #elseif USE_MR
+            uv = transformUV2.zw * ORI_VertexVarying.fragUV1 + transformUV2.xy; 
+            var maskTex = textureSample(maskMap, maskMapSampler, uv ) ;
+            #if USE_AOTEX
+                var aoMap = textureSample(aomapMap, aoMapSampler, uv );
+                ORI_ShadingInput.AmbientOcclusion = mix(0.0,aoMap.r,materialUniform.ao) ;
+            #else
+                ORI_ShadingInput.AmbientOcclusion = maskTex.b * materialUniform.ao ; 
+            #endif
+
+            ORI_ShadingInput.Roughness = maskTex.g * materialUniform.roughness ;
+            ORI_ShadingInput.Metallic =  maskTex.r * materialUniform.metallic ;
         #else
             ORI_ShadingInput.Roughness = materialUniform.roughness ;
             ORI_ShadingInput.Metallic = materialUniform.metallic ;

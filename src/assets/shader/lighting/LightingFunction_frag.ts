@@ -19,7 +19,7 @@ fn calcAttenuation( d : f32 ,  falloffStart : f32 ,  falloffEnd : f32)-> f32
     return saturate((falloffEnd-d) / (falloffEnd - falloffStart));
 }
 
-fn directLighting( albedo:vec3<f32>, N:vec3<f32>, V:vec3<f32>,  roughness:f32 , light:LightData , shadowBias:f32 ) -> vec3<f32> {
+fn directLighting( albedo:vec3<f32>, N:vec3<f32>, V:vec3<f32>,  roughness:f32 , metallic:f32 , light:LightData , shadowBias:f32 ) -> vec3<f32> {
     var color = vec3<f32>(0.0) ;
     #if USE_LIGHT
       var L = -normalize(light.direction.xyz) ;
@@ -37,13 +37,13 @@ fn directLighting( albedo:vec3<f32>, N:vec3<f32>, V:vec3<f32>,  roughness:f32 , 
       #endif 
 
       #if USE_BRDF
-        color = simpleBRDF(albedo,N,V,L,att,lightColor,fragData.Roughness) ;
+        color = simpleBRDF(albedo,N,V,L,att,lightColor,roughness,metallic) ;
       #endif 
     #endif 
     return color ;
 }
 
-fn pointLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, roughness:f32 , light:LightData ) -> vec3<f32> {
+fn pointLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, roughness:f32 , metallic:f32 ,light:LightData ) -> vec3<f32> {
     var color = vec3<f32>(0.0) ;
     let lightPos = light.position.xyz;
     var dir = lightPos.xyz - WP ;
@@ -74,7 +74,7 @@ fn pointLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, rough
         #endif 
 
         #if USE_BRDF
-          color = (simpleBRDF(albedo,N,V,L,atten,lightColor,fragData.Roughness))  ;
+          color = (simpleBRDF(albedo,N,V,L,atten,lightColor,roughness,metallic))  ;
         #endif 
     } 
     return color ;
@@ -84,7 +84,7 @@ fn getDistanceAtten(  light:LightData , dist : f32 ) -> f32 {
   return 1.0 - smoothstep(0.0,light.range,dist) ;
 }
 
-fn spotLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, roughness:f32 , light:LightData ) -> vec3<f32> {
+fn spotLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, roughness:f32 , metallic:f32 ,light:LightData ) -> vec3<f32> {
     let lightPos = light.position.xyz;
     var dir = lightPos.xyz - WP ;
     let dist = length(dir) ;
@@ -127,7 +127,7 @@ fn spotLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, roughn
         #endif 
 
         #if USE_BRDF
-          color = (simpleBRDF(albedo,N,V,L,atten,lightColor,fragData.Roughness)) ;
+          color = (simpleBRDF(albedo,N,V,L,atten,lightColor,roughness,metallic)) ;
         #endif 
     }
     return  color ;

@@ -17,7 +17,7 @@ class Sample_ClearCoat {
         await Engine3D.init();
 
         //config settings
-        Engine3D.setting.shadow.shadowBound = 50;
+        Engine3D.setting.shadow.shadowBound = 300;
         Engine3D.setting.shadow.shadowBias = 0.0001;
         Engine3D.setting.render.postProcessing.bloom = {
             enable: true,
