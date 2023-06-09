@@ -63,7 +63,7 @@ export let GrassCastShadowShader = /* wgsl */`
     
         // weights0 x,y,z is grass blend dir , w is curvature random 
         let weights = vertex.weights0 ;
-        var speed = windDirection.xz * ( windNoise.r ) ; 
+        var speed = windDirection.xz * ( windNoise.rg ) ; 
      
         var roat = localMatrix ;
         roat[3].x = 0.0 ;
@@ -73,20 +73,18 @@ export let GrassCastShadowShader = /* wgsl */`
         var uv = vertex.uv ;
         let weight = ( 1.0 - uv.y )  ;
         let limitAngle = 90.0 / 8.0 * DEGREES_TO_RADIANS + PI * 0.35 ;
-        if(uv.y < 1.0 ){
-            for (var index:i32 = 1; index <= 8 ; index+=1) {
-                let bios = f32(index) / 8.0 ;
-                if(uv.y <= bios){
-                    // let bios2 = f32(index) / 8.0 ;
-
-                    let rx = weights.x * weights.w + clamp(speed.y * windPower * pow(weight,materialUniform.curvature),-limitAngle,limitAngle)  ;//* pow(weight,0.1);
-                    let rz = weights.z * weights.w + clamp(-speed.x * windPower * pow(weight,materialUniform.curvature),-limitAngle,limitAngle) ;//* pow(weight,0.1) ;
+        // if(uv.y < 1.0 ){
+            for (var index:i32 = 1; index <= 5 ; index+=1) {
+                let bios = f32(index) / 5.0 ;
+                if(weight >= bios){
+                    let rx = weights.x * weights.w + clamp(speed.y * windPower * pow(weight,materialUniform.curvature),-1.0,1.0)  ;
+                    let rz = weights.z * weights.w + clamp(-speed.x * windPower * pow(weight,materialUniform.curvature),-1.0,1.0) ;
 
                     var rot = buildRotateXYZMat4(rx,0.0,rz,0.0,materialUniform.grassHeight*bios,0.0);
                     finalMatrix *= rot ;
                 }
             }
-        }
+        // }
 
         finalMatrix *= roat;
         //create grass pivot matrix 

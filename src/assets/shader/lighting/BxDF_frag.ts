@@ -90,7 +90,7 @@ export let BxDF_frag: string = /*wgsl*/ `
       var kS = F;
       var kD = vec3(1.0) - kS;
       kD = kD * (1.0 - fragData.Metallic);
-      let env =  materialUniform.envIntensity * approximateSpecularIBL( F , fragData.Roughness , fragData.R ) ;
+      let env =  materialUniform.envIntensity * approximateSpecularIBL( F , fragData.Roughness , fragData.R , fragData.NoV ) ;
 
       //***********indirect-specular part********* 
       var surfaceReduction = 1.0/(fragData.Roughness*fragData.Roughness+1.0);            //压暗非金属的反射

@@ -15,6 +15,7 @@ export let GrassShader = /* wgsl */`
         baseColor: vec4<f32>,
         grassBottomColor: vec4<f32>,
         grassTopColor: vec4<f32>,
+        materialF0: vec4<f32>,
         windBound: vec4<f32>,
         windDirection: vec2<f32>,
         windPower: f32,
@@ -68,7 +69,7 @@ export let GrassShader = /* wgsl */`
     
         // weights0 x,y,z is grass blend dir , w is curvature random 
         let weights = vertex.weights0 ;
-        var speed = windDirection.xz * ( windNoise.r ) ; 
+        var speed = windDirection.xz * ( windNoise.rg ) ; 
      
         var roat = localMatrix ;
         roat[3].x = 0.0 ;
@@ -78,20 +79,18 @@ export let GrassShader = /* wgsl */`
         var uv = vertex.uv ;
         let weight = ( 1.0 - uv.y )  ;
         let limitAngle = 90.0 / 8.0 * DEGREES_TO_RADIANS + PI * 0.35 ;
-        if(uv.y < 1.0 ){
+        // if(uv.y < 1.0 ){
             for (var index:i32 = 1; index <= 5 ; index+=1) {
                 let bios = f32(index) / 5.0 ;
-                if(uv.y <= bios){
-                    // let bios2 = f32(index) / 8.0 ;
-
-                    let rx = weights.x * weights.w + clamp(speed.y * windPower * pow(weight,materialUniform.curvature),-limitAngle,limitAngle)  ;//* pow(weight,0.1);
-                    let rz = weights.z * weights.w + clamp(-speed.x * windPower * pow(weight,materialUniform.curvature),-limitAngle,limitAngle) ;//* pow(weight,0.1) ;
+                if(weight >= bios){
+                    let rx = weights.x * weights.w + clamp(speed.y * windPower * pow(weight,materialUniform.curvature),-1.0,1.0)  ;
+                    let rz = weights.z * weights.w + clamp(-speed.x * windPower * pow(weight,materialUniform.curvature),-1.0,1.0) ;
 
                     var rot = buildRotateXYZMat4(rx,0.0,rz,0.0,materialUniform.grassHeight*bios,0.0);
                     finalMatrix *= rot ;
                 }
             }
-        }
+        // }
 
         finalMatrix *= roat;
         //create grass pivot matrix 
@@ -146,7 +145,7 @@ export let GrassShader = /* wgsl */`
         let NoV = max(dot(normal,viewDir),0.0);
 
         var mainLightColor:vec3<f32> = sunLight.intensity / LUMEN * sunLight.lightColor.rgb ;
-        let att = clamp(dot(-sunDir,normal) * 0.5 + 0.5 ,0.0,1.0)  * shadowStrut.directShadowVisibility[0] ;// + materialUniform.translucent ;
+        let att = clamp(dot(-sunDir,normal) * 0.5 + 0.5 ,0.0,1.0) ;// + materialUniform.translucent ;
 
         let grassColor = mix(materialUniform.grassBottomColor,materialUniform.grassTopColor * att * vec4<f32>(mainLightColor,1.0) , 1.0 - uv.y );
 
@@ -159,17 +158,16 @@ export let GrassShader = /* wgsl */`
         //     backColor = backColor ;
         // }
 
-        var f0 = 0.14 * materialUniform.grassTopColor.rgb ;
         var roughness = materialUniform.roughness ;
-        // var kS = FresnelSchlickRoughness(NoV, f0 , roughness );
-        var envRef = approximateSpecularIBL( materialUniform.grassTopColor.rgb , roughness + 0.35 , R ,NoV ) * f0 ;
+        // var envRef = approximateSpecularIBL( materialUniform.materialF0.rgb , roughness + 0.35 , R ,NoV ) ;
+        let MAX_REFLECTION_LOD  = f32(textureNumLevels(prefilterMap)) ;
+        var irradiance = LinearToGammaSpace(globalUniform.skyExposure * textureSampleLevel(prefilterMap, prefilterMapSampler, fragData.N.xyz, 0.8 * (MAX_REFLECTION_LOD) ).rgb);
         let specular = vec3<f32>( pow(max(dot(viewDir, reflectDir), 0.0), (1.0 - roughness + 0.001) * 200.0 ) ) * mainLightColor * materialUniform.specular;
 
-        var diffuse = color.rgb / PI * grassColor.rgb ;
-        var finalColor = diffuse + specular + envRef ;//+ backColor;
+        var diffuse = color.rgb / PI * grassColor.rgb * shadowStrut.directShadowVisibility[0] ;
+        var finalColor = diffuse + specular + irradiance * grassColor.rgb * sunLight.quadratic;//+ backColor;
+        // var finalColor = irradiance * grassColor.rgb * sunLight.quadratic;//+ backColor;
 
-        // finalColor = pow(finalColor,vec3<f32>(1.0/2.2));
-        // ORI_ShadingInput.BaseColor = vec4<f32>(att,att,att,1.0) ;
         ORI_ShadingInput.BaseColor = vec4<f32>(finalColor.rgb,1.0) ;
         UnLit();
     }
