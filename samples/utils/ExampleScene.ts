@@ -67,9 +67,9 @@ export function createSceneParam(): ExampleSceneParam {
                 z: -40,
             },
             euler: {
-                x: 0,
-                y: 200,
-                z: 135,
+                x: 20,
+                y: 160,
+                z: 0,
             },
 
             kelvin: 5355,
