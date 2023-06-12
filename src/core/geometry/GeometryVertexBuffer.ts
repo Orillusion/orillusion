@@ -91,6 +91,7 @@ export class GeometryVertexBuffer {
         for (let i = 0; i < shaderReflection.attributes.length; i++) {
             const attributeInfo = shaderReflection.attributes[i];
             if (attributeInfo.name == `index`) continue;
+            if (attributeInfo.type == `builtin`) continue;
             this._attributeLocation[attributeInfo.name] = attributeInfo.location;
 
             let attributeLayout: VertexAttribute = {
@@ -132,6 +133,7 @@ export class GeometryVertexBuffer {
     }
 
     public upload(attribute: string, vertexDataInfo: VertexAttributeData) {
+        if (!this.vertexGPUBuffer) return;
         switch (this.geometryType) {
             case GeometryVertexType.split:
                 {

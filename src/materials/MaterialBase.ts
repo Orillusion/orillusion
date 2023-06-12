@@ -1,3 +1,4 @@
+import { GPUPrimitiveTopology } from '..';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
 import { ShaderState } from '../gfx/graphics/webGpu/shader/value/ShaderState';
 import { RendererType } from '../gfx/renderJob/passRenderer/state/RendererType';
@@ -298,6 +299,12 @@ export class MaterialBase extends MaterialPass {
         //         }
         //     })
         // });
+    }
+
+    public set topology(topology: GPUPrimitiveTopology) {
+        if (this.renderShader) {
+            this.renderShader.topology = topology;
+        }
     }
 
     /**

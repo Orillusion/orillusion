@@ -195,10 +195,12 @@ export class Transform extends ComponentBase {
     */
     public notifyLocalChange() {
         this._localChange = true;
-        let entityChildren = this.object3D.entityChildren;
-        for (let i = 0, len = entityChildren.length; i < len; i++) {
-            const transform = entityChildren[i].transform;
-            transform.notifyLocalChange();
+        if (this.object3D) {
+            let entityChildren = this.object3D.entityChildren;
+            for (let i = 0, len = entityChildren.length; i < len; i++) {
+                const transform = entityChildren[i].transform;
+                transform.notifyLocalChange();
+            }
         }
     }
 

@@ -67,7 +67,6 @@ fn pointLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, rough
 
         var lightColor = light.lightColor.rgb  ;
         lightColor = getHDRColor(lightColor , light.linear )  ;
-        // lightColor = LinearToSrgbBranchless(lightColor.rgb) ;
 
         #if USE_LAMBERT
           color = vec3<f32>(1.0,0.5,1.0) ;
@@ -108,7 +107,7 @@ fn spotLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, roughn
           
           }
         }else{
-          atten = 0.0 ;
+            atten = 0.0 ;
         }
 
         if( light.castShadow >= 0 )

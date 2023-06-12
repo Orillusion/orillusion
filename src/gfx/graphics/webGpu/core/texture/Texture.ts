@@ -344,6 +344,10 @@ export class Texture implements GPUSamplerDescriptor {
         this.noticeChange();
     }
 
+    public get sourceImageData() {
+        return this._sourceImageData;
+    }
+
     protected updateTextureDescription() {
         // let mipmapCount = this.useMipmap ? Math.floor(Math.log2(this.width)) : 1;
         this.mipmapCount = Math.floor(this.useMipmap ? Math.log2(Math.min(this.width, this.height)) : 1);
