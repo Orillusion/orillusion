@@ -9,11 +9,10 @@ import {
 export class Sample_CandleFlame {
     async run() {
         Engine3D.setting.shadow.enable = true;
-        Engine3D.setting.shadow.pointShadowBias = 0.6;
+        Engine3D.setting.shadow.pointShadowBias = 0.001;
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.updateFrameRate = 1;
-        Engine3D.setting.material.materialChannelDebug = true;
-        await Engine3D.init({});
+        await Engine3D.init();
 
         let scene = new Scene3D();
         scene.addComponent(AtmosphericComponent);

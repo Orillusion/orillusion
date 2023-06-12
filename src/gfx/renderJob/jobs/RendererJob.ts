@@ -16,6 +16,7 @@ import { PostRenderer } from '../passRenderer/post/PostRenderer';
 import { PostBase } from '../post/PostBase';
 import { RendererBase } from '../passRenderer/RendererBase';
 import { Ctor } from '../../../util/Global';
+import { DDGIProbeRenderer } from '../passRenderer/ddgi/DDGIProbeRenderer';
 
 /**
  * render jobs 
@@ -39,6 +40,10 @@ export class RendererJob {
      */
     public pointLightShadowRenderer: PointLightShadowRenderer;
 
+    /**
+     * @internal
+     */
+    public ddgiProbeRenderer: DDGIProbeRenderer;
     /**
      * @internal
      */
@@ -205,6 +210,11 @@ export class RendererJob {
         if (this.depthPassRenderer) {
             this.depthPassRenderer.compute(view, this.occlusionSystem);
             this.depthPassRenderer.render(view, this.occlusionSystem);
+        }
+
+        if (Engine3D.setting.gi.enable && this.ddgiProbeRenderer) {
+            this.ddgiProbeRenderer.compute(view, this.occlusionSystem);
+            this.ddgiProbeRenderer.render(view, this.occlusionSystem);
         }
 
         let passList = this.rendererMap.getAllPassRenderer();

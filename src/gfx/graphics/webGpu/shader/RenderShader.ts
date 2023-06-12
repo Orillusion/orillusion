@@ -371,11 +371,11 @@ export class RenderShader extends ShaderBase {
             this.defineValue[`USE_WORLDPOS`] = false;
             this.defineValue[`USEGBUFFER`] = false;
         }
-        // if (Engine3D.setting.gi.enable) {
-        //     this.defineValue[`USEGI`] = true;
-        // } else {
-        //     this.defineValue[`USEGI`] = false;
-        // }
+        if (Engine3D.setting.gi.enable) {
+            this.defineValue[`USEGI`] = true;
+        } else {
+            this.defineValue[`USEGI`] = false;
+        }
         if (Engine3D.setting.material.materialChannelDebug) {
             this.defineValue[`USE_DEBUG`] = true;
         }
