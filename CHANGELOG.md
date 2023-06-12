@@ -1,5 +1,12 @@
-## [0.6.4](https://github.com/Orillusion/orillusion/compare/v0.6.3...v0.6.4) (2023-06-06)
+## [0.6.5](https://github.com/Orillusion/orillusion/compare/v0.6.4...v0.6.5) (2023-06-12)
 
+### Features
+
+* **GI:** Add GI ([#215](https://github.com/Orillusion/orillusion/issues/215)) ([775ebbc](https://github.com/Orillusion/orillusion/commit/775ebbcee2ff801af931d2e626c8f4f5a4c5c09f))
+* **GUI:** Add color transition mode to the UIButton ([#212](https://github.com/Orillusion/orillusion/issues/212)) ([56e5f03](https://github.com/Orillusion/orillusion/commit/56e5f034ea180c41cb6e97cb143e1822c497bdd1))
+
+
+## [0.6.4](https://github.com/Orillusion/orillusion/compare/v0.6.3...v0.6.4) (2023-06-06)
 
 ### Bug Fixes
 

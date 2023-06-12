@@ -1,6 +1,6 @@
 {
     "name": "@orillusion/core",
-    "version": "0.6.4",
+    "version": "0.6.5",
     "author": "Orillusion",
     "description": "Orillusion WebGPU Engine",
     "main": "./dist/orillusion.umd.js",
