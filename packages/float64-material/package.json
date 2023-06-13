@@ -1,14 +1,26 @@
 {
   "name": "@orillusion/float64-material",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.2.0",
+  "author": "Orillusion",
+  "description": "Orillusion Float64-material Plugin",
+  "main": "./dist/float64-material.umd.js",
+  "module": "./dist/float64-material.es.js",
+  "module:dev": "./index.ts",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+      "build": "vite build && npm run build:types && npm run build:clean",
+      "build:types": "tsc --emitDeclarationOnly -p tsconfig.json",
+      "build:clean": "mv dist/packages/float64-material/* dist && rm -rf dist/src && rm -rf dist/packages",
+      "docs": "npm run docs:typedoc ../../docs/float64-material index.ts",
+      "docs:typedoc": "npx typedoc --plugin typedoc-plugin-markdown --plugin ../../script/typedoc-plugin-not-exported.js --tsconfig tsconfig.json --gitRevision main --hideBreadcrumbs true --allReflectionsHaveOwnDocument true --readme none --excludeInternal --excludePrivate --excludeProtected --sort source-order --out"
   },
-  "author": "",
-  "license": "ISC",
-      "dependencies": {
-        "@orillusion/core": "^0.6.0"
-    }
+  "license": "MIT",
+  "repository": {
+      "type": "git",
+      "url": "git+https://github.com/Orillusion/orillusion.git"
+  },
+  "dependencies": {
+      "@orillusion/core": "^0.6.0"
+  }
 }

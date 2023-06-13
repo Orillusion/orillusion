@@ -21,7 +21,7 @@ struct MVPMatrix {
             cameraPos_l: vec3<f32>,
             matrixMVP_RTE: mat4x4<f32>,
         };
-        
+
         @group(2) @binding(0)
         var<uniform> args: MVPMatrix;
 
@@ -29,7 +29,7 @@ fn applyLogarithmicDepth(clipPosition: vec4<f32>,logarithmicDepthConstant: f32,p
     let z = ((2.0 * log((logarithmicDepthConstant * clipPosition.z) + 1.0) / log((logarithmicDepthConstant * perspectiveFarPlaneDistance) + 1.0)) - 1.0) * clipPosition.w;
     return vec4<f32>(clipPosition.x, clipPosition.y, z, clipPosition.w);
 }
-       
+
 @vertex
 fn VertMain(in: VertexInput) -> VertexOutput {
     let position_h = in.position;
