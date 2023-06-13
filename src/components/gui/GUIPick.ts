@@ -132,8 +132,8 @@ export class GUIPick {
                 let panels = canvas.object3D.getComponentsByProperty('isUIPanel', true, true) as UIPanel[];
 
                 panels.sort((a, b) => {
-                    let aOrder = a['_mesh'].uiRenderer['__renderOrder'];
-                    let bOrder = b['_mesh'].uiRenderer['__renderOrder'];
+                    let aOrder = a['_uiRenderer']['__renderOrder'];
+                    let bOrder = b['_uiRenderer']['__renderOrder'];
                     return aOrder > bOrder ? -1 : 1;
                 })
 

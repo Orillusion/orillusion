@@ -42,7 +42,7 @@ export class UIInteractive extends UIComponentBase implements IUIInteractive {
     }
 
     public rayPick(ray: Ray, panel: UIPanel, screenPos: Vector2, screenSize: Vector2): { intersect: boolean; intersectPoint?: Vector3; distance: number } {
-        return GUIPickHelper.rayPick(ray, screenPos, screenSize, panel.space, this._uiTransform, panel['_mesh'].transform.worldMatrix);
+        return GUIPickHelper.rayPick(ray, screenPos, screenSize, panel.space, this._uiTransform, panel.transform.worldMatrix);
     }
 
     public cloneTo(obj: Object3D) {

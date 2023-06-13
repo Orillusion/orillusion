@@ -7,11 +7,11 @@ import { BillboardType } from './gui/GUIConfig';
 export class BillboardComponent extends ComponentBase {
     public type: BillboardType;
     public camera: Camera3D;
-    private _cameraDirection: Vector3;
+    private _cameraPosition: Vector3;
 
     constructor() {
         super();
-        this._cameraDirection = new Vector3();
+        this._cameraPosition = new Vector3();
     }
 
     public onUpdate() {
@@ -22,13 +22,14 @@ export class BillboardComponent extends ComponentBase {
 
     private updateBillboardMatrix(): void {
         let camera = this.transform.view3D.camera;
-        this._cameraDirection.copyFrom(camera.transform.back);
+        this._cameraPosition.copyFrom(camera.transform.back);
         if (this.type == BillboardType.BillboardXYZ) {
         } else if (this.type == BillboardType.BillboardY) {
-            this._cameraDirection.y = 0;
+            this._cameraPosition.y = 0;
         }
-        this._cameraDirection.normalize();
-        this.transform.lookAt(Vector3.ZERO, this._cameraDirection, camera.transform.up);
+        this._cameraPosition.normalize();
+        this._cameraPosition.add(this.object3D.localPosition, this._cameraPosition);
+        this.transform.lookAt(this.object3D.localPosition, this._cameraPosition, camera.transform.up);
     }
 
     public cloneTo(obj: Object3D) {
