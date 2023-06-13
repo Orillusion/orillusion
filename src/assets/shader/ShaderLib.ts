@@ -85,7 +85,6 @@ export class ShaderLib {
         ShaderLib.register('LitShader', LitShader);
         ShaderLib.register('PBRLItShader', PBRLItShader);
 
-
         ShaderLib.register('ClusterDebug_frag', ClusterDebug_frag);
         ShaderLib.register('BxdfDebug_frag', BxdfDebug_frag);
         ShaderLib.register('GenerayRandomDir', GenerayRandomDir);

@@ -136,7 +136,7 @@ export class ShaderBase {
             this.defineValue[defineName] = value;
             this.noticeStateChange();
             this.noticeShaderChange();
-            console.log("USE_CLEARCOAT");
+            // console.log("USE_CLEARCOAT");
         }
         this.defineValue[defineName] = value;
     }

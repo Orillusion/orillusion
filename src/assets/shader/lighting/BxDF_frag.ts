@@ -58,7 +58,8 @@ export let BxDF_frag: string = /*wgsl*/ `
           irradiance += getIrradiance().rgb ;
       #else
           let MAX_REFLECTION_LOD  = f32(textureNumLevels(prefilterMap)) ;
-          irradiance += LinearToGammaSpace(globalUniform.skyExposure * textureSampleLevel(prefilterMap, prefilterMapSampler, fragData.N.xyz, 0.8 * (MAX_REFLECTION_LOD) ).rgb);
+          // irradiance += LinearToGammaSpace(globalUniform.skyExposure * textureSampleLevel(prefilterMap, prefilterMapSampler, fragData.N.xyz, 0.8 * (MAX_REFLECTION_LOD) ).rgb);
+          irradiance += (globalUniform.skyExposure * textureSampleLevel(prefilterMap, prefilterMapSampler, fragData.N.xyz, 0.8 * (MAX_REFLECTION_LOD) ).rgb);
       #endif
 
       //***********lighting-PBR part********* 
@@ -133,34 +134,16 @@ export let BxDF_frag: string = /*wgsl*/ `
       var clearCoatColor = vec3<f32>(0.0);
       #if USE_CLEARCOAT
         let clearCoatBaseColor = vec3<f32>(1.0) * materialUniform.baseColor.rgb ;
-        for(var i:i32 = i32(start) ; i < i32(end); i = i + 1 )
-        {
-            let light = getLight(i32(i));
-            switch (light.lightType) {
-                case PointLightType: {
-                  clearCoatColor += pointLighting( clearCoatBaseColor ,ORI_VertexVarying.vWorldPos.xyz,fragData.N,fragData.V,fragData.ClearcoatRoughness , 0.0, light ) ;
-                }
-                case DirectLightType: {
-                  clearCoatColor += directLighting( clearCoatBaseColor ,fragData.N,fragData.V,fragData.ClearcoatRoughness ,0.0,light , globalUniform.shadowBias) ;
-                }
-                case SpotLightType: {
-                  clearCoatColor += spotLighting( clearCoatBaseColor,ORI_VertexVarying.vWorldPos.xyz,fragData.N,fragData.V,fragData.ClearcoatRoughness ,0.0, light ) ;
-                }
-                default: {
-                }
-            }
-        }
-        clearCoatColor += approximate_coating(color,clearCoatColor,-fragData.N,fragData.V,sunLight);
-        // clearCoatColor /= fragData.Albedo.a ;
-        color += clearCoatColor.rgb ; 
+        let clearNormal = fragData.N ;
+        let clearcoatRoughness = fragData.ClearcoatRoughness ;
+        let att = sunLight.intensity / LUMEN ;
+        let clearCoatLayer = ClearCoat_BRDF( color , materialUniform.clearcoatColor.rgb , clearNormal , -sunLight.direction ,-fragData.V , materialUniform.clearcoatWeight , clearcoatRoughness , att );
+        color = vec3<f32>(clearCoatLayer.rgb/fragData.Albedo.a) ; 
       #endif
    
       ORI_FragmentOutput.color = vec4<f32>(LinearToGammaSpace(color.rgb),fragData.Albedo.a) ;
-      // ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(clearCoatColor),fragData.Albedo.a) ;
   }
 
-  fn clearCoat(){
-   
-  }
+ 
   `
 

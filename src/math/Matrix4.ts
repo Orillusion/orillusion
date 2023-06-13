@@ -29,7 +29,7 @@ export class Matrix4 {
     /**
      * matrix has max limit count
      */
-    public static maxCount: number = 50000;
+    public static maxCount: number = 200000;
 
     /**
      * current matrix use count 

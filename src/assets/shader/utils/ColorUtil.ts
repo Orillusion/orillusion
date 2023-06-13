@@ -96,4 +96,18 @@ export let ColorUtil: string = /*wgsl*/ `
             return color2 * (1.0 / 12.92);
         }
     }
+
+//     fn ReorientedBlendNormal(){
+//         vec3 t = texture(baseMap,   uv).xyz * vec3( 2.0,  2.0, 2.0) + vec3(-1.0, -1.0,  0.0);
+// vec3 u = texture(detailMap, uv).xyz * vec3(-2.0, -2.0, 2.0) + vec3( 1.0,  1.0, -1.0);
+// vec3 r = normalize(t * dot(t, u) - u * t.z);
+// return r;
+//     }
+
+//     fn UDNBlendNormal(){
+    // vec3 t = texture(baseMap,   uv).xyz * 2.0 - 1.0;
+    // vec3 u = texture(detailMap, uv).xyz * 2.0 - 1.0;
+    // vec3 r = normalize(t.xy + u.xy, t.z);
+    // return r;
+//     }
 `

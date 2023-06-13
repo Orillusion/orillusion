@@ -68,6 +68,14 @@ export let BRDF_frag: string = /*wgsl*/ `
         return level * f32(mipmapCount);
     }
 
+    fn IORToF0(ior:f32)->f32{
+        var dc = ior - 1.0 ;
+        dc *= dc ;
+        var dt = ior + 1.0 ;
+        dt *= dt ;
+        return dc / dt ;
+    }
+
     fn Fd90( NoL:f32, roughness:f32) -> f32
     {
         return (2.0 * NoL * roughness) + 0.4;
@@ -85,7 +93,7 @@ export let BRDF_frag: string = /*wgsl*/ `
 
     fn FresnelSchlickRoughness( NoV:f32,  F0:vec3<f32>,  roughness:f32) -> vec3<f32>
     {
-        return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - NoV, 5.0);
+        return F0 + (max(vec3(roughness), F0) - F0) * pow(1.0 - NoV, 5.0);
     }
 
     fn DistributionGGX( NdotH:f32 ,  roughness:f32 ) -> f32
@@ -170,9 +178,8 @@ export let BRDF_frag: string = /*wgsl*/ `
         return (alpha2) / (PI * (NdotH2 * (alpha2 - 1.0) + 1.0) * (NdotH2 * (alpha2 - 1.0) + 1.0));
     }
 
-    fn D_GGX( N:vec3<f32>,  H:vec3<f32>,  roughness:f32 ) -> f32
+    fn D_GGX( NoH:f32,  roughness:f32 ) -> f32
     {
-        var NoH = saturate(dot(N, H));
         var d = ( NoH * roughness - NoH ) * NoH + 1.0;	// 2 mad
         return roughness / ( PI*d*d );					// 4 mul, 1 rcp
     }
@@ -232,7 +239,7 @@ export let BRDF_frag: string = /*wgsl*/ `
         let MAX_REFLECTION_LOD  = i32(textureNumLevels(prefilterMap)) ;
         let mip = roughnessToMipmapLevel(roughness,MAX_REFLECTION_LOD);
         var prefilteredColor: vec3<f32> = (textureSampleLevel(prefilterMap, prefilterMapSampler, getSpecularDominantDir(fragData.N,R,roughness) , mip ).rgb);
-        prefilteredColor = globalUniform.skyExposure * LinearToGammaSpace(prefilteredColor);
+        prefilteredColor = globalUniform.skyExposure * (prefilteredColor);
         var envBRDF = textureSampleLevel(brdflutMap, brdflutMapSampler, vec2<f32>(NoV, roughness) , 0.0 ) ;
         return prefilteredColor * (specularColor.rgb * envBRDF.x + saturate( 50.0 * specularColor.g ) * envBRDF.y) ;
     }
@@ -268,13 +275,19 @@ export let BRDF_frag: string = /*wgsl*/ `
         return f0 + (f90 - f0) * pow(1.0 - VoH,5.0);
     }
 
+    fn F_Schlick2(  SpecularColor:vec3<f32>,  VoH :f32 )-> vec3<f32> {
+        var Fc = pow5( 1.0 - VoH );
+        let rt = clamp(50.0 * SpecularColor.g,0.0,1.0) ;
+        return rt * Fc + (1.0 - Fc) * SpecularColor;
+    }
+
     //https://google.github.io/filament/Filament.html materialsystem/clearcoatmodel/clearcoatparameterization
     fn CoatSpecular_brdf( f:vec3<f32>, s:vec3<f32>, n:vec3<f32> , v:vec3<f32> , l:vec3<f32> , att:f32 , layer :vec3<f32> , clearcoatRoughnessFactor:f32 ) -> vec3<f32> {
         let H = normalize(v + l); 
         let VdotNc = max(dot(v,n),0.0);
         let LdotNc = max(dot(l,n),0.0);
         let NoH = max(dot(n,H),0.0);
-        let LoH = clamp(dot(l,H),0.0,1.0);
+        let LoH = saturate(dot(l, H))  ;
         let NoL = max(dot(n,l),0.0);
 
         let Fd = f ; 
@@ -283,35 +296,37 @@ export let BRDF_frag: string = /*wgsl*/ `
         let factor = clamp(clearcoatRoughnessFactor,0.089,1.0);
         let clearCoatRoughness = factor * factor ;
 
-        let Dc = Specular_D_GGX( NoH , clearCoatRoughness ) ;
-        let Vc = V_Kelemen( LoH ) ;
-        let Fc = F_Schlick(vec3<f32>(0.04), clearCoatRoughness , pow(LoH,2.0)); 
+        let Dc = D_GGX( NoH , factor ) ;
+        let Vc = V_Kelemen( LoH ) * NoL ;
+        let Fc = F_Schlick(vec3<f32>(0.04), 2.0 , LoH); 
         let Frc = (Dc * Vc) * Fc ;
-        // return layer * vec3<f32>((Fd + Fr * (1.0 - Fc)) * (1.0 - Fc) + Frc) ;//* NoL;
-        return layer * vec3<f32>((Fd + Fr * (1.0 - Fc)) * (1.0 - Fc) + Frc) * ( 0.5 + NoL * 0.5 ) ;
+        // return layer * vec3<f32>((Fd + Fr * (1.0 - Fc)) * (1.0 - Fc) + Frc) * ( 0.5 + NoL * 0.5 ) ;
+        return vec3<f32>(Frc) ;
     }
 
-    // fn approximate_coating(base:vec3<f32> , clearColor: vec3<f32>, n:vec3<f32> , v:vec3<f32> , light:LightData , clearcoatRoughnessFactor:f32 ) -> vec3<f32> {
-    //     let factor = clamp(clearcoatRoughnessFactor,0.084,1.0);
-    //     var clearcoatAlpha = factor * factor + fragData.ClearcoatRoughness;
+    fn approximate_coating(base:vec3<f32> , clearColor: vec3<f32>, n:vec3<f32> , v:vec3<f32> , light:LightData , clearcoatRoughnessFactor:f32 ) -> vec3<f32> {
+        let factor = clamp(clearcoatRoughnessFactor,0.084,1.0);
+        var clearcoatAlpha = factor * factor + fragData.ClearcoatRoughness;
 
-    //     // var lightColor = getHDRColor( lightCC.rgb , light.linear )  ;
-    //     var att = light.intensity ;
-    //     let l = light.direction ;
+        // var lightColor = getHDRColor( lightCC.rgb , light.linear )  ;
+        var att = light.intensity / LUMEN ;
+        let l = light.direction ;
    
-    //     let NdotV = max(dot(n,v),0.0);
-    //     let MAX_REFLECTION_LOD  = i32(textureNumLevels(prefilterMap)) ;
-    //     let mip = roughnessToMipmapLevel(clearcoatAlpha,MAX_REFLECTION_LOD);
-    //     let R = 2.0 * dot( v , n ) * n - v ;
-    //     var envIBL: vec3<f32> = globalUniform.skyExposure * (textureSampleLevel(prefilterMap, prefilterMapSampler, R ,mip ).rgb) ;
-    //     envIBL = LinearToGammaSpace(envIBL);
+        let NdotV = max(dot(n,v),0.0);
+        let MAX_REFLECTION_LOD  = f32(textureNumLevels(prefilterMap)) ;
+        // let mip = roughnessToMipmapLevel(clearcoatAlpha,MAX_REFLECTION_LOD);
+        let R = 2.0 * dot( v , n ) * n - v ;
+        var envIBL: vec3<f32> = globalUniform.skyExposure * (textureSampleLevel(prefilterMap, prefilterMapSampler, R , MAX_REFLECTION_LOD * clearcoatRoughnessFactor ).rgb) ;
+        // envIBL = LinearToGammaSpace(envIBL);
 
-    //     let clearCoat = materialUniform.clearcoatFactor ;
-    //     let f = FresnelSchlickRoughness( max(dot(n,v),0.0) , vec3<f32>(0.0) , clearcoatAlpha ) ;
-    //     let clearcoat_brdf = (f * envIBL) + CoatSpecular_brdf( clearColor , vec3<f32>( clearCoat ) , n , v , -l , att , envIBL , factor ) ;
+        let clearCoat = materialUniform.clearcoatFactor ;
+        // let f = FresnelSchlickRoughness( max(dot(n,v),0.0) , vec3<f32>(0.0) , clearcoatAlpha ) ;
+        let clearcoat_brdf =  CoatSpecular_brdf( vec3<f32>(0.04) , vec3<f32>( 0.04 ) , n , v , -l , att , vec3<f32>( 0.04 ) , factor ) ;
 
-    //     // return clearcoat_brdf;+ fragData.ClearcoatRoughness 
-    //     return mix(base,clearcoat_brdf,materialUniform.clearcoatWeight ) ;
-    // }
+        // return clearcoat_brdf;+ fragData.ClearcoatRoughness 
+        return mix(base, clearcoat_brdf,materialUniform.clearcoatWeight ) ;
+    }
+
+   
 `
 
