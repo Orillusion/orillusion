@@ -125,7 +125,7 @@ export let MultiBouncePass_cs: string = /*wgsl*/ `
      return probeIrradiance;
   }
 
-  n getIrrdiaceIndex(index:i32, wsn:vec3<f32>) -> vec4<f32>{
+  fn getIrrdiaceIndex(index:i32, wsn:vec3<f32>) -> vec4<f32>{
     var wsN = rotateDir(wsn.xyz);
     var texCoord:vec2<f32> = textureCoordFromDirection(wsN,
       index,

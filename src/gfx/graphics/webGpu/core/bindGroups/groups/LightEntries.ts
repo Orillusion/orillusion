@@ -6,8 +6,8 @@ import { Engine3D } from "../../../../../../Engine3D";
 import { LightData } from "../../../../../../components/lights/LightData";
 import { View3D } from "../../../../../../core/View3D";
 import { MemoryInfo } from "../../../../../../core/pool/memory/MemoryInfo";
-import { IrradianceVolume } from "../../../../../data/IrradianceVolume";
 import { EntityCollect } from "../../../../../renderJob/collect/EntityCollect";
+import { DDGIIrradianceVolume } from "../../../../../renderJob/passRenderer/ddgi/DDGIIrradianceVolume";
 import { StorageGPUBuffer } from "../../buffer/StorageGPUBuffer";
 
 /**
@@ -16,7 +16,7 @@ import { StorageGPUBuffer } from "../../buffer/StorageGPUBuffer";
  */
 export class LightEntries {
     public storageGPUBuffer: StorageGPUBuffer;
-    public irradianceVolume: IrradianceVolume;
+    public irradianceVolume: DDGIIrradianceVolume;
     private _lightList: MemoryInfo[] = [];
 
     constructor() {
@@ -25,7 +25,8 @@ export class LightEntries {
             GPUBufferUsage.COPY_SRC
         );
 
-        this.irradianceVolume = new IrradianceVolume();
+        this.irradianceVolume = new DDGIIrradianceVolume();
+        this.irradianceVolume.init(Engine3D.setting.gi);
 
         for (let i = 0; i < Engine3D.setting.light.maxLight; i++) {
             let memory = this.storageGPUBuffer.memory.allocation_node(LightData.lightSize * 4);
