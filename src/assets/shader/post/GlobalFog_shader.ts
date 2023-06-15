@@ -83,8 +83,8 @@ fn main(@location(0) fragUV: vec2<f32>,
     let dis = texNormal.w * distance(cameraPos,texPosition.xyz);
     let height = texPosition.y ;
 
-    var heightFactor = computeFog((dis + height) / 2.0 );
-    //var heightFactor = computeFog((dis));
+    //var heightFactor = computeFog((dis + height) / 2.0 );
+    var heightFactor = computeFog((dis));
     if(texNormal.w<=0.5){
         return FragmentOutput(texColor);
     }else{
