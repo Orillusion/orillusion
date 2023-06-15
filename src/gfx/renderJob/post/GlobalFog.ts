@@ -10,6 +10,9 @@ import { webGPUContext } from '../../graphics/webGpu/Context3D';
 import { PostBase } from './PostBase';
 import { View3D } from '../../../core/View3D';
 import { GBufferFrame } from '../frame/GBufferFrame';
+import { SkyRenderer } from '../../../components/renderer/SkyRenderer';
+import { EntityCollect } from '../collect/EntityCollect';
+import { Texture } from '../../..';
 /**
  * screen space fog
  * @group Post Effects
@@ -40,6 +43,9 @@ export class GlobalFog extends PostBase {
             end: new UniformNode(globalFog.end),
             density: new UniformNode(globalFog.density),
             ins: new UniformNode(globalFog.ins),
+            skyFactor: new UniformNode(globalFog.skyFactor),
+            skyRoughness: new UniformNode(globalFog.skyRoughness),
+            isSkyHDR: new UniformNode(false),
         };
 
         this.rtTexture = this.createRTTexture(`GlobalFog`, presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float);
@@ -104,6 +110,18 @@ export class GlobalFog extends PostBase {
     public get density() {
         return this.viewQuad.uniforms['density'].value;
     }
+    public set skyRoughness(v: number) {
+        this.viewQuad.uniforms['skyRoughness'].value = v;
+    }
+    public get skyRoughness() {
+        return this.viewQuad.uniforms['skyRoughness'].value;
+    }
+    public set skyFactor(v: number) {
+        this.viewQuad.uniforms['skyFactor'].value = v;
+    }
+    public get skyFactor() {
+        return this.viewQuad.uniforms['skyFactor'].value;
+    }
     /**
      * @internal
      */
@@ -125,13 +143,20 @@ export class GlobalFog extends PostBase {
         const renderShader = this.viewQuad.material.renderShader;
         renderShader.setTexture('positionMap', positionMap);
         renderShader.setTexture('normalMap', normalMap);
+        let skyTexture: Texture = Engine3D.res.defaultSky;
+        if (EntityCollect.instance.sky instanceof SkyRenderer) {
+            skyTexture = EntityCollect.instance.sky.map;
+        }
+        renderShader.setTexture(`prefilterMap`, skyTexture);
     }
+
     /**
      * @internal
      */
     render(view: View3D, command: GPUCommandEncoder) {
         const renderShader = this.viewQuad.material.renderShader;
         renderShader.setTexture('colorMap', this.getOutTexture());
+        renderShader.setUniformFloat('isSkyHDR', renderShader.getTexture('prefilterMap').isHDRTexture ? 1 : 0);
         this.viewQuad.renderTarget(view, this.viewQuad, command);
     }
 
