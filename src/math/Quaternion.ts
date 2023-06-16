@@ -357,7 +357,7 @@ export class Quaternion {
      * @param m 
      * @returns 
      */
-    public setFromRotationMatrix(m: any) {
+    public setFromRotationMatrix(m: { rawData: Float32Array }) {
         const te = m.rawData;
         const m11 = te[0];
         const m12 = te[4];
