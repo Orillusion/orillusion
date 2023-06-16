@@ -44,6 +44,10 @@ export type GlobalFogSetting = {
      */
     skyRoughness: number,
     /**
+     * factor effect the sky
+     */
+    overrideSkyFactor: number,
+    /**
      * fog color
      */
     fogColor: Color;

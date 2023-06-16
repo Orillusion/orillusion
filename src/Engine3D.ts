@@ -137,13 +137,14 @@ export class Engine3D {
                     enable: false,
                     fogType: 0.0,
                     height: 100,
-                    start: 400,
-                    end: 50,
+                    start: 800,
+                    end: 200,
                     density: 0.02,
                     ins: 1,
                     skyFactor: 0.5,
-                    skyRoughness: 0.5,
-                    fogColor: new Color(70 / 255, 105 / 255, 145 / 255, 1),
+                    skyRoughness: 0.4,
+                    overrideSkyFactor: 0.8,
+                    fogColor: new Color(112 / 255, 61 / 255, 139 / 255, 1),
                 },
                 ssao: {
                     enable: false,
@@ -264,7 +265,7 @@ export class Engine3D {
             type: 'HDRSKY',
             sky: null,
             skyExposure: 1.0,
-            defaultFar: 1000000,
+            defaultFar: 65536,//can't be to big
             defaultNear: 1,
         },
         light: {

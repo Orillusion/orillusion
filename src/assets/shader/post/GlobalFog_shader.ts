@@ -22,6 +22,7 @@ struct UniformData {
     ins : f32 ,
     skyFactor: f32,
     skyRoughness: f32,
+    overrideSkyFactor: f32,
     isSkyHDR: f32
 };
 
@@ -68,42 +69,65 @@ fn getSkyColor(worldPosition:vec3<f32>, skyRoughness:f32, isHDRTexture:bool) -> 
      return prefilterColor.xyz * globalUniform.skyExposure;
   }
 
+  var<private> texPosition: vec4<f32>;
+  var<private> texNormal: vec4<f32>;
+  var<private> texColor: vec4<f32>;
+
 @fragment
 fn main(@location(0) fragUV: vec2<f32>,
 @builtin(position) coord: vec4<f32>) -> FragmentOutput {
-    var texCoord = fragUV ;
-    texCoord.y = 1.0 - texCoord.y ;
+    var texCoord = vec2<f32>(fragUV.x, 1.0 - fragUV.y);
+    texPosition = textureSample(positionMap, positionMapSampler, texCoord) ;
+    texNormal = textureSample(normalMap, normalMapSampler, texCoord) ;
+    texColor = textureSample(colorMap, colorMapSampler, texCoord) ;
+  
+    var opColor = vec3<f32>(0.0);
+    if(texNormal.w <= 0.5){
+        //for sky
+        if(global.overrideSkyFactor > 0.01){
+            opColor = blendSkyColor();
+        }else{
+            opColor = texColor.xyz;
+        }
+    }else{
+        //for ground
+        var fogFactor = calcFogFactor();
+        if(global.skyFactor > 0.01 || global.overrideSkyFactor > 0.01){
+            opColor = blendGroundColor(fogFactor);
+        }else{
+            opColor = mix(texColor.rgb, global.fogColor.xyz, fogFactor);
+        }
+    }
+    return FragmentOutput(vec4<f32>(opColor.xyz, texColor.a));
+}
 
+fn calcFogFactor() -> f32{
     var cameraPos = globalUniform.cameraWorldMatrix[3].xyz  ;
-
-    var texPosition = textureSample(positionMap, positionMapSampler ,texCoord) ;
-    var texNormal = textureSample(normalMap, normalMapSampler,texCoord) ;
-    var texColor = textureSample(colorMap, colorMapSampler ,texCoord) ;
-
     let dis = texNormal.w * distance(cameraPos,texPosition.xyz);
     let height = texPosition.y ;
-
     //var heightFactor = computeFog((dis + height) / 2.0 );
     var heightFactor = computeFog((dis));
-    if(texNormal.w<=0.5){
-        return FragmentOutput(texColor);
-    }else{
-        var fogFactor = clamp(global.ins * heightFactor,0.0,1.0);
-        var fogColor = global.fogColor.xyz;
-        if(global.skyFactor > 0.01){
-            var skyColor = getSkyColor(texPosition.xyz, global.skyRoughness, global.isSkyHDR > 0.5);
-            var skyFactor = global.skyFactor;
-            skyFactor += (1.0 - skyFactor) * fogFactor;
-            fogColor = mix(global.fogColor.xyz, skyColor, global.skyFactor);
-        }
-        
-        var opColor = mix( texColor.rgb , fogColor.rgb, fogFactor);
-        return FragmentOutput(vec4<f32>(opColor, texColor.a));
-    }
-  }
-  
+    return clamp(global.ins * heightFactor,0.0,1.0);
+}
 
-  fn computeFog(z:f32) -> f32 {
+    
+fn blendGroundColor(fogFactor:f32) -> vec3<f32>
+{
+    var skyColorBlur = getSkyColor(texPosition.xyz, global.skyRoughness, global.isSkyHDR > 0.5);
+    let skyFactor = clamp(global.skyFactor - global.overrideSkyFactor * 0.5, 0.0, 1.0);
+    var fogColor = mix(global.fogColor.xyz, skyColorBlur, skyFactor);
+    return mix(texColor.rgb, fogColor.rgb, fogFactor);
+}
+
+fn blendSkyColor() -> vec3<f32>
+{
+    let overrideSkyFactor = sqrt(global.overrideSkyFactor);
+    var skyColorBlur = getSkyColor(texPosition.xyz, overrideSkyFactor * 0.3, global.isSkyHDR > 0.5);
+    return mix(global.fogColor.xyz, skyColorBlur, 1.0 - overrideSkyFactor);
+}
+
+
+fn computeFog(z:f32) -> f32 {
     var fog = 0.0;
     if( global.fogType == 0.0 ){
         fog = (global.end - z) / (global.end - global.start);
@@ -114,5 +138,5 @@ fn main(@location(0) fragUV: vec2<f32>,
         fog = exp2(-fog * fog);
     }
     return max(fog,0.0);
-  }
+}
 `;

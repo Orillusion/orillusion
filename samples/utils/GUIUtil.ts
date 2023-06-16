@@ -35,6 +35,7 @@ export class GUIUtil {
         GUIHelp.add(fog, 'ins', 0.0, 5.0, 0.0001);
         GUIHelp.add(fog, 'skyFactor', 0.0, 1.0, 0.0001);
         GUIHelp.add(fog, 'skyRoughness', 0.0, 1.0, 0.0001);
+        GUIHelp.add(fog, 'overrideSkyFactor', 0.0, 1.0, 0.0001);
         GUIHelp.addColor(fog, 'fogColor');
         open && GUIHelp.open();
         GUIHelp.endFolder();

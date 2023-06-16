@@ -45,7 +45,8 @@ export class GlobalFog extends PostBase {
             ins: new UniformNode(globalFog.ins),
             skyFactor: new UniformNode(globalFog.skyFactor),
             skyRoughness: new UniformNode(globalFog.skyRoughness),
-            isSkyHDR: new UniformNode(false),
+            overrideSkyFactor: new UniformNode(globalFog.overrideSkyFactor),
+            isSkyHDR: new UniformNode(0),
         };
 
         this.rtTexture = this.createRTTexture(`GlobalFog`, presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float);
@@ -122,6 +123,14 @@ export class GlobalFog extends PostBase {
     public get skyFactor() {
         return this.viewQuad.uniforms['skyFactor'].value;
     }
+
+    public set overrideSkyFactor(v: number) {
+        this.viewQuad.uniforms['overrideSkyFactor'].value = v;
+    }
+    public get overrideSkyFactor() {
+        return this.viewQuad.uniforms['overrideSkyFactor'].value;
+    }
+
     /**
      * @internal
      */
