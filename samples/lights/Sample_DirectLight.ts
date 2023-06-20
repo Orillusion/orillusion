@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Scene3D, HoverCameraController, Engine3D, AtmosphericComponent, Object3D, Camera3D, Vector3, View3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer, BoxGeometry, CameraUtil } from "@orillusion/core";
+import { Scene3D, HoverCameraController, Engine3D, AtmosphericComponent, Object3D, Camera3D, Vector3, View3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer, BoxGeometry, CameraUtil, Transform } from "@orillusion/core";
 
 //sample of direction light
 class Sample_DirectLight {
@@ -12,7 +12,7 @@ class Sample_DirectLight {
         GUIHelp.init();
 
         this.scene = new Scene3D();
-        this.scene.addComponent(AtmosphericComponent);
+        let skyComponent = this.scene.addComponent(AtmosphericComponent);
 
         // init camera3D
         let mainCamera = CameraUtil.createCamera3D(null, this.scene);
@@ -26,13 +26,13 @@ class Sample_DirectLight {
         view.scene = this.scene;
         view.camera = mainCamera;
 
-        this.initLight();
+        skyComponent.relativeTransform = this.initLight().transform;
         Engine3D.startRenderView(view);
 
     }
 
     // create direction light
-    private initLight() {
+    private initLight(): Transform {
         this.lightObj3D = new Object3D();
         this.lightObj3D.x = 0;
         this.lightObj3D.y = 30;
@@ -48,6 +48,7 @@ class Sample_DirectLight {
         directLight.intensity = 20;
         this.showLightGUI(directLight);
         this.scene.addChild(this.lightObj3D);
+        return directLight.transform;
     }
 
     // show gui
