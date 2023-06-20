@@ -21,8 +21,6 @@ export class GrassMaterial extends MaterialBase {
         shaderState.castShadow = false;
         shaderState.blendMode = BlendMode.NONE;
 
-
-
         ShaderLib.register("GrassCastShadowShader", GrassCastShadowShader);
         let shadowPass = new MaterialBase();
         shadowPass.isPassMaterial = true;

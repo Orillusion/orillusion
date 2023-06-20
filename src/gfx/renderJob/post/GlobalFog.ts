@@ -40,6 +40,10 @@ export class GlobalFog extends PostBase {
             end: new UniformNode(globalFog.end),
             density: new UniformNode(globalFog.density),
             ins: new UniformNode(globalFog.ins),
+            falloff: new UniformNode(0.07),
+            rayLength: new UniformNode(47.0),
+            scatteringExponent: new UniformNode(2.7),
+            dirHeightLine: new UniformNode(10.0),
         };
 
         this.rtTexture = this.createRTTexture(`GlobalFog`, presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float);
@@ -116,6 +120,38 @@ export class GlobalFog extends PostBase {
     public set fogColor(value: Color) {
         this.viewQuad.uniforms['fogColor'].color = value;
         this.viewQuad.uniforms['fogColor'].onChange();
+    }
+
+    public set falloff(v: number) {
+        this.viewQuad.uniforms['falloff'].value = v;
+    }
+
+    public get falloff() {
+        return this.viewQuad.uniforms['falloff'].value;
+    }
+
+    public set rayLength(v: number) {
+        this.viewQuad.uniforms['rayLength'].value = v;
+    }
+
+    public get rayLength() {
+        return this.viewQuad.uniforms['rayLength'].value;
+    }
+
+    public set scatteringExponent(v: number) {
+        this.viewQuad.uniforms['scatteringExponent'].value = v;
+    }
+
+    public get scatteringExponent() {
+        return this.viewQuad.uniforms['scatteringExponent'].value;
+    }
+
+    public set dirHeightLine(v: number) {
+        this.viewQuad.uniforms['dirHeightLine'].value = v;
+    }
+
+    public get dirHeightLine() {
+        return this.viewQuad.uniforms['dirHeightLine'].value;
     }
 
     /**

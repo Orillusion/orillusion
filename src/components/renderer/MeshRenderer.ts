@@ -129,14 +129,4 @@ export class MeshRenderer extends RenderNode {
         super.destroy(force);
     }
 
-    cloneTo(obj: Object3D) {
-        let mr = obj.addComponent(MeshRenderer);
-        mr.geometry = this.geometry;
-        mr.material = this.material;
-        mr.castShadow = this.castShadow;
-        mr.castGI = this.castGI;
-        mr.receiveShadow = this.receiveShadow;
-        mr.rendererMask = this.rendererMask;
-    }
-
 }

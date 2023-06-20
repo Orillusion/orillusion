@@ -137,7 +137,7 @@ export let BxDF_frag: string = /*wgsl*/ `
         let clearNormal = fragData.N ;
         let clearcoatRoughness = fragData.ClearcoatRoughness ;
         let att = sunLight.intensity / LUMEN ;
-        let clearCoatLayer = ClearCoat_BRDF( color , materialUniform.clearcoatColor.rgb , clearNormal , -sunLight.direction ,-fragData.V , materialUniform.clearcoatWeight , clearcoatRoughness , att );
+        let clearCoatLayer = ClearCoat_BRDF( color , materialUniform.clearcoatColor.rgb , materialUniform.ior , clearNormal , -sunLight.direction ,-fragData.V , materialUniform.clearcoatWeight , clearcoatRoughness , att );
         color = vec3<f32>(clearCoatLayer.rgb/fragData.Albedo.a) ; 
       #endif
    

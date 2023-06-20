@@ -179,7 +179,10 @@ export class GUIUtil {
         GUIHelp.add(globalFog, "start", 0, 1000, 0.001);
         GUIHelp.add(globalFog, "height", -100, 1000, 0.001);
         GUIHelp.add(globalFog, "ins", 0, 1, 0.001);
+        GUIHelp.add(globalFog, "falloff", 0, 100, 0.001);
+        GUIHelp.add(globalFog, "rayLength", 0, 1000, 0.001);
+        GUIHelp.add(globalFog, "scatteringExponent", 0, 1000, 0.001);
+        GUIHelp.add(globalFog, "dirHeightLine", 0, 10, 0.001);
         GUIHelp.endFolder();
     }
-
 }

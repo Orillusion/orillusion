@@ -32,9 +32,12 @@ class Sample_Grass {
         this.post = this.view.scene.addComponent(PostProcessingComponent);
         let fog = this.post.addPost(GlobalFog);
         fog.fogColor = new Color(136 / 255, 215 / 255, 236 / 255, 1);
-        fog.start = 1000;
-        fog.height = 480;
-        fog.ins = 0.473;
+        fog.start = 0;
+        fog.height = -0.017;
+        fog.ins = 1;
+        fog.falloff = 0.626;
+        fog.scatteringExponent = 3;
+        fog.dirHeightLine = 10;
         // post.addPost(TAAPost);
 
         this.createScene(this.view.scene);

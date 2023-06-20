@@ -304,6 +304,7 @@ export let BRDF_frag: string = /*wgsl*/ `
         return vec3<f32>(Frc) ;
     }
 
+    #if USE_CLEARCOAT
     fn approximate_coating(base:vec3<f32> , clearColor: vec3<f32>, n:vec3<f32> , v:vec3<f32> , light:LightData , clearcoatRoughnessFactor:f32 ) -> vec3<f32> {
         let factor = clamp(clearcoatRoughnessFactor,0.084,1.0);
         var clearcoatAlpha = factor * factor + fragData.ClearcoatRoughness;
@@ -326,7 +327,7 @@ export let BRDF_frag: string = /*wgsl*/ `
         // return clearcoat_brdf;+ fragData.ClearcoatRoughness 
         return mix(base, clearcoat_brdf,materialUniform.clearcoatWeight ) ;
     }
-
+    #endif
    
 `
 

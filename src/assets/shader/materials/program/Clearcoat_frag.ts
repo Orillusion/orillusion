@@ -19,8 +19,8 @@ export let Clearcoat_frag: string = /*wgsl*/ `
     }
     #endif
 
-
-    fn ClearCoat_BRDF( baseColor:vec3<f32>, clearCoatColor:vec3<f32> ,N:vec3<f32>, L:vec3<f32> ,  V:vec3<f32> , clearCoatStrength:f32, clearCoatPerceptualRoughness:f32 , att:f32) -> vec3<f32> {
+    #if USE_CLEARCOAT
+    fn ClearCoat_BRDF( baseColor:vec3<f32>, clearCoatColor:vec3<f32> , ior:f32 ,N:vec3<f32>, L:vec3<f32> ,  V:vec3<f32> , clearCoatStrength:f32, clearCoatPerceptualRoughness:f32 , att:f32) -> vec3<f32> {
         var factor = clamp(clearCoatPerceptualRoughness, 0.0001, 1.0);
         var clearCoatRoughness = factor * factor;
 
@@ -33,7 +33,7 @@ export let Clearcoat_frag: string = /*wgsl*/ `
 
         let Fr = FresnelSchlickRoughness( NoV , vec3<f32>(0.0) , clearCoatRoughness ) ;
         var Fd = clearCoatColor / 3.1415926 ;
-        let F0 = IORToF0(materialUniform.ior) ;
+        let F0 = IORToF0(ior) ;
         // clear coat BRDF
         var Dc = D_GGX(NoH,clearCoatRoughness);
         var Vc = V_Kelemen(LoH) * NoL;
@@ -46,4 +46,5 @@ export let Clearcoat_frag: string = /*wgsl*/ `
         iblSpecular += approximateSpecularIBL(vec3<f32>(1.0),clearCoatRoughness,R, NoV) * Fc ;
         return vec3<f32>(mix(baseColor,iblSpecular,materialUniform.clearcoatWeight));
     }
+    #endif
 `
