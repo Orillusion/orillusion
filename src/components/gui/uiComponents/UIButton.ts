@@ -1,5 +1,5 @@
-﻿import { Color } from '../../..';
-import { Object3D } from '../../../core/entities/Object3D';
+﻿import { Object3D } from '../../../core/entities/Object3D';
+import { Color } from '../../../math/Color';
 import { ImageType } from '../GUIConfig';
 import { GUISprite } from '../core/GUISprite';
 import { UIInteractiveStyle } from './IUIInteractive';

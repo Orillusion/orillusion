@@ -17,7 +17,7 @@ export interface IUIInteractive {
 
     get interactiveVisible(): boolean;
 
-    rayPick(ray: Ray, screenPos: Vector2, screenSize: Vector2);
+    rayPick(ray: Ray, panel: any, screenPos: Vector2, screenSize: Vector2);
 
     destroy(): void;
 

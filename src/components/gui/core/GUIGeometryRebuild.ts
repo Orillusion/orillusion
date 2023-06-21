@@ -1,8 +1,7 @@
-import { GUIQuadAttrEnum, Object3D } from "../../..";
+import { GUIQuadAttrEnum, Object3D, UIPanel } from "../../..";
 import { Texture } from "../../../gfx/graphics/webGpu/core/texture/Texture";
 import { UITransform } from "../uiComponents/UITransform";
 import { UIRenderAble } from "../uiComponents/UIRenderAble";
-import { GUIMesh } from "./GUIMesh";
 import { GUIQuad } from "./GUIQuad";
 import { GUITexture } from "./GUITexture";
 
@@ -15,14 +14,14 @@ export class GUIGeometryRebuild {
   private _textureList: Texture[] = [];
 
   /**
-   * Rebuild a specified GUIMesh
-   * Check and rebuild a GUIMesh, including geometry and materials
-   * @param transforms Fill in the UITransform list for the specified GUIMesh
-   * @param guiMesh Specify the GUIMesh object for reconstructing Geometry
+   * Rebuild a specified GUI Mesh
+   * Check and rebuild a GUI Mesh, including geometry and materials
+   * @param transforms Fill in the UITransform list for the specified GUI Mesh
+   * @param panel Specify the GUI Mesh object for reconstructing Geometry
    * @param forceUpdate whether need to force refactoring
    * @returns Return the build result (the maximum number of textures supported by GUIMaterials for a single UIPanel is limited and cannot exceed the limit)
    */
-  public build(transforms: UITransform[], guiMesh: GUIMesh, forceUpdate: boolean): boolean {
+  public build(transforms: UITransform[], panel: UIPanel, forceUpdate: boolean): boolean {
     let quadIndex = -1;
     let texIndex = -1;
 
@@ -31,10 +30,9 @@ export class GUIGeometryRebuild {
 
     let collectQuads = [];
 
-    let zMax: number = guiMesh.quadMaxCount - 1;
+    let zMax: number = panel.quadMaxCount - 1;
     let needBreak: boolean;
     for (let transform of transforms) {
-      transform.guiMesh = guiMesh;
       let needUpdateQuads = transform.needUpdateQuads;
       collectQuads.length = 0;
       const quads = this.collectQuads(transform.object3D, collectQuads);
@@ -62,7 +60,7 @@ export class GUIGeometryRebuild {
           quad.applyTransform(transform);
         }
         if (quad.dirtyAttributes) {
-          quad.writeToGeometry(guiMesh.geometry, transform);
+          quad.writeToGeometry(panel['_geometry'], transform);
         }
         if (quadIndex == zMax) {
           needBreak = true;
@@ -74,8 +72,8 @@ export class GUIGeometryRebuild {
       }
     }
 
-    guiMesh['_setTextures'](this._textureList);
-    guiMesh.limitVertexCount = (quadIndex + 1) * 4;
+    panel['_uiMaterial'].setTextures(this._textureList);
+    panel['_limitVertexCount'] = (quadIndex + 1) * 4;
     return !needBreak;
   }
 

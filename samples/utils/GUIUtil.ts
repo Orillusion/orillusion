@@ -276,6 +276,48 @@ export class GUIUtil {
             panel.billboard = v;
         });
 
+        let scissorData = {
+            scissorCornerRadius: panel.scissorCornerRadius,
+            scissorFadeOutSize: panel.scissorFadeOutSize,
+            panelWidth: 400,
+            panelHeight: 300,
+            backGroundVisible: panel.visible,
+            backGroundColor: panel.color,
+            scissorEnable: panel.scissorEnable
+
+        };
+        let changeSissor = () => {
+            panel.scissorCornerRadius = scissorData.scissorCornerRadius;
+            panel.scissorEnable = scissorData.scissorEnable;
+            panel.scissorFadeOutSize = scissorData.scissorFadeOutSize;
+            panel.color = scissorData.backGroundColor;
+            panel.visible = scissorData.backGroundVisible;
+            panel.uiTransform.resize(scissorData.panelWidth, scissorData.panelHeight);
+        }
+        GUIHelp.add(scissorData, 'scissorCornerRadius', 0, 100, 0.1).onChange(() => {
+            changeSissor();
+        });
+        GUIHelp.add(scissorData, 'scissorFadeOutSize', 0, 100, 0.1).onChange(() => {
+            changeSissor();
+        });
+        GUIHelp.add(scissorData, 'panelWidth', 1, 400, 1).onChange(() => {
+            changeSissor();
+        });
+        GUIHelp.add(scissorData, 'panelHeight', 1, 300, 1).onChange(() => {
+            changeSissor();
+        });
+        GUIHelp.add(scissorData, 'backGroundVisible').onChange(() => {
+            changeSissor();
+        });
+
+        GUIHelp.addColor(scissorData, 'backGroundColor').onChange(() => {
+            changeSissor();
+        });
+
+        GUIHelp.add(scissorData, 'scissorEnable').onChange(() => {
+            changeSissor();
+        });
+
         //depth test
         if (panel['isWorldPanel']) {
             GUIHelp.add(panel, 'depthTest');

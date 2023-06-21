@@ -9,11 +9,8 @@ import { Vector3 } from '../../math/Vector3';
 import { Time } from '../../util/Time';
 import { IUIInteractive, UIInteractiveStyle } from './uiComponents/IUIInteractive';
 import { UITransform } from './uiComponents/UITransform';
-import { ViewPanel } from './uiComponents/ViewPanel';
-import { WorldPanel } from './uiComponents/WorldPanel';
-import { Object3D } from '../../core/entities/Object3D';
 import { View3D } from '../../core/View3D';
-import { zSorterUtil } from '../../util/ZSorterUtil';
+import { UIPanel } from './uiComponents/UIPanel';
 
 /**
  * Pickup logic for GUI interactive components
@@ -121,41 +118,44 @@ export class GUIPick {
     }
 
     private _colliderOut: IUIInteractive[] = [];
-    private _uiList: UITransform[] = [];
+    private _transformList: UITransform[] = [];
     private _sortWorldPanelList = [];
+    private _iteractive2PanelDict: Map<IUIInteractive, UIPanel> = new Map<IUIInteractive, UIPanel>();
+
     private collectEntities(): IUIInteractive[] {
         this._colliderOut.length = 0;
-        this._uiList.length = 0;
         this._sortWorldPanelList.length = 0;
+        this._iteractive2PanelDict.clear();
 
         this._view.canvasList.forEach(canvas => {
             if (canvas && canvas.transform && canvas.transform.parent) {
-                let viewPanels = canvas.object3D.getComponents(ViewPanel);
-                let worldPanels = canvas.object3D.getComponents(WorldPanel);
-                worldPanels = zSorterUtil.sort(this._view.camera, worldPanels, this.getObject3D, this._sortWorldPanelList) as any;
+                let panels = canvas.object3D.getComponentsByProperty('isUIPanel', true, true) as UIPanel[];
 
-                for (let panel of worldPanels) {
-                    panel.object3D.getComponents(UITransform, this._uiList);
-                }
+                panels.sort((a, b) => {
+                    let aOrder = a['_uiRenderer']['__renderOrder'];
+                    let bOrder = b['_uiRenderer']['__renderOrder'];
+                    return aOrder > bOrder ? -1 : 1;
+                })
 
-                for (let panel of viewPanels) {
-                    panel.object3D.getComponents(UITransform, this._uiList);
-                }
-
-                for (const uiTransform of this._uiList) {
-                    let interactiveList = uiTransform.uiInteractiveList;
-                    if (interactiveList && interactiveList.length > 0) {
-                        this._colliderOut.push(...interactiveList);
+                for (let panel of panels) {
+                    this._transformList.length = 0;
+                    panel.object3D.getComponents(UITransform, this._transformList);
+                    for (const uiTransform of this._transformList) {
+                        let interactiveList = uiTransform.uiInteractiveList;
+                        if (interactiveList && interactiveList.length > 0) {
+                            for (let item of interactiveList) {
+                                this._colliderOut.push(item);
+                                this._iteractive2PanelDict.set(item, panel);
+                            }
+                        }
                     }
                 }
+
+
             }
         });
 
         return this._colliderOut;
-    }
-
-    private getObject3D(userData: WorldPanel): Object3D {
-        return userData.object3D;
     }
 
     private pick(colliders: IUIInteractive[], camera: Camera3D) {
@@ -166,7 +166,8 @@ export class GUIPick {
         let intersect: { intersect: boolean; intersectPoint?: Vector3; distance: number; interactive?: IUIInteractive };
         for (const iterator of colliders) {
             if (iterator.interactive && iterator.enable && iterator.interactiveVisible) {
-                intersect = iterator.rayPick(this._ray, screenPos, screenSize);
+                let panel = this._iteractive2PanelDict.get(iterator);
+                intersect = iterator.rayPick(this._ray, panel, screenPos, screenSize);
                 if (intersect) {
                     intersect.interactive = iterator;
                     return intersect;

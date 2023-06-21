@@ -1,7 +1,6 @@
 import { Object3D } from "../../../core/entities/Object3D";
 import { Matrix3 } from "../../../math/Matrix3";
 import { ComponentBase } from "../../ComponentBase";
-import { GUIMesh } from "../core/GUIMesh";
 import { IUIInteractive } from "./IUIInteractive";
 import { UIPanel } from "./UIPanel";
 import { ViewPanel } from "./ViewPanel";
@@ -23,7 +22,6 @@ export class UITransform extends ComponentBase {
     private _height: number = 100;
     private _localVisible: boolean = true;
     private _globalVisible: boolean = true;
-    public guiMesh: GUIMesh;
     protected _uiInteractiveList: IUIInteractive[];
 
     public get uiInteractiveList() {
