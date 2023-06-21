@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AtmosphericComponent, BillboardType, Color, DirectLight, Engine3D, GPUCullMode, GlobalIlluminationComponent, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
+import { AtmosphericComponent, BillboardType, Color, DirectLight, Engine3D, GPUCullMode, GlobalFog, GlobalIlluminationComponent, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
@@ -16,6 +16,27 @@ export class GUIUtil {
         GUIHelp.add(component, 'sunBrightness', 0, 10, 0.01);
         GUIHelp.add(component, 'exposure', 0, 2, 0.01);
         GUIHelp.add(component, 'displaySun', 0, 1, 0.01);
+        open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
+
+    public static renderGlobalFog(fog: GlobalFog, open: boolean = true, name?: string) {
+        name ||= 'GlobalFog';
+        GUIHelp.addFolder(name);
+        GUIHelp.add(fog, 'fogType', {
+            Liner: 0,
+            Exp: 1,
+            Exp2: 2,
+        });
+        GUIHelp.add(fog, 'start', -0.0, 1000.0, 0.0001);
+        GUIHelp.add(fog, 'end', -0.0, 1000.0, 0.0001);
+        GUIHelp.add(fog, 'height', -1000.0, 1000.0, 0.0001);
+        GUIHelp.add(fog, 'density', 0.0, 1.0, 0.0001);
+        GUIHelp.add(fog, 'ins', 0.0, 5.0, 0.0001);
+        GUIHelp.add(fog, 'skyFactor', 0.0, 1.0, 0.0001);
+        GUIHelp.add(fog, 'skyRoughness', 0.0, 1.0, 0.0001);
+        GUIHelp.add(fog, 'overrideSkyFactor', 0.0, 1.0, 0.0001);
+        GUIHelp.addColor(fog, 'fogColor');
         open && GUIHelp.open();
         GUIHelp.endFolder();
     }

@@ -1,4 +1,6 @@
 import { AtmosphericComponent, BoxGeometry, CameraUtil, CylinderGeometry, DirectLight, Engine3D, GlobalFog, HoverCameraController, KelvinUtil, LitMaterial, MeshRenderer, Object3D, PlaneGeometry, PostProcessingComponent, Scene3D, View3D, webGPUContext } from '@orillusion/core';
+import { GUIHelp } from '@orillusion/debug/GUIHelp';
+import { GUIUtil } from '@samples/utils/GUIUtil';
 
 class Sample_Fog {
     constructor() { }
@@ -7,27 +9,29 @@ class Sample_Fog {
 
     async run() {
         Engine3D.setting.shadow.shadowSize = 2048
-        Engine3D.setting.shadow.shadowBound = 500;
-        Engine3D.setting.shadow.shadowBias = 0.0002;
+        Engine3D.setting.shadow.shadowBound = 1000;
+        Engine3D.setting.shadow.shadowBias = 0.0005;
 
         await Engine3D.init();
 
         this.scene = new Scene3D();
-        this.scene.addComponent(AtmosphericComponent).sunY = 0.6;
-
+        let sky = this.scene.addComponent(AtmosphericComponent);
+        sky.sunY = 0.6;
         let mainCamera = CameraUtil.createCamera3DObject(this.scene, 'camera');
         mainCamera.perspective(60, webGPUContext.aspect, 1, 5000.0);
         let ctrl = mainCamera.object3D.addComponent(HoverCameraController);
-        ctrl.setCamera(0, -20, 150);
+        ctrl.setCamera(0, -10, 400);
         await this.initScene();
-
         let view = new View3D();
         view.scene = this.scene;
         view.camera = mainCamera;
         Engine3D.startRenderView(view);
 
+        GUIHelp.init();
+        GUIUtil.renderAtomosphericSky(sky, false);
         let postProcessing = this.scene.addComponent(PostProcessingComponent);
         let fog = postProcessing.addPost(GlobalFog);
+        GUIUtil.renderGlobalFog(fog, true);
     }
 
     async initScene() {
@@ -55,7 +59,7 @@ class Sample_Fog {
 
             let floor = new Object3D();
             let mr = floor.addComponent(MeshRenderer);
-            mr.geometry = new CylinderGeometry(2000, 2000, 1, 20, 20, false);
+            mr.geometry = new CylinderGeometry(10000, 10000, 1, 20, 20, false);
             mr.materials = [mat, mat, mat];
             this.scene.addChild(floor);
         }
@@ -82,11 +86,11 @@ class Sample_Fog {
                 mr.material = mat;
                 mr.geometry = cubeGeometry;
                 building.localScale = building.localScale;
-                building.x = (i - 5) * (Math.random() * 0.5 + 0.5) * 50;
-                building.z = (j - 5) * (Math.random() * 0.5 + 0.5) * 50;
-                building.scaleX = 10 * (Math.random() * 0.5 + 0.5);
-                building.scaleZ = 10 * (Math.random() * 0.5 + 0.5);
-                building.scaleY = 50 * (Math.random() * 0.5 + 0.5);
+                building.x = (i - 5) * (Math.random() * 0.5 + 0.5) * 100;
+                building.z = (j - 5) * (Math.random() * 0.5 + 0.5) * 100;
+                building.scaleX = 10 * (Math.random() * 0.5 + 0.5) * 2;
+                building.scaleZ = 10 * (Math.random() * 0.5 + 0.5) * 2;
+                building.scaleY = 200 * (Math.random() * 0.5 + 0.5);
                 scene.addChild(building);
             }
         }
