@@ -54,7 +54,7 @@ export class LitMaterial extends PhysicMaterial {
         ret.baseMap = this.baseMap;
         ret.normalMap = this.normalMap;
         ret.aoMap = this.aoMap;
-        ret.brdfLUT = ret.brdfLUT;
+        ret.brdfLUT = this.brdfLUT;
         if (this.maskMap) ret.maskMap = this.maskMap;
         ret.emissiveMap = this.emissiveMap;
         this.uvTransform_1 && (ret.uvTransform_1 = new Vector4().copyFrom(this.uvTransform_1));
