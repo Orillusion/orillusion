@@ -1546,7 +1546,7 @@ export class Matrix4 {
                     q.y = (mr[6] + mr[9]) / (4 * q.z);
                     q.w = (mr[1] - mr[4]) / (4 * q.z);
                 }
-                q.toEulerAngles(rot);
+                q.getEulerAngles(rot);
 
                 break;
         }
