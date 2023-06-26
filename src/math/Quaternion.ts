@@ -538,12 +538,13 @@ export class Quaternion {
      * Copies the data from a quaternion into this instance.
      * @param q The quaternion to copy from.
      */
-    public copyFrom(q: Quaternion | Vector3) {
+    public copyFrom(q: Quaternion | Vector3): this {
         var v = this;
         v.x = q.x;
         v.y = q.y;
         v.z = q.z;
         v.w = q.w;
+        return this;
     }
 
     /**
