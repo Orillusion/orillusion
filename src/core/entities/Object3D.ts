@@ -88,6 +88,7 @@ export class Object3D extends Entity {
             let component = this.components.get(className);
             this.components.delete(className);
             component[`__stop`]();
+            component.beforeDestroy?.();
             component.destroy();
         }
     }

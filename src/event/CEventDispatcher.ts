@@ -52,7 +52,7 @@ export class CEventDispatcher {
      *
      * release all registered event.
      */
-    public dispose() {
+    public destroy() {
         for (var key in this.listeners) {
             var list: any = this.listeners[key];
             while (list.length > 0) {

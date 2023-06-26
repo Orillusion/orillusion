@@ -57,6 +57,7 @@ class Sample_PixelPick {
         // add sphere list and register mouse events
         let size: number = 9;
         let geometry = new SphereGeometry(size / 2, 20, 20);
+        let last: Object3D;
         for (let i = 0; i < 10; i++) {
             let obj = new Object3D();
             obj.name = 'sphere ' + i;
@@ -77,7 +78,12 @@ class Sample_PixelPick {
 
             // register collider component
             obj.addComponent(ColliderComponent);
+            last = obj;
         }
+
+        setTimeout(() => {
+            last.destroy();
+        }, 2000);
     }
 
     private getPickObject(e: PointerEvent3D): Object3D {

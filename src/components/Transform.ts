@@ -718,13 +718,17 @@ export class Transform extends ComponentBase {
         return this._localScale;
     }
 
-    destroy(): void {
+    public beforeDestroy(force?: boolean) {
         if (this.parent && this.parent.object3D) {
             this.parent.object3D.removeChild(this.object3D);
-            this.scene3D = null;
         }
+        super.beforeDestroy?.(force);
+    }
+
+    destroy(): void {
         super.destroy();
 
+        this.scene3D = null;
         this.eventPositionChange = null;
         this.eventRotationChange = null;
         this.eventScaleChange = null;
