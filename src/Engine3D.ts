@@ -17,7 +17,6 @@ import { ShaderLib } from './assets/shader/ShaderLib';
 import { ShaderUtil } from './gfx/graphics/webGpu/shader/util/ShaderUtil';
 import { ComponentCollect } from './gfx/renderJob/collect/ComponentCollect';
 import { ShadowLightsCollect } from './gfx/renderJob/collect/ShadowLightsCollect';
-import { ProfilerUtil } from '.';
 
 /** 
  * Orillusion 3D Engine
@@ -289,7 +288,7 @@ export class Engine3D {
      * @returns
      */
     public static async init(descriptor: { canvasConfig?: CanvasConfig; beforeRender?: Function; renderLoop?: Function; lateRender?: Function, engineSetting?: EngineSetting } = {}) {
-        console.log('engine version', version);
+        console.log('Engine Version', version);
 
         this.setting = { ...this.setting, ...descriptor.engineSetting }
 
