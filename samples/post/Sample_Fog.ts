@@ -22,6 +22,7 @@ class Sample_Fog {
         let ctrl = mainCamera.object3D.addComponent(HoverCameraController);
         ctrl.setCamera(0, -10, 400);
         await this.initScene();
+        sky.relativeTransform = this.lightObj.transform;
         let view = new View3D();
         view.scene = this.scene;
         view.camera = mainCamera;
@@ -34,7 +35,7 @@ class Sample_Fog {
         GUIUtil.renderGlobalFog(fog, true);
     }
 
-    async initScene() {
+    initScene() {
         {
             this.lightObj = new Object3D();
             this.lightObj.rotationX = 45;

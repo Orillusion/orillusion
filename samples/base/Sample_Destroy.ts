@@ -31,6 +31,7 @@ class Sample_Destroy {
         let light: Object3D = new Object3D()
         // add direct light component
         let component: DirectLight = light.addComponent(DirectLight)
+        sky.relativeTransform = component.transform;
         // adjust lighting
         light.rotationX = 45
         light.rotationY = 30

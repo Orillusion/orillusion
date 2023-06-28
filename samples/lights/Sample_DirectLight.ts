@@ -19,7 +19,7 @@ class Sample_DirectLight {
         mainCamera.perspective(60, Engine3D.aspect, 1, 2000.0);
         //set camera data
         mainCamera.object3D.addComponent(HoverCameraController).setCamera(0, -25, 1000);
-        
+
         sky.relativeTransform = this.initLight();
         this.initScene();
 
@@ -39,7 +39,7 @@ class Sample_DirectLight {
         this.lightObj3D.z = -40;
         this.lightObj3D.rotationX = 46;
         this.lightObj3D.rotationY = 62;
-        this.lightObj3D.rotationZ = 360;
+        this.lightObj3D.rotationZ = 0;
         let directLight = this.lightObj3D.addComponent(DirectLight);
         //Convert color temperature to color object
         directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);

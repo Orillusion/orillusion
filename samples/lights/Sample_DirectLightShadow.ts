@@ -32,7 +32,7 @@ class Sample_DirectLightShadow {
         let view = new View3D();
         view.scene = this.scene;
         view.camera = mainCamera;
-        
+
         Engine3D.startRenderView(view);
     }
 
@@ -40,6 +40,9 @@ class Sample_DirectLightShadow {
     private initLight() {
         // add a direction light
         let lightObj3D = new Object3D();
+        lightObj3D.rotationX = 46;
+        lightObj3D.rotationY = 62;
+        lightObj3D.rotationZ = 0;
         let sunLight = lightObj3D.addComponent(DirectLight);
         sunLight.intensity = 15;
         sunLight.lightColor = KelvinUtil.color_temperature_to_rgb(6553);
@@ -47,7 +50,7 @@ class Sample_DirectLightShadow {
 
         GUIUtil.renderDirLight(sunLight);
         this.scene.addChild(lightObj3D);
-        return sunLight.transform
+        return sunLight.transform;
     }
 
     initScene() {

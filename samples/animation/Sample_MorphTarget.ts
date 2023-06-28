@@ -14,13 +14,14 @@ class Sample_MorphTarget {
         await Engine3D.init();
 
         this.scene = new Scene3D();
-        this.scene.addComponent(AtmosphericComponent);
+        let sky = this.scene.addComponent(AtmosphericComponent);
 
         let camera = CameraUtil.createCamera3DObject(this.scene);
         camera.perspective(60, webGPUContext.aspect, 1, 5000.0);
         camera.object3D.addComponent(HoverCameraController).setCamera(0, 0, 150);
 
         this.initDirectLight();
+        sky.relativeTransform = this.lightObj3D.transform;
         await this.initMorphModel();
 
         let view = new View3D();

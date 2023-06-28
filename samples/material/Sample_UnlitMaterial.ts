@@ -9,7 +9,7 @@ class Sample_UnlitMaterial {
         await Engine3D.init();
 
         this.scene = new Scene3D();
-        this.scene.addComponent(AtmosphericComponent);
+        let sky = this.scene.addComponent(AtmosphericComponent);
 
         let mainCamera = CameraUtil.createCamera3DObject(this.scene);
 
@@ -17,6 +17,7 @@ class Sample_UnlitMaterial {
         mainCamera.object3D.addComponent(HoverCameraController).setCamera(45, -45, 50);
 
         await this.initScene(this.scene);
+        sky.relativeTransform = this.lightObj3D.transform;
 
         let view = new View3D();
         view.scene = this.scene;
@@ -60,7 +61,7 @@ class Sample_UnlitMaterial {
         {
             let sphere = new Object3D();
             let renderer = sphere.addComponent(MeshRenderer);
-            renderer.geometry = new SphereGeometry(1,32,32);
+            renderer.geometry = new SphereGeometry(1, 32, 32);
             renderer.material = new UnLitMaterial()
             sphere.scaleX = 5;
             sphere.scaleY = 5;
@@ -73,7 +74,7 @@ class Sample_UnlitMaterial {
         {
             let sphere = new Object3D();
             let renderer = sphere.addComponent(MeshRenderer);
-            renderer.geometry = new SphereGeometry(1,32,32);
+            renderer.geometry = new SphereGeometry(1, 32, 32);
             renderer.material = new LitMaterial()
             sphere.scaleX = 5;
             sphere.scaleY = 5;

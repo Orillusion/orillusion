@@ -40,9 +40,10 @@ class Sample_LoadGLTF {
     }
 
     async initScene() {
+        let atmospheric: AtmosphericComponent;
         /******** sky *******/
         {
-            let atmospheric = this.scene.addComponent(AtmosphericComponent);
+            atmospheric = this.scene.addComponent(AtmosphericComponent);
             atmospheric.sunY = 0.62;
             atmospheric.sunRadiance = 47;
             atmospheric.exposure = 1;
@@ -62,6 +63,8 @@ class Sample_LoadGLTF {
             GUIHelp.init();
             GUIUtil.renderDirLight(directLight);
             this.scene.addChild(this.lightObj3D);
+
+            atmospheric.relativeTransform = this.lightObj3D.transform;
         }
 
         {
