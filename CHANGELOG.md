@@ -1,3 +1,28 @@
+## [0.6.6](https://github.com/Orillusion/orillusion/compare/v0.6.5...v0.6.6) (2023-06-28)
+
+### Bug Fixes
+
+* **collider:** Fix error of component deconstruction ([#236](https://github.com/Orillusion/orillusion/issues/236)) ([7b6d356](https://github.com/Orillusion/orillusion/commit/7b6d356ff50b32ee84ea1c041832166ff87a8225))
+* **loader:** fix unnecessary copy [#233](https://github.com/Orillusion/orillusion/issues/233) ([#235](https://github.com/Orillusion/orillusion/issues/235)) ([7ad1581](https://github.com/Orillusion/orillusion/commit/7ad1581bc97bb8febed37338b6a1c4364c7e5099))
+* **material:** Complete data for cloned shaders ([#226](https://github.com/Orillusion/orillusion/issues/226)) ([fb7aa97](https://github.com/Orillusion/orillusion/commit/fb7aa979b1fb3e7c75d44388d437529b0ddd9ff7))
+* **Matrix4:** Fix matrix calculation error of lookAt ([#231](https://github.com/Orillusion/orillusion/issues/231)) ([a1617f6](https://github.com/Orillusion/orillusion/commit/a1617f6f0b5c6d48794dbefda1f10b8f66a636cb))
+* **OrbitController:** limit zoom speed ([13608a8](https://github.com/Orillusion/orillusion/commit/13608a826d573f43c06af801ebb441b400d311d0))
+* **skyLight:** change all AtmosphericComponent of samples ([#239](https://github.com/Orillusion/orillusion/issues/239)) ([2050e54](https://github.com/Orillusion/orillusion/commit/2050e5487510471796304ad84ccb5a642ac84810))
+
+
+### Features
+
+* **geometry:** Add extrude geometry feature ([#225](https://github.com/Orillusion/orillusion/issues/225)) ([1cb5d50](https://github.com/Orillusion/orillusion/commit/1cb5d504751937bbb8d2c45a6665baa8440c9fbb))
+* **GUI:** New feature of scissor the GUI content. ([#219](https://github.com/Orillusion/orillusion/issues/219)) ([722abe1](https://github.com/Orillusion/orillusion/commit/722abe112dca85beaaa2c8dee76b38280bc175a4))
+* **RelativeSky:** Relative sky to sunlight ([#237](https://github.com/Orillusion/orillusion/issues/237)) ([3664c8b](https://github.com/Orillusion/orillusion/commit/3664c8b3fe43690021b7653a8bec8dc2e927e79b))
+
+
+### Performance Improvements
+
+* **globalFog:** Optimize the fog effect to add fog color to the ambi… ([#223](https://github.com/Orillusion/orillusion/issues/223)) ([fab97a5](https://github.com/Orillusion/orillusion/commit/fab97a59b73bf01540e31b2c5c880dfa91f9b7cd))
+
+
+
 ## [0.6.5](https://github.com/Orillusion/orillusion/compare/v0.6.4...v0.6.5) (2023-06-12)
 
 ### Features
