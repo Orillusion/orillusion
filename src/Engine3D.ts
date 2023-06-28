@@ -412,7 +412,7 @@ export class Engine3D {
             })
         });
 
-        let command = webGPUContext.device.createCommandEncoder();;
+        let command = webGPUContext.device.createCommandEncoder();
         ComponentCollect.componentsComputeList.forEach((v, k) => {
             v.forEach((c, f) => {
                 if (f.enable) {

@@ -86,7 +86,7 @@ export class PositionAudio extends StaticAudio {
         for (let l of this._lines) {
             l.removeAllChild();
             l.removeFromParent();
-            l.dispose();
+            l.destroy();
         }
         this._lines.length = 0;
     }

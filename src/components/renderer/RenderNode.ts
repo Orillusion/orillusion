@@ -474,9 +474,7 @@ export class RenderNode extends ComponentBase {
         }
     }
 
-    public destroy(force?: boolean) {
-        super.destroy(force);
-
+    public beforeDestroy(force?: boolean) {
         Reference.getInstance().detached(this._geometry, this);
         if (!Reference.getInstance().hasReference(this._geometry)) {
             this._geometry.destroy(force);
@@ -489,7 +487,11 @@ export class RenderNode extends ComponentBase {
                 mat.destroy(force);
             }
         }
+        super.beforeDestroy?.(force);
+    }
 
+    public destroy(force?: boolean) {
+        super.destroy(force);
         this._geometry = null;
         this._materials = null;
         this._combineShaderRefection = null;
