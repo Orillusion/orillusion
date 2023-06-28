@@ -33,6 +33,8 @@ export class LitMaterial extends PhysicMaterial {
         let bdrflutTex = Engine3D.res.getTexture(`BRDFLUT`);
         this.brdfLUT = bdrflutTex;
 
+        this.envIntensity = 0.75;
+        this.materialF0 = new Vector4(0.04, 0.04, 0.04, 1.0 - 0.04);
         this.baseMap = Engine3D.res.whiteTexture;
         this.normalMap = Engine3D.res.normalTexture;
         // this.aoMap = defaultTexture.whiteTexture;
@@ -52,6 +54,7 @@ export class LitMaterial extends PhysicMaterial {
         ret.baseMap = this.baseMap;
         ret.normalMap = this.normalMap;
         ret.aoMap = this.aoMap;
+        ret.brdfLUT = this.brdfLUT;
         if (this.maskMap) ret.maskMap = this.maskMap;
         ret.emissiveMap = this.emissiveMap;
         this.uvTransform_1 && (ret.uvTransform_1 = new Vector4().copyFrom(this.uvTransform_1));
@@ -73,6 +76,25 @@ export class LitMaterial extends PhysicMaterial {
         ret.ior = this.ior;
         ret.clearcoatFactor = this.clearcoatFactor;
         ret.clearcoatRoughnessFactor = this.clearcoatRoughnessFactor;
+
+        this.clearcoatColor && (ret.clearcoatColor = this.clearcoatColor.clone());
+        ret.clearcoatWeight = this.clearcoatWeight;
+        ret.transparent = this.transparent;
+        ret.cullMode = this.cullMode;
+        ret.blendMode = this.blendMode;
+
+        ret.shaderState.acceptShadow = this.shaderState.acceptShadow;
+        ret.shaderState.castShadow = this.shaderState.castShadow;
+        ret.shaderState.receiveEnv = this.shaderState.receiveEnv;
+        ret.shaderState.acceptGI = this.shaderState.acceptGI;
+        ret.shaderState.useLight = this.shaderState.useLight;
+
+        for (let key in this.renderShader.defineValue) {
+            ret.renderShader.defineValue[key] = this.renderShader.defineValue[key];
+        }
+        for (let key in this.renderShader.constValues) {
+            ret.renderShader.constValues[key] = this.renderShader.constValues[key];
+        }
         return ret as this;
     }
 
