@@ -333,26 +333,6 @@ export class Quaternion {
     }
 
     /**
-     * Fills a target Vector3D object with the Euler angles that form the rotation represented by this quaternion.
-     * @param target An optional Vector3D object to contain the Euler angles. If not provided, a new object is created.
-     * @returns The Vector3D containing the Euler angles.
-     */
-    public toEulerAngles(target: Vector3 = null): Vector3 {
-        target ||= new Vector3();
-        target.x = Math.atan2(2.0 * (this.w * this.x + this.y * this.z), 1.0 - 2.0 * (this.x * this.x + this.y * this.y));
-
-        var temp: number = 2.0 * (this.w * this.y - this.z * this.x);
-        temp = this.clampf(temp, -1.0, 1.0);
-        target.y = Math.asin(temp);
-        target.z = Math.atan2(2.0 * (this.w * this.z + this.x * this.y), 1.0 - 2.0 * (this.y * this.y + this.z * this.z));
-
-        target.x /= DEGREES_TO_RADIANS;
-        target.y /= DEGREES_TO_RADIANS;
-        target.z /= DEGREES_TO_RADIANS;
-        return target;
-    }
-
-    /**
      * Sets the current quaternion from the rotation matrix
      * @param m 
      * @returns 
@@ -418,7 +398,7 @@ export class Quaternion {
         var qw;
         var a2;
 
-        eulers = eulers === undefined ? new Vector3() : eulers;
+        eulers ||= new Vector3();
 
         qx = this.x;
         qy = this.y;
@@ -538,12 +518,13 @@ export class Quaternion {
      * Copies the data from a quaternion into this instance.
      * @param q The quaternion to copy from.
      */
-    public copyFrom(q: Quaternion | Vector3) {
+    public copyFrom(q: Quaternion | Vector3): this {
         var v = this;
         v.x = q.x;
         v.y = q.y;
         v.z = q.z;
         v.w = q.w;
+        return this;
     }
 
     /**
