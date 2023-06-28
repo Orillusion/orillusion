@@ -33,7 +33,7 @@ class Sample_PointLight {
     }
 
     initScene(scene: Scene3D) {
-        let lightObj3D = new Object3D();
+        let lightObj3D = this.lightObj = new Object3D();
         let render = lightObj3D.addComponent(MeshRenderer);
         render.geometry = new SphereGeometry(5, 30, 30);
         render.material = new LitMaterial();
