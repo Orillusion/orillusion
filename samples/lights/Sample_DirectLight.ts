@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Scene3D, HoverCameraController, Engine3D, AtmosphericComponent, Object3D, Camera3D, Vector3, View3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer, BoxGeometry, CameraUtil } from "@orillusion/core";
+import { Scene3D, HoverCameraController, Engine3D, AtmosphericComponent, Object3D, Camera3D, Vector3, View3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer, BoxGeometry, CameraUtil, Transform } from "@orillusion/core";
 
 //sample of direction light
 class Sample_DirectLight {
@@ -12,27 +12,27 @@ class Sample_DirectLight {
         GUIHelp.init();
 
         this.scene = new Scene3D();
-        this.scene.addComponent(AtmosphericComponent);
+        let sky = this.scene.addComponent(AtmosphericComponent);
 
         // init camera3D
         let mainCamera = CameraUtil.createCamera3D(null, this.scene);
         mainCamera.perspective(60, Engine3D.aspect, 1, 2000.0);
         //set camera data
         mainCamera.object3D.addComponent(HoverCameraController).setCamera(0, -25, 1000);
-
-        await this.initScene();
+        
+        sky.relativeTransform = this.initLight();
+        this.initScene();
 
         let view = new View3D();
         view.scene = this.scene;
         view.camera = mainCamera;
 
-        this.initLight();
         Engine3D.startRenderView(view);
 
     }
 
     // create direction light
-    private initLight() {
+    private initLight(): Transform {
         this.lightObj3D = new Object3D();
         this.lightObj3D.x = 0;
         this.lightObj3D.y = 30;
@@ -41,13 +41,13 @@ class Sample_DirectLight {
         this.lightObj3D.rotationY = 62;
         this.lightObj3D.rotationZ = 360;
         let directLight = this.lightObj3D.addComponent(DirectLight);
-
         //Convert color temperature to color object
         directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
         directLight.castShadow = false;
         directLight.intensity = 20;
         this.showLightGUI(directLight);
         this.scene.addChild(this.lightObj3D);
+        return directLight.transform;
     }
 
     // show gui

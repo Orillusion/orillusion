@@ -1477,7 +1477,7 @@ export class Matrix4 {
         mr[10] /= scale.z;
 
         let rot = vec[1];
-
+        let tr: number;
         switch (orientationStyle) {
             case Orientation3D.AXIS_ANGLE:
                 rot.w = Math.acos((mr[0] + mr[5] + mr[10] - 1) / 2);
@@ -1489,7 +1489,7 @@ export class Matrix4 {
 
                 break;
             case Orientation3D.QUATERNION:
-                let tr = mr[0] + mr[5] + mr[10];
+                tr = mr[0] + mr[5] + mr[10];
 
                 if (tr > 0) {
                     rot.w = Math.sqrt(1 + tr) / 2;

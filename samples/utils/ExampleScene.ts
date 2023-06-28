@@ -23,6 +23,7 @@ type ExampleSceneParam = {
         exposure: number,
         atmosphericSky?: any,
     },
+
     light: {
         position: {
             x: number,
@@ -37,7 +38,7 @@ type ExampleSceneParam = {
 
         kelvin: number,
         intensity: number,
-        castShadow: boolean,
+        castShadow: boolean
     },
 }
 
@@ -74,7 +75,7 @@ export function createSceneParam(): ExampleSceneParam {
 
             kelvin: 5355,
             intensity: 30,
-            castShadow: true,
+            castShadow: true
         }
     }
     return param;
@@ -131,6 +132,11 @@ export function createExampleScene(param?: ExampleSceneParam) {
     // create direction light
     let light = createDirectLight(param);
     scene.addChild(light.object3D);
+
+    // relative light to sky
+    if (atmosphericSky) {
+        atmosphericSky.relativeTransform = light.transform;
+    }
 
     //pkg
     let content = {} as ExampleSceneContent;
