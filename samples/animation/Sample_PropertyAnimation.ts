@@ -16,8 +16,6 @@ class Sample_PropertyAnimation {
         await Engine3D.init();
         let param = createSceneParam();
         param.camera.distance = 16;
-        param.camera.pitch = -25;
-        param.light.intensity = 40;
         let exampleScene = createExampleScene(param);
 
         GUIHelp.init();

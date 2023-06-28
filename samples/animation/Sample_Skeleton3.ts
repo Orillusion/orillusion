@@ -21,7 +21,7 @@ class Sample_Skeleton3 {
         GUIHelp.init();
 
         this.scene = new Scene3D();
-        this.scene.addComponent(AtmosphericComponent);
+        let sky = this.scene.addComponent(AtmosphericComponent);
 
         let mainCamera = CameraUtil.createCamera3DObject(this.scene);
         mainCamera.perspective(60, webGPUContext.aspect, 1, 3000.0);
@@ -37,6 +37,7 @@ class Sample_Skeleton3 {
         this.view.camera = mainCamera;
 
         Engine3D.startRenderView(this.view);
+        sky.relativeTransform = this.lightObj3D.transform;
     }
 
     async initScene(scene: Scene3D) {

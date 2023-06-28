@@ -15,7 +15,7 @@ class Sample_Skeleton {
         await Engine3D.init();
 
         this.scene = new Scene3D();
-        this.scene.addComponent(AtmosphericComponent);
+        let sky = this.scene.addComponent(AtmosphericComponent);
 
         let camera = CameraUtil.createCamera3DObject(this.scene);
         camera.perspective(60, Engine3D.aspect, 0.01, 5000.0);
@@ -30,7 +30,8 @@ class Sample_Skeleton {
 
         Engine3D.startRenderView(view);
 
-        this.initScene(this.scene);
+        await this.initScene(this.scene);
+        sky.relativeTransform = this.lightObj3D.transform;
     }
 
 

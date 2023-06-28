@@ -6,7 +6,7 @@ import { GUIUtil } from "@samples/utils/GUIUtil";
 
 class Sample_UVMove {
     scene: Scene3D;
-
+    lightObj: Object3D;
     async run() {
         await Engine3D.init();
 
@@ -24,7 +24,7 @@ class Sample_UVMove {
         };
 
         this.scene = new Scene3D();
-        this.scene.addComponent(AtmosphericComponent);
+        let sky = this.scene.addComponent(AtmosphericComponent);
 
         let camera = CameraUtil.createCamera3DObject(this.scene);
         camera.perspective(60, Engine3D.aspect, 0.01, 5000.0);
@@ -38,6 +38,7 @@ class Sample_UVMove {
         Engine3D.startRenderView(view);
 
         await this.initScene();
+        sky.relativeTransform = this.lightObj.transform;
     }
 
     async initScene() {
@@ -48,10 +49,10 @@ class Sample_UVMove {
         }
         /******** light *******/
         {
-            let lightObj = new Object3D();
+            let lightObj = this.lightObj = new Object3D();
             lightObj.rotationX = 57;
             lightObj.rotationY = 347;
-            lightObj.rotationZ = 10;
+            lightObj.rotationZ = 0;
 
             let directLight = lightObj.addComponent(DirectLight);
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);

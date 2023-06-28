@@ -5,7 +5,7 @@ import { GUIUtil } from "@samples/utils/GUIUtil";
 // sample of SpotLight
 class Sample_SpotLight {
     scene: Scene3D;
-
+    lightObj: Object3D;
     async run() {
         Engine3D.setting.occlusionQuery.enable = false;
         Engine3D.setting.shadow.enable = true;
@@ -15,7 +15,7 @@ class Sample_SpotLight {
         GUIHelp.init();
 
         this.scene = new Scene3D();
-        this.scene.addComponent(AtmosphericComponent);
+        let sky = this.scene.addComponent(AtmosphericComponent);
 
         // init camera3D
         let mainCamera = CameraUtil.createCamera3D(null, this.scene);
@@ -24,6 +24,7 @@ class Sample_SpotLight {
         mainCamera.object3D.addComponent(HoverCameraController).setCamera(0, -25, 1000);
 
         await this.initScene();
+        sky.relativeTransform = this.lightObj.transform;
 
         let view = new View3D();
         view.scene = this.scene;
@@ -38,7 +39,7 @@ class Sample_SpotLight {
     }
 
     private makeLight(): void {
-        let lightObj3D = new Object3D();
+        let lightObj3D = this.lightObj = new Object3D();
 
         let renderer = lightObj3D.addComponent(MeshRenderer);
         renderer.geometry = new SphereGeometry(5, 30, 30);
@@ -49,9 +50,9 @@ class Sample_SpotLight {
         lightObj3D.x = -86;
         lightObj3D.y = 200;
         lightObj3D.z = -300;
-        lightObj3D.transform.rotationX = 342;
-        lightObj3D.transform.rotationY = 360;
-        lightObj3D.transform.rotationZ = 199;
+        lightObj3D.transform.rotationX = 20;
+        lightObj3D.transform.rotationY = 160;
+        lightObj3D.transform.rotationZ = 0;
         spotLight.lightColor.r = 255 / 255;
         spotLight.lightColor.g = 157 / 255;
         spotLight.lightColor.b = 5 / 255;

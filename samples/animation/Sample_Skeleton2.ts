@@ -16,7 +16,7 @@ class Sample_Skeleton2 {
         await Engine3D.init();
 
         this.scene = new Scene3D();
-        this.scene.addComponent(AtmosphericComponent);
+        let sky = this.scene.addComponent(AtmosphericComponent);
         this.scene.exposure = 1;
 
         let mainCamera = CameraUtil.createCamera3DObject(this.scene);
@@ -33,6 +33,7 @@ class Sample_Skeleton2 {
         Engine3D.startRenderView(view);
 
         await this.initScene(this.scene);
+        sky.relativeTransform = this.lightObj3D.transform;
     }
 
     async initScene(scene: Scene3D) {
@@ -56,7 +57,7 @@ class Sample_Skeleton2 {
             GUIUtil.renderDirLight(directLight);
             scene.addChild(this.lightObj3D);
         }
-     
+
         {
             // load model with skeletion animation
             let rootNode = await Engine3D.res.loadGltf('gltfs/glb/Soldier.glb');
@@ -96,8 +97,8 @@ class Sample_Skeleton2 {
         return true;
     }
 
-    sleep(time:number){
-        return new Promise(res=>{
+    sleep(time: number) {
+        return new Promise(res => {
             setTimeout(res, time || 200)
         })
     }

@@ -150,12 +150,12 @@ export class AtmosphericComponent extends SkyRenderer {
     public onUpdate(view?: any) {
         if (this._relatedTransform) {
             this._relatedTransform.rotationZ = 0;
-            if (this._historyData.isSkyChange(this.sunX, this.sunY)) {
-                this._relatedTransform.rotationY = this.sunX * 360 - 90;
-                this._relatedTransform.rotationX = (this.sunY - 0.5) * 180;
-            } else if (this._historyData.isRotateChange(this._relatedTransform.rotationX, this._relatedTransform.rotationY)) {
+            if (this._historyData.isRotateChange(this._relatedTransform.rotationX, this._relatedTransform.rotationY)) {
                 this.sunX = (this._relatedTransform.rotationY + 90) / 360//
                 this.sunY = this._relatedTransform.rotationX / 180 + 0.5;
+            } else if (this._historyData.isSkyChange(this.sunX, this.sunY)) {
+                this._relatedTransform.rotationY = this.sunX * 360 - 90;
+                this._relatedTransform.rotationX = (this.sunY - 0.5) * 180;
             }
             this._historyData.save(this.sunX, this.sunY, this._relatedTransform.rotationX, this._relatedTransform.rotationY);
         }

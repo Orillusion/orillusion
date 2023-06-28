@@ -8,6 +8,7 @@ class Smaple_VertexAnimation {
     // This geometry will dynamically update its vertex data over time
     floorGeometry: PlaneGeometry;
     scene: Scene3D;
+    lightObj: Object3D;
     async run() {
 
         await Engine3D.init({ beforeRender: () => this.update() });
@@ -15,7 +16,7 @@ class Smaple_VertexAnimation {
         let view = new View3D();
 
         view.scene = new Scene3D();
-        view.scene.addComponent(AtmosphericComponent);
+        let sky = view.scene.addComponent(AtmosphericComponent);
         view.scene.addComponent(Stats);
 
         this.scene = view.scene;
@@ -27,12 +28,13 @@ class Smaple_VertexAnimation {
         Engine3D.startRenderView(view);
 
         this.createScene();
+        sky.relativeTransform = this.lightObj.transform;
     }
 
     private createScene() {
         GUIHelp.init();
         // add light
-        let lightObj3D = new Object3D();
+        let lightObj3D = this.lightObj = new Object3D();
         let directLight = lightObj3D.addComponent(DirectLight);
         directLight.intensity = 25;
         directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);

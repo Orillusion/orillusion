@@ -4,6 +4,7 @@ import { GUIUtil } from "@samples/utils/GUIUtil";
 
 // An sample of display internal geometry
 class Sample_InternalGeometry {
+    lightObj: Object3D;
     async run() {
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.shadowBias = 0.002;
@@ -13,7 +14,7 @@ class Sample_InternalGeometry {
         await Engine3D.init();
         let view = new View3D();
         view.scene = new Scene3D();
-        view.scene.addComponent(AtmosphericComponent);
+        let sky = view.scene.addComponent(AtmosphericComponent);
 
         view.camera = CameraUtil.createCamera3DObject(view.scene);
         view.camera.perspective(60, webGPUContext.aspect, 1, 5000.0);
@@ -22,12 +23,13 @@ class Sample_InternalGeometry {
 
         Engine3D.startRenderView(view);
 
-        this.createScene(view.scene);
+        await this.createScene(view.scene);
+        sky.relativeTransform = this.lightObj.transform;
     }
 
     private async createScene(scene: Scene3D) {
         // add a direction light
-        let lightObj3D = new Object3D();
+        let lightObj3D = this.lightObj = new Object3D();
         let sunLight = lightObj3D.addComponent(DirectLight);
         sunLight.intensity = 15;
         sunLight.lightColor = KelvinUtil.color_temperature_to_rgb(6553);

@@ -40,8 +40,9 @@ class Sample_PBRMaterial {
 
     async initScene() {
         /******** sky *******/
+        let sky: AtmosphericComponent;
         {
-            let sky = this.scene.addComponent(AtmosphericComponent);
+            sky = this.scene.addComponent(AtmosphericComponent);
             sky.enable = false;
         }
         /******** light *******/
@@ -56,6 +57,8 @@ class Sample_PBRMaterial {
             directLight.intensity = 43;
             GUIUtil.renderDirLight(directLight);
             this.scene.addChild(this.lightObj3D);
+
+            sky.relativeTransform = this.lightObj3D.transform;
         }
 
         {
