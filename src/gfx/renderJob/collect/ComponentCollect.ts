@@ -34,6 +34,11 @@ export class ComponentCollect {
      */
     public static waitStartComponent: Map<Object3D, IComponent[]>;
 
+    /**
+     * @internal
+     */
+    public static hasNewComponent: boolean = false;
+
     private static _init: boolean = false;
 
     private static init() {
@@ -138,16 +143,30 @@ export class ComponentCollect {
         }
     }
 
-    public static appendWaitStart(obj: Object3D, component: IComponent) {
+    public static appendWaitStart(component: IComponent) {
+        this.hasNewComponent = true;
         this.init();
-        let arr = ComponentCollect.waitStartComponent.get(obj);
+        let arr = ComponentCollect.waitStartComponent.get(component.object3D);
         if (!arr) {
-            ComponentCollect.waitStartComponent.set(obj, [component]);
+            ComponentCollect.waitStartComponent.set(component.object3D, [component]);
         } else {
             let index = arr.indexOf(component);
             if (index == -1) {
                 arr.push(component);
             }
         }
+    }
+
+    public static removeWaitStart(component: IComponent): boolean {
+        this.init();
+        let arr = ComponentCollect.waitStartComponent.get(component.object3D);
+        if (arr) {
+            let index = arr.indexOf(component);
+            if (index >= 0) {
+                arr.splice(index, 1);
+                return true;
+            }
+        }
+        return false;
     }
 }
