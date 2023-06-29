@@ -27,6 +27,7 @@ export class ComponentBase implements IComponent {
     protected _enable: boolean = true;
 
     private __isStart: boolean = false;
+    public isDestroyed?: boolean;
 
     constructor() {
         this.eventDispatcher = new CEventDispatcher();
@@ -192,6 +193,9 @@ export class ComponentBase implements IComponent {
      * release this component
      */
     public destroy(force?: boolean) {
+        if (this.isDestroyed) return;
+
+        this.isDestroyed = true;
         this.enable = false;
         this.stop();
         this._onBeforeUpdate(null);
@@ -206,4 +210,5 @@ export class ComponentBase implements IComponent {
         this.onCompute = null;
         this.onGraphic = null;
     }
+
 }

@@ -404,32 +404,7 @@ export class Engine3D {
         if (this._beforeRender) this._beforeRender();
 
         /****** auto start with component list *****/
-        ComponentCollect.hasNewComponent ||= ComponentCollect.waitStartComponent.size > 0;
-        while (ComponentCollect.hasNewComponent) {
-            ComponentCollect.hasNewComponent = false;
-            //It is possible to create new components when executing __start,
-            //And then it'll set ComponentCollect.hasNewComponent to be true.
-            ComponentCollect.waitStartComponent.forEach((v, k) => {
-                v.forEach(c => {
-                    if (c.enable && !c['__isStart']) {
-                        c[`__start`]();
-                    }
-                })
-
-                let isAllStarted = true;
-                for (let c of v) {
-                    if (!c['__isStart']) {
-                        isAllStarted = false;
-                        break;
-                    }
-                }
-
-                if (isAllStarted) {
-                    ComponentCollect.waitStartComponent.delete(k);
-                }
-            });
-        }
-
+        ComponentCollect.startComponents();
 
         /****** auto before update with component list *****/
         ComponentCollect.componentsBeforeUpdateList.forEach((v, k) => {

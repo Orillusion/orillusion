@@ -8,6 +8,7 @@ export interface IComponent {
     eventDispatcher: CEventDispatcher;
     transform: Transform;
     enable: boolean;
+    isDestroyed?: boolean;
     init(param?: any);
     start();
     stop();
