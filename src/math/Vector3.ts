@@ -344,15 +344,6 @@ export class Vector3 {
         return space;
     }
 
-    public static cross(a: Vector3, b: Vector3, target: Vector3 = null): Vector3 {
-        target = target || new Vector3();
-        target.x = a.y * b.z - a.z * b.y;
-        target.y = a.z * b.x - a.x * b.z;
-        target.z = a.x * b.y - a.y * b.x;
-        target.w = 1;
-        return target;
-    }
-
     /**
      * Take the dot product of two vectors.
      * @param a Vector a
@@ -521,6 +512,20 @@ export class Vector3 {
         return target;
     }
 
+    public subVectors(a: Vector3, b: Vector3): this {
+        this.x = a.x - b.x;
+        this.y = a.y - b.y;
+        this.z = a.z - b.z;
+        return this;
+    }
+
+    public distanceToSquared(v: Vector3): number {
+        let dx = this.x - v.x;
+        let dy = this.y - v.y;
+        let dz = this.z - v.z;
+        return dx * dx + dy * dy + dz * dz;
+    }
+
     public addXYZW(x: number, y: number, z: number, w: number, target: Vector3 = null): Vector3 {
         target ||= new Vector3();
 
@@ -555,21 +560,6 @@ export class Vector3 {
         v.z = src.z;
         v.w = src.w;
         return v;
-    }
-
-    /**
-     * You take the cross product of two vectors,
-     * The cross product is going to be the perpendicular vector between these two vectors
-     * @param a Take the cross product of another vector
-     * @returns Vector3 returns the cross product vector
-     */
-    public crossProduct(a: Vector3, target: Vector3 = null): Vector3 {
-        target = target || new Vector3();
-        target.x = this.y * a.z - this.z * a.y;
-        target.y = this.z * a.x - this.x * a.z;
-        target.z = this.x * a.y - this.y * a.x;
-        target.w = 1;
-        return target;
     }
 
     /**
@@ -1018,18 +1008,23 @@ export class Vector3 {
     }
 
     /**
-     * The cross product of two Vector3s is this cross product of a
+     * You take the cross product of two vectors,
      * The cross product is going to be the perpendicular vector between these two vectors
      * @param a Take the cross product of another vector
-     * @returns Vector3 Returns the cross product vector
+     * @returns Vector3 returns the cross product vector
      */
-    public cross(a: Vector3, target: Vector3 = null): Vector3 {
+    public crossProduct(a: Vector3, target: Vector3 = null): Vector3 {
         target = target || new Vector3();
         target.x = this.y * a.z - this.z * a.y;
         target.y = this.z * a.x - this.x * a.z;
         target.z = this.x * a.y - this.y * a.x;
         target.w = 1;
         return target;
+    }
+
+    public crossVectors(a: Vector3, b: Vector3): this {
+        a.crossProduct(b, this);
+        return this;
     }
 
     public multiplyScalar(scalar: number) {

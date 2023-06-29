@@ -270,7 +270,7 @@ export class Ray {
         v2.subtract(v0, this._E2);
 
         // P
-        dir.cross(this._E2, this._P);
+        dir.crossProduct(this._E2, this._P);
 
         // determinant
         let det = this._E1.dotProduct(this._P);
@@ -291,7 +291,7 @@ export class Ray {
         if (face.u < 0.0 || face.u > det) return null;
 
         // Q
-        this._T.cross(this._E1, this._Q);
+        this._T.crossProduct(this._E1, this._Q);
 
         // Calculate v and make sure u + v <= 1
         face.v = dir.dotProduct(this._Q);

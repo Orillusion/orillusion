@@ -60,7 +60,7 @@ export class Triangle {
         let edge1 = new Vector3(v2.x - v1.x, v2.y - v1.y, v2.z - v1.z);
         let edge2 = new Vector3(v3.x - v1.x, v3.y - v1.y, v3.z - v1.z);
 
-        let normal = edge2.cross(edge1);
+        let normal = edge2.crossProduct(edge1);
         normal.normalize();
         return normal;
     }

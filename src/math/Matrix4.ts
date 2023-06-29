@@ -364,7 +364,7 @@ export class Matrix4 {
             zAxis.normalize();
         }
 
-        xAxis = up.cross(zAxis, xAxis).normalize();
+        xAxis = up.crossProduct(zAxis, xAxis).normalize();
 
         let yAxis = zAxis.crossProduct(xAxis, Vector3.HELP_2).normalize();
 

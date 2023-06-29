@@ -121,7 +121,7 @@ export class I3DMLoader extends I3DMLoaderBase {
             if (NORMAL_UP) {
                 temp.tempUp.set(NORMAL_UP[i * 3 + 0], NORMAL_UP[i * 3 + 1], NORMAL_UP[i * 3 + 2]);
                 temp.tempRight.set(NORMAL_RIGHT[i * 3 + 0], NORMAL_RIGHT[i * 3 + 1], NORMAL_RIGHT[i * 3 + 2]);
-                temp.tempRight.cross(temp.tempUp, temp.tempFwd).normalize();
+                temp.tempRight.crossProduct(temp.tempUp, temp.tempFwd).normalize();
                 temp.tempMat.makeBasis(temp.tempRight, temp.tempUp, temp.tempFwd);
                 temp.tempQuat.setFromRotationMatrix(temp.tempMat);
             } else {

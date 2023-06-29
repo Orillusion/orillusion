@@ -264,7 +264,7 @@ export class Engine3D {
             type: 'HDRSKY',
             sky: null,
             skyExposure: 1.0,
-            defaultFar: 65536,//can't be to big
+            defaultFar: 65536,//can't be too big
             defaultNear: 1,
         },
         light: {

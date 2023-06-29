@@ -200,9 +200,9 @@ export class MathUtil {
      * @param to Vector 2
      * @returns The Angle between two vectors
      */
-    public static angle_360(from, to) {
+    public static angle_360(from: Vector3, to: Vector3) {
         let v3 = Vector3.HELP_0;
-        from.cross(to, v3);
+        from.crossProduct(to, v3);
         if (v3.z > 0) {
             return MathUtil.angle(from, to);
         }
@@ -776,8 +776,8 @@ export function normalizeFast(inV: Vector3) {
 /**
  * @internal
  */
-export function cross(lhs: Vector3, rhs: Vector3) {
-    return new Vector3(lhs.y * rhs.z - lhs.z * rhs.y, lhs.z * rhs.x - lhs.x * rhs.z, lhs.x * rhs.y - lhs.y * rhs.x);
+export function crossProduct(lhs: Vector3, rhs: Vector3) {
+    return lhs.crossProduct(rhs);
 }
 
 /**
