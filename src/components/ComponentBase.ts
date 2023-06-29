@@ -46,9 +46,9 @@ export class ComponentBase implements IComponent {
         if (this._enable != value) {
             this._enable = value;
             if (this._enable) {
-                this.onEnable && this.onEnable();
+                this.onEnable?.();
             } else {
-                this.onDisable && this.onDisable();
+                this.onDisable?.();
             }
         }
     }
@@ -61,17 +61,16 @@ export class ComponentBase implements IComponent {
     }
 
     private __init(param?: any) {
-
         this.init(param);
     }
 
     private __start() {
-        if (this.start && this.transform && this.transform.scene3D && this.__isStart == false) {
-            this.start();
+        if (this.transform && this.transform.scene3D && this.__isStart == false) {
+            this.start?.();
             this.__isStart = true;
         }
-        if (this.onEnable && this.transform && this.transform.scene3D) {
-            this.onEnable();
+        if (this.transform && this.transform.scene3D) {
+            this.onEnable?.();
         }
         if (this.onUpdate) {
             this._onUpdate(this.onUpdate.bind(this));
@@ -92,15 +91,13 @@ export class ComponentBase implements IComponent {
 
     private __stop() {
         if (this.transform && this.transform.scene3D) {
-            this.onDisable && this.onDisable();
+            this.onDisable?.();
         }
         this._onUpdate(null);
         this._onLateUpdate(null);
         this._onBeforeUpdate(null);
         this._onCompute(null);
         this._onGraphic(null);
-
-
     }
 
     public init(param?: any) { }
@@ -114,6 +111,7 @@ export class ComponentBase implements IComponent {
     public onCompute?(view?: View3D, command?: GPUCommandEncoder);
     public onGraphic?(view?: View3D);
     public onParentChange?(lastParent?: Object3D, currentParent?: Object3D);
+    public beforeDestroy?(force?: boolean);
 
     /**
      *

@@ -1,3 +1,4 @@
+import { Vector4 } from "../../..";
 import { Engine3D } from "../../../Engine3D";
 import { ShaderLib } from "../../../assets/shader/ShaderLib";
 import { GPUCompareFunction, GPUCullMode } from "../../../gfx/graphics/webGpu/WebGPUConst";
@@ -14,6 +15,9 @@ import { GUIShader } from "./GUIShader";
  * @group GPU GUI
  */
 export class GUIMaterial extends MaterialBase {
+    private _scissorRect: Vector4;
+    private _screenSize: Vector2 = new Vector2();
+    private _scissorEnable: boolean = false;
     constructor(space: GUISpace) {
         super();
 
@@ -25,7 +29,9 @@ export class GUIMaterial extends MaterialBase {
         shader.setShaderEntry(`VertMain`, `FragMain`);
 
         shader.setUniformVector2('screen', new Vector2(1024, 1024));
-        shader.setUniformVector2('mipmapRange', new Vector2(0, 10));
+        shader.setUniformVector4('scissorRect', new Vector4());
+        shader.setUniformFloat('scissorCornerRadius', 0.0);
+        shader.setUniformFloat('scissorFadeOutSize', 0.0);
         shader.setUniformFloat('limitVertex', 0);//count: (quadCount + 1) * QuadStruct.vertexCount
 
         let shaderState = shader.shaderState;
@@ -46,14 +52,35 @@ export class GUIMaterial extends MaterialBase {
         this.renderShader.setUniformFloat('limitVertex', vertexCount);
     }
 
-    private _screenSizeVec2: Vector2 = new Vector2();
+    public setScissorRect(left: number, bottom: number, right: number, top: number) {
+        this._scissorRect ||= new Vector4();
+        this._scissorRect.set(left, bottom, right, top);
+        this.renderShader.setUniformVector4('scissorRect', this._scissorRect);
+    }
+
+    public setScissorEnable(value: boolean) {
+        if (this._scissorEnable != value) {
+            this._scissorEnable = value;
+            if (value) {
+                this.renderShader.setDefine("SCISSOR_ENABLE", true);
+            } else {
+                this.renderShader.deleteDefine('SCISSOR_ENABLE');
+            }
+            this.renderShader.noticeStateChange();
+        }
+    }
+
+    public setScissorCorner(radius: number, fadeOut: number) {
+        this.renderShader.setUniformFloat('scissorCornerRadius', radius);
+        this.renderShader.setUniformFloat('scissorFadeOutSize', fadeOut);
+    }
 
     /**
      * Write screen size to the shader
      */
     public setScreenSize(width: number, height: number): this {
-        this._screenSizeVec2.set(width, height);
-        this.renderShader.setUniformVector2('screen', this._screenSizeVec2);
+        this._screenSize.set(width, height);
+        this.renderShader.setUniformVector2('screen', this._screenSize);
         return this;
     }
 
@@ -70,6 +97,7 @@ export class GUIMaterial extends MaterialBase {
 
     private _videoTextureFlags: { [key: string]: boolean } = {};
     private setVideoTextureDefine(i: number, isVideoTexture: boolean): void {
+        let changed = false;
         if (isVideoTexture != this._videoTextureFlags[i]) {
             if (isVideoTexture) {
                 this.renderShader.setDefine(`VideoTexture${i}`, true);
@@ -77,6 +105,11 @@ export class GUIMaterial extends MaterialBase {
                 this.renderShader.deleteDefine(`VideoTexture${i}`);
             }
             this._videoTextureFlags[i] = isVideoTexture;
+            changed = true;
+        }
+
+        if (changed) {
+            this.renderShader.noticeStateChange();
         }
 
     }

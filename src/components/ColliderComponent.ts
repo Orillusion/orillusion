@@ -50,14 +50,12 @@ export class ColliderComponent extends ComponentBase {
         }
         return null;
     }
-    /**
-     * @internal
-     */
-    public destroy(force?: boolean) {
+
+    public beforeDestroy?(force?: boolean) {
         if (Engine3D.setting.pick.mode == `pixel`) {
             this.transform.scene3D.view.pickFire.mouseEnableMap.delete(this.transform.worldMatrix.index);
         }
-        super.destroy(force);
+        super.beforeDestroy?.(force);
     }
 
 }

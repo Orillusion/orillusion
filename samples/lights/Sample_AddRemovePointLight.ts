@@ -15,7 +15,7 @@ class Sample_AddRemovePointLight {
         GUIHelp.init();
 
         this.scene = new Scene3D();
-        this.scene.addComponent(AtmosphericComponent);
+        let sky = this.scene.addComponent(AtmosphericComponent);
         // init camera3D
         let mainCamera = CameraUtil.createCamera3D(null, this.scene);
         mainCamera.perspective(60, Engine3D.aspect, 1, 2000.0);
@@ -29,6 +29,7 @@ class Sample_AddRemovePointLight {
         view.camera = mainCamera;
 
         Engine3D.startRenderViews([view]);
+        sky.relativeTransform = this.lightObj.transform;
 
     }
 

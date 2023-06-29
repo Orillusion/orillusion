@@ -11,7 +11,7 @@ class Sample_TextureSample {
         await Engine3D.init();
 
         this.scene = new Scene3D();
-        this.scene.addComponent(AtmosphericComponent);
+        let sky = this.scene.addComponent(AtmosphericComponent);
         let camera = CameraUtil.createCamera3DObject(this.scene);
         camera.perspective(60, Engine3D.aspect, 0.01, 5000.0);
 
@@ -23,6 +23,7 @@ class Sample_TextureSample {
 
         Engine3D.startRenderView(view);
         await this.initScene();
+        sky.relativeTransform = this.lightObj3D.transform;
     }
 
     async initScene() {

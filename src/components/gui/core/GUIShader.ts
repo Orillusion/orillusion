@@ -42,8 +42,10 @@ export class GUIShader {
 
         var<private> fragmentOutput: FragmentOutput;
         var<private> uvSlice: vec2<f32>;
+        var<private> EPSILON: f32 = 0.001;
         
-        fn sliceBorder(s0:f32, scale:f32, border0:vec2<f32>) -> f32 {
+        fn sliceBorder(s0:f32, scale:f32, border0:vec2<f32>) -> f32 
+        {
           var s = s0;
           var border = border0;
           var borderScale = vec2<f32>(border.x / scale, 1.0 - (1.0 - border.y) / scale);
@@ -57,18 +59,68 @@ export class GUIShader {
           }
           return s;
         }
+
+        fn isInsideAlpha(coord:vec2<f32>, rect:vec4<f32>, cornerRadius0:f32, fadeOutSize0:f32) -> f32
+        {
+            var minX = min(rect.x, rect.z);
+            var maxX = max(rect.x, rect.z);
+            var minY = min(rect.y, rect.w);
+            var maxY = max(rect.y, rect.w);
+
+            var cornerRadius = max(EPSILON, cornerRadius0);
+
+            var center = vec2<f32>(minX + maxX, minY + maxY) * 0.5;
+            var extents = vec2<f32>(maxX - minX, maxY - minY) * 0.5;
+
+            cornerRadius = min(extents.x, cornerRadius);
+            cornerRadius = min(extents.y, cornerRadius);
+            
+            var extendsMin = max(vec2<f32>(0.0), extents - cornerRadius);
+            
+            var toCenter = abs(coord - center);
+            var outerDist = toCenter - extents;
+            var innerDist = toCenter - extendsMin;
+            
+            if(innerDist.x <= 0 && innerDist.y <= 0){
+                return 1.0;
+            }else if(outerDist.x <= 0 && outerDist.y <= 0){
+                var fadeOutPercent = clamp(fadeOutSize0, EPSILON, cornerRadius) / cornerRadius;
+                innerDist = max(vec2(EPSILON), innerDist);
+                var distance = min(cornerRadius, length(innerDist));
+                var alpha = 1.0 - distance / cornerRadius;
+                alpha /= fadeOutPercent;
+                alpha = clamp(alpha, 0.0, 1.0);
+                return alpha;
+            }
+            return 0.0;
+        }
         
         @fragment
         fn FragMain( 
             @location(0) vUV: vec2<f32>,
             @location(1) vColor4: vec4<f32>,
-            @location(2) vUvRec: vec4<f32>,
-            @location(3) vUvBorder: vec4<f32>,
-            @location(4) vUvSlice: vec2<f32>,
-            @location(5) vTextureID: f32,
+            @location(2) vLocalPos: vec2<f32>,
+            @location(3) vUvRec: vec4<f32>,
+            @location(4) vUvBorder: vec4<f32>,
+            @location(5) vUvSlice: vec2<f32>,
+            @location(6) vTextureID: f32,
             @builtin(front_facing) face: bool,
             @builtin(position) fragCoord : vec4<f32> 
         ) -> FragmentOutput {
+
+            var scissorAlpha = 1.0;
+#if SCISSOR_ENABLE
+            scissorAlpha = isInsideAlpha(
+                vLocalPos.xy,
+                materialUniform.scissorRect,
+                materialUniform.scissorCornerRadius,
+                materialUniform.scissorFadeOutSize);
+
+            if(scissorAlpha < EPSILON){
+                discard;
+            }
+#endif
+
             uvSlice = vUvSlice;
             
             var uv:vec2<f32> = vUV;
@@ -98,11 +150,12 @@ export class GUIShader {
                 ${this.sampleTexture(6)}
             }
             color *= vColor4;
-            if(color.a < 0.001)
+            color.a *= scissorAlpha;
+            if(color.a < EPSILON)
             { 
                 discard;
             }
-            
+
             fragmentOutput.color = color;
             return fragmentOutput ;
         }`;
@@ -120,18 +173,21 @@ export class GUIShader {
         }
                 
         struct MaterialUniform{
+            scissorRect:vec4<f32>,
             screen:vec2<f32>,
-            mipmapRange:vec2<f32>,
+            scissorCornerRadius:f32,
+            scissorFadeOutSize:f32,
             limitVertex:f32,
         }
         
         struct VertexOutput {
             @location(0) vUV: vec2<f32>,
             @location(1) vColor4: vec4<f32>,
-            @location(2) vUvRec: vec4<f32>,
-            @location(3) vUvBorder: vec4<f32>,
-            @location(4) vUvSlice: vec2<f32>,
-            @location(5) vTextureID: f32,
+            @location(2) vLocalPos: vec2<f32>,
+            @location(3) vUvRec: vec4<f32>,
+            @location(4) vUvBorder: vec4<f32>,
+            @location(5) vUvSlice: vec2<f32>,
+            @location(6) vTextureID: f32,
             
             @builtin(position) member: vec4<f32>
         };
@@ -145,13 +201,31 @@ export class GUIShader {
         @group(2) @binding(0)
         var<uniform> materialUniform : MaterialUniform;
         @group(3) @binding(1)
-        var<storage, read> vPositionBuffer: array<vec2<f32>>;
+        var<storage, read> vPositionBuffer: array<vec4<f32>>;
         @group(3) @binding(2)
         var<storage, read> vSpriteBuffer: array<VertexSpriteBuffer>;
         @group(3) @binding(3)
         var<storage, read> vColorBuffer: array<vec4<f32>>;
 
         var<private> vertexOut: VertexOutput ;
+
+        //quad: (left, bottom, right, top)
+        //index: 0~3
+        fn getVertexXY(quad:vec4<f32>, index:u32) -> vec2<f32>
+        {
+            var ret = vec2<f32>(0.0);
+            if(index == 0 || index == 3){
+                ret.x = quad.x;
+            }else{
+                ret.x = quad.z;
+            }
+            if(index == 0 || index == 1){
+                ret.y = quad.w;
+            }else{
+                ret.y = quad.y;
+            }
+            return ret;
+        }
     `;
 
     public static readonly GUI_shader_view: string = /* wgsl */ `
@@ -164,13 +238,16 @@ export class GUIShader {
             
             let vertexIndex = vertex.vIndex;
             let quadIndex = u32(vertex.vIndex * 0.25);
+            let vertexPosition = getVertexXY(vPositionBuffer[quadIndex], u32(vertexIndex) % 4u);
             var vSpriteData = vSpriteBuffer[quadIndex];
             
             var op = vec2<f32>(0.0001);
-            if(vSpriteData.vVisible > 0.5 && vertexIndex < materialUniform.limitVertex){
-                op = 2.0 * vPositionBuffer[u32(vertexIndex)] / materialUniform.screen;
+            let isValidVertex = vSpriteData.vVisible > 0.5 && vertexIndex < materialUniform.limitVertex;
+            if(isValidVertex){
+                op = 2.0 * vertexPosition / materialUniform.screen;
             }
 
+            vertexOut.vLocalPos = vertexPosition;
             vertexOut.member = vec4<f32>(op.x, op.y, vertexIndex * 0.0001, 1.0);
 
             vertexOut.vUV = vec2<f32>(vertex.uv);
@@ -178,7 +255,6 @@ export class GUIShader {
             vertexOut.vUvBorder = vSpriteData.vUvBorder;
             vertexOut.vUvSlice = vSpriteData.vUvSlice;
             vertexOut.vTextureID = vSpriteData.vTextureID;
-            
             vertexOut.vColor4 = vColorBuffer[quadIndex];
 
             return vertexOut;
@@ -195,21 +271,24 @@ export class GUIShader {
             
             let vertexIndex = vertex.vIndex;
             let quadIndex = u32(vertex.vIndex * 0.25);
+            let vertexPosition = getVertexXY(vPositionBuffer[quadIndex], u32(vertexIndex) % 4u);
+            var localPos = vec4<f32>(vertexPosition.xy, vertexIndex * 0.0001, 1.0) ;
+            var op = vec4<f32>(0.0001);
             var vSpriteData = vSpriteBuffer[quadIndex];
 
-            var localPos = vec4<f32>(vPositionBuffer[u32(vertexIndex)], vertexIndex * 0.0001, 1.0) ;
-            var op = vec4<f32>(0.0001);
-            if(vSpriteData.vVisible > 0.5 && vertexIndex < materialUniform.limitVertex){
+            let isValidVertex = vSpriteData.vVisible > 0.5 && vertexIndex < materialUniform.limitVertex;
+            if(isValidVertex){
                 op = globalUniform.projMat * globalUniform.viewMat * modelMatrix * localPos ;
             }
+
+            vertexOut.vLocalPos = vertexPosition;
             vertexOut.member = op;
+
             vertexOut.vUV = vec2<f32>(vertex.uv);
-            
             vertexOut.vUvRec = vSpriteData.vUvRec;
             vertexOut.vUvBorder = vSpriteData.vUvBorder;
             vertexOut.vUvSlice = vSpriteData.vUvSlice;
             vertexOut.vTextureID = vSpriteData.vTextureID;
-            
             vertexOut.vColor4 = vColorBuffer[quadIndex];
 
             return vertexOut;

@@ -44,6 +44,8 @@ class Sample_Transform {
         dirLight.intensity = 10;
         scene.addChild(lightObj);
 
+        sky.relativeTransform = dirLight.transform;
+
         // create a view with target scene and camera
         let view = new View3D();
         view.scene = scene;

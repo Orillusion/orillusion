@@ -17,7 +17,6 @@ import { ShaderLib } from './assets/shader/ShaderLib';
 import { ShaderUtil } from './gfx/graphics/webGpu/shader/util/ShaderUtil';
 import { ComponentCollect } from './gfx/renderJob/collect/ComponentCollect';
 import { ShadowLightsCollect } from './gfx/renderJob/collect/ShadowLightsCollect';
-import { ProfilerUtil } from '.';
 
 /** 
  * Orillusion 3D Engine
@@ -137,11 +136,14 @@ export class Engine3D {
                     enable: false,
                     fogType: 0.0,
                     height: 100,
-                    start: 400,
-                    end: 0,
+                    start: 800,
+                    end: 200,
                     density: 0.02,
                     ins: 1,
-                    fogColor: new Color(84 / 255, 90 / 255, 239 / 255, 1),
+                    skyFactor: 0.5,
+                    skyRoughness: 0.4,
+                    overrideSkyFactor: 0.8,
+                    fogColor: new Color(112 / 255, 61 / 255, 139 / 255, 1),
                 },
                 ssao: {
                     enable: false,
@@ -262,7 +264,7 @@ export class Engine3D {
             type: 'HDRSKY',
             sky: null,
             skyExposure: 1.0,
-            defaultFar: 1000000,
+            defaultFar: 65536,//can't be to big
             defaultNear: 1,
         },
         light: {
@@ -286,7 +288,7 @@ export class Engine3D {
      * @returns
      */
     public static async init(descriptor: { canvasConfig?: CanvasConfig; beforeRender?: Function; renderLoop?: Function; lateRender?: Function, engineSetting?: EngineSetting } = {}) {
-        console.log('engine version', version);
+        console.log('Engine Version', version);
 
         this.setting = { ...this.setting, ...descriptor.engineSetting }
 
@@ -410,7 +412,7 @@ export class Engine3D {
             })
         });
 
-        let command = webGPUContext.device.createCommandEncoder();;
+        let command = webGPUContext.device.createCommandEncoder();
         ComponentCollect.componentsComputeList.forEach((v, k) => {
             v.forEach((c, f) => {
                 if (f.enable) {

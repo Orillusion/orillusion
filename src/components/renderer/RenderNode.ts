@@ -43,6 +43,7 @@ export class RenderNode extends ComponentBase {
     protected _combineShaderRefection: ShaderReflection;
     protected _ignoreEnvMap?: boolean;
     protected _ignorePrefilterMap?: boolean;
+    private __renderOrder: number = 0;//cameraDepth + _renderOrder
     private _renderOrder: number = 0;
     public isRenderOrderChange?: boolean;
     public needSortOnCameraZ?: boolean;
@@ -60,6 +61,7 @@ export class RenderNode extends ComponentBase {
         if (value != this._renderOrder) {
             this.isRenderOrderChange = true;
             this._renderOrder = value;
+            this.__renderOrder = value;
         }
     }
 
@@ -472,9 +474,7 @@ export class RenderNode extends ComponentBase {
         }
     }
 
-    public destroy(force?: boolean) {
-        super.destroy(force);
-
+    public beforeDestroy(force?: boolean) {
         Reference.getInstance().detached(this._geometry, this);
         if (!Reference.getInstance().hasReference(this._geometry)) {
             this._geometry.destroy(force);
@@ -487,7 +487,11 @@ export class RenderNode extends ComponentBase {
                 mat.destroy(force);
             }
         }
+        super.beforeDestroy?.(force);
+    }
 
+    public destroy(force?: boolean) {
+        super.destroy(force);
         this._geometry = null;
         this._materials = null;
         this._combineShaderRefection = null;

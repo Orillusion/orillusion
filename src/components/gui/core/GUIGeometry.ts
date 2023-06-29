@@ -129,16 +129,14 @@ export class GUIGeometry extends GeometryBase {
         return this;
     }
 
-
     private createBuffer(): void {
         let quadNum: number = this.maxQuadCount;
-        //Each quad has 4 vertices, and each vertex has 2 data points
-        let sizePositionArray = quadNum * 4 * 2;
-        this._posAttribute = new GUIAttribute(sizePositionArray);
+
+        //Each quad has 4 vertices,(left bottom right top)
+        this._posAttribute = new GUIAttribute(quadNum * 4);
 
         //Each quad has : uvRec_size/uvBorder_size/uvSlice_size/textureID/visible
-        let sizeSpriteArray = quadNum * (4 + 4 + 2 + 2);
-        this._spriteAttribute = new GUIAttribute(sizeSpriteArray);
+        this._spriteAttribute = new GUIAttribute(quadNum * (4 + 4 + 2 + 2));
 
         this._colorAttribute = new GUIAttribute(quadNum * 4);
     }
@@ -156,20 +154,7 @@ export class GUIGeometry extends GeometryBase {
     }
 
     private fillQuadPosition(quad: GUIQuad, transform: UITransform): void {
-        let qi = quad.z * QuadStruct.vertexCount;
-
-        let array = this._posAttribute.array;
-        let vi = 0;
-        SetBufferDataV2.setXY(array, qi + vi, quad.left, quad.top);
-
-        vi = 1;
-        SetBufferDataV2.setXY(array, qi + vi, quad.right, quad.top);
-
-        vi = 2;
-        SetBufferDataV2.setXY(array, qi + vi, quad.right, quad.bottom);
-
-        vi = 3;
-        SetBufferDataV2.setXY(array, qi + vi, quad.left, quad.bottom);
+        SetBufferDataV4.setXYZW(this._posAttribute.array, quad.z, quad.left, quad.bottom, quad.right, quad.top);
 
         this._onPositionChange = true;
     }
@@ -196,14 +181,13 @@ export class GUIGeometry extends GeometryBase {
             uvSliceHeight = (transform.height - (texture.offsetSize.w - texture.trimSize.y)) / uvSliceHeight;
         }
 
-        let i = quad.z;
         let textureID = texture.guiTexture.dynamicId;
         let uvRec = texture.uvRec;
         let uvBorder = texture.uvBorder;
         //Each quad has: uvRec_size/uvBorder_size/uvSlice_size/textureID/visible
 
         let spriteArray = this._spriteAttribute.array;
-        let offset = (4 + 4 + 2 + 2) * i;
+        let offset = (4 + 4 + 2 + 2) * quad.z;
 
         spriteArray[offset + 0] = uvRec.x;
         spriteArray[offset + 1] = uvRec.y;
@@ -222,16 +206,6 @@ export class GUIGeometry extends GeometryBase {
 
         this._onSpriteChange = true;
     }
-
-    // cutOff(z: number) {
-    //     let qi = z * QuadStruct.vertexCount;
-    //     let max = this.maxQuadCount * QuadStruct.vertexCount;
-    //     for (let i = qi; i < max; i++) {
-    //         SetBufferDataV2.setXY(this._posAttribute.array, i, 0, 0);
-    //     }
-    //     this._onPositionChange = true;
-    // }
-
 }
 
 class SetBufferData {

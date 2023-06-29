@@ -397,38 +397,17 @@ export class Transform extends ComponentBase {
      * @param up up direction
      */
     public lookAt(pos: Vector3, target: Vector3, up: Vector3 = Vector3.UP) {
-        this._targetPos = target.clone();
-        this._localPos.copyFrom(pos);
-        this.notifyLocalChange();
+        this._targetPos ||= new Vector3();
+        this._targetPos.copyFrom(target);
+
+        this.localPosition = pos;
 
         Matrix4.helpMatrix.lookAt(pos, target, up);
         Matrix4.helpMatrix.invert();
         var prs: Vector3[] = Matrix4.helpMatrix.decompose(Orientation3D.QUATERNION);
-        Quaternion.CALCULATION_QUATERNION.x = prs[1].x;
-        Quaternion.CALCULATION_QUATERNION.y = prs[1].y;
-        Quaternion.CALCULATION_QUATERNION.z = prs[1].z;
-        Quaternion.CALCULATION_QUATERNION.w = prs[1].w;
-        Quaternion.CALCULATION_QUATERNION.toEulerAngles(this._localRot);
 
-        if (this.eventPositionChange) {
-            this.eventDispatcher.dispatchEvent(this.eventPositionChange);
-        }
-
-        if (this.onPositionChange) {
-            this.onPositionChange();
-        }
-
-        if (this.onRotationChange) {
-            this.onRotationChange();
-        }
-
-        if (this.eventRotationChange) {
-            this.eventDispatcher.dispatchEvent(this.eventRotationChange);
-        }
+        this.localRotQuat = Quaternion.CALCULATION_QUATERNION.copyFrom(prs[1]);
     }
-
-
-
 
     public decomposeFromMatrix(matrix: Matrix4, orientationStyle: string = 'eulerAngles'): this {
         let prs = matrix.decompose(orientationStyle);
@@ -718,13 +697,17 @@ export class Transform extends ComponentBase {
         return this._localScale;
     }
 
-    destroy(): void {
+    public beforeDestroy(force?: boolean) {
         if (this.parent && this.parent.object3D) {
             this.parent.object3D.removeChild(this.object3D);
-            this.scene3D = null;
         }
+        super.beforeDestroy?.(force);
+    }
+
+    destroy(): void {
         super.destroy();
 
+        this.scene3D = null;
         this.eventPositionChange = null;
         this.eventRotationChange = null;
         this.eventScaleChange = null;

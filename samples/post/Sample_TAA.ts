@@ -19,13 +19,16 @@ class Sample_TAA {
 		await Engine3D.init();
 
 		this.scene = new Scene3D();
-		this.scene.addComponent(AtmosphericComponent).sunY = 0.6;
+		let sky = this.scene.addComponent(AtmosphericComponent);
+		sky.sunY = 0.6;
 
 		let mainCamera = CameraUtil.createCamera3DObject(this.scene, 'camera');
 		mainCamera.perspective(60, webGPUContext.aspect, 1, 5000.0);
 		let ctrl = mainCamera.object3D.addComponent(HoverCameraController);
 		ctrl.setCamera(0, -15, 20);
 		await this.initScene();
+
+		sky.relativeTransform = this.lightObj.transform;
 
 		let view = new View3D();
 		view.scene = this.scene;

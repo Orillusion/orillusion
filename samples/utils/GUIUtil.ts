@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AtmosphericComponent, BillboardType, Color, DirectLight, Engine3D, GPUCullMode, GlobalIlluminationComponent, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
+import { AtmosphericComponent, BillboardType, Color, DirectLight, Engine3D, GPUCullMode, GlobalFog, GlobalIlluminationComponent, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
@@ -9,13 +9,36 @@ export class GUIUtil {
         name ||= 'AtmosphericSky';
         GUIHelp.addFolder(name);
         GUIHelp.add(component, 'sunX', 0, 1, 0.01);
-        GUIHelp.add(component, 'sunY', 0, 1, 0.01);
+        GUIHelp.add(component, 'sunY', 0.4, 1.6, 0.01);
         GUIHelp.add(component, 'eyePos', 0, 5000, 1);
         GUIHelp.add(component, 'sunRadius', 0, 1000, 0.01);
         GUIHelp.add(component, 'sunRadiance', 0, 100, 0.01);
         GUIHelp.add(component, 'sunBrightness', 0, 10, 0.01);
         GUIHelp.add(component, 'exposure', 0, 2, 0.01);
         GUIHelp.add(component, 'displaySun', 0, 1, 0.01);
+        GUIHelp.add(component, 'enable');
+
+        open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
+
+    public static renderGlobalFog(fog: GlobalFog, open: boolean = true, name?: string) {
+        name ||= 'GlobalFog';
+        GUIHelp.addFolder(name);
+        GUIHelp.add(fog, 'fogType', {
+            Liner: 0,
+            Exp: 1,
+            Exp2: 2,
+        });
+        GUIHelp.add(fog, 'start', -0.0, 1000.0, 0.0001);
+        GUIHelp.add(fog, 'end', -0.0, 1000.0, 0.0001);
+        GUIHelp.add(fog, 'height', -1000.0, 1000.0, 0.0001);
+        GUIHelp.add(fog, 'density', 0.0, 1.0, 0.0001);
+        GUIHelp.add(fog, 'ins', 0.0, 5.0, 0.0001);
+        GUIHelp.add(fog, 'skyFactor', 0.0, 1.0, 0.0001);
+        GUIHelp.add(fog, 'skyRoughness', 0.0, 1.0, 0.0001);
+        GUIHelp.add(fog, 'overrideSkyFactor', 0.0, 1.0, 0.0001);
+        GUIHelp.addColor(fog, 'fogColor');
         open && GUIHelp.open();
         GUIHelp.endFolder();
     }
@@ -253,6 +276,48 @@ export class GUIUtil {
         // change billboard by click dropdown box
         GUIHelp.add({ billboard: panel.billboard }, 'billboard', billboard).onChange((v) => {
             panel.billboard = v;
+        });
+
+        let scissorData = {
+            scissorCornerRadius: panel.scissorCornerRadius,
+            scissorFadeOutSize: panel.scissorFadeOutSize,
+            panelWidth: 400,
+            panelHeight: 300,
+            backGroundVisible: panel.visible,
+            backGroundColor: panel.color,
+            scissorEnable: panel.scissorEnable
+
+        };
+        let changeSissor = () => {
+            panel.scissorCornerRadius = scissorData.scissorCornerRadius;
+            panel.scissorEnable = scissorData.scissorEnable;
+            panel.scissorFadeOutSize = scissorData.scissorFadeOutSize;
+            panel.color = scissorData.backGroundColor;
+            panel.visible = scissorData.backGroundVisible;
+            panel.uiTransform.resize(scissorData.panelWidth, scissorData.panelHeight);
+        }
+        GUIHelp.add(scissorData, 'scissorCornerRadius', 0, 100, 0.1).onChange(() => {
+            changeSissor();
+        });
+        GUIHelp.add(scissorData, 'scissorFadeOutSize', 0, 100, 0.1).onChange(() => {
+            changeSissor();
+        });
+        GUIHelp.add(scissorData, 'panelWidth', 1, 400, 1).onChange(() => {
+            changeSissor();
+        });
+        GUIHelp.add(scissorData, 'panelHeight', 1, 300, 1).onChange(() => {
+            changeSissor();
+        });
+        GUIHelp.add(scissorData, 'backGroundVisible').onChange(() => {
+            changeSissor();
+        });
+
+        GUIHelp.addColor(scissorData, 'backGroundColor').onChange(() => {
+            changeSissor();
+        });
+
+        GUIHelp.add(scissorData, 'scissorEnable').onChange(() => {
+            changeSissor();
         });
 
         //depth test

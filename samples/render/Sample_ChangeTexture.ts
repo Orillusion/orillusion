@@ -1,62 +1,38 @@
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, HoverCameraController, View3D, DirectLight, KelvinUtil, MeshRenderer, BoxGeometry, LitMaterial, Vector3, Color, BlendMode, CameraUtil } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, BoxGeometry, LitMaterial, MeshRenderer, } from "@orillusion/core";
+import { createExampleScene } from "@samples/utils/ExampleScene";
 
 class Sample_ChangeTexture {
-    lightObj: Object3D;
-    scene: Scene3D;
 
+    scene: Scene3D;
     async run() {
         await Engine3D.init();
 
-        this.scene = new Scene3D();
-        this.scene.addComponent(AtmosphericComponent);
-
-        //camera
-        let mainCamera = CameraUtil.createCamera3DObject(this.scene, 'camera');
-        mainCamera.perspective(60, Engine3D.aspect, 1, 5000.0);
-        mainCamera.object3D.addComponent(HoverCameraController).setCamera(-125, -10, 10);
-
+        let exampleScene = createExampleScene();
+        this.scene = exampleScene.scene;
         await this.initScene();
+        Engine3D.startRenderView(exampleScene.view);
 
-        let view = new View3D();
-        view.scene = this.scene;
-        view.camera = mainCamera;
-
-        this.initLight();
-        Engine3D.startRenderView(view);
     }
 
-    private initLight(): void {
-        this.lightObj = new Object3D();
-        this.lightObj.x = 0;
-        this.lightObj.y = 30;
-        this.lightObj.z = -40;
-        this.lightObj.rotationX = 46;
-        this.lightObj.rotationY = 62;
-        this.lightObj.rotationZ = 360;
-        let lc = this.lightObj.addComponent(DirectLight);
-        lc.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
-        lc.intensity = 20;
-        this.scene.addChild(this.lightObj);
-    }
 
     async initScene() {
         //create first box
         let box1 = new Object3D();
-        box1.transform.z = -2
+        box1.transform.z = -20;
         this.scene.addChild(box1);
 
         let render1 = box1.addComponent(MeshRenderer);
-        render1.geometry = new BoxGeometry(2, 2, 2);
+        render1.geometry = new BoxGeometry(20, 20, 20);
         let material1 = render1.material = new LitMaterial();
         material1.maskMap = Engine3D.res.maskTexture;
 
         //create second box
         let box2 = new Object3D();
-        box2.transform.z = 2;
+        box2.transform.z = 20;
         this.scene.addChild(box2);
 
         let render2 = box2.addComponent(MeshRenderer);
-        render2.geometry = new BoxGeometry(2, 2, 2);
+        render2.geometry = new BoxGeometry(20, 20, 20);
         let material2 = render2.material = new LitMaterial();
         material2.maskMap = Engine3D.res.maskTexture;
 

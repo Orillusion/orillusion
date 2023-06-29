@@ -348,8 +348,7 @@ export class Matrix4 {
      */
     public lookAt(eye: Vector3, at: Vector3, up: Vector3 = Vector3.Y_AXIS): void {
         let data = this.rawData;
-        at.subtract(eye, Vector3.HELP_0);
-        let zAxis: Vector3 = Vector3.HELP_0;
+        let zAxis: Vector3 = at.subtract(eye, Vector3.HELP_0);
         if (zAxis.length < 0.0001) {
             zAxis.z = 1;
         }
@@ -362,14 +361,12 @@ export class Matrix4 {
             } else {
                 zAxis.z += 0.0001;
             }
+            zAxis.normalize();
         }
 
-        zAxis.normalize();
-        up.cross(zAxis, xAxis);
+        xAxis = up.cross(zAxis, xAxis).normalize();
 
-
-        xAxis.normalize(); //
-        let yAxis = zAxis.crossProduct(xAxis, Vector3.HELP_2);
+        let yAxis = zAxis.crossProduct(xAxis, Vector3.HELP_2).normalize();
 
         data[0] = xAxis.x;
         data[1] = yAxis.x;
@@ -1433,6 +1430,7 @@ export class Matrix4 {
         return this;
     }
 
+    private static decomposeRawData = new Float32Array(16).fill(0)
     /**
      * Decompose the current matrix
      * @param orientationStyle The default decomposition type is Orientation3D.EULER_ANGLES
@@ -1445,8 +1443,8 @@ export class Matrix4 {
     public decompose(orientationStyle: string = 'eulerAngles', target?: Vector3[]): Vector3[] {
         let q: Quaternion = Quaternion.CALCULATION_QUATERNION;
         let vec: Vector3[] = target ? target : Matrix4._prs;
-        this.copyRawDataTo(Matrix4.helpMatrix.rawData);
-        let mr = Matrix4.helpMatrix.rawData;
+        this.copyRawDataTo(Matrix4.decomposeRawData);
+        let mr = Matrix4.decomposeRawData;
 
         let pos: Vector3 = vec[0];
         pos.x = mr[12];
@@ -1479,7 +1477,7 @@ export class Matrix4 {
         mr[10] /= scale.z;
 
         let rot = vec[1];
-
+        let tr: number;
         switch (orientationStyle) {
             case Orientation3D.AXIS_ANGLE:
                 rot.w = Math.acos((mr[0] + mr[5] + mr[10] - 1) / 2);
@@ -1491,7 +1489,7 @@ export class Matrix4 {
 
                 break;
             case Orientation3D.QUATERNION:
-                let tr = mr[0] + mr[5] + mr[10];
+                tr = mr[0] + mr[5] + mr[10];
 
                 if (tr > 0) {
                     rot.w = Math.sqrt(1 + tr) / 2;
@@ -1548,7 +1546,7 @@ export class Matrix4 {
                     q.y = (mr[6] + mr[9]) / (4 * q.z);
                     q.w = (mr[1] - mr[4]) / (4 * q.z);
                 }
-                q.toEulerAngles(rot);
+                q.getEulerAngles(rot);
 
                 break;
         }

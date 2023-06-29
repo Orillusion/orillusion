@@ -5,6 +5,7 @@ import { Ray } from '../../../math/Ray';
 import { GUIPickHelper } from '../GUIPickHelper';
 import { Object3D } from '../../../core/entities/Object3D';
 import { Vector3 } from '../../../math/Vector3';
+import { UIPanel } from './UIPanel';
 
 /**
  * The basic class of interactive GUI component
@@ -40,9 +41,8 @@ export class UIInteractive extends UIComponentBase implements IUIInteractive {
         super.destroy();
     }
 
-    public rayPick(ray: Ray, screenPos: Vector2, screenSize: Vector2): { intersect: boolean; intersectPoint?: Vector3; distance: number } {
-        let mesh = this.uiTransform.guiMesh;
-        return GUIPickHelper.rayPick(ray, screenPos, screenSize, mesh.space, this._uiTransform, mesh.transform.worldMatrix)
+    public rayPick(ray: Ray, panel: UIPanel, screenPos: Vector2, screenSize: Vector2): { intersect: boolean; intersectPoint?: Vector3; distance: number } {
+        return GUIPickHelper.rayPick(ray, screenPos, screenSize, panel.space, this._uiTransform, panel.transform.worldMatrix);
     }
 
     public cloneTo(obj: Object3D) {

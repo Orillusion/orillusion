@@ -36,6 +36,18 @@ export type GlobalFogSetting = {
      */
     ins: number;
     /**
+     * mix fog color with sky color
+     */
+    skyFactor: number;
+    /**
+     * use mipmap level
+     */
+    skyRoughness: number,
+    /**
+     * factor effect the sky
+     */
+    overrideSkyFactor: number,
+    /**
      * fog color
      */
     fogColor: Color;
