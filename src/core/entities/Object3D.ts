@@ -53,7 +53,7 @@ export class Object3D extends Entity {
             instance.object3D = this;
             this.components.set(className, instance);
             instance[`__init`](param);
-            ComponentCollect.appendWaitStart(this, instance);
+            ComponentCollect.appendWaitStart(instance);
             return instance;
         }
         return null;
@@ -88,7 +88,7 @@ export class Object3D extends Entity {
             let component = this.components.get(className);
             this.components.delete(className);
             component[`__stop`]();
-            component.beforeDestroy?.();
+            component.beforeDestroy();
             component.destroy();
         }
     }

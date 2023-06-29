@@ -124,7 +124,7 @@ export class Transform extends ComponentBase {
         } else {
             this._scene3d = hasRoot;
             this.object3D.components.forEach((c) => {
-                ComponentCollect.appendWaitStart(this.object3D, c);
+                ComponentCollect.appendWaitStart(c);
             });
         }
 
@@ -701,7 +701,7 @@ export class Transform extends ComponentBase {
         if (this.parent && this.parent.object3D) {
             this.parent.object3D.removeChild(this.object3D);
         }
-        super.beforeDestroy?.(force);
+        super.beforeDestroy(force);
     }
 
     destroy(): void {

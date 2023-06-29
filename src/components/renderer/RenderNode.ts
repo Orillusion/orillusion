@@ -487,7 +487,7 @@ export class RenderNode extends ComponentBase {
                 mat.destroy(force);
             }
         }
-        super.beforeDestroy?.(force);
+        super.beforeDestroy(force);
     }
 
     public destroy(force?: boolean) {

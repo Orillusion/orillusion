@@ -30,15 +30,14 @@ await test('component enable false', async () => {
     let scene = new Scene3D();
     let obj = new Object3D();
     let c = obj.addComponent(TestComponents);
+
     expect(c.initState).toEqual(true);
     expect(c.startState).toEqual(false);
     expect(c.destroyState).toEqual(false);
 
     scene.addChild(obj);
-    scene.waitUpdate();
 
-    expect(c.startState).toEqual(true);
-
+    expect(c.startState).toEqual(false);
     c.enable = false;
     expect(c.enableState).toEqual(false);
 

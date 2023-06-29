@@ -403,6 +403,9 @@ export class Engine3D {
         Interpolator.tick(Time.delta);
         if (this._beforeRender) this._beforeRender();
 
+        /****** auto start with component list *****/
+        ComponentCollect.startComponents();
+
         /****** auto before update with component list *****/
         ComponentCollect.componentsBeforeUpdateList.forEach((v, k) => {
             v.forEach((c, f) => {
@@ -412,7 +415,7 @@ export class Engine3D {
             })
         });
 
-        let command = webGPUContext.device.createCommandEncoder();
+        let command = webGPUContext.device.createCommandEncoder();;
         ComponentCollect.componentsComputeList.forEach((v, k) => {
             v.forEach((c, f) => {
                 if (f.enable) {
