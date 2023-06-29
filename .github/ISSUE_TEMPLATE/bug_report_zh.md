@@ -30,6 +30,10 @@ assignees: ''
  - Browser: [e.g. chrome]
  - Version: [e.g. 113]
 
+## 本机配置
+- CPU: e.g. Intel I7 13700, Apple M2
+- Graphics Card: e.g, Intel UHD 670, Apple M2, GTX 3070
+
 ## 代码示例
 如果有sandbox/codepen的代码示例链接，请提供  
 您可以修改 https://codepen.io/pen?template=QWQrRmr 来创建一个简单的演示
