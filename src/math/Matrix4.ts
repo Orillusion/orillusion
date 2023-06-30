@@ -648,7 +648,7 @@ export class Matrix4 {
 
         data[12] = 0;
         data[13] = 0;
-        data[14] = zn / (zn - zf);
+        data[14] = (zn + zf) / (zn - zf);
         data[15] = 1;
 
         return this
@@ -711,7 +711,7 @@ export class Matrix4 {
 
         data[12] = (l + r) / (l - r);
         data[13] = (t + b) / (b - t);
-        data[14] = zn / (zn - zf);
+        data[14] = (zn + zf) / (zn - zf);
         data[15] = 1;
     }
 
