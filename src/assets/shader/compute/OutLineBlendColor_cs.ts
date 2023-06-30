@@ -28,7 +28,10 @@ export let OutLineBlendColor_cs: string = /*wgsl*/ `
          return;
       }
 
-      let uv01 = vec2<f32>(fragCoord) / (vec2<f32>(texSize) - 1.0);
+      var uv01 = vec2<f32>(fragCoord) / (vec2<f32>(texSize) - 1.0);
+      var offset = vec2<f32>(texSize) / vec2<f32>(outlineSetting.lowTexWidth, outlineSetting.lowTexHeight);
+      offset = 0.5 * offset / (vec2<f32>(texSize) - 1.0);
+      uv01 += offset;
       var outLineColor = textureSampleLevel(lowTex, lowTexSampler, uv01, 0.0);
 
       outLineColor.x *= outlineSetting.strength;
