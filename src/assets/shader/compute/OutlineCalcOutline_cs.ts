@@ -45,9 +45,11 @@ export let OutlineCalcOutline_cs: string = /*wgsl*/ `
   fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_invocation_id) globalInvocation_id : vec3<u32>)
   {
     fragCoordLow = vec2<i32>( globalInvocation_id.xy );
-    fragCoord = fragCoordLow * 2;
     texSize = textureDimensions(indexTexture).xy;
     lowSize = vec2<i32>(i32(outlineSetting.lowTexWidth), i32(outlineSetting.lowTexHeight));
+    let scaleValue = f32(texSize.x) / f32(lowSize.x);
+    fragCoord.x = i32(f32(fragCoordLow.x) * scaleValue);
+    fragCoord.y = i32(f32(fragCoordLow.y) * scaleValue);
 
     if(fragCoord.x >= i32(texSize.x) || fragCoord.y >= i32(texSize.y)){
         return;

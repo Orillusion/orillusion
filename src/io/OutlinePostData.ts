@@ -11,7 +11,7 @@ export class OutlinePostData {
     //Supports up to 8 sets of colors
     public readonly SlotCount: number = 8;
     public readonly MaxEntities: number = 16;
-    public readonly defaultColor: Color = new Color(0.2, 1, 1, 1);
+    public readonly defaultColor: Color = new Color(0.2, 0.5, 0.5, 1);
     private readonly slots: OutlinePostSlot[] = [];
 
     private dataDirty: boolean = true;

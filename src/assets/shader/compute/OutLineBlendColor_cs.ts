@@ -29,14 +29,20 @@ export let OutLineBlendColor_cs: string = /*wgsl*/ `
       }
 
       let uv01 = vec2<f32>(fragCoord) / (vec2<f32>(texSize) - 1.0);
-      let outLineColor = textureSampleLevel(lowTex, lowTexSampler, uv01, 0.0) * outlineSetting.strength;
-      var newOC = textureLoad(inTex, fragCoord, 0);
+      var outLineColor = textureSampleLevel(lowTex, lowTexSampler, uv01, 0.0);
+
+      outLineColor.x *= outlineSetting.strength;
+      outLineColor.y *= outlineSetting.strength;
+      outLineColor.z *= outlineSetting.strength;
+
+      var inColor = textureLoad(inTex, fragCoord, 0);
       var blendColor:vec3<f32> = vec3<f32>(0.0);
       if(outlineSetting.useAddMode > 0.5){
-         blendColor = vec3<f32>(newOC.xyz) + vec3<f32>(outLineColor.xyz) * outLineColor.w;
+         blendColor = inColor.xyz + outLineColor.xyz * outLineColor.w;
       }else{
-         blendColor = mix(vec3<f32>(newOC.xyz), vec3<f32>(outLineColor.xyz), outLineColor.w);
+         blendColor = mix(inColor.xyz, outLineColor.xyz, outLineColor.w);
       }
-      textureStore(outlineTex, fragCoord , vec4<f32>(blendColor, newOC.w));
+      textureStore(outlineTex, fragCoord, vec4<f32>(blendColor, inColor.w));
    }
+
 `
