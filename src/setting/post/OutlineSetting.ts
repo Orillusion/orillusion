@@ -26,7 +26,8 @@ export type OutlineSetting = {
      */
     useAddMode: boolean;
     /**
-     * 
+     * Set the scaling value of the offline map used for calculation relative to the GBuffer map
      */
+    textureScale: number,
     debug: boolean;
 };

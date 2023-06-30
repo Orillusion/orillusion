@@ -183,7 +183,8 @@ export class OutlinePost extends PostBase {
         let presentationSize = webGPUContext.presentationSize;
         let w = presentationSize[0];
         let h = presentationSize[1];
-        this.lowTexSize = new Vector2(Math.floor(w * 0.5), Math.floor(h * 0.5));
+        let textureScale = Engine3D.setting.render.postProcessing.outline.textureScale;
+        this.lowTexSize = new Vector2(Math.ceil(w * textureScale), Math.ceil(h * textureScale));
 
         this.lowTex = new VirtualTexture(this.lowTexSize.x, this.lowTexSize.y, GPUTextureFormat.rgba16float, false, GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC | GPUTextureUsage.TEXTURE_BINDING);
         this.lowTex.name = 'lowTex';

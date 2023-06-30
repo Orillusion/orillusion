@@ -10,20 +10,17 @@ class Sample_OutlineEffectPick {
     highLightColor: Color;
 
     constructor() {
-        this.selectColor = new Color(1.0, 0, 0.0, 3.0);
-        this.selectColor.convertToHDRRGB();
-
-        this.highLightColor = new Color(0.0, 1.0, 1.0, 3);
-        this.highLightColor.convertToHDRRGB();
+        this.selectColor = new Color(1.0, 0, 0.0, 1.0);
+        this.highLightColor = new Color(0.0, 1.0, 1.0, 1);
     }
 
     async run() {
         Engine3D.setting.pick.enable = true;
         Engine3D.setting.pick.mode = `pixel`;
 
-        Engine3D.setting.render.postProcessing.outline.outlinePixel = 2;
-        Engine3D.setting.render.postProcessing.outline.fadeOutlinePixel = 1;
-        Engine3D.setting.render.postProcessing.outline.strength = 0.5;
+        Engine3D.setting.render.postProcessing.outline.outlinePixel = 3;
+        Engine3D.setting.render.postProcessing.outline.fadeOutlinePixel = 6;
+        Engine3D.setting.render.postProcessing.outline.strength = 1;
 
         // init Engine3D
         await Engine3D.init({});
