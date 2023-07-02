@@ -22,6 +22,19 @@ export class GUIUtil {
         GUIHelp.endFolder();
     }
 
+    static renderFog(globalFog: GlobalFog) {
+        GUIHelp.addFolder("GlobalFog");
+        GUIHelp.addColor(globalFog, "fogColor");
+        GUIHelp.add(globalFog, "density", 0.0, 10.0, 0.001);
+        GUIHelp.add(globalFog, "start", 0, 1000, 0.001);
+        GUIHelp.add(globalFog, "height", -100, 1000, 0.001);
+        GUIHelp.add(globalFog, "ins", 0, 1, 0.001);
+        GUIHelp.add(globalFog, "falloff", 0, 100, 0.001);
+        GUIHelp.add(globalFog, "rayLength", 0, 1000, 0.001);
+        GUIHelp.add(globalFog, "scatteringExponent", 0, 1000, 0.001);
+        GUIHelp.add(globalFog, "dirHeightLine", 0, 10, 0.001);
+        GUIHelp.endFolder();
+    }
     public static renderGlobalFog(fog: GlobalFog, open: boolean = true, name?: string) {
         name ||= 'GlobalFog';
         GUIHelp.addFolder(name);
@@ -32,12 +45,16 @@ export class GUIUtil {
         });
         GUIHelp.add(fog, 'start', -0.0, 1000.0, 0.0001);
         GUIHelp.add(fog, 'end', -0.0, 1000.0, 0.0001);
-        GUIHelp.add(fog, 'height', -1000.0, 1000.0, 0.0001);
+        GUIHelp.add(fog, 'fogHeightScale', 0.0001, 1.0, 0.0001);
         GUIHelp.add(fog, 'density', 0.0, 1.0, 0.0001);
         GUIHelp.add(fog, 'ins', 0.0, 5.0, 0.0001);
         GUIHelp.add(fog, 'skyFactor', 0.0, 1.0, 0.0001);
         GUIHelp.add(fog, 'skyRoughness', 0.0, 1.0, 0.0001);
         GUIHelp.add(fog, 'overrideSkyFactor', 0.0, 1.0, 0.0001);
+        GUIHelp.add(fog, 'falloff', 0.0, 100.0, 0.01);
+        GUIHelp.add(fog, 'rayLength', 0.01, 2000.0, 0.01);
+        GUIHelp.add(fog, 'scatteringExponent', 1, 40.0, 0.001);
+        GUIHelp.add(fog, 'dirHeightLine', 0.0, 20.0, 0.01);
         GUIHelp.addColor(fog, 'fogColor');
         open && GUIHelp.open();
         GUIHelp.endFolder();
