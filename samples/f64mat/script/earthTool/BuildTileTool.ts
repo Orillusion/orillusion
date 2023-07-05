@@ -1,6 +1,7 @@
 import {
     Engine3D,
     GPUAddressMode,
+    GPUPrimitiveTopology,
     Object3D,
     PlaneGeometry,
     Scene3D,
@@ -91,7 +92,7 @@ export class BuildTileTool {
 
         })
 
-        // mr.material.shaderState.topology = GPUPrimitiveTopology.line_list;
+        mr.material.shaderState.topology = GPUPrimitiveTopology.line_list;
         mr.material.transparent = false;
         // mr.material.cullMode = GPUCullMode.none;
         scene.addChild(obj);
