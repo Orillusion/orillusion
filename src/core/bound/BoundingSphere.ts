@@ -44,7 +44,7 @@ export class BoundingSphere implements IBound {
     }
 
     public containsPoint(point: Vector3) {
-        var lenSq = this.tmpVecA.subtract(point, this.center).lengthSquared;
+        var lenSq = this.center.subtract(point, this.tmpVecA).lengthSquared;
         var r = this.radius;
         return lenSq < r * r;
     }

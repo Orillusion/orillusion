@@ -9,7 +9,7 @@ export class MemoryDO {
     private _byteOffset: number = 0;
 
     public allocation(byteSize: number) {
-        if (this.shareDataBuffer && this.shareDataBuffer.byteLength < byteSize) {
+        if (this.shareDataBuffer && this.shareDataBuffer.byteLength > byteSize) {
             this._byteOffset = 0;
         } else {
             this.shareDataBuffer = new ArrayBuffer(byteSize);

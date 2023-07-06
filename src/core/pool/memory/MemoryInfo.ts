@@ -180,7 +180,7 @@ export class MemoryInfo {
         tmp.set(data);
     }
 
-    public setArrayBuffer(index: number, arrayBuffer: ArrayBuffer) {
+    public setArrayBuffer(index: number, arrayBuffer: DataView) {
         if (arrayBuffer instanceof Uint8Array) {
             this.setUint8Array(index, arrayBuffer);
         } else if (arrayBuffer instanceof Uint16Array) {
