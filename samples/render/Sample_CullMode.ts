@@ -7,7 +7,7 @@ class Sample_CullMode {
         GUIHelp.init();
 
         let scene = new Scene3D();
-        scene.addComponent(AtmosphericComponent);
+        let sky = scene.addComponent(AtmosphericComponent);
 
         let camera = CameraUtil.createCamera3DObject(scene);
         camera.perspective(60, Engine3D.aspect, 0.01, 10000.0);
@@ -30,6 +30,8 @@ class Sample_CullMode {
         light.lightColor = new Color(1.0, 1.0, 1.0, 1.0);
         light.intensity = 10;
         scene.addChild(lightObj);
+
+        sky.relativeTransform = light.transform;
 
         let planeObj: Object3D;
         let texture = new BitmapTexture2D();

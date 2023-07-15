@@ -1,6 +1,6 @@
 ﻿import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { createExampleScene } from "@samples/utils/ExampleScene";
-import { Engine3D, Object3DUtil, Object3D, GUISpace, WorldPanel, ViewPanel, UIButton, UITextField, Color, TextAnchor, PointerEvent3D, UIImage, ImageType, ComponentBase, View3D, UITransform, UIPanel } from "@orillusion/core";
+import { Engine3D, Object3DUtil, Object3D, GUISpace, WorldPanel, ViewPanel, UIButton, UITextField, Color, TextAnchor, PointerEvent3D, UIImage, ImageType, ComponentBase, View3D, UITransform, UIPanel, UIInteractiveStyle, UIButtonTransition } from "@orillusion/core";
 
 export class Sample_UIButton {
     button: UIButton;
@@ -55,6 +55,8 @@ export class Sample_UIButton {
 
             button.uiTransform.resize(200, 60);
             button.uiTransform.y = -100;
+            button.transition = UIButtonTransition.SPRITE;
+
             this.button = button;
 
             let buttonLabel = quad.addComponent(UITextField);
@@ -67,6 +69,28 @@ export class Sample_UIButton {
             quad.addEventListener(PointerEvent3D.PICK_OUT_GUI, this.onOut, this);
             quad.addEventListener(PointerEvent3D.PICK_OVER_GUI, this.onOver, this);
             quad.addEventListener(PointerEvent3D.PICK_DOWN_GUI, this.onDown, this);
+        }
+
+        {
+            let quad = new Object3D();
+            panelRoot.addChild(quad);
+            let button: UIButton = quad.addComponent(UIButton);
+            button.normalSprite = Engine3D.res.getGUISprite('button-up');
+
+            button.uiTransform.resize(200, 60);
+            button.uiTransform.y = 200;
+
+            let buttonLabel = quad.addComponent(UITextField);
+            buttonLabel.text = 'Color Button';
+            buttonLabel.fontSize = 24;
+            buttonLabel.color = new Color(1, 0.8, 0.4);
+            buttonLabel.alignment = TextAnchor.MiddleCenter;
+
+            button.setStyleColor(UIInteractiveStyle.NORMAL, new Color(1, 0.5, 0.5, 1));
+            button.setStyleColor(UIInteractiveStyle.DOWN, new Color(0.5, 0.5, 1, 1));
+            button.setStyleColor(UIInteractiveStyle.OVER, new Color(0.5, 1, 0.5, 1));
+            button.setStyleColor(UIInteractiveStyle.DISABLE, new Color(0.5, 0.5, 0.5, 1));
+            button.transition = UIButtonTransition.COLOR;
         }
 
         {

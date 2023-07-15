@@ -12,7 +12,7 @@ class Sample_BlendMode {
         await Engine3D.init({});
 
         this.scene = new Scene3D();
-        this.scene.addComponent(AtmosphericComponent);
+        let sky = this.scene.addComponent(AtmosphericComponent);
 
         let mainCamera = CameraUtil.createCamera3DObject(this.scene, 'camera');
         mainCamera.perspective(60, Engine3D.aspect, 1, 5000.0);
@@ -21,11 +21,13 @@ class Sample_BlendMode {
 
         await this.initScene(this.scene);
 
+
         let view = new View3D();
         view.scene = this.scene;
         view.camera = mainCamera;
 
         this.initLight();
+        sky.relativeTransform = this.lightObj.transform;
         // 
         Engine3D.startRenderView(view);
     }

@@ -1,9 +1,11 @@
 
-import { Engine3D, zSorterUtil } from '../../..';
+import { Engine3D } from '../../../Engine3D';
 import { ILight } from '../../../components/lights/ILight';
 import { RenderNode } from '../../../components/renderer/RenderNode';
 import { Scene3D } from '../../../core/Scene3D';
+import { zSorterUtil } from '../../../util/ZSorterUtil';
 import { RenderLayerUtil, RenderLayer } from '../config/RenderLayer';
+import { Probe } from '../passRenderer/ddgi/Probe';
 import { Graphic3DBatchRenderer } from '../passRenderer/graphic/Graphic3DBatchRenderer';
 import { RendererMask } from '../passRenderer/state/RendererMask';
 import { CollectInfo } from './CollectInfo';
@@ -16,6 +18,7 @@ import { EntityBatchCollect } from './EntityBatchCollect';
 export class EntityCollect {
     // private static  _sceneRenderList: Map<Scene3D, RenderNode[]>;
     private _sceneLights: Map<Scene3D, ILight[]>;
+    private _sceneGIProbes: Map<Scene3D, Probe[]>;
 
     private _source_opaqueRenderNodes: Map<Scene3D, RenderNode[]>;
     private _source_transparentRenderNodes: Map<Scene3D, RenderNode[]>;
@@ -49,6 +52,7 @@ export class EntityCollect {
     constructor() {
         // this._sceneRenderList = new Map<Scene3D, RenderNode[]>();
         this._sceneLights = new Map<Scene3D, ILight[]>();
+        this._sceneGIProbes = new Map<Scene3D, Probe[]>();
 
         this._source_opaqueRenderNodes = new Map<Scene3D, RenderNode[]>();
         this._source_transparentRenderNodes = new Map<Scene3D, RenderNode[]>();
@@ -168,6 +172,29 @@ export class EntityCollect {
     }
     public getLights(root: Scene3D): ILight[] {
         let list = this._sceneLights.get(root);
+        return list ? list : [];
+    }
+
+    public addGIProbe(root: Scene3D, probe: Probe) {
+        if (!this._sceneGIProbes.has(root)) {
+            this._sceneGIProbes.set(root, [probe]);
+        } else {
+            this._sceneGIProbes.get(root).push(probe);
+        }
+    }
+
+    public removeGIProbe(root: Scene3D, probe: Probe) {
+        if (this._sceneGIProbes.has(root)) {
+            let list = this._sceneGIProbes.get(root);
+            let index = list.indexOf(probe);
+            if (index != -1) {
+                list.splice(index, 1);
+            }
+        }
+    }
+
+    public getProbes(root: Scene3D) {
+        let list = this._sceneGIProbes.get(root);
         return list ? list : [];
     }
 

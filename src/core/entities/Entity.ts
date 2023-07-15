@@ -275,13 +275,6 @@ export class Entity extends CEventDispatcher {
     }
 
     /**
-     * @internal
-     */
-    public dispose() {
-        this._dispose = true;
-    }
-
-    /**
      *
      * @private
      * @returns
@@ -297,11 +290,10 @@ export class Entity extends CEventDispatcher {
      */
     public waitUpdate(): void {
         if (this._dispose) {
-            if (this.transform.parent) {
-                this.transform.parent.object3D.removeChild(this);
-            }
+            this.removeFromParent();
             this.components.forEach((v, k) => {
                 v.enable = false;
+                v.beforeDestroy?.();
                 v.destroy();
             });
             this.components.clear();
@@ -336,18 +328,24 @@ export class Entity extends CEventDispatcher {
         BoundUtil.transformBound(this.transform.worldMatrix, this._bound as BoundingBox, this._boundWorld as BoundingBox);
     }
 
-
     /**
      * release current object
      */
     public destroy(force?: boolean) {
-        this.components.forEach((c) => {
-            c.destroy(force);
-        });
-        this.components.clear();
-        this.entityChildren.forEach((c) => {
-            c.destroy(force);
-        })
-        this.transform.parent = null;
+        if (!this._dispose) {
+            this.components.forEach((c) => {
+                c.beforeDestroy?.(force);
+            });
+            this.components.forEach((c) => {
+                c.destroy(force);
+            });
+            this.components.clear();
+            this.entityChildren.forEach((c) => {
+                c.destroy(force);
+            })
+            this.transform.parent = null;
+            this._dispose = true;
+            super.destroy();
+        }
     }
 }

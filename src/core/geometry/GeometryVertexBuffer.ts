@@ -155,7 +155,7 @@ export class GeometryVertexBuffer {
                 }
                 break;
         }
-        this.vertexGPUBuffer.apply();
+        this.vertexGPUBuffer?.apply();
     }
 
     public updateAttributes(vertexDataInfos: Map<string, VertexAttributeData>) {

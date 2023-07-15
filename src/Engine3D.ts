@@ -17,7 +17,6 @@ import { ShaderLib } from './assets/shader/ShaderLib';
 import { ShaderUtil } from './gfx/graphics/webGpu/shader/util/ShaderUtil';
 import { ComponentCollect } from './gfx/renderJob/collect/ComponentCollect';
 import { ShadowLightsCollect } from './gfx/renderJob/collect/ShadowLightsCollect';
-import { ProfilerUtil } from '.';
 
 /** 
  * Orillusion 3D Engine
@@ -136,12 +135,19 @@ export class Engine3D {
                     debug: false,
                     enable: false,
                     fogType: 0.0,
-                    height: 0,
-                    start: 0,
-                    end: 0,
+                    fogHeightScale: 0.1,
+                    start: 400,
+                    end: 10,
                     density: 0.02,
                     ins: 0.5,
-                    fogColor: new Color(84 / 255, 90 / 255, 239 / 255, 1),
+                    skyFactor: 0.5,
+                    skyRoughness: 0.4,
+                    overrideSkyFactor: 0.8,
+                    fogColor: new Color(112 / 255, 61 / 255, 139 / 255, 1),
+                    falloff: 0.7,
+                    rayLength: 200.0,
+                    scatteringExponent: 2.7,
+                    dirHeightLine: 10.0,
                 },
                 ssao: {
                     enable: false,
@@ -229,11 +235,40 @@ export class Engine3D {
             updateFrameRate: 2,
             debug: false,
         },
+        gi: {
+            enable: false,
+            offsetX: 0,
+            offsetY: 0,
+            offsetZ: 0,
+            probeSpace: 64,
+            probeXCount: 4,
+            probeYCount: 2,
+            probeZCount: 4,
+            probeSize: 32,
+            probeSourceTextureSize: 2048,
+            octRTMaxSize: 2048,
+            octRTSideSize: 16,
+            maxDistance: 64 * 1.73,
+            normalBias: 0.25,
+            depthSharpness: 1,
+            hysteresis: 0.98,
+            lerpHysteresis: 0.01,//The smaller the value, the slower the reaction, which can counteract flickering
+            irradianceChebyshevBias: 0.01,
+            rayNumber: 144,
+            irradianceDistanceBias: 32,
+            indirectIntensity: 1.0,
+            ddgiGamma: 2.2,
+            bounceIntensity: 0.025,
+            probeRoughness: 1,
+            realTimeGI: false,
+            debug: false,
+            autoRenderProbe: false,
+        },
         sky: {
             type: 'HDRSKY',
             sky: null,
             skyExposure: 1.0,
-            defaultFar: 1000000,
+            defaultFar: 65536,//can't be too big
             defaultNear: 1,
         },
         light: {
@@ -257,7 +292,7 @@ export class Engine3D {
      * @returns
      */
     public static async init(descriptor: { canvasConfig?: CanvasConfig; beforeRender?: Function; renderLoop?: Function; lateRender?: Function, engineSetting?: EngineSetting } = {}) {
-        console.log('engine version', version);
+        console.log('Engine Version', version);
 
         this.setting = { ...this.setting, ...descriptor.engineSetting }
 
@@ -381,7 +416,7 @@ export class Engine3D {
             })
         });
 
-        let command = webGPUContext.device.createCommandEncoder();;
+        let command = webGPUContext.device.createCommandEncoder();
         ComponentCollect.componentsComputeList.forEach((v, k) => {
             v.forEach((c, f) => {
                 if (f.enable) {

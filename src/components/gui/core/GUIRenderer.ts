@@ -1,3 +1,4 @@
+import { GeometryBase } from "../../..";
 import { View3D } from "../../../core/View3D";
 import { ClusterLightingBuffer } from "../../../gfx/renderJob/passRenderer/cluster/ClusterLightingBuffer";
 import { RendererMask } from "../../../gfx/renderJob/passRenderer/state/RendererMask";
@@ -5,7 +6,6 @@ import { RendererPassState } from "../../../gfx/renderJob/passRenderer/state/Ren
 import { RendererType } from "../../../gfx/renderJob/passRenderer/state/RendererType";
 import { MeshRenderer } from "../../renderer/MeshRenderer";
 import { GUIGeometry } from "./GUIGeometry";
-import { GUIMaterial } from "./GUIMaterial";
 
 /**
  * GUI Renderer
@@ -18,7 +18,6 @@ export class GUIRenderer extends MeshRenderer {
 
     /**
      * init renderer
-     * @param param {count:number, space: GUISpace}
      * @returns
      */
     init(param?: any) {
@@ -26,16 +25,20 @@ export class GUIRenderer extends MeshRenderer {
         this.addRendererMask(RendererMask.UI);
 
         this.removeRendererMask(RendererMask.Default);
-        let { count, space } = param;
 
-        this._guiGeometry = new GUIGeometry(count).create();
-        this.geometry = this._guiGeometry;
-        this.material = new GUIMaterial(space);
         this.castGI = false;
         this.castShadow = false;
         this.alwaysRender = true;
 
         this._ignoreEnvMap = this._ignorePrefilterMap = true;
+    }
+
+    public get geometry(): GeometryBase {
+        return super.geometry;
+    }
+    public set geometry(value: GeometryBase) {
+        super.geometry = value;
+        this._guiGeometry = value as GUIGeometry;
     }
 
     /**

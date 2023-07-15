@@ -248,11 +248,11 @@ export class GeometryBase {
             Vector3.sub(point1, point2, crossA).normalize();
             Vector3.sub(point1, point3, crossB).normalize();
 
-            let normal = Vector3.cross(crossA, crossB, crossRet).normalize();
+            let normal = crossA.crossProduct(crossB, crossRet).normalize();
 
             normalAttrData.data[index1 * 3] = normalAttrData.data[index2 * 3] = normalAttrData.data[index3 * 3] = normal.x;
             normalAttrData.data[index1 * 3 + 1] = normalAttrData.data[index2 * 3 + 1] = normalAttrData.data[index3 * 3 + 1] = normal.y;
-            normalAttrData.data[index1 * 3 + 2] = normalAttrData.data[index3 * 3 + 2] = normalAttrData.data[index3 * 3 + 2] = normal.z;
+            normalAttrData.data[index1 * 3 + 2] = normalAttrData.data[index2 * 3 + 2] = normalAttrData.data[index3 * 3 + 2] = normal.z;
         }
 
         // normal attr need to be upload

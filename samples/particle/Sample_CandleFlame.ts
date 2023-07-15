@@ -7,16 +7,16 @@ import {
 } from '@orillusion/particle';
 
 export class Sample_CandleFlame {
+    lightObj: Object3D;
     async run() {
         Engine3D.setting.shadow.enable = true;
-        Engine3D.setting.shadow.pointShadowBias = 0.6;
+        Engine3D.setting.shadow.pointShadowBias = 0.001;
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.updateFrameRate = 1;
-        Engine3D.setting.material.materialChannelDebug = true;
-        await Engine3D.init({});
+        await Engine3D.init();
 
         let scene = new Scene3D();
-        scene.addComponent(AtmosphericComponent);
+        let sky = scene.addComponent(AtmosphericComponent);
         let camera = CameraUtil.createCamera3DObject(scene);
         camera.perspective(60, webGPUContext.aspect, 0.1, 5000.0);
 
@@ -25,7 +25,7 @@ export class Sample_CandleFlame {
         // ctrl.maxDistance = 1000;
 
         await this.initScene(scene);
-
+        sky.relativeTransform = this.lightObj.transform;
         let view = new View3D();
         view.scene = scene;
         view.camera = camera;
@@ -43,7 +43,7 @@ export class Sample_CandleFlame {
         let particleSystem = obj.addComponent(ParticleSystem);
 
         {
-            let lightObj = new Object3D();
+            let lightObj = this.lightObj = new Object3D();
             let pl = lightObj.addComponent(PointLight);
             pl.range = 56;
             pl.radius = 1;

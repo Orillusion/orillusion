@@ -62,8 +62,8 @@ export default defineConfig( option => ({
         lib: {
             entry: resolve(__dirname, './src/index.ts'),
             name: 'Orillusion',
-            fileName: (format) => `orillusion.${format}.js`
+            fileName: (format) => `orillusion.${format}.max.js`,
         },
-        // minify: 'terser'
+        minify: false
     }
 }))

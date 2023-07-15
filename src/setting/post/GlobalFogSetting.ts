@@ -18,7 +18,7 @@ export type GlobalFogSetting = {
     /**
      * Setting the Influence of Height on Fog
      */
-    height: number;
+    fogHeightScale: number;
     /**
      * If the distance between the object and the camera is set as distance, the fog concentration will be linear interpolation between start and end
      */
@@ -36,7 +36,24 @@ export type GlobalFogSetting = {
      */
     ins: number;
     /**
+     * mix fog color with sky color
+     */
+    skyFactor: number;
+    /**
+     * use mipmap level
+     */
+    skyRoughness: number,
+    /**
+     * factor effect the sky
+     */
+    overrideSkyFactor: number,
+    /**
      * fog color
      */
-    fogColor: Color;
+    fogColor: Color,
+
+    falloff: number,
+    rayLength: number,
+    scatteringExponent: number,
+    dirHeightLine: number
 };

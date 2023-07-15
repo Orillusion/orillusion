@@ -202,6 +202,7 @@ export class OrbitController extends ComponentBase {
      * @internal
      */
     private onWheel(e: PointerEvent3D) {
+        e.deltaY = clamp(e.deltaY, -this._spherical.radius, this._spherical.radius)
         this._spherical.radius += e.deltaY * this.zoomFactor;
         this._spherical.radius = clamp(this._spherical.radius, this.minDistance, this.maxDistance);
         this.updateCamera();
@@ -231,7 +232,7 @@ export class OrbitController extends ComponentBase {
             this._spherical.phi -= rb * Math.PI / 180;
             this._spherical.phi = clamp(this._spherical.phi, this.minPolarAngle, this.maxPolarAngle);
             this.updateCamera();
-            // pan
+        // pan
         } else if (e.mouseCode === 2) {
             Vector3Ex.mulScale(this.object3D.transform.up, e.movementY * this.panFactor * this._camera.aspect, Vector3.HELP_1);
             this._target.y += Vector3.HELP_1.y;

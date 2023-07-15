@@ -5,7 +5,7 @@ import { GUIUtil } from "@samples/utils/GUIUtil";
 // sample of point light shadow
 class Sample_PointLightShadow {
     scene: Scene3D;
-
+    lightObj: Object3D;
     async run() {
 
         Engine3D.setting.shadow.enable = true;
@@ -16,7 +16,7 @@ class Sample_PointLightShadow {
         await Engine3D.init({});
 
         this.scene = new Scene3D();
-        this.scene.addComponent(AtmosphericComponent);
+        let sky = this.scene.addComponent(AtmosphericComponent);
 
         // init camera3D
         let mainCamera = CameraUtil.createCamera3D(null, this.scene);
@@ -25,6 +25,7 @@ class Sample_PointLightShadow {
         mainCamera.object3D.addComponent(HoverCameraController).setCamera(0, -45, 500);
 
         await this.initScene(this.scene);
+        sky.relativeTransform = this.lightObj.transform;
 
         let view = new View3D();
         view.scene = this.scene;
@@ -34,7 +35,7 @@ class Sample_PointLightShadow {
     }
 
     async initScene(scene: Scene3D) {
-        let lightObj3D = new Object3D();
+        let lightObj3D = this.lightObj = new Object3D();
         lightObj3D.y = 25;
 
         //make point light

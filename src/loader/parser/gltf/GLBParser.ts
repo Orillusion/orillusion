@@ -60,7 +60,7 @@ export class GLBParser extends ParserBase {
             return false;
         }
 
-        let time = performance.now();
+        // let time = performance.now();
         let gltfJSON = '';
         let maxCount = 65535;
         let chunkJSONData = chunks[0].chunkData;
@@ -70,7 +70,7 @@ export class GLBParser extends ParserBase {
             let newUint = chunkJSONData.subarray(i, i + count);
             gltfJSON += String.fromCharCode(...newUint);
         }
-        console.log(performance.now() - time);
+        // console.log(performance.now() - time);
 
         // let gltfJSON = String.fromCharCode(...chunks[0].chunkData) ;//.apply(null, chunks[0].chunkData);
         let obj = JSON.parse(gltfJSON) as object;
