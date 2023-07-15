@@ -1,7 +1,5 @@
-import { GrassNode } from "./grass/GrassNode";
-import { GrassComponent } from "./grass/component/GrassComponent";
-import { GrassGeometry } from "./grass/geometry/GrassGeometry";
-import { GrassMaterial } from "./grass/material/GrassMaterial";
-import { TerrainGeometry } from "./terrain/geometry/TerrainGeometry";
-
-export { GrassComponent, GrassMaterial, GrassGeometry, GrassNode, TerrainGeometry } 
+export * from "./grass/GrassNode";
+export * from "./grass/component/GrassComponent";
+export * from "./grass/geometry/GrassGeometry";
+export * from "./grass/material/GrassMaterial";
+export * from "./terrain/geometry/TerrainGeometry";

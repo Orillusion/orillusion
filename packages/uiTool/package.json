@@ -1,0 +1,36 @@
+{
+  "name": "@orillusion/uitool",
+  "version": "0.1.7",
+  "author": "Orillusion",
+  "description": "Orillusion ui tool",
+  "main": "./dist/uitool.umd.js",
+  "module": "./dist/uitool.es.js",
+  "types": "./dist/UITool.d.ts",
+  "files": [
+    "dist",
+    "tsconfig.json",
+    "tsconfig.node.json"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "build:types": "tsc --emitDeclarationOnly -p tsconfig.build.json",
+    "build:publish": "npm run build && npm run build:types && npm publish",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "@vitejs/plugin-vue": "^4.1.0",
+    "element-plus": "^2.3.1",
+    "nanoid": "^4.0.2",
+    "typescript": "^4.9.3",
+    "unplugin-auto-import": "^0.15.3",
+    "unplugin-vue-components": "^0.24.1",
+    "vite": "^4.2.0",
+    "vite-plugin-css-injected-by-js": "^3.1.0",
+    "vue": "^3.2.47",
+    "vue-tsc": "^1.2.0",
+    "@orillusion/core": "^0.6.2"
+  }
+}
