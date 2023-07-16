@@ -48,7 +48,7 @@ export let ErpImage2CubeMapCreateCube_cs: string = /*wgsl*/ `
 
   fn convertIdToDir3(uv_i32:vec2<i32>, quaternion:vec4<f32>) -> vec3<f32>{
       var uv_f32:vec2<f32> = vec2<f32>(uv_i32.xy);
-      var halfSize:f32 = f32(size.dstWidth / 2);
+      var halfSize:f32 = f32(size.dstWidth / 2) - 0.5;
       var worldDirection:vec3<f32> = vec3<f32>(uv_f32.x - halfSize, uv_f32.y - halfSize, -halfSize);
       worldDirection = normalize(worldDirection);
       worldDirection = applyQuaternion(worldDirection, quaternion);
