@@ -1,4 +1,4 @@
-import { GUIQuadAttrEnum, Object3D, UIPanel } from "../../..";
+import { GUIQuadAttrEnum, Object3D, TexturesBindGroup, UIPanel } from "../../..";
 import { Texture } from "../../../gfx/graphics/webGpu/core/texture/Texture";
 import { UITransform } from "../uiComponents/UITransform";
 import { UIRenderAble } from "../uiComponents/UIRenderAble";
@@ -29,7 +29,6 @@ export class GUIGeometryRebuild {
     this._textureList.length = 0;
 
     let collectQuads = [];
-
     let zMax: number = panel.quadMaxCount - 1;
     let needBreak: boolean;
     for (let transform of transforms) {
@@ -38,18 +37,21 @@ export class GUIGeometryRebuild {
       const quads = this.collectQuads(transform.object3D, collectQuads);
       for (let quad of quads) {
         quad.z = ++quadIndex;
-        if (quad.sprite && quad.sprite.guiTexture) {
-          let textureSource = quad.sprite.guiTexture;
-          if (!this._textureMap.has(textureSource.staticId)) {
-            ++texIndex;
-            this._textureMap.set(textureSource.staticId, textureSource);
-            textureSource.dynamicId = texIndex;
-            this._textureList[texIndex] = textureSource.texture;
-            if (texIndex > 7) {
-              console.warn('texture Count Exceeded the maximum limit of 7');
-              break;
-            }
+        let textureSource = quad.sprite.guiTexture;
+        if (!this._textureMap.has(textureSource.staticId)) {
+          ++texIndex;
+          this._textureMap.set(textureSource.staticId, textureSource);
+          textureSource.dynamicId = texIndex;
+          this._textureList[texIndex] = textureSource.texture;
+          if (texIndex > 7) {
+            console.warn('texture Count Exceeded the maximum limit of 7');
+            break;
           }
+        }
+
+        if (quad.cacheTextureId != textureSource.dynamicId) {
+          quad.dirtyAttributes = GUIQuadAttrEnum.MAX;
+          quad.cacheTextureId = textureSource.dynamicId;
         }
 
         let updateAllAttr = needUpdateQuads || forceUpdate;

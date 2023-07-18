@@ -3,7 +3,8 @@ import { repeat, clamp } from '../../../math/MathUtil';
 import { Matrix4 } from '../../../math/Matrix4';
 import { PropertyAnimClip, WrapMode } from './PropertyAnimClip';
 import { PropertyAnimation } from './PropertyAnimation';
-import { PropertyHelp } from './PropertyHelp';
+import { PropertyAnimTag, PropertyHelp } from './PropertyHelp';
+import { IObject3DForPropertyAnim } from './PropertyAnimDecoration';
 
 /**
  * @internal
@@ -13,28 +14,28 @@ export class AnimationMonitor {
     public static readonly Complete: number = 0;
     public static readonly Seek: number = 1;
 
-    private _propertyAnimClip: { [animName: string]: PropertyAnimClip };
-    private _target: Object3D;
+    private _rootObject3D: Object3D;
     private _animation: PropertyAnimation;
     private _propertyCache: {
         [path: string]: { [attribute: string]: { value: any; property: string } };
     };
-    private _bindObjects: Object3D[] = [];
     private _currentClip: PropertyAnimClip;
     private _frame: number = 0;
     private _time: number = 0;
     private _isPlaying: boolean = true;
     public speed: number = 1;
+    private _propertyTagDic: Map<Object3D, PropertyAnimTag>;
 
     constructor(animation: PropertyAnimation) {
-        this._target = animation.object3D;
+        this._rootObject3D = animation.object3D;
         this._animation = animation;
-        this._propertyAnimClip = {};
-        this._propertyCache = {};
+        this._propertyTagDic = new Map<Object3D, PropertyAnimTag>();
+        this.reset();
     }
 
-    public get object3D() {
-        return this._target;
+    private reset(): void {
+        this._propertyCache = {};
+        this._propertyTagDic.clear();
     }
 
     public get time(): number {
@@ -45,66 +46,57 @@ export class AnimationMonitor {
         return this._currentClip;
     }
 
-    public getClip(name: string): PropertyAnimClip {
-        return this._propertyAnimClip[name];
+    public play(clip: PropertyAnimClip, reset: boolean = true) {
+        this._isPlaying = true;
+        if (reset) {
+            this._time = 0;
+        }
+        if (clip != this._currentClip) {
+            if (clip) {
+                this.parseAnimClip(clip);
+            }
+        }
+        this._currentClip = clip;
+        this.validProperty();
     }
 
-    public addClip(clip: PropertyAnimClip): this {
-        this._propertyAnimClip[clip.name] = clip;
+    private parseAnimClip(clip: PropertyAnimClip): this {
+        this.reset();
 
         for (const objPath in clip.objAnimClip) {
             let objClip = clip.objAnimClip[objPath];
-            let bind = this._target;
+            let bindObject3D = this._rootObject3D;
+            let attsCache = {};
             if (objPath == '') {
-                bind = this._target;
+                bindObject3D = this._rootObject3D;
             } else {
-                // let objNames = objPath.split('/');
-                // let objName = objNames[objNames.length - 1];
-                bind = this._target.getObjectByName(objPath) as Object3D;
+                bindObject3D = this._rootObject3D.getObjectByName(objPath) as Object3D;
             }
+            if (!bindObject3D)
+                continue;
+
+            let tag = new PropertyAnimTag();
+            this._propertyTagDic.set(bindObject3D, tag);
 
             let curve = objClip.curve;
             for (const attribute in curve) {
-                if (Object.prototype.hasOwnProperty.call(curve, attribute)) {
-                    // const attributeAnim = curve[attribute];
-                    // let att = PropertyHelp.property[attribute];
-                    let atts = PropertyHelp.property[attribute].split('.');
-                    if (bind) {
-                        if (this._bindObjects.indexOf(bind) == -1) {
-                            this._bindObjects.push(bind);
-                        }
-                        if (this._propertyCache[objPath] == null) {
-                            this._propertyCache[objPath] = {};
+                PropertyHelp.updatePropertyTag(tag, attribute);
+                let binder = this._propertyCache[objPath] ||= {};
 
-                        }
-                        this._propertyCache[objPath][attribute] = {
-                            value: bind[atts[0]],
-                            property: atts[1],
-                        };
-                        for (let i = 1; i < atts.length - 1; i++) {
-                            this._propertyCache[objPath][attribute] = {
-                                value: bind[atts[i]],
-                                property: atts[i + 1],
-                            };
-                        }
+                let atts = PropertyHelp.Property[attribute].split('.');
+                let atts_0 = atts[0];
+                if (atts.length > 1) {
+                    let value = attsCache[atts_0];
+                    if (!value) {
+                        value = attsCache[atts_0] = bindObject3D[atts_0];
                     }
+                    binder[attribute] = { value: value, property: atts[1] };
+                } else {
+                    binder[attribute] = { value: bindObject3D, property: atts[0] };
                 }
             }
         }
         return this;
-    }
-
-    public play(name: string, reset: boolean = true): PropertyAnimClip {
-        let clip = this._propertyAnimClip[name];
-        if (!clip) return null;
-
-        this._isPlaying = true;
-
-        if (reset || !this._currentClip || this._currentClip.name != name) {
-            this._time = 0;
-        }
-        this._currentClip = clip;
-        return this._currentClip;
     }
 
     public stop(): this {
@@ -143,7 +135,7 @@ export class AnimationMonitor {
 
     public seek(time: number): this {
         this._time = this.calcTime(time);
-        this.validProperty();
+        this._rootObject3D && this.validProperty();
         return this;
     }
 
@@ -157,31 +149,38 @@ export class AnimationMonitor {
     }
 
     private validProperty() {
-        if (this._target) {
-            for (const objName in this._currentClip.objAnimClip) {
-                let objClip = this._currentClip.objAnimClip[objName];
-                let hasQuaternion = false;
-                let curve = objClip.curve;
-                for (const attribute in curve) {
-                    if (Object.prototype.hasOwnProperty.call(curve, attribute)) {
-                        const attributeAnim = curve[attribute];
-                        // this.target[PropertyHelp.property[key]] = attributeAnim.getValue(this._time);
-                        let value = this._propertyCache[objName][attribute];
-                        let scale = PropertyHelp.property_scale[attribute];
-                        hasQuaternion = hasQuaternion || PropertyHelp.property_quaternion[attribute];
-                        let ret = attributeAnim.getValue(this._time) * scale + PropertyHelp.property_offset[attribute];
-                        value.value[value.property] = ret;
-                    }
+        for (const objName in this._currentClip.objAnimClip) {
+            let objClip = this._currentClip.objAnimClip[objName];
+            let curve = objClip.curve;
+            for (const attribute in curve) {
+                const attributeAnim = curve[attribute];
+                let target = this._propertyCache[objName][attribute];
+                let ret = attributeAnim.getValue(this._time);
+                if (attribute in PropertyHelp.Scale) {
+                    ret *= PropertyHelp.Scale[attribute];
                 }
 
-                if (hasQuaternion) {
-                    let transform = this._target.transform;
-                    Matrix4.getEuler(transform.localRotation, transform.localRotQuat, true, 'ZYX');
-                }
+                target.value[target.property] = ret;
             }
         }
-        for (let i of this._bindObjects) {
-            i.transform.notifyChange();
+        //
+        this._propertyTagDic.forEach((v, k) => {
+            this.applyProperty(v, k);
+        })
+
+    }
+
+    private applyProperty(tag: PropertyAnimTag, obj3d: Object3D) {
+        if (tag.quaternion) {
+            Matrix4.getEuler(obj3d.transform.localRotation, obj3d.transform.localRotQuat, true, 'ZYX');
+        }
+        if (tag.transform) {
+            obj3d.transform.notifyChange();
+        }
+
+        let animObj: IObject3DForPropertyAnim = obj3d as any as IObject3DForPropertyAnim;
+        if (tag.materialColor) {
+            animObj.notifyMaterialColorChange(0, 'baseColor');
         }
     }
 }

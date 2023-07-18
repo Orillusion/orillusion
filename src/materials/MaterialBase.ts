@@ -4,6 +4,7 @@ import { RendererType } from '../gfx/renderJob/passRenderer/state/RendererType';
 import { Color } from '../math/Color';
 import { Vector4 } from '../math/Vector4';
 import { UUID } from '../util/Global';
+import { EditorInspector } from '../util/SerializeDecoration';
 import { MaterialPass } from './MaterialPass';
 import { registerMaterial } from './MaterialRegister';
 
@@ -78,6 +79,7 @@ export class MaterialBase extends MaterialPass {
     /**
      *  Set base map(main map)
      */
+    @EditorInspector
     public set baseMap(texture: Texture) {
         this.renderShader.setTexture(`baseMap`, texture);
 
@@ -87,6 +89,7 @@ export class MaterialBase extends MaterialPass {
     /**
      * Get base map(main map)
      */
+    @EditorInspector
     public get baseMap(): Texture {
         return this.renderShader.textures[`baseMap`];
     }
@@ -116,6 +119,7 @@ export class MaterialBase extends MaterialPass {
     /**
      * Get emissive color
      */
+    @EditorInspector
     public get emissiveColor(): Color {
         return this.renderShader.uniforms[`emissiveColor`].color;
     }
@@ -123,6 +127,7 @@ export class MaterialBase extends MaterialPass {
     /**
      * Set emissive color
      */
+    @EditorInspector
     public set emissiveColor(value: Color) {
         this.renderShader.setUniformColor(`emissiveColor`, value);
         this.notifyPropertyChange(`emissiveColor`, value);
@@ -131,6 +136,7 @@ export class MaterialBase extends MaterialPass {
     /**
      * Set emissive intensity
      */
+    @EditorInspector
     public set emissiveIntensity(value: number) {
         this.renderShader.setUniformFloat(`emissiveIntensity`, value);
         this.notifyPropertyChange(`emissiveIntensity`, value);
@@ -139,6 +145,7 @@ export class MaterialBase extends MaterialPass {
     /**
      * Get emissive intensity
      */
+    @EditorInspector
     public get emissiveIntensity(): number {
         return this.renderShader.uniforms[`emissiveIntensity`].value;
     }
@@ -158,6 +165,7 @@ export class MaterialBase extends MaterialPass {
     /**
      * Get envionment effect intensity
      */
+    @EditorInspector
     public get envIntensity() {
         return this.renderShader.uniforms[`envIntensity`].value;
     }
@@ -165,6 +173,7 @@ export class MaterialBase extends MaterialPass {
     /**
      * Set envionment effect intensity
      */
+    @EditorInspector
     public set envIntensity(value: number) {
         if (`envIntensity` in this.renderShader.uniforms) this.renderShader.uniforms[`envIntensity`].value = value;
         this.notifyPropertyChange(`envIntensity`, value);
@@ -188,6 +197,7 @@ export class MaterialBase extends MaterialPass {
     /**
      * Get alphaCutoff, channel transparency threshold parameter
      */
+    @EditorInspector
     public get alphaCutoff() {
         return this.renderShader.uniforms[`alphaCutoff`].value;
     }
@@ -195,6 +205,7 @@ export class MaterialBase extends MaterialPass {
     /**
      * Set alphaCutoff, channel transparency threshold parameter
      */
+    @EditorInspector
     public set alphaCutoff(value: number) {
         if (`alphaCutoff` in this.renderShader.uniforms) {
             this.renderShader.uniforms[`alphaCutoff`].value = value;
@@ -238,9 +249,14 @@ export class MaterialBase extends MaterialPass {
         this.notifyPropertyChange(`irradianceDepthMap`, value);
     }
 
+    public getBaseColor(ret?: Color): Color {
+        return this.renderShader.uniforms['baseColor'].getColor(ret);
+    }
+
     /**
      * Get base color(tint color)
      */
+    @EditorInspector
     public get baseColor(): Color {
         return this.renderShader.uniforms[`baseColor`].color;
     }
@@ -248,6 +264,7 @@ export class MaterialBase extends MaterialPass {
     /**
      * Set base color(tint color)
      */
+    @EditorInspector
     public set baseColor(value: Color) {
         this.renderShader.setUniformColor(`baseColor`, value);
         this.notifyPropertyChange(`baseColor`, value);
@@ -300,6 +317,12 @@ export class MaterialBase extends MaterialPass {
         // });
     }
 
+    public set topology(topology: GPUPrimitiveTopology) {
+        if (this.renderShader) {
+            this.renderShader.topology = topology;
+        }
+    }
+
     /**
     * Enable/Disable the definition of shaders
     * @param {string} define key
@@ -339,7 +362,6 @@ export class MaterialBase extends MaterialPass {
         }
     }
 
-
     /**
      * destroy self
      */
@@ -347,6 +369,11 @@ export class MaterialBase extends MaterialPass {
         super.destroy(force);
     }
 
+    protected cloneObject(src: any, dst: any) {
+        for (let key in src) {
+            dst[key] = src[key];
+        }
+    }
 
     /**
      * clone one material

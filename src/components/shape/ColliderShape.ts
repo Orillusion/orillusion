@@ -2,6 +2,7 @@ import { Matrix4 } from "../../math/Matrix4";
 import { Ray } from "../../math/Ray";
 import { Vector3 } from "../../math/Vector3";
 
+export type HitInfo = { intersectPoint?: Vector3; distance: number; collider?: any };
 
 export enum ColliderShapeType {
     None,
@@ -20,6 +21,11 @@ export class ColliderShape {
     private _size: Vector3;
     private _halfSize: Vector3;
     protected _shapeType: ColliderShapeType = ColliderShapeType.None;
+
+
+    protected static v3_help_0: Vector3 = new Vector3();
+    protected static helpMatrix: Matrix4 = new Matrix4();
+    protected static helpRay: Ray = new Ray();
 
     constructor() {
         this._center = new Vector3();
@@ -83,7 +89,7 @@ export class ColliderShape {
      *  IntersectPoint: collision point;
      *  Distance: The distance from the origin of the ray to the collision point.
      */
-    public rayPick(ray: Ray, fromMatrix: Matrix4): { intersect: boolean; intersectPoint?: Vector3; distance: number } {
+    public rayPick(ray: Ray, fromMatrix: Matrix4): HitInfo {
         return null;
     }
 

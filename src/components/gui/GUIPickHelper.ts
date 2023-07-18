@@ -4,7 +4,8 @@ import { Ray } from "../../math/Ray";
 import { Vector2 } from "../../math/Vector2";
 import { Vector3 } from "../../math/Vector3";
 import { UITransform } from "./uiComponents/UITransform";
-import { GUISpace } from "./GUIConfig";
+import { GUIConfig, GUISpace } from "./GUIConfig";
+import { HitInfo } from "../shape/ColliderShape";
 
 /**
  * @internal
@@ -33,16 +34,16 @@ export class GUIPickHelper {
         this._worldMatrix = new Matrix4();
     }
 
-    public static rayPick(ray: Ray, screenPos: Vector2, screenSize: Vector2, space: GUISpace, uiTransform: UITransform, worldMatrix: Matrix4): { intersect: boolean; intersectPoint?: Vector3; distance: number } {
+    public static rayPick(ray: Ray, screenPos: Vector2, screenSize: Vector2, space: GUISpace, uiTransform: UITransform, worldMatrix: Matrix4): HitInfo {
         if (!this._isInit) {
             this.init();
             this._isInit = true;
         }
 
         let helpMatrix = this._worldMatrix;
-        let pick;
 
         if (space == GUISpace.World) {
+            let pickPoint: Vector3;
             this.calculateHotArea_World(uiTransform, this._pt0, this._pt1, this._pt2, this._pt3);
 
             helpMatrix.copyFrom(worldMatrix).invert();
@@ -50,17 +51,16 @@ export class GUIPickHelper {
             helpRay.copy(ray).applyMatrix(helpMatrix);
 
             this._triangle.set(this._pt0, this._pt1, this._pt2);
-            pick = helpRay.intersectTriangle(helpRay.origin, helpRay.direction, this._triangle);
-            if (!pick) {
+            pickPoint = helpRay.intersectTriangle(helpRay.origin, helpRay.direction, this._triangle);
+            if (!pickPoint) {
                 this._triangle.set(this._pt1, this._pt2, this._pt3);
-                pick = helpRay.intersectTriangle(helpRay.origin, helpRay.direction, this._triangle);
+                pickPoint = helpRay.intersectTriangle(helpRay.origin, helpRay.direction, this._triangle);
             }
 
-            if (pick) {
+            if (pickPoint) {
                 return {
-                    intersect: true,
                     distance: 0,
-                    intersectPoint: pick,
+                    intersectPoint: pickPoint,
                 };
             }
         } else {
@@ -73,11 +73,10 @@ export class GUIPickHelper {
             let minY: number = Math.min(this._pt0.y, this._pt1.y, this._pt2.y, this._pt3.y) + screenSizeY * 0.5;
             let maxX: number = Math.max(this._pt0.x, this._pt1.x, this._pt2.x, this._pt3.x) + screenSizeX * 0.5;
             let maxY: number = Math.max(this._pt0.y, this._pt1.y, this._pt2.y, this._pt3.y) + screenSizeY * 0.5;
-            pick = screenPos.x <= maxX && screenPos.x >= minX && screenPos.y <= maxY && screenPos.y >= minY;
+            let pick = screenPos.x <= maxX && screenPos.x >= minX && screenPos.y <= maxY && screenPos.y >= minY;
             if (pick) {
                 this._hitPoint.set(screenPos.x, screenPos.y, 0);
                 return {
-                    intersect: true,
                     distance: 0,
                     intersectPoint: this._hitPoint,
                 };
@@ -113,6 +112,11 @@ export class GUIPickHelper {
         pt1.y -= offset;
         pt2.y -= offset;
         pt3.y -= offset;
+
+        pt0.multiplyScalar(GUIConfig.pixelRatio);
+        pt1.multiplyScalar(GUIConfig.pixelRatio);
+        pt2.multiplyScalar(GUIConfig.pixelRatio);
+        pt3.multiplyScalar(GUIConfig.pixelRatio);
     }
 
     private static calculateHotArea_World(transform: UITransform, pt0: Vector3, pt1: Vector3, pt2: Vector3, pt3: Vector3) {

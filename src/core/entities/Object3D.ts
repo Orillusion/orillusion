@@ -5,14 +5,18 @@ import { Entity } from './Entity';
 import { Ctor } from "../../util/Global";
 import { IComponent } from '../../components/IComponent';
 import { ComponentCollect } from '../../gfx/renderJob/collect/ComponentCollect';
+import { SerializeTag } from '../../util/SerializeDecoration';
+import { DecorateObject3D } from '../../components/anim/curveAnim/PropertyAnimDecoration';
 /**
  * The base class of most objects provides a series of properties and methods for manipulating objects in three-dimensional space.
  * @group Entity
  */
+
+@DecorateObject3D
 export class Object3D extends Entity {
     protected _isScene3D: boolean;
     public prefabRef?: string;
-
+    public serializeTag?: SerializeTag;
     /**
      * Instantiate a 3D object
      */
@@ -245,14 +249,16 @@ export class Object3D extends Entity {
      */
     public instantiate(): Object3D {
         let tmp = new Object3D();
-        tmp.name = this.name + "_clone";
+        tmp.name = this.name;
+        tmp.serializeTag = this.serializeTag;
+        tmp.prefabRef = this.prefabRef;
+
         this.entityChildren.forEach((v, k) => {
             let tmpChild = v.instantiate();
             tmp.addChild(tmpChild);
         });
 
-        let coms = this.components;
-        coms.forEach((v, k) => {
+        this.components.forEach((v, k) => {
             v.cloneTo(tmp);
         });
         return tmp;
