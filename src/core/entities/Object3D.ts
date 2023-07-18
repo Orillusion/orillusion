@@ -6,7 +6,8 @@ import { Ctor } from "../../util/Global";
 import { IComponent } from '../../components/IComponent';
 import { ComponentCollect } from '../../gfx/renderJob/collect/ComponentCollect';
 import { SerializeTag } from '../../util/SerializeDecoration';
-import { DecorateObject3D } from '../../components/anim/curveAnim/PropertyAnimDecoration';
+import { Color } from '../../math/Color';
+import { MeshRenderer } from '../../components/renderer/MeshRenderer';
 /**
  * The base class of most objects provides a series of properties and methods for manipulating objects in three-dimensional space.
  * @group Entity
@@ -524,4 +525,38 @@ export class Object3D extends Entity {
         super.destroy(force);
     }
 
+}
+
+export interface IObject3DForPropertyAnim {
+    materialColor: Color;
+    notifyMaterialColorChange(materialIndex: number, key: string);
+    active: number;
+}
+
+function DecorateObject3D(ctor: any, _?: any) {
+    return class extends Object3D implements IObject3DForPropertyAnim {
+
+        set active(value) {
+            this.transform.enable = value > 0;
+        }
+
+        get active(): number {
+            return this.transform.enable ? 1 : 0;
+        }
+
+        public get materialColor(): Color {
+            let component = this.getComponent(MeshRenderer);
+            return component?.material?.getBaseColor();
+        }
+
+        public set materialColor(color: Color) {
+            let material = this.getComponent(MeshRenderer)?.material;
+            material && (material.baseColor = color);
+        }
+
+        public notifyMaterialColorChange(materialIndex: number, key: string) {
+            let materials = this.getComponent(MeshRenderer).materials;
+            materials?.[materialIndex]?.renderShader.uniforms[key].onChange();
+        }
+    };
 }

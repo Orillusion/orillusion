@@ -1,10 +1,9 @@
-import { Object3D } from '../../../core/entities/Object3D';
+import { IObject3DForPropertyAnim, Object3D } from '../../../core/entities/Object3D';
 import { repeat, clamp } from '../../../math/MathUtil';
 import { Matrix4 } from '../../../math/Matrix4';
 import { PropertyAnimClip, WrapMode } from './PropertyAnimClip';
 import { PropertyAnimation } from './PropertyAnimation';
 import { PropertyAnimTag, PropertyHelp } from './PropertyHelp';
-import { IObject3DForPropertyAnim } from './PropertyAnimDecoration';
 
 /**
  * @internal
