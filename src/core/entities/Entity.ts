@@ -82,6 +82,7 @@ export class Entity extends CEventDispatcher {
      */
     protected _bound: IBound;
     protected _boundWorld: IBound;
+    protected _isBoundChange: boolean = true;
     private _dispose: boolean = false;
     // private _visible: boolean = true;
 
@@ -153,7 +154,6 @@ export class Entity extends CEventDispatcher {
             }
             child.transform.parent = this.transform;
             this.entityChildren.push(child);
-            child.transform.notifyLocalChange();
             return child;
         }
         return null;
@@ -307,25 +307,32 @@ export class Entity extends CEventDispatcher {
         }
     }
 
+    protected onTransformLocalChange(e) {
+        this._isBoundChange = true;
+    }
+
     public get bound(): IBound {
-        if (!this._bound) {
-            this.updateBound();
-        }
+        this.updateBound();
         return this._boundWorld;
     }
 
     public set bound(value: IBound) {
         this._bound = value;
         this._boundWorld = this._bound.clone();
-        this.updateBound();
+        this._isBoundChange = true;
     }
 
-    public updateBound() {
+    private updateBound(): IBound {
         if (!this._bound) {
             this._bound = new BoundingBox(Vector3.ZERO.clone(), Vector3.ONE.clone());
             this._boundWorld = this._bound.clone();
+            this._isBoundChange = true;
         }
-        BoundUtil.transformBound(this.transform.worldMatrix, this._bound as BoundingBox, this._boundWorld as BoundingBox);
+        if (this._isBoundChange) {
+            BoundUtil.transformBound(this.transform.worldMatrix, this._bound as BoundingBox, this._boundWorld as BoundingBox);
+            this._isBoundChange = false;
+        }
+        return this._boundWorld;
     }
 
     /**

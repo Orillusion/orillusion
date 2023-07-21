@@ -19,6 +19,7 @@ export class Object3D extends Entity {
     constructor() {
         super();
         this.transform = this.addComponent(Transform);
+        this.transform.eventDispatcher.addEventListener(Transform.LOCAL_ONCHANGE, this.onTransformLocalChange, this);
     }
 
     public get isScene3D(): boolean {
@@ -515,6 +516,7 @@ export class Object3D extends Entity {
      * Release self
      */
     public destroy(force?: boolean): void {
+        this.transform.eventDispatcher.removeEventListener(Transform.LOCAL_ONCHANGE, this.onTransformLocalChange, this);
         super.destroy(force);
     }
 
