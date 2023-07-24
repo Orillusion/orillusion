@@ -5,14 +5,19 @@ import { Entity } from './Entity';
 import { Ctor } from "../../util/Global";
 import { IComponent } from '../../components/IComponent';
 import { ComponentCollect } from '../../gfx/renderJob/collect/ComponentCollect';
+import { SerializeTag } from '../../util/SerializeDecoration';
+import { Color } from '../../math/Color';
+import { MeshRenderer } from '../../components/renderer/MeshRenderer';
 /**
  * The base class of most objects provides a series of properties and methods for manipulating objects in three-dimensional space.
  * @group Entity
  */
+
+@DecorateObject3D
 export class Object3D extends Entity {
     protected _isScene3D: boolean;
     public prefabRef?: string;
-
+    public serializeTag?: SerializeTag;
     /**
      * Instantiate a 3D object
      */
@@ -246,14 +251,16 @@ export class Object3D extends Entity {
      */
     public instantiate(): Object3D {
         let tmp = new Object3D();
-        tmp.name = this.name + "_clone";
+        tmp.name = this.name;
+        tmp.serializeTag = this.serializeTag;
+        tmp.prefabRef = this.prefabRef;
+
         this.entityChildren.forEach((v, k) => {
             let tmpChild = v.instantiate();
             tmp.addChild(tmpChild);
         });
 
-        let coms = this.components;
-        coms.forEach((v, k) => {
+        this.components.forEach((v, k) => {
             v.cloneTo(tmp);
         });
         return tmp;
@@ -520,4 +527,38 @@ export class Object3D extends Entity {
         super.destroy(force);
     }
 
+}
+
+export interface IObject3DForPropertyAnim {
+    materialColor: Color;
+    notifyMaterialColorChange(materialIndex: number, key: string);
+    active: number;
+}
+
+function DecorateObject3D(ctor: any, _?: any) {
+    return class extends Object3D implements IObject3DForPropertyAnim {
+
+        set active(value) {
+            this.transform.enable = value > 0;
+        }
+
+        get active(): number {
+            return this.transform.enable ? 1 : 0;
+        }
+
+        public get materialColor(): Color {
+            let component = this.getComponent(MeshRenderer);
+            return component?.material?.getBaseColor();
+        }
+
+        public set materialColor(color: Color) {
+            let material = this.getComponent(MeshRenderer)?.material;
+            material && (material.baseColor = color);
+        }
+
+        public notifyMaterialColorChange(materialIndex: number, key: string) {
+            let materials = this.getComponent(MeshRenderer).materials;
+            materials?.[materialIndex]?.renderShader.uniforms[key].onChange();
+        }
+    };
 }

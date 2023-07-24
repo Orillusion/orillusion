@@ -1,5 +1,4 @@
-﻿import { Camera3D } from '../../core/Camera3D';
-import { Engine3D } from '../../Engine3D';
+﻿import { Engine3D } from '../../Engine3D';
 import { PointerEvent3D } from '../../event/eventConst/PointerEvent3D';
 import { MouseCode } from '../../event/MouseCode';
 import { webGPUContext } from '../../gfx/graphics/webGpu/Context3D';
@@ -11,6 +10,7 @@ import { IUIInteractive, UIInteractiveStyle } from './uiComponents/IUIInteractiv
 import { UITransform } from './uiComponents/UITransform';
 import { View3D } from '../../core/View3D';
 import { UIPanel } from './uiComponents/UIPanel';
+import { HitInfo } from '../shape/ColliderShape';
 
 /**
  * Pickup logic for GUI interactive components
@@ -44,19 +44,27 @@ export class GUIPick {
         this._upEvent = new PointerEvent3D(PointerEvent3D.PICK_UP_GUI);
         this._downEvent = new PointerEvent3D(PointerEvent3D.PICK_DOWN_GUI);
 
-        Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_DOWN, this.onTouchDown, this);
-        Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_UP, this.onTouchUp, this);
-        Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_MOVE, this.onTouchMove, this);
+        Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_DOWN, this.onTouchDown, this, null, 1);
+        Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_UP, this.onTouchUp, this, null, 1);
+        Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_MOVE, this.onTouchMove, this, null, 1);
+        Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_CLICK, this.onTouchClick, this, null, 1);
     }
 
     private _lastDownTarget: IUIInteractive;
     private _lastOverTarget: IUIInteractive;
 
+    private onTouchClick(e: PointerEvent3D) {
+        if (this._lastOverTarget) {
+            e.stopImmediatePropagation();
+        }
+    }
+
     private onTouchMove(e: PointerEvent3D) {
         this._mouseCode = e.mouseCode;
         this.collectEntities();
-        let ret = this.pick(this._colliderOut, this._view.camera);
-        let target = ret ? ret.interactive : null;
+        let ret = this.pick(this._colliderOut);
+        ret && e.stopImmediatePropagation();
+        let target = ret ? ret.collider : null;
         if (target != this._lastOverTarget) {
             if (this._lastOverTarget && this._lastOverTarget.enable) {
                 this._lastOverTarget.mouseStyle = UIInteractiveStyle.NORMAL;
@@ -84,8 +92,9 @@ export class GUIPick {
 
         this._mouseCode = e.mouseCode;
         this.collectEntities();
-        let ret = this.pick(this._colliderOut, this._view.camera);
-        let target = ret ? ret.interactive : null;
+        let ret = this.pick(this._colliderOut);
+        ret && e.stopImmediatePropagation();
+        let target = ret ? ret.collider : null;
         if (target) {
             target.mouseStyle = UIInteractiveStyle.DOWN;
             this._overEvent.data = target;
@@ -99,8 +108,10 @@ export class GUIPick {
 
         this._mouseCode = e.mouseCode;
         this.collectEntities();
-        let ret = this.pick(this._colliderOut, this._view.camera);
-        let target = ret ? ret.interactive : null;
+        let ret = this.pick(this._colliderOut);
+        ret && e.stopImmediatePropagation();
+
+        let target = ret ? ret.collider : null;
         if (this._lastDownTarget && this._lastDownTarget.enable) {
             this._lastDownTarget.mouseStyle = UIInteractiveStyle.NORMAL;
         }
@@ -127,7 +138,8 @@ export class GUIPick {
         this._sortWorldPanelList.length = 0;
         this._iteractive2PanelDict.clear();
 
-        this._view.canvasList.forEach(canvas => {
+        let reversedCanvasList = this._view.canvasList.slice().reverse();
+        reversedCanvasList.forEach(canvas => {
             if (canvas && canvas.transform && canvas.transform.parent) {
                 let panels = canvas.object3D.getComponentsByProperty('isUIPanel', true, true) as UIPanel[];
 
@@ -140,6 +152,7 @@ export class GUIPick {
                 for (let panel of panels) {
                     this._transformList.length = 0;
                     panel.object3D.getComponents(UITransform, this._transformList);
+                    this._transformList.reverse();
                     for (const uiTransform of this._transformList) {
                         let interactiveList = uiTransform.uiInteractiveList;
                         if (interactiveList && interactiveList.length > 0) {
@@ -158,22 +171,23 @@ export class GUIPick {
         return this._colliderOut;
     }
 
-    private pick(colliders: IUIInteractive[], camera: Camera3D) {
+    private pick(colliders: IUIInteractive[]): HitInfo {
         this._ray = this._view.camera.screenPointToRay(Engine3D.inputSystem.mouseX, Engine3D.inputSystem.mouseY);
         let screenPos = new Vector2(Engine3D.inputSystem.mouseX, Engine3D.inputSystem.mouseY);
         let screenSize = new Vector2(webGPUContext.canvas.clientWidth, webGPUContext.canvas.clientHeight);
 
-        let intersect: { intersect: boolean; intersectPoint?: Vector3; distance: number; interactive?: IUIInteractive };
+        let hitInfo: HitInfo;
         for (const iterator of colliders) {
             if (iterator.interactive && iterator.enable && iterator.interactiveVisible) {
                 let panel = this._iteractive2PanelDict.get(iterator);
-                intersect = iterator.rayPick(this._ray, panel, screenPos, screenSize);
-                if (intersect) {
-                    intersect.interactive = iterator;
-                    return intersect;
+                hitInfo = iterator.rayPick(this._ray, panel, screenPos, screenSize);
+                if (hitInfo) {
+                    hitInfo.collider = iterator;
+                    return hitInfo;
                 }
             }
         }
+
         return null;
     }
 }

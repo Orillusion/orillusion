@@ -33,7 +33,7 @@ export class UITextField extends UIRenderAble {
         this._alignment = from._alignment;
         this._lineSpacing = from._lineSpacing;
         this._color.copyFrom(from._color);
-        this.text = this.text;
+        this.text = from.text;
         return this;
     }
 

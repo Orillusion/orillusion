@@ -49,6 +49,15 @@ export class UniformNode {
         }
     }
 
+    public getColor(ret: Color) {
+        if (ret) {
+            ret.copyFrom(this._data);
+        } else {
+            ret = this._data;
+        }
+        return ret;
+    }
+
     public get color(): Color {
         let c = new Color(this._data.r, this._data.g, this._data.b, this._data.a);
         return c;
