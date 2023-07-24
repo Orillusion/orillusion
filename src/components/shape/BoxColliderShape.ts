@@ -15,7 +15,7 @@ export class BoxColliderShape extends ColliderShape {
     private readonly box: BoundingBox;
 
     private static v3_help_0: Vector3 = new Vector3();
-    private static helpMatrix: Matrix4 = new Matrix4();
+    private static helpMatrix: Matrix4;
     private static helpRay: Ray = new Ray();
 
     /**
@@ -23,6 +23,7 @@ export class BoxColliderShape extends ColliderShape {
      */
     constructor() {
         super();
+        BoxColliderShape.helpMatrix ||= new Matrix4();
         this._shapeType = ColliderShapeType.Box;
         this.box = new BoundingBox(new Vector3(), new Vector3());
     }

@@ -6,7 +6,8 @@ import { GUIUtil } from '@samples/utils/GUIUtil';
 // simple base demo
 class Sample_drawCall {
     scene: Scene3D;
-    public anim: boolean = false;
+    public rotation: boolean = false;
+    public revolution: boolean = false;
     async run() {
         // init engine
         await Engine3D.init({ renderLoop: () => this.renderLoop() });
@@ -52,8 +53,12 @@ class Sample_drawCall {
 
         GUIHelp.init();
 
-        GUIHelp.add(this, "anim").onChange = () => {
-            this.anim != this.anim;
+        GUIHelp.add(this, "rotation").onChange = () => {
+            this.rotation != this.rotation;
+        };
+
+        GUIHelp.add(this, "revolution").onChange = () => {
+            this.revolution != this.revolution;
         };
 
         this.initScene();
@@ -86,7 +91,7 @@ class Sample_drawCall {
         // let material = new LitMaterial();
 
         let group = new Object3D();
-        let count = 100000;
+        let count = 50000;
         // let count = 70000;
         for (let i = 0; i < count; i++) {
             let pos = Vector3Ex.sphereXYZ(50, 100, 100, 10, 100);
@@ -111,7 +116,7 @@ class Sample_drawCall {
             obj.transform.rotatingY = 16 * 0.01 * this._rotList[i];
         }
 
-        group.addComponent(InstanceDrawComponent);
+        // group.addComponent(InstanceDrawComponent);
         this._rotList.push(1.0);
         group.transform.rotatingY = 16 * 0.01 * 1;
 
@@ -121,14 +126,19 @@ class Sample_drawCall {
     }
 
     renderLoop() {
-        if (this.anim) {
+        if (this.rotation) {
             let i = 0;
-            for (let i = 0; i < this._list.length; i++) {
+            for (let i = 0; i < this._list.length - 1; i++) {
                 const element = this._list[i];
-                // element.transform.rotationY += Time.delta * 0.01 * this._rotList[i];
+                element.transform.rotationY += Time.delta * 0.01 * this._rotList[i];
                 // element.transform._localRot.y += Time.delta * 0.01 * this._rotList[i];
-                element.transform._localChange = true;
+                // element.transform.localChange = true;
             }
+        }
+
+        if (this.revolution) {
+            const element = this._list[this._list.length - 1];
+            element.transform.rotationY += Time.delta * 0.01 * this._rotList[this._list.length - 1];
         }
     }
 }

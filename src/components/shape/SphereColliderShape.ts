@@ -15,7 +15,7 @@ export class SphereColliderShape extends ColliderShape {
     private readonly box: BoundingSphere;
 
     private static v3_help_0: Vector3 = new Vector3();
-    private static helpMatrix: Matrix4 = new Matrix4();
+    private static helpMatrix: Matrix4;
     private static helpRay: Ray = new Ray();
 
     /**
@@ -29,6 +29,7 @@ export class SphereColliderShape extends ColliderShape {
      */
     constructor(radius: number) {
         super();
+        SphereColliderShape.helpMatrix ||= new Matrix4();
         this._shapeType = ColliderShapeType.Sphere;
         this.radius = radius;
         this.box = new BoundingSphere(new Vector3(), 1);
