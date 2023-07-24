@@ -183,6 +183,18 @@ export class PointLightShadowRenderer extends RendererBase {
         shadowCamera.onUpdate();
         shadowCamera.transform.updateWorldMatrix(true);
 
+        let viewRenderList = EntityCollect.instance.getRenderShaderCollect(view);
+        for (const renderList of viewRenderList) {
+            let nodeMap = renderList[1];
+            for (const iterator of nodeMap) {
+                let node = iterator[1];
+                if (node.preInit) {
+                    node.nodeUpdate(view, this._rendererType, this.rendererPassState, null);
+                    break;
+                }
+            }
+        }
+
         this.drawShadowRenderNodes(view, shadowCamera, encoder, collectInfo.opaqueList, occlusionSystem);
         this.drawShadowRenderNodes(view, shadowCamera, encoder, collectInfo.transparentList, occlusionSystem);
 
@@ -202,7 +214,7 @@ export class PointLightShadowRenderer extends RendererBase {
                     continue;
                 if (!renderNode.enable)
                     continue;
-                renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState);
+                // renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState);
 
                 for (let i = 0; i < renderNode.materials.length; i++) {
                     const material = renderNode.materials[i];

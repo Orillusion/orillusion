@@ -78,6 +78,10 @@ export class ShadowMapPassRenderer extends RendererBase {
             return;
 
         camera.transform.updateWorldMatrix();
+
+
+
+
         //*********************/
         //***shadow light******/
         //*********************/
@@ -89,6 +93,18 @@ export class ShadowMapPassRenderer extends RendererBase {
                 continue;
 
             this.rendererPassState = this.rendererPassStates[light.shadowIndex];
+            let viewRenderList = EntityCollect.instance.getRenderShaderCollect(view);
+            for (const renderList of viewRenderList) {
+                let nodeMap = renderList[1];
+                for (const iterator of nodeMap) {
+                    let node = iterator[1];
+                    if (node.preInit) {
+                        node.nodeUpdate(view, this._rendererType, this.rendererPassState, null);
+                        break;
+                    }
+                }
+            }
+
             if ((light.castShadow && light.needUpdateShadow || this._forceUpdate) || (light.castShadow && Engine3D.setting.shadow.autoUpdate)) {
                 light.needUpdateShadow = false;
                 let shadowFar = clamp(Engine3D.setting.shadow.shadowFar, camera.near, camera.far);
@@ -142,7 +158,7 @@ export class ShadowMapPassRenderer extends RendererBase {
         let command = GPUContext.beginCommandEncoder();
         let encoder = GPUContext.beginRenderPass(command, this.rendererPassState);
 
-        shadowCamera.transform.updateWorldMatrix();
+        // shadowCamera.transform.updateWorldMatrix();
         occlusionSystem.update(shadowCamera, view.scene);
         GPUContext.bindCamera(encoder, shadowCamera);
         let op_bundleList = this.renderShadowBundleOp(view, shadowCamera);
