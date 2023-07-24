@@ -57,7 +57,7 @@ export default defineConfig( option => ({
             server.watcher.on('change', autoIndex)
             server.watcher.on('unlink', autoIndex) 
         }
-    }, basicSsl()],
+    }],
     build: {
         lib: {
             entry: resolve(__dirname, './src/index.ts'),
