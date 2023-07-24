@@ -64,7 +64,7 @@ class Context3D {
 
         // check webgpu support
         if (navigator.gpu === undefined) {
-            throw new Error(`Your browser is not support webgpu!`);
+            throw new Error('Your browser does not support WebGPU!');
         }
         // request adapter
         this.adapter = await navigator.gpu.requestAdapter({
@@ -72,7 +72,7 @@ class Context3D {
             // powerPreference: 'low-power',
         });
         if (this.adapter == null) {
-            throw new Error(`Your browser is not support webgpu!`);
+            throw new Error('Your browser does not support WebGPU!');
         }
         // request device
         this.device = await this.adapter.requestDevice({
@@ -90,7 +90,7 @@ class Context3D {
             }
         });
         if (this.device == null) {
-            throw new Error(`Your browser is not support webgpu!`);
+            throw new Error('Your browser does not support WebGPU!');
         }
 
         this._pixelRatio = this.canvasConfig?.devicePixelRatio || window.devicePixelRatio || 1;
