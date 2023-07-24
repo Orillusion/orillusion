@@ -270,6 +270,7 @@ export class EntityCollect {
     }
 
     public getRenderShaderCollect(view: View3D) {
-        return this._renderShaderCollect.renderShaderUpdateList.get(view);
+        let viewList = this._renderShaderCollect.renderShaderUpdateList.get(view) || [];
+        return viewList;
     }
 }

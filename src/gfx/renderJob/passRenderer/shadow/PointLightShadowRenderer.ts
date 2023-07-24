@@ -227,17 +227,19 @@ export class PointLightShadowRenderer extends RendererBase {
                     for (let i = 0; i < passes.length; i++) {
                         const renderShader = passes[i].renderShader;
 
-                        renderShader.setUniformFloat("cameraFar", shadowCamera.far);
-                        renderShader.setUniformVector3("lightWorldPos", shadowCamera.transform.worldPosition);
-                        renderShader.materialDataUniformBuffer.apply();
+                        if (renderShader.pipeline) {
+                            renderShader.setUniformFloat("cameraFar", shadowCamera.far);
+                            renderShader.setUniformVector3("lightWorldPos", shadowCamera.transform.worldPosition);
+                            renderShader.materialDataUniformBuffer.apply();
 
-                        GPUContext.bindPipeline(encoder, renderShader);
-                        let subGeometries = renderNode.geometry.subGeometries;
-                        for (let k = 0; k < subGeometries.length; k++) {
-                            const subGeometry = subGeometries[k];
-                            let lodInfos = subGeometry.lodLevels;
-                            let lodInfo = lodInfos[renderNode.lodLevel];
-                            GPUContext.drawIndexed(encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
+                            GPUContext.bindPipeline(encoder, renderShader);
+                            let subGeometries = renderNode.geometry.subGeometries;
+                            for (let k = 0; k < subGeometries.length; k++) {
+                                const subGeometry = subGeometries[k];
+                                let lodInfos = subGeometry.lodLevels;
+                                let lodInfo = lodInfos[renderNode.lodLevel];
+                                GPUContext.drawIndexed(encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
+                            }
                         }
                     }
                 }

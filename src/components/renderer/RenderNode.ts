@@ -292,27 +292,29 @@ export class RenderNode extends ComponentBase {
 
                 // for (let j = passes.length > 1 ? 1 : 0 ; j < passes.length; j++) {
                 const renderShader = matPass.renderShader;
-                if (renderShader.shaderState.splitTexture) {
-                    renderContext.endRenderPass();
-                    RTResourceMap.WriteSplitColorTexture(renderNode.instanceID);
-                    renderContext.beginRenderPass();
 
-                    GPUContext.bindCamera(renderContext.encoder, view.camera);
-                    GPUContext.bindGeometryBuffer(renderContext.encoder, renderNode._geometry);
-                }
-                GPUContext.bindPipeline(renderContext.encoder, renderShader);
-                let subGeometries = renderNode._geometry.subGeometries;
-                // for (let k = 0; k < subGeometries.length; k++) {
-                const subGeometry = subGeometries[i];
-                let lodInfos = subGeometry.lodLevels;
-                let lodInfo = lodInfos[renderNode.lodLevel];
+                if (renderShader.pipeline) {
+                    if (renderShader.shaderState.splitTexture) {
+                        renderContext.endRenderPass();
+                        RTResourceMap.WriteSplitColorTexture(renderNode.instanceID);
+                        renderContext.beginRenderPass();
 
-                if (renderNode.instanceCount > 0) {
-                    GPUContext.drawIndexed(renderContext.encoder, lodInfo.indexCount, renderNode.instanceCount, lodInfo.indexStart, 0, 0);
-                } else {
-                    GPUContext.drawIndexed(renderContext.encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
+                        GPUContext.bindCamera(renderContext.encoder, view.camera);
+                        GPUContext.bindGeometryBuffer(renderContext.encoder, renderNode._geometry);
+                    }
+                    GPUContext.bindPipeline(renderContext.encoder, renderShader);
+                    let subGeometries = renderNode._geometry.subGeometries;
+                    // for (let k = 0; k < subGeometries.length; k++) {
+                    const subGeometry = subGeometries[i];
+                    let lodInfos = subGeometry.lodLevels;
+                    let lodInfo = lodInfos[renderNode.lodLevel];
+
+                    if (renderNode.instanceCount > 0) {
+                        GPUContext.drawIndexed(renderContext.encoder, lodInfo.indexCount, renderNode.instanceCount, lodInfo.indexStart, 0, 0);
+                    } else {
+                        GPUContext.drawIndexed(renderContext.encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
+                    }
                 }
-                // }
             }
         }
     }
@@ -342,8 +344,10 @@ export class RenderNode extends ComponentBase {
                     if (!matPass.enable)
                         continue;
 
-                    GPUContext.bindPipeline(encoder, matPass.renderShader);
-                    GPUContext.draw(encoder, 6, 1, 0, worldMatrix.index);
+                    if (matPass.renderShader.pipeline) {
+                        GPUContext.bindPipeline(encoder, matPass.renderShader);
+                        GPUContext.draw(encoder, 6, 1, 0, worldMatrix.index);
+                    }
                 }
             } else {
                 GPUContext.bindGeometryBuffer(encoder, node._geometry);
@@ -351,12 +355,15 @@ export class RenderNode extends ComponentBase {
                     let matPass = passes[j];
                     if (!matPass.enable)
                         continue;
-                    GPUContext.bindPipeline(encoder, matPass.renderShader);
-                    let subGeometries = node._geometry.subGeometries;
-                    const subGeometry = subGeometries[i];
-                    let lodInfos = subGeometry.lodLevels;
-                    let lodInfo = lodInfos[node.lodLevel];
-                    GPUContext.drawIndexed(encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
+
+                    if (matPass.renderShader.pipeline) {
+                        GPUContext.bindPipeline(encoder, matPass.renderShader);
+                        let subGeometries = node._geometry.subGeometries;
+                        const subGeometry = subGeometries[i];
+                        let lodInfos = subGeometry.lodLevels;
+                        let lodInfo = lodInfos[node.lodLevel];
+                        GPUContext.drawIndexed(encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
+                    }
                 }
             }
 

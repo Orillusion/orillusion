@@ -100,34 +100,34 @@ export class PassGenerate {
         }
         material.addPass(RendererType.SHADOW, shadowMaterialPass, 0);
 
-        // let castPointShadowMaterialPass = material.renderShader.getPassShader(RendererType.POINT_SHADOW);
-        // if (!castPointShadowMaterialPass) {
-        //     castPointShadowMaterialPass = new CastPointShadowMaterialPass();
-        //     castPointShadowMaterialPass.baseMap = renderNode.materials[0].baseMap;
-        //     castPointShadowMaterialPass.alphaCutoff = renderNode.materials[0].alphaCutoff;
-        //     castPointShadowMaterialPass.setDefine("USE_ALPHACUT", renderNode.materials[0].alphaCutoff < 1.0);
-        //     // castPointShadowMaterialPass.doubleSide = false ;
-        //     for (let j = 0; j < 1; j++) {
-        //         const renderShader = castPointShadowMaterialPass.renderShader;
-        //         if (useTangent) {
-        //             renderShader.setDefine(`USE_TANGENT`, useTangent);
-        //         }
-        //         if (use_skeleton) {
-        //             renderShader.setDefine(`USE_SKELETON`, use_skeleton);
-        //         }
-        //         if (useMorphTargets) {
-        //             renderShader.setDefine(`USE_MORPHTARGETS`, useMorphTargets);
-        //         }
-        //         if (useMorphNormals) {
-        //             renderShader.setDefine(`USE_MORPHNORMALS`, useMorphNormals);
-        //         }
-        //         // renderShader.shaderState.cullMode = baseMat.getShader().cullMode ;
-        //         renderShader.shaderState.cullMode = `front`;
-        //         renderShader.preCompile(renderNode.geometry);
-        //     }
-        //     material.renderShader.setPassShader(RendererType.POINT_SHADOW, castPointShadowMaterialPass);
-        // }
-        // material.addPass(RendererType.POINT_SHADOW, castPointShadowMaterialPass, 0);
+        let castPointShadowMaterialPass = material.renderShader.getPassShader(RendererType.POINT_SHADOW);
+        if (!castPointShadowMaterialPass) {
+            castPointShadowMaterialPass = new CastPointShadowMaterialPass();
+            castPointShadowMaterialPass.baseMap = renderNode.materials[0].baseMap;
+            castPointShadowMaterialPass.alphaCutoff = renderNode.materials[0].alphaCutoff;
+            castPointShadowMaterialPass.setDefine("USE_ALPHACUT", renderNode.materials[0].alphaCutoff < 1.0);
+            // castPointShadowMaterialPass.doubleSide = false ;
+            for (let j = 0; j < 1; j++) {
+                const renderShader = castPointShadowMaterialPass.renderShader;
+                if (useTangent) {
+                    renderShader.setDefine(`USE_TANGENT`, useTangent);
+                }
+                if (use_skeleton) {
+                    renderShader.setDefine(`USE_SKELETON`, use_skeleton);
+                }
+                if (useMorphTargets) {
+                    renderShader.setDefine(`USE_MORPHTARGETS`, useMorphTargets);
+                }
+                if (useMorphNormals) {
+                    renderShader.setDefine(`USE_MORPHNORMALS`, useMorphNormals);
+                }
+                // renderShader.shaderState.cullMode = baseMat.getShader().cullMode ;
+                renderShader.shaderState.cullMode = `front`;
+                renderShader.preCompile(renderNode.geometry);
+            }
+            material.renderShader.setPassShader(RendererType.POINT_SHADOW, castPointShadowMaterialPass);
+        }
+        material.addPass(RendererType.POINT_SHADOW, castPointShadowMaterialPass, 0);
     }
 
     public static createReflectionPass(renderNode: RenderNode, material: MaterialBase) {
