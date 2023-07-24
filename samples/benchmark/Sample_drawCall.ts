@@ -86,7 +86,7 @@ class Sample_drawCall {
         // let material = new LitMaterial();
 
         let group = new Object3D();
-        let count = 100000;
+        let count = 50000;
         // let count = 70000;
         for (let i = 0; i < count; i++) {
             let pos = Vector3Ex.sphereXYZ(50, 100, 100, 10, 100);
@@ -111,7 +111,7 @@ class Sample_drawCall {
             obj.transform.rotatingY = 16 * 0.01 * this._rotList[i];
         }
 
-        group.addComponent(InstanceDrawComponent);
+        // group.addComponent(InstanceDrawComponent);
         this._rotList.push(1.0);
         group.transform.rotatingY = 16 * 0.01 * 1;
 
@@ -125,9 +125,9 @@ class Sample_drawCall {
             let i = 0;
             for (let i = 0; i < this._list.length; i++) {
                 const element = this._list[i];
-                // element.transform.rotationY += Time.delta * 0.01 * this._rotList[i];
+                element.transform.rotationY += Time.delta * 0.01 * this._rotList[i];
                 // element.transform._localRot.y += Time.delta * 0.01 * this._rotList[i];
-                element.transform._localChange = true;
+                // element.transform._localChange = true;
             }
         }
     }

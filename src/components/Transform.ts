@@ -380,7 +380,7 @@ export class Transform extends ComponentBase {
     public updateWorldMatrix(force: boolean = false) {
         if (this._localChange || force) {
             if (this.parent) {
-                this._localRot.y += this.rotatingY;
+                // this._localRot.y += this.rotatingY;
                 makeMatrix44(this._localRot, this._localPos, this.localScale, this._worldMatrix);
                 append(this._worldMatrix, this.parent.worldMatrix, this._worldMatrix);
                 this._localChange = false;
