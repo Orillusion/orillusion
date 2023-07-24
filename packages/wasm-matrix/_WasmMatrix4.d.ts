@@ -17,13 +17,18 @@ declare module Module {
 
     function _updateAllMatrixTransform(start: number, end: number);
 
+    function _updateAllMatrixContinueTransform(start: number, end: number);
+
     function _printMatrix(index: number);
+
 
     function _getSRTPtr(): number;
 
     function _getInfoPtr(): number;
 
     function _getMatrixBufferPtr(): number;
+
+    function _getContinuedSRTPtr(): number;
 }
 
 

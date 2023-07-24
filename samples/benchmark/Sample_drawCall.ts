@@ -1,6 +1,6 @@
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { Stats } from '@orillusion/stats'
-import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D, Vector3, Vector3Ex, UnLitMaterial, InstanceDrawComponent, LambertMaterial, Time, BoundingBox, Color, OcclusionSystem } from '@orillusion/core';
+import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D, Vector3, Vector3Ex, UnLitMaterial, InstanceDrawComponent, LambertMaterial, Time, BoundingBox, Color, OcclusionSystem, WasmMatrix } from '@orillusion/core';
 import { GUIUtil } from '@samples/utils/GUIUtil';
 
 // simple base demo
@@ -71,7 +71,9 @@ class Sample_drawCall {
         let shareGeometry = new BoxGeometry();
         // let material = new UnLitMaterial();
         let materials = [
-            new LambertMaterial(),
+            new LitMaterial(),
+
+            // new LambertMaterial(),
             // new LambertMaterial(),
             // new LambertMaterial(),
             // new LambertMaterial(),
@@ -94,7 +96,7 @@ class Sample_drawCall {
         let count = 50000;
         // let count = 70000;
         for (let i = 0; i < count; i++) {
-            let pos = Vector3Ex.sphereXYZ(50, 100, 100, 10, 100);
+            let pos = Vector3Ex.sphereXYZ(50, 150, 100, 10, 100);
             // let pos = Vector3Ex.getRandomXYZ(-2, 2);
             let obj = new Object3D();
             let mr = obj.addComponent(MeshRenderer);
@@ -112,13 +114,16 @@ class Sample_drawCall {
             obj.transform.rotationY = Math.random() * 360;
             obj.transform.rotationZ = Math.random() * 360;
 
+
             this._rotList.push((Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 100);
             obj.transform.rotatingY = 16 * 0.01 * this._rotList[i];
+            WasmMatrix.setContinueRotation(obj.transform.index, 0, obj.transform.rotatingY, 0);
         }
 
         // group.addComponent(InstanceDrawComponent);
         this._rotList.push(1.0);
         group.transform.rotatingY = 16 * 0.01 * 1;
+        WasmMatrix.setContinueRotation(group.transform.index, 0, group.transform.rotatingY, 0);
 
         group.bound = new BoundingBox(Vector3.SAFE_MIN, Vector3.SAFE_MAX);
         this._list.push(group);
@@ -130,15 +135,16 @@ class Sample_drawCall {
             let i = 0;
             for (let i = 0; i < this._list.length - 1; i++) {
                 const element = this._list[i];
-                element.transform.rotationY += Time.delta * 0.01 * this._rotList[i];
+                // element.transform.rotationY += Time.delta * 0.01 * this._rotList[i];
                 // element.transform._localRot.y += Time.delta * 0.01 * this._rotList[i];
-                // element.transform.localChange = true;
+                element.transform.localChange = true;
             }
         }
 
         if (this.revolution) {
             const element = this._list[this._list.length - 1];
-            element.transform.rotationY += Time.delta * 0.01 * this._rotList[this._list.length - 1];
+            // element.transform.rotationY += Time.delta * 0.01 * this._rotList[this._list.length - 1];
+            element.transform.localChange = true;
         }
     }
 }

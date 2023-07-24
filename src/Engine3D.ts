@@ -459,7 +459,7 @@ export class Engine3D {
         }
 
         /* update all transform */
-        WasmMatrix.updateAllMatrixTransform(0, 200000);
+        WasmMatrix.updateAllContinueTransform(0, Matrix4.allocCount);
         let views = this.views;
         let i = 0;
         for (i = 0; i < views.length; i++) {
