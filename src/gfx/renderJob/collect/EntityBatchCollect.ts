@@ -15,7 +15,7 @@ export class EntityBatchCollect {
     public collect_add(node: RenderNode) {
         let g_key = '';
         let s_key = '';
-        g_key += node.geometry.uuid;
+        g_key += node.geometry.instanceID;
         for (let i = 0; i < node.materials.length; i++) {
             const mat = node.materials[i];
             s_key += mat.renderShader.shaderVariant;

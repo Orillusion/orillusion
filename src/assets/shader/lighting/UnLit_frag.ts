@@ -3,7 +3,6 @@ export let UnLit_frag: string = /*wgsl*/ `
     #include "GlobalUniform"
 
     fn UnLit(){
-        
         let alpha = ORI_ShadingInput.BaseColor.a ;
         ORI_FragmentOutput.color = vec4<f32>(ORI_ShadingInput.BaseColor.rgb * alpha , alpha) ;
 

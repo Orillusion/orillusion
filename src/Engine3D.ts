@@ -17,6 +17,7 @@ import { ShaderLib } from './assets/shader/ShaderLib';
 import { ShaderUtil } from './gfx/graphics/webGpu/shader/util/ShaderUtil';
 import { ComponentCollect } from './gfx/renderJob/collect/ComponentCollect';
 import { ShadowLightsCollect } from './gfx/renderJob/collect/ShadowLightsCollect';
+import { RenderShaderCollect, Transform } from '.';
 
 /** 
  * Orillusion 3D Engine
@@ -408,36 +409,63 @@ export class Engine3D {
         if (this._beforeRender) this._beforeRender();
 
         /****** auto before update with component list *****/
-        ComponentCollect.componentsBeforeUpdateList.forEach((v, k) => {
-            v.forEach((c, f) => {
+        for (const iterator of ComponentCollect.componentsBeforeUpdateList) {
+            let k = iterator[0];
+            let v = iterator[1];
+            for (const iterator2 of v) {
+                let f = iterator2[0];
+                let c = iterator2[1];
                 if (f.enable) {
                     c(k);
                 };
-            })
-        });
+            }
+        }
 
         let command = webGPUContext.device.createCommandEncoder();
-        ComponentCollect.componentsComputeList.forEach((v, k) => {
-            v.forEach((c, f) => {
+        for (const iterator of ComponentCollect.componentsComputeList) {
+            let k = iterator[0];
+            let v = iterator[1];
+            for (const iterator2 of v) {
+                let f = iterator2[0];
+                let c = iterator2[1];
                 if (f.enable) {
                     c(k, command);
                 };
-            })
-        });
+            }
+        }
         webGPUContext.device.queue.submit([command.finish()]);
+
+        /* update all transform */
+        let views = this.views;
+        let i = 0;
+        for (i = 0; i < views.length; i++) {
+            const view = views[i];
+            Transform.updateChildTransform(view.scene.transform);
+        }
+        // for (const iterator of RenderShaderCollect.renderNodeList) {
+        //     let nodes = iterator[1];
+        //     for (const node of nodes) {
+        //         let item = node[1];
+        //         item.transform.updateWorldMatrix();
+        //     }
+        // }
 
         /****** auto update global matrix share buffer write to gpu *****/
         let globalMatrixBindGroup = GlobalBindGroup.modelMatrixBindGroup;
         globalMatrixBindGroup.writeBuffer();
 
         /****** auto update with component list *****/
-        ComponentCollect.componentsUpdateList.forEach((v, k) => {
-            v.forEach((c, f) => {
+        for (const iterator of ComponentCollect.componentsUpdateList) {
+            let k = iterator[0];
+            let v = iterator[1];
+            for (const iterator2 of v) {
+                let f = iterator2[0];
+                let c = iterator2[1];
                 if (f.enable) {
                     c(k);
                 };
-            })
-        });
+            }
+        }
 
         if (this._renderLoop) {
             this._renderLoop();
@@ -448,13 +476,17 @@ export class Engine3D {
         });
 
         /****** auto late update with component list *****/
-        ComponentCollect.componentsLateUpdateList.forEach((v, k) => {
-            v.forEach((c, f) => {
+        for (const iterator of ComponentCollect.componentsLateUpdateList) {
+            let k = iterator[0];
+            let v = iterator[1];
+            for (const iterator2 of v) {
+                let f = iterator2[0];
+                let c = iterator2[1];
                 if (f.enable) {
                     c(k);
                 };
-            })
-        });
+            }
+        }
 
         if (this._lateRender) this._lateRender();
     }

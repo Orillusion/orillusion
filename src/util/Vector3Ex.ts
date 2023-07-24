@@ -143,7 +143,7 @@ export class Vector3Ex {
      * @returns random vector
      */
     public static getRandomXYZ(min: number = -100, max: number = 100): Vector3 {
-        return new Vector3(Math.random() * max + min, Math.random() * max + min, Math.random() * max + min);
+        return new Vector3(Math.random() * (max - min) + min, Math.random() * (max - min) + min, Math.random() * (max - min) + min);
     }
 
     /**
@@ -156,5 +156,21 @@ export class Vector3Ex {
      */
     public static getRandomV3(min: number = -100, max: number = 100, yMin: number, yMax: number): Vector3 {
         return new Vector3(Math.random() * max + min, Math.random() * yMax + yMin, Math.random() * max + min);
+    }
+
+    public static sphere(radius: number) {
+        let r = radius * Math.random();
+        let randomDir = new Vector3(Math.random() * 1 - 0.5, Math.random() * 1 - 0.5, Math.random() * 1 - 0.5);
+        randomDir.normalize();
+        randomDir.scaleBy(r);
+        return randomDir;
+    }
+
+    public static sphereXYZ(radiusMin: number, radiusMax: number, x: number = 1, y: number = 1, z: number = 1) {
+        let r = radiusMin + (radiusMax - radiusMin) * Math.random();
+        let randomDir = new Vector3(Math.random() * x - x * 0.5, Math.random() * y - y * 0.5, Math.random() * z - z * 0.5);
+        randomDir.normalize();
+        randomDir.scaleBy(r);
+        return randomDir;
     }
 }

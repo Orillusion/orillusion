@@ -213,7 +213,7 @@ export class FlyCameraController extends ComponentBase {
     }
 
     public onUpdate(): void {
-        this.transform.updateWorldMatrix();
+        // this.transform.updateWorldMatrix();
         let transform = this.transform;
         let dt = clamp(Time.delta, 0.0, 0.016);
 

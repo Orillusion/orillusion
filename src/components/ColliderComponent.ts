@@ -1,3 +1,4 @@
+import { ComponentCollect, View3D } from "..";
 import { Engine3D } from "../Engine3D";
 import { Ray } from "../math/Ray";
 import { Vector3 } from "../math/Vector3";
@@ -23,6 +24,14 @@ export class ColliderComponent extends ComponentBase {
         if (Engine3D.setting.pick.mode == `pixel`) {
             this.transform.scene3D.view.pickFire.mouseEnableMap.set(this.transform.worldMatrix.index, this);
         }
+    }
+
+    public onEnable(view?: View3D) {
+        ComponentCollect.bindEnablePick(view, this, null);
+    }
+
+    public onDisable(view?: View3D) {
+        ComponentCollect.unBindEnablePick(view, this);
     }
 
     /**

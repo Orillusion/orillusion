@@ -103,7 +103,7 @@ export class PointLight extends LightBase {
     }
 
     public onUpdate(): void {
-        this.transform.updateWorldMatrix(true);
+        // this.transform.updateWorldMatrix(true);
     }
 
     public onGraphic(view?: View3D): void {

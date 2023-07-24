@@ -76,7 +76,14 @@ class Context3D {
         }
         // request device
         this.device = await this.adapter.requestDevice({
-            //requiredFeatures: [`texture-compression-bc`],
+            requiredFeatures: [
+                "bgra8unorm-storage",
+                "depth-clip-control",
+                "depth32float-stencil8",
+                "indirect-first-instance",
+                "rg11b10ufloat-renderable",
+                "texture-compression-bc"
+            ],
             requiredLimits: {
                 minUniformBufferOffsetAlignment: 256,
                 maxStorageBufferBindingSize: this.adapter.limits.maxStorageBufferBindingSize
@@ -98,7 +105,7 @@ class Context3D {
             format: this.presentationFormat,
             usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
             alphaMode: 'premultiplied',
-            colorSpace: `display-p3`
+            colorSpace: `display-p3`,
         });
 
         // resize canvas size, aspect

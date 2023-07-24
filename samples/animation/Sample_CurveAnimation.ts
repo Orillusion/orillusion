@@ -88,6 +88,7 @@ class Sample_AnimCurve {
         // load a gltf model
         this.Duck = (await Engine3D.res.loadGltf('PBR/Duck/Duck.gltf')) as Object3D;
         this.Duck.scaleX = this.Duck.scaleY = this.Duck.scaleZ = 0.3;
+        this.Duck.name = "Duck"
         this.scene.addChild(this.Duck);
     }
 

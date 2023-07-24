@@ -60,7 +60,7 @@ export class SkyRenderer extends MeshRenderer {
     }
 
     public renderPass2(view: View3D, passType: RendererType, rendererPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer, encoder: GPURenderPassEncoder, useBundle: boolean = false) {
-        this.transform.updateWorldMatrix();
+        // this.transform.updateWorldMatrix();
         super.renderPass2(view, passType, rendererPassState, clusterLightingBuffer, encoder, useBundle);
         // this.transform.localPosition = Camera3D.mainCamera.transform.localPosition ;
     }

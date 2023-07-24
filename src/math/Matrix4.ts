@@ -725,7 +725,7 @@ export class Matrix4 {
         let data = this.rawData;
 
         let EPSILON: number = 0.000001;
-        let v: Vector3 = Vector3.HELP_0;
+        let v: Vector3 = Vector3.ZERO;
         toDirection.crossProduct(fromDirection, v);
         let e: number = toDirection.dotProduct(fromDirection);
 
@@ -813,7 +813,8 @@ export class Matrix4 {
             let hvxz;
             let hvyz;
 
-            let h = (1.0 - e) / v.dotProduct(v);
+            let v2 = v.dotProduct(v);
+            let h = (1.0 - e) / v2;
             hvx = h * v.x;
             hvz = h * v.z;
             hvxy = hvx * v.y;

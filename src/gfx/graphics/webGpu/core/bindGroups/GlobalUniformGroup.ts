@@ -74,7 +74,7 @@ export class GlobalUniformGroup {
     // }
 
     public setCamera(camera: Camera3D) {
-        camera.transform.updateWorldMatrix(true);
+        // camera.transform.updateWorldMatrix(true);
         this.uniformGPUBuffer.setMatrix(`_projectionMatrix`, camera.projectionMatrix);
         this.uniformGPUBuffer.setMatrix(`_viewMatrix`, camera.viewMatrix);
         this.uniformGPUBuffer.setMatrix(`_cameraWorldMatrix`, camera.transform.worldMatrix);
@@ -121,7 +121,7 @@ export class GlobalUniformGroup {
     }
 
     setShadowCamera(camera: Camera3D) {
-        camera.transform.updateWorldMatrix(true);
+        // camera.transform.updateWorldMatrix(true);
         this.uniformGPUBuffer.setMatrix(`_projectionMatrix`, camera.projectionMatrix);
         this.uniformGPUBuffer.setMatrix(`_viewMatrix`, camera.viewMatrix);
         this.uniformGPUBuffer.setMatrix(`_pvMatrix`, camera.pvMatrix);

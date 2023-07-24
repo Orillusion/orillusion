@@ -1,6 +1,6 @@
 export let LightingFunction_frag: string = /*wgsl*/ `
 #include "BRDF_frag"
-#include "LightStruct"
+#include "ClusterLight"
 #include "ShadowMapping_frag"
 
 #if USE_IES_PROFILE

@@ -201,30 +201,33 @@ export class ShadowMapPassRenderer extends RendererBase {
         return [];
     }
 
-
     protected recordShadowRenderBundleNode(view: View3D, shadowCamera: Camera3D, encoder, nodes: RenderNode[], clusterLightingBuffer?: ClusterLightingBuffer) {
         GPUContext.bindCamera(encoder, shadowCamera);
         GPUContext.bindGeometryBuffer(encoder, nodes[0].geometry);
-        for (let i = 0; i < nodes.length; ++i) {
-            let renderNode = nodes[i];
-            let matrixIndex = renderNode.transform.worldMatrix.index;
-            if (!renderNode.transform.enable)
-                continue;
-            renderNode.recordRenderPass2(view, this._rendererType, this.rendererPassState, clusterLightingBuffer, encoder);
+        if (nodes) {
+            for (let i = 0; i < nodes.length; ++i) {
+                let renderNode = nodes[i];
+                let matrixIndex = renderNode.transform.worldMatrix.index;
+                if (!renderNode.transform.enable)
+                    continue;
+                renderNode.recordRenderPass2(view, this._rendererType, this.rendererPassState, clusterLightingBuffer, encoder);
+            }
         }
     }
 
     protected drawShadowRenderNodes(view: View3D, shadowCamera: Camera3D, encoder: GPURenderPassEncoder, nodes: RenderNode[], clusterLightingBuffer?: ClusterLightingBuffer) {
         GPUContext.bindCamera(encoder, shadowCamera);
-        for (let i = Engine3D.setting.render.drawOpMin; i < Math.min(nodes.length, Engine3D.setting.render.drawOpMax); ++i) {
-            let renderNode = nodes[i];
-            // let matrixIndex = renderNode.transform.worldMatrix.index;
-            // if (!occlusionSystem.renderCommitTesting(camera,renderNode) ) continue;
-            if (!renderNode.transform.enable)
-                continue;
-            if (!renderNode.enable)
-                continue;
-            renderNode.renderPass2(view, this._rendererType, this.rendererPassState, clusterLightingBuffer, encoder);
+        if (nodes) {
+            for (let i = Engine3D.setting.render.drawOpMin; i < Math.min(nodes.length, Engine3D.setting.render.drawOpMax); ++i) {
+                let renderNode = nodes[i];
+                // let matrixIndex = renderNode.transform.worldMatrix.index;
+                // if (!occlusionSystem.renderCommitTesting(camera,renderNode) ) continue;
+                if (!renderNode.transform.enable)
+                    continue;
+                if (!renderNode.enable)
+                    continue;
+                renderNode.renderPass2(view, this._rendererType, this.rendererPassState, clusterLightingBuffer, encoder);
+            }
         }
     }
 }

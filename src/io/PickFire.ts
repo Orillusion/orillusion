@@ -8,6 +8,8 @@ import { PickCompute } from './picker/PickCompute';
 import { ColliderComponent } from '../components/ColliderComponent';
 import { View3D } from '../core/View3D';
 import { PointerEvent3D } from '../event/eventConst/PointerEvent3D';
+import { ComponentCollect } from '../gfx/renderJob/collect/ComponentCollect';
+import { IComponent } from '..';
 /**
  * Management and triggering for picking 3D objects
  * @group IO
@@ -39,6 +41,9 @@ export class PickFire extends CEventDispatcher {
      * a map records the association information between meshID(matrix id) and ColliderComponent
      */
     public mouseEnableMap: Map<number, ColliderComponent>;
+
+    private _interestList: ColliderComponent[] = [];
+
     private _view: View3D;
 
     constructor(view: View3D) {
@@ -94,8 +99,8 @@ export class PickFire extends CEventDispatcher {
         this.isTouching = true;
         this._mouseCode = e.mouseCode;
 
-        this.collectEntities();
-        this.pick(this._colliderOut, this._view.camera);
+        this.pick(this._view);
+
         let target = this.findNearestObj(this._interestList, this._view.camera);
         this._lastDownTarget = target;
         if (target) {
@@ -115,8 +120,8 @@ export class PickFire extends CEventDispatcher {
         this.isTouching = false;
         this._mouseCode = e.mouseCode;
 
-        this.collectEntities();
-        this.pick(this._colliderOut, this._view.camera);
+        this.pick(this._view);
+
         let target = this.findNearestObj(this._interestList, this._view.camera);
         if (target) {
             this._upEvent.target = target.object3D;
@@ -143,8 +148,7 @@ export class PickFire extends CEventDispatcher {
     private onTouchMove(e: PointerEvent3D) {
         this.isTouching = true;
         this._mouseCode = e.mouseCode;
-        this.collectEntities();
-        this.pick(this._colliderOut, this._view.camera);
+        this.pick(this._view);
         let target = this.findNearestObj(this._interestList, this._view.camera);
         if (target) {
             this._mouseMove.target = target.object3D;
@@ -182,8 +186,7 @@ export class PickFire extends CEventDispatcher {
     private onTouchOnce(e: PointerEvent3D) {
         this.isTouching = true;
         this._mouseCode = e.mouseCode;
-        this.collectEntities();
-        this.pick(this._colliderOut, this._view.camera);
+        this.pick(this._view);
         let target = this.findNearestObj(this._interestList, this._view.camera);
         if (target) {
             let info = Engine3D.setting.pick.mode == `pixel` ? this.getPickInfo() : null;
@@ -213,17 +216,7 @@ export class PickFire extends CEventDispatcher {
         return target;
     }
 
-    private _colliderOut: ColliderComponent[] = [];
-
-    private collectEntities(): ColliderComponent[] {
-        this._colliderOut.length = 0;
-        this._view.scene.getComponents(ColliderComponent, this._colliderOut);
-        return this._colliderOut;
-    }
-
-    private _interestList: ColliderComponent[] = [];
-
-    private pick(colliders: ColliderComponent[], camera: Camera3D) {
+    private pick(view: View3D) {
         this._interestList.length = 0;
         if (Engine3D.setting.pick.mode == `pixel`) {
             this._pickCompute.compute(this._view);
@@ -233,14 +226,15 @@ export class PickFire extends CEventDispatcher {
                 this._interestList.push(iterator);
             }
         } else if (Engine3D.setting.pick.mode == `bound`) {
-            this.ray = camera.screenPointToRay(Engine3D.inputSystem.mouseX, Engine3D.inputSystem.mouseY);
+            this.ray = view.camera.screenPointToRay(Engine3D.inputSystem.mouseX, Engine3D.inputSystem.mouseY);
             let intersect: { intersect: boolean; intersectPoint?: Vector3; distance: number };
-            for (const iterator of colliders) {
+            let pickerList = ComponentCollect.componentsEnablePickerList.get(view);
+            pickerList.forEach((v, iterator) => {
                 intersect = iterator.enable && iterator.rayPick(this.ray);
                 if (intersect) {
                     this._interestList.push(iterator);
                 }
-            }
+            })
         }
     }
 }

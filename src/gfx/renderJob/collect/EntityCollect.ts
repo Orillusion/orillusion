@@ -1,4 +1,5 @@
 
+import { View3D } from '../../..';
 import { Engine3D } from '../../../Engine3D';
 import { ILight } from '../../../components/lights/ILight';
 import { RenderNode } from '../../../components/renderer/RenderNode';
@@ -10,6 +11,7 @@ import { Graphic3DBatchRenderer } from '../passRenderer/graphic/Graphic3DBatchRe
 import { RendererMask } from '../passRenderer/state/RendererMask';
 import { CollectInfo } from './CollectInfo';
 import { EntityBatchCollect } from './EntityBatchCollect';
+import { RenderShaderCollect } from './RenderShaderCollect';
 
 /**
  * @internal
@@ -27,6 +29,8 @@ export class EntityCollect {
 
     private _op_renderGroup: Map<Scene3D, EntityBatchCollect>;
     private _tr_renderGroup: Map<Scene3D, EntityBatchCollect>;
+
+    private _renderShaderCollect: RenderShaderCollect;
 
     public state: {
         /**
@@ -63,6 +67,7 @@ export class EntityCollect {
         this._tr_renderGroup = new Map<Scene3D, EntityBatchCollect>();
 
         this._collectInfo = new CollectInfo();
+        this._renderShaderCollect = new RenderShaderCollect();
     }
 
     private getPashList(root: Scene3D, renderNode: RenderNode) {
@@ -127,6 +132,8 @@ export class EntityCollect {
             }
         }
         renderNode.object3D.renderNode = renderNode;
+
+        this._renderShaderCollect.collect_add(renderNode);
     }
 
     public removeRenderNode(root: Scene3D, renderNode: RenderNode) {
@@ -143,6 +150,8 @@ export class EntityCollect {
                 }
             }
         }
+
+        this._renderShaderCollect.collect_remove(renderNode);
     }
 
     public addLight(root: Scene3D, light: ILight) {
@@ -258,5 +267,9 @@ export class EntityCollect {
 
     public getGraphicList(): Graphic3DBatchRenderer[] {
         return this._graphics;
+    }
+
+    public getRenderShaderCollect(view: View3D) {
+        return this._renderShaderCollect.renderShaderUpdateList.get(view);
     }
 }

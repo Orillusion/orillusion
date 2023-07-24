@@ -27,10 +27,13 @@ export class GPUBufferBase {
     public usage: GPUBufferUsageFlags;
     public visibility: number = GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT | GPUShaderStage.COMPUTE;
     private _readBuffer: GPUBuffer;
+    private _dataView: Float32Array;
 
     constructor() {
         this.memory = new MemoryDO();
         this.memoryNodes = new Map<string | number, MemoryInfo>();
+
+        this._dataView = new Float32Array(this.memory.shareDataBuffer);
     }
 
     public debug() {
@@ -295,12 +298,19 @@ export class GPUBufferBase {
     // }
 
     public clean() {
-        let data = new Float32Array(this.memory.shareDataBuffer);
-        data.fill(0, 0, data.length);
+        // this._dataView = new Float32Array(this.memory.shareDataBuffer);
+        this._dataView.fill(0, 0, this._dataView.length);
     }
 
     public apply() {
         webGPUContext.device.queue.writeBuffer(this.buffer, 0, this.memory.shareDataBuffer);//, this.memory.shareFloat32Array.byteOffset, this.memory.shareFloat32Array.byteLength);
+    }
+
+    public async mapAsync() {
+        await this.buffer.mapAsync(GPUMapMode.WRITE);
+        let data = new Float32Array(this.memory.shareDataBuffer);
+        new Float32Array(this.buffer.getMappedRange()).set(data);
+        this.buffer.unmap();
     }
 
     public destroy(force?: boolean) {

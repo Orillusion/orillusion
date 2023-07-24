@@ -325,6 +325,7 @@ export class Entity extends CEventDispatcher {
             this._bound = new BoundingBox(Vector3.ZERO.clone(), Vector3.ONE.clone());
             this._boundWorld = this._bound.clone();
         }
+        // if (this.transform['_localChange'])
         BoundUtil.transformBound(this.transform.worldMatrix, this._bound as BoundingBox, this._boundWorld as BoundingBox);
     }
 

@@ -64,7 +64,7 @@ export class CylinderGeometry extends GeometryBase {
         this.openEnded = openEnded;
         this.thetaStart = thetaStart;
         this.thetaLength = thetaLength;
-        this.uuid = UUID();
+        this.instanceID = UUID();
         this.buildGeometry();
     }
 

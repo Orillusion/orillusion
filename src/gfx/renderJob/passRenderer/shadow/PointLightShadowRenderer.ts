@@ -192,39 +192,41 @@ export class PointLightShadowRenderer extends RendererBase {
 
     protected drawShadowRenderNodes(view: View3D, shadowCamera: Camera3D, encoder: GPURenderPassEncoder, nodes: RenderNode[], occlusionSystem: OcclusionSystem) {
         GPUContext.bindCamera(encoder, shadowCamera);
-        for (let i = Engine3D.setting.render.drawOpMin; i < Math.min(nodes.length, Engine3D.setting.render.drawOpMax); ++i) {
-            let renderNode = nodes[i];
-            let matrixIndex = renderNode.transform.worldMatrix.index;
-            if (!renderNode.transform.enable)
-                continue;
-            if (!occlusionSystem.renderCommitTesting(shadowCamera, renderNode))
-                continue;
-            if (!renderNode.enable)
-                continue;
-            renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState);
-
-            for (let i = 0; i < renderNode.materials.length; i++) {
-                const material = renderNode.materials[i];
-                let passes = material.renderPasses.get(this._rendererType);
-                if (!passes || passes.length == 0)
+        if (nodes) {
+            for (let i = Engine3D.setting.render.drawOpMin; i < Math.min(nodes.length, Engine3D.setting.render.drawOpMax); ++i) {
+                let renderNode = nodes[i];
+                let matrixIndex = renderNode.transform.worldMatrix.index;
+                if (!renderNode.transform.enable)
                     continue;
+                if (!occlusionSystem.renderCommitTesting(shadowCamera, renderNode))
+                    continue;
+                if (!renderNode.enable)
+                    continue;
+                renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState);
 
-                GPUContext.bindGeometryBuffer(encoder, renderNode.geometry);
-                let worldMatrix = renderNode.object3D.transform._worldMatrix;
-                for (let i = 0; i < passes.length; i++) {
-                    const renderShader = passes[i].renderShader;
+                for (let i = 0; i < renderNode.materials.length; i++) {
+                    const material = renderNode.materials[i];
+                    let passes = material.renderPasses.get(this._rendererType);
+                    if (!passes || passes.length == 0)
+                        continue;
 
-                    renderShader.setUniformFloat("cameraFar", shadowCamera.far);
-                    renderShader.setUniformVector3("lightWorldPos", shadowCamera.transform.worldPosition);
-                    renderShader.materialDataUniformBuffer.apply();
+                    GPUContext.bindGeometryBuffer(encoder, renderNode.geometry);
+                    let worldMatrix = renderNode.object3D.transform._worldMatrix;
+                    for (let i = 0; i < passes.length; i++) {
+                        const renderShader = passes[i].renderShader;
 
-                    GPUContext.bindPipeline(encoder, renderShader);
-                    let subGeometries = renderNode.geometry.subGeometries;
-                    for (let k = 0; k < subGeometries.length; k++) {
-                        const subGeometry = subGeometries[k];
-                        let lodInfos = subGeometry.lodLevels;
-                        let lodInfo = lodInfos[renderNode.lodLevel];
-                        GPUContext.drawIndexed(encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
+                        renderShader.setUniformFloat("cameraFar", shadowCamera.far);
+                        renderShader.setUniformVector3("lightWorldPos", shadowCamera.transform.worldPosition);
+                        renderShader.materialDataUniformBuffer.apply();
+
+                        GPUContext.bindPipeline(encoder, renderShader);
+                        let subGeometries = renderNode.geometry.subGeometries;
+                        for (let k = 0; k < subGeometries.length; k++) {
+                            const subGeometry = subGeometries[k];
+                            let lodInfos = subGeometry.lodLevels;
+                            let lodInfo = lodInfos[renderNode.lodLevel];
+                            GPUContext.drawIndexed(encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
+                        }
                     }
                 }
             }

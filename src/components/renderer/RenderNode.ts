@@ -1,3 +1,4 @@
+import { RenderShaderCollect } from "../..";
 import { Engine3D } from "../../Engine3D";
 import { View3D } from "../../core/View3D";
 import { GeometryBase } from "../../core/geometry/GeometryBase";
@@ -48,9 +49,11 @@ export class RenderNode extends ComponentBase {
     public isRenderOrderChange?: boolean;
     public needSortOnCameraZ?: boolean;
 
-    constructor() {
-        super();
+    public preInit: boolean = false;
+
+    public init() {
         this.rendererMask = RendererMask.Default;
+        this.instanceID = UUID();
     }
 
     public get renderOrder(): number {
@@ -130,10 +133,7 @@ export class RenderNode extends ComponentBase {
         }
     }
 
-    public init() {
-        // this.renderPasses = new Map<RendererType, MaterialBase[]>();
-        this.instanceID = UUID();
-    }
+
 
     public addRendererMask(tag: RendererMask) {
         this._rendererMask = RendererMaskUtil.addMask(this._rendererMask, tag);
@@ -149,7 +149,6 @@ export class RenderNode extends ComponentBase {
         }
         EntityCollect.instance.addRenderNode(this.transform.scene3D, this);
     }
-
 
     public onDisable(): void {
         EntityCollect.instance.removeRenderNode(this.transform.scene3D, this);
@@ -170,8 +169,9 @@ export class RenderNode extends ComponentBase {
 
     protected initPipeline() {
         if (this._geometry && this._materials.length > 0) {
-            for (let i = 0; i < this._materials.length; i++) {
-                const material = this._materials[i];
+            let index = 0;
+            for (let j = 0; j < this._materials.length; j++) {
+                const material = this._materials[j];
                 let passList = material.addPass(RendererType.COLOR, material);
                 for (let i = 0; i < passList.length; i++) {
                     const pass = passList[i];
@@ -181,7 +181,6 @@ export class RenderNode extends ComponentBase {
                     }
                     this._geometry.generate(shader.shaderReflection);
                 }
-
                 this.object3D.bound = this._geometry.bounds.clone();
             }
             this._readyPipeline = true;
@@ -203,6 +202,7 @@ export class RenderNode extends ComponentBase {
             if (this.enable && this.transform && this.transform.scene3D) {
                 EntityCollect.instance.addRenderNode(this.transform.scene3D, this);
             }
+
         }
     }
 
@@ -326,7 +326,7 @@ export class RenderNode extends ComponentBase {
     public renderPass2(view: View3D, passType: RendererType, rendererPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer, encoder: GPURenderPassEncoder, useBundle: boolean = false) {
         if (!this.enable)
             return;
-        this.nodeUpdate(view, passType, rendererPassState, clusterLightingBuffer);
+        // this.nodeUpdate(view, passType, rendererPassState, clusterLightingBuffer);
 
         let node = this;
         let worldMatrix = node.object3D.transform._worldMatrix;
@@ -387,43 +387,44 @@ export class RenderNode extends ComponentBase {
                 GPUContext.drawIndexed(encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
             }
         }
-
     }
 
     private noticeShaderChange() {
         if (this.enable) {
             this.onEnable();
+            this.preInit = false;
         }
     }
 
     public nodeUpdate(view: View3D, passType: RendererType, renderPassState: RendererPassState, clusterLightingBuffer?: ClusterLightingBuffer) {
-
+        this.preInit = true;
         let node = this;
-        for (let i = 0; i < this.materials.length; i++) {
-            let material = this.materials[i];
+        let envMap = view.scene.envMap;
+
+        for (let j = 0; j < node.materials.length; j++) {
+            let material = node.materials[j];
             let passes = material.renderPasses.get(passType);
             if (passes) {
                 for (let i = 0; i < passes.length; i++) {
                     const pass = passes[i];
-                    // RenderShader.getShader(passes[i].shaderID);
+
                     const renderShader = pass.renderShader;
-                    // RenderShader.getShader(passes[i].shaderID);
+
                     if (renderShader.shaderState.splitTexture) {
-                        let splitTexture = RTResourceMap.CreateSplitTexture(this.instanceID);
+                        let splitTexture = RTResourceMap.CreateSplitTexture(node.instanceID);
                         renderShader.setTexture("splitTexture_Map", splitTexture);
                     }
-                    // renderShader.setUniformVector3("center", this.transform.worldPosition);
-                    // if(scene3D.envMapChange){
-                    if (!this._ignoreEnvMap) {
-                        renderShader.setTexture(`envMap`, view.scene.envMap);
+
+                    if (!node._ignoreEnvMap && renderShader.envMap != envMap) {
+                        renderShader.setTexture(`envMap`, envMap);
                     }
-                    if (!this._ignorePrefilterMap) {
-                        renderShader.setTexture(`prefilterMap`, view.scene.envMap);
+
+                    if (!node._ignorePrefilterMap && renderShader.prefilterMap != envMap) {
+                        renderShader.setTexture(`prefilterMap`, envMap);
                     }
-                    // }
 
                     if (renderShader.pipeline) {
-                        renderShader.apply(this._geometry, pass, renderPassState, () => this.noticeShaderChange());
+                        renderShader.apply(node._geometry, pass, renderPassState, () => node.noticeShaderChange());
                         continue;
                     }
 
@@ -468,7 +469,8 @@ export class RenderNode extends ComponentBase {
                         renderShader.setStorageBuffer(`clusterBuffer`, clusterLightingBuffer.clusterBuffer);
                     }
 
-                    renderShader.apply(this._geometry, pass, renderPassState);
+                    renderShader.apply(node._geometry, pass, renderPassState);
+
                 }
             }
         }
