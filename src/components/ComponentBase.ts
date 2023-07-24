@@ -19,7 +19,15 @@ export class ComponentBase implements IComponent {
     /**
      * @internal
      */
-    public eventDispatcher: CEventDispatcher;
+    protected _eventDispatcher: CEventDispatcher;
+    public get eventDispatcher() {
+        this._eventDispatcher ||= new CEventDispatcher();
+        return this._eventDispatcher;
+    }
+
+    public set eventDispatcher(value) {
+        console.error('The eventDispatcher should not be set externally!');
+    }
 
     /**
      * @internal
@@ -28,9 +36,6 @@ export class ComponentBase implements IComponent {
 
     private __isStart: boolean = false;
 
-    constructor() {
-        this.eventDispatcher = new CEventDispatcher();
-    }
 
     /**
      * Return the Transform component attached to the Object3D.
