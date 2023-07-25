@@ -193,20 +193,6 @@ fn computeFog(z:f32) -> f32
     return vec3<f32>(scatter*sunColor);
   }
 
-  fn cFog(y:f32) -> f32 {
-     let fogDensity = global.density * exp(global.height * y);
-     let fogFactor = (1.0 - exp2(-global.falloff)) / global.falloff ;
-     let fog = fogDensity * fogFactor * max(global.rayLength - global.start, 0.0); 
-     return max(fog,0.0);
-  }
-
-  fn inScatterIng(sunDir:vec3<f32>,worldPos:vec3<f32>,sunColor:vec3<f32>) -> vec3<f32> {
-    let viewDir = normalize(globalUniform.CameraPos.xyz - worldPos.xyz) ;
-    let VoL = saturate(dot(viewDir,sunDir)) ;
-    var scatter = pow(VoL,global.scatteringExponent);
-    scatter *= (1.0-saturate(exp2(-global.dirHeightLine)));
-    return vec3<f32>(scatter*sunColor);
-  }
 `;
 
 
