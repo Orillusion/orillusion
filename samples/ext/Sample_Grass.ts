@@ -33,7 +33,7 @@ class Sample_Grass {
         let fog = this.post.addPost(GlobalFog);
         fog.fogColor = new Color(136 / 255, 215 / 255, 236 / 255, 1);
         fog.start = 0;
-        fog.height = -0.017;
+        fog.overrideSkyFactor = 0.0764;
         fog.ins = 1;
         fog.falloff = 0.626;
         fog.scatteringExponent = 3;
@@ -169,7 +169,7 @@ class Sample_Grass {
         GUIHelp.endFolder();
 
         let globalFog = this.post.getPost(GlobalFog);
-        GUIUtil.renderFog(globalFog);
+        // GUIUtil.renderFog(globalFog);
     }
 
 }

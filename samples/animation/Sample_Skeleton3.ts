@@ -37,7 +37,6 @@ class Sample_Skeleton3 {
         this.view.camera = mainCamera;
 
         Engine3D.startRenderView(this.view);
-        sky.relativeTransform = this.lightObj3D.transform;
     }
 
     async initScene(scene: Scene3D) {
@@ -49,7 +48,6 @@ class Sample_Skeleton3 {
             this.character.scaleZ = 0.3;
             this.character.rotationY = 180;
             scene.addChild(this.character);
-
 
 
             let animation = this.character.getComponentsInChild(SkeletonAnimationComponent)[0];

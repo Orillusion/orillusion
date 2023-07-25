@@ -1,6 +1,6 @@
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { Stats } from '@orillusion/stats'
-import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D, Vector3, Vector3Ex, UnLitMaterial, InstanceDrawComponent, LambertMaterial, Time, BoundingBox, Color, OcclusionSystem } from '@orillusion/core';
+import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D, Vector3, Vector3Ex, UnLitMaterial, InstanceDrawComponent, LambertMaterial, Time, BoundingBox, Color, OcclusionSystem, PostProcessingComponent, GlobalFog } from '@orillusion/core';
 import { GUIUtil } from '@samples/utils/GUIUtil';
 
 // simple base demo
@@ -36,8 +36,9 @@ class Sample_drawCall {
         lightObj.rotationY = 60;
         lightObj.rotationZ = 150;
         let dirLight = lightObj.addComponent(DirectLight);
-        dirLight.lightColor = KelvinUtil.color_temperature_to_rgb(53355);
-        dirLight.intensity = 60;
+        dirLight.lightColor = KelvinUtil.color_temperature_to_rgb(5500);
+        dirLight.intensity = 100;
+        dirLight.indirect = 1;
         this.scene.addChild(lightObj);
 
         sky.relativeTransform = dirLight.transform;
@@ -49,8 +50,18 @@ class Sample_drawCall {
 
         // start render
         Engine3D.startRenderView(view);
-
         GUIHelp.init();
+
+        // let post = view.scene.addComponent(PostProcessingComponent);
+        // let fog = post.addPost(GlobalFog);
+        // fog.fogColor = new Color(136 / 255, 215 / 255, 236 / 255, 1);
+        // fog.start = 0;
+        // fog.overrideSkyFactor = 0.0764;
+        // fog.ins = 1;
+        // fog.falloff = 0.626;
+        // fog.scatteringExponent = 3;
+        // fog.dirHeightLine = 10;
+        // GUIUtil.renderGlobalFog(fog);
 
         GUIHelp.add(this, "anim").onChange = () => {
             this.anim != this.anim;
@@ -66,7 +77,7 @@ class Sample_drawCall {
         let shareGeometry = new BoxGeometry();
         // let material = new UnLitMaterial();
         let materials = [
-            new LambertMaterial(),
+            new LitMaterial(),
             // new LambertMaterial(),
             // new LambertMaterial(),
             // new LambertMaterial(),
@@ -80,13 +91,15 @@ class Sample_drawCall {
 
         for (let i = 0; i < materials.length; i++) {
             const element = materials[i];
-            element.baseColor = Color.random();
+            element.metallic = 0.97;
+            element.roughness = 0.15;
+            element.baseColor = new Color().hexToRGB(Color.GOLD);
         }
 
         // let material = new LitMaterial();
 
         let group = new Object3D();
-        let count = 50000;
+        let count = 45000;
         // let count = 70000;
         for (let i = 0; i < count; i++) {
             let pos = Vector3Ex.sphereXYZ(50, 100, 100, 10, 100);

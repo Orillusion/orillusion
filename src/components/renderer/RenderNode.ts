@@ -107,6 +107,8 @@ export class RenderNode extends ComponentBase {
     }
 
     public set materials(value: MaterialBase[]) {
+        this._readyPipeline = false;
+
         for (let i = 0; i < this._materials.length; i++) {
             let mat = this._materials[i];
             Reference.getInstance().detached(mat, this)

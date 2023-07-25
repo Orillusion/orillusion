@@ -49,7 +49,7 @@ class Sample_AnimCurve {
             let directLight = this.lightObj3D.addComponent(DirectLight);
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             directLight.castShadow = true;
-            directLight.intensity = 10;
+            directLight.intensity = 30;
             this.scene.addChild(this.lightObj3D);
 
             //create animation curve 1

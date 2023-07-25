@@ -31,10 +31,16 @@ class Sample_Terrain {
 
         this.post = this.view.scene.addComponent(PostProcessingComponent);
         let fog = this.post.addPost(GlobalFog);
+        fog.start = 223;
+        fog.end = 113;
+        fog.fogHeightScale = 0.0692;
+        fog.density = 0.1241;
+        fog.ins = 0.1041;
+        fog.skyFactor = 0.7959;
+        fog.overrideSkyFactor = 0.0764;
+
         fog.fogColor = new Color(136 / 255, 215 / 255, 236 / 255, 1);
-        fog.start = 0;
         fog.fogHeightScale = -0.017;
-        fog.ins = 1;
         fog.falloff = 0.626;
         fog.scatteringExponent = 3;
         fog.dirHeightLine = 10;

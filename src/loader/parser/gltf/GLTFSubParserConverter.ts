@@ -212,6 +212,8 @@ export class GLTFSubParserConverter {
 
                     physicMaterial.doubleSide = doubleSided;
 
+                    physicMaterial.ao = 1;
+
                     if (baseColorTexture) {
                         physicMaterial.baseMap = baseColorTexture;
                     }
