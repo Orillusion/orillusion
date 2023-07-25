@@ -56,47 +56,48 @@ export class OcclusionSystem {
         // EntityCollect.instance.autoSortRenderNodes(scene);
         let nodes = EntityCollect.instance.getRenderNodes(scene);
 
-        if (nodes.opaqueList) {
-            for (let i = 0; i < nodes.opaqueList.length; i++) {
-                const node = nodes.opaqueList[i];
-                // cameraViewRenderList.set(node, 1);
+        // if (nodes.opaqueList) {
+        //     for (let i = 0; i < nodes.opaqueList.length; i++) {
+        //         const node = nodes.opaqueList[i];
+        //         // cameraViewRenderList.set(node, 1);
 
-                let inRender = 0;
+        //         let inRender = 0;
 
-                if (node.enable && node.transform.enable && node.object3D.bound) {
-                    inRender = node.object3D.bound.containsFrustum(node.object3D, camera.frustum);
-                }
+        //         if (node.enable && node.transform.enable && node.object3D.bound) {
+        //             inRender = node.object3D.bound.containsFrustum(node.object3D, camera.frustum);
+        //         }
 
-                if (inRender) {
-                    cameraViewRenderList.set(node, inRender);
-                }
-            }
-        }
+        //         if (inRender) {
+        //             cameraViewRenderList.set(node, inRender);
+        //         }
+        //     }
+        // }
 
-        if (nodes.transparentList) {
-            for (let i = 0; i < nodes.transparentList.length; i++) {
-                const node = nodes.transparentList[i];
-                // cameraViewRenderList.set(node, 1);
+        // if (nodes.transparentList) {
+        //     for (let i = 0; i < nodes.transparentList.length; i++) {
+        //         const node = nodes.transparentList[i];
+        //         // cameraViewRenderList.set(node, 1);
 
-                let inRender = 0;
-                if (node.enable && node.transform.enable && node.object3D.bound) {
-                    inRender = node.object3D.bound.containsFrustum(node.object3D, camera.frustum);
-                }
+        //         let inRender = 0;
+        //         if (node.enable && node.transform.enable && node.object3D.bound) {
+        //             inRender = node.object3D.bound.containsFrustum(node.object3D, camera.frustum);
+        //         }
 
-                if (inRender) {
-                    cameraViewRenderList.set(node, inRender);
-                }
-            }
-        }
+        //         if (inRender) {
+        //             cameraViewRenderList.set(node, inRender);
+        //         }
+        //     }
+        // }
     }
 
     renderCommitTesting(camera: Camera3D, renderNode: RenderNode): boolean {
-        if (!OcclusionSystem.enable) return true;
-        let cameraRenderList = this._renderList.get(camera);
-        if (cameraRenderList) {
-            return this._renderList.get(camera).get(renderNode) > 0;
-        } else {
-            return false;
-        }
+        return true;
+        // if (!OcclusionSystem.enable) return true;
+        // let cameraRenderList = this._renderList.get(camera);
+        // if (cameraRenderList) {
+        //     return this._renderList.get(camera).get(renderNode) > 0;
+        // } else {
+        //     return false;
+        // }
     }
 }

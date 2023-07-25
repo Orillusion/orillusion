@@ -1,6 +1,6 @@
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { Stats } from '@orillusion/stats'
-import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D, Vector3, Vector3Ex, UnLitMaterial, InstanceDrawComponent, LambertMaterial, Time, BoundingBox, Color } from '@orillusion/core';
+import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D, Vector3, Vector3Ex, UnLitMaterial, InstanceDrawComponent, LambertMaterial, Time, BoundingBox, Color, OcclusionSystem } from '@orillusion/core';
 import { GUIUtil } from '@samples/utils/GUIUtil';
 
 // simple base demo
@@ -11,6 +11,9 @@ class Sample_SphereDraw {
     async run() {
         // init engine
         await Engine3D.init({ renderLoop: () => this.renderLoop() });
+
+        // OcclusionSystem.enable = false;
+
         // create new Scene
         this.scene = new Scene3D();
 
@@ -65,15 +68,15 @@ class Sample_SphereDraw {
         // let material = new UnLitMaterial();
         let materials = [
             new LambertMaterial(),
-            new LambertMaterial(),
-            new LambertMaterial(),
-            new LambertMaterial(),
-            new LambertMaterial(),
-            new LambertMaterial(),
-            new LambertMaterial(),
-            new LambertMaterial(),
-            new LambertMaterial(),
-            new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
         ];
 
         for (let i = 0; i < materials.length; i++) {
@@ -86,7 +89,7 @@ class Sample_SphereDraw {
         let group = new Object3D();
         this.scene.addChild(group);
         // let count = 150000;
-        let count = 100000;
+        let count = 50000;
         for (let i = 0; i < count; i++) {
             let pos = Vector3Ex.sphere(100);
             // let pos = Vector3Ex.getRandomXYZ(-2, 2);
@@ -106,6 +109,7 @@ class Sample_SphereDraw {
             obj.transform.scaleY = sc;
             obj.transform.scaleZ = Math.random() * 5 + 1;
 
+            obj.transform.localChange = true;
             obj.transform.forward = d;
             // obj.transform.rotationX = Math.random() * 360;
             // obj.transform.rotationY = Math.random() * 360;
@@ -113,7 +117,7 @@ class Sample_SphereDraw {
 
             obj["rot"] = (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 20;
         }
-        group.addComponent(InstanceDrawComponent);
+        // group.addComponent(InstanceDrawComponent);
         group["rot"] = 1.0;
         group.bound = new BoundingBox(Vector3.SAFE_MIN, Vector3.SAFE_MAX);
         this._list.push(group);

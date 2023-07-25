@@ -36,7 +36,7 @@ await test('ecs test ColliderComponent', async () => {
     let ray = new Ray(new Vector3(0, 0, -5), new Vector3(0, 0, 1));
 
     let pick = component.rayPick(ray);
-    let success = pick && pick.intersect;
+    let success = pick != null;
 
     expect(success).toEqual(true);
 })

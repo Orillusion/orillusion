@@ -14,10 +14,6 @@ export class SphereColliderShape extends ColliderShape {
     private _pickRet: { intersect: boolean; intersectPoint?: Vector3; distance: number };
     private readonly box: BoundingSphere;
 
-    private static v3_help_0: Vector3 = new Vector3();
-    private static helpMatrix: Matrix4;
-    private static helpRay: Ray = new Ray();
-
     /**
      * radius of this collider
      */
@@ -29,7 +25,6 @@ export class SphereColliderShape extends ColliderShape {
      */
     constructor(radius: number) {
         super();
-        SphereColliderShape.helpMatrix ||= new Matrix4();
         this._shapeType = ColliderShapeType.Sphere;
         this.radius = radius;
         this.box = new BoundingSphere(new Vector3(), 1);
@@ -39,10 +34,10 @@ export class SphereColliderShape extends ColliderShape {
         let box = this.box;
         box.setFromCenterAndSize(this.center, this.radius);
 
-        let helpMatrix = SphereColliderShape.helpMatrix;
+        let helpMatrix = ColliderShape.helpMatrix;
         helpMatrix.copyFrom(fromMatrix).invert();
 
-        let helpRay = SphereColliderShape.helpRay.copy(ray);
+        let helpRay = ColliderShape.helpRay.copy(ray);
         helpRay.applyMatrix(helpMatrix);
 
         let pick = helpRay.intersectSphere(helpRay.origin, helpRay.direction, this.box.center, this.box.radius);
@@ -52,7 +47,7 @@ export class SphereColliderShape extends ColliderShape {
             }
             this._pickRet.intersect = true;
             this._pickRet.intersectPoint = pick;
-            this._pickRet.distance = Vector3.distance(helpRay.origin, SphereColliderShape.v3_help_0);
+            this._pickRet.distance = Vector3.distance(helpRay.origin, ColliderShape.v3_help_0);
             return this._pickRet;
         }
         return null;

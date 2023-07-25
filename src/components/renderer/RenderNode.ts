@@ -1,4 +1,4 @@
-import { RenderShaderCollect } from "../..";
+import { EditorInspector } from "../../util/SerializeDecoration";
 import { Engine3D } from "../../Engine3D";
 import { View3D } from "../../core/View3D";
 import { GeometryBase } from "../../core/geometry/GeometryBase";
@@ -56,6 +56,20 @@ export class RenderNode extends ComponentBase {
         this.instanceID = UUID();
     }
 
+    public copyComponent(from: this): this {
+        super.copyComponent(from);
+        this.geometry = from._geometry;
+        this.materials = from._materials.slice();
+        this.drawType = from.drawType;
+        this.alwaysRender = from.alwaysRender;
+        this.needSortOnCameraZ = from.needSortOnCameraZ;
+        this.isRenderOrderChange = from.isRenderOrderChange;
+        this.castShadow = from.castShadow;
+        this.castGI = from.castGI;
+        this.rendererMask = from.rendererMask;
+        return this;
+    }
+
     public get renderOrder(): number {
         return this._renderOrder;
     }
@@ -102,10 +116,12 @@ export class RenderNode extends ComponentBase {
         this._rendererMask = value;
     }
 
+    @EditorInspector
     public get materials(): MaterialBase[] {
         return this._materials;
     }
 
+    @EditorInspector
     public set materials(value: MaterialBase[]) {
         for (let i = 0; i < this._materials.length; i++) {
             let mat = this._materials[i];
@@ -248,18 +264,22 @@ export class RenderNode extends ComponentBase {
         }
     }
 
+    @EditorInspector
     public get castShadow(): boolean {
         return this._castShadow;
     }
 
+    @EditorInspector
     public set castShadow(value: boolean) {
         this._castShadow = value;
     }
 
+    @EditorInspector
     public get castGI(): boolean {
         return this._castGI;
     }
 
+    @EditorInspector
     public set castGI(value: boolean) {
         this._castGI = value;
     }

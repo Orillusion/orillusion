@@ -16,6 +16,8 @@ export class LitMaterial extends PhysicMaterial {
     constructor() {
         super();
 
+        this.name = this.instanceID;
+
         this.setShader('PBRLItShader', 'PBRLItShader');
 
         let shader = this.getShader();
@@ -43,13 +45,9 @@ export class LitMaterial extends PhysicMaterial {
         // shader.setDefine(`USE_ARMC`, false);
         this.emissiveMap = Engine3D.res.blackTexture;
         // this.alphaCutoff = 0.5;
-
-
     }
 
     public clone(): this {
-        // console.log(`clone LitMaterial ${this.name}`);
-
         let ret = new LitMaterial();
         ret.baseMap = this.baseMap;
         ret.normalMap = this.normalMap;
@@ -79,22 +77,15 @@ export class LitMaterial extends PhysicMaterial {
 
         this.clearcoatColor && (ret.clearcoatColor = this.clearcoatColor.clone());
         ret.clearcoatWeight = this.clearcoatWeight;
+
         ret.transparent = this.transparent;
         ret.cullMode = this.cullMode;
         ret.blendMode = this.blendMode;
 
-        ret.shaderState.acceptShadow = this.shaderState.acceptShadow;
-        ret.shaderState.castShadow = this.shaderState.castShadow;
-        ret.shaderState.receiveEnv = this.shaderState.receiveEnv;
-        ret.shaderState.acceptGI = this.shaderState.acceptGI;
-        ret.shaderState.useLight = this.shaderState.useLight;
+        this.cloneObject(this.shaderState, ret.shaderState);
+        this.cloneObject(this.renderShader.defineValue, ret.renderShader.shaderState);
+        this.cloneObject(this.renderShader.constValues, ret.renderShader.constValues);
 
-        for (let key in this.renderShader.defineValue) {
-            ret.renderShader.defineValue[key] = this.renderShader.defineValue[key];
-        }
-        for (let key in this.renderShader.constValues) {
-            ret.renderShader.constValues[key] = this.renderShader.constValues[key];
-        }
         return ret as this;
     }
 

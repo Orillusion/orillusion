@@ -16,7 +16,11 @@ export class PoolNode<T> {
     }
   }
 
-  public getOne(instance: { new (): T }): T {
+  public getUseList(): T[] {
+    return this._use;
+  }
+
+  public getOne(instance: { new(arg?): T }, param?): T {
     let node: T;
     if (this._unUse.length > 0) {
       node = this._unUse[0];
@@ -24,7 +28,7 @@ export class PoolNode<T> {
       this._use.push(node);
       return node;
     } else {
-      node = new instance();
+      node = new instance(param);
       this._use.push(node);
     }
 

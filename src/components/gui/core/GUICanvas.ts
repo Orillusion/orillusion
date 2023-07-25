@@ -7,6 +7,7 @@ import { ComponentBase } from "../../ComponentBase";
  */
 export class GUICanvas extends ComponentBase {
 
+    public readonly isGUICanvas: boolean = true;
     public index: number = 0;
 
     /**
@@ -32,6 +33,12 @@ export class GUICanvas extends ComponentBase {
 
 
     public cloneTo(obj: Object3D) {
-        console.error('UICanvas Can not be Clone!');
+        let canvas = obj.getOrAddComponent(GUICanvas);
+        canvas.copyComponent(this);
+    }
+
+    public copyComponent(from: this): this {
+        from.index = from.index;
+        return this;
     }
 }

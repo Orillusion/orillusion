@@ -1,9 +1,16 @@
+export class PropertyAnimTag {
+    transform?: boolean;
+    quaternion?: boolean;
+    materialColor?: boolean;
+}
+
 /**
  * @internal
  * @group Animation
  */
 export class PropertyHelp {
-    static property: any = {
+
+    static Property: any = {
         'm_LocalPosition.x': 'localPosition.x',
         'm_LocalPosition.y': 'localPosition.y',
         'm_LocalPosition.z': 'localPosition.z',
@@ -25,28 +32,30 @@ export class PropertyHelp {
         'm_LocalScale.y': 'localScale.y',
         'm_LocalScale.z': 'localScale.z',
 
-        'm_Color.r': 'r',
-        'm_Color.g': 'g',
-        'm_Color.b': 'b',
-        'm_Color.a': 'alpha',
+        'm_Color.r': 'materialColor.r',
+        'm_Color.g': 'materialColor.g',
+        'm_Color.b': 'materialColor.b',
+        'm_Color.a': 'materialColor.a',
+
+        'material._Color.r': 'materialColor.r',
+        'material._Color.g': 'materialColor.g',
+        'material._Color.b': 'materialColor.b',
+        'material._Color.a': 'materialColor.a',
+        'material._UnlitColor.r': 'materialColor.r',
+        'material._UnlitColor.g': 'materialColor.g',
+        'material._UnlitColor.b': 'materialColor.b',
+        'material._UnlitColor.a': 'materialColor.a',
 
         'field of view': 'camera3D.fov',
 
-        m_IsActive: 'visible',
-        m_Sprite: 'texture',
+        m_IsActive: 'active',
+        m_Sprite: 'sprite',
 
         m_FlipX: 'flipX',
         m_FlipY: 'flipY',
     };
 
-    static property_quaternion: any = {
-        'm_LocalRotation.x': true,
-        'm_LocalRotation.y': true,
-        'm_LocalRotation.z': true,
-        'm_LocalRotation.w': true,
-    };
-
-    static property_scale: any = {
+    static Scale: any = {
         'm_LocalPosition.x': 1,
         'm_LocalPosition.y': 1,
         'm_LocalPosition.z': -1,
@@ -64,51 +73,56 @@ export class PropertyHelp {
         'm_LocalRotation.z': -1, //Rad2Deg(1),
         'm_LocalRotation.w': -1, //Rad2Deg(1),
 
-        'm_LocalScale.x': 1,
-        'm_LocalScale.y': 1,
-        'm_LocalScale.z': 1,
-
-        'm_Color.r': 1,
-        'm_Color.g': 1,
-        'm_Color.b': 1,
-        'm_Color.a': 1,
-
         'field of view': 1,
 
         m_IsActive: 1,
         m_Sprite: 1,
     };
 
-    static property_offset: any = {
-        'm_LocalPosition.x': 0,
-        'm_LocalPosition.y': 0,
-        'm_LocalPosition.z': 0,
+    public static updatePropertyTag(tag: PropertyAnimTag, attribute: string) {
+        tag.quaternion ||= this.tag_quaternion[attribute];
+        tag.transform ||= this.tag_transform[attribute];
+        tag.materialColor ||= this.tag_materialColor[attribute];
+    }
 
-        'localEulerAnglesRaw.x': 0, //Deg2Rad(0),
-        'localEulerAnglesRaw.y': 0, //Deg2Rad(0),
-        'localEulerAnglesRaw.z': 0, //Deg2Rad(0),
-
-        'm_LocalEulerAngles.x': 0, //Deg2Rad(0),
-        'm_LocalEulerAngles.y': 0, //Deg2Rad(0),
-        'm_LocalEulerAngles.z': 0, //Deg2Rad(0),
-
-        'm_LocalRotation.x': 0,
-        'm_LocalRotation.y': 0,
-        'm_LocalRotation.z': 0,
-        'm_LocalRotation.w': 0,
-
-        'm_LocalScale.x': 0,
-        'm_LocalScale.y': 0,
-        'm_LocalScale.z': 0,
-
-        'field of view': 0,
-
-        'm_Color.r': 0,
-        'm_Color.g': 0,
-        'm_Color.b': 0,
-        'm_Color.a': 0,
-
-        m_IsActive: 0,
-        m_Sprite: 0,
+    private static tag_quaternion: any = {
+        'm_LocalRotation.x': true,
+        'm_LocalRotation.y': true,
+        'm_LocalRotation.z': true,
+        'm_LocalRotation.w': true,
     };
+
+    private static tag_materialColor: any = {
+        'material._Color.r': true,
+        'material._Color.g': true,
+        'material._Color.b': true,
+        'material._Color.a': true,
+        'material._UnlitColor.r': true,
+        'material._UnlitColor.g': true,
+        'material._UnlitColor.b': true,
+        'material._UnlitColor.a': true,
+
+    };
+
+    private static tag_transform: any = {
+        'm_LocalPosition.x': true,
+        'm_LocalPosition.y': true,
+        'm_LocalPosition.z': true,
+        'm_LocalRotation.x': true,
+        'm_LocalRotation.y': true,
+        'm_LocalRotation.z': true,
+        'm_LocalRotation.w': true,
+
+        'localEulerAnglesRaw.x': true,
+        'localEulerAnglesRaw.y': true,
+        'localEulerAnglesRaw.z': true,
+
+        'm_LocalEulerAngles.x': true,
+        'm_LocalEulerAngles.y': true,
+        'm_LocalEulerAngles.z': true,
+
+        'm_LocalScale.x': true,
+        'm_LocalScale.y': true,
+        'm_LocalScale.z': true,
+    }
 }

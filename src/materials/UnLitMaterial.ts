@@ -54,6 +54,33 @@ export class UnLitMaterial extends MaterialBase {
         //not need shadowMap texture
     }
 
+    public clone(): this {
+        // console.log(`clone LitMaterial ${this.name}`);
+
+        let ret = new UnLitMaterial();
+        ret.baseMap = this.baseMap;
+        ret.normalMap = this.normalMap;
+        ret.emissiveMap = this.emissiveMap;
+        this.uvTransform_1 && (ret.uvTransform_1 = new Vector4().copyFrom(this.uvTransform_1));
+        this.uvTransform_2 && (ret.uvTransform_2 = new Vector4().copyFrom(this.uvTransform_2));
+        ret.baseColor = this.baseColor.clone();
+        ret.emissiveColor = this.emissiveColor.clone();
+        ret.envIntensity = this.envIntensity;
+        ret.normalScale = this.normalScale;
+        ret.emissiveIntensity = this.emissiveIntensity;
+        ret.alphaCutoff = this.alphaCutoff;
+
+        ret.transparent = this.transparent;
+        ret.cullMode = this.cullMode;
+        ret.blendMode = this.blendMode;
+
+        this.cloneObject(this.shaderState, ret.shaderState);
+        this.cloneObject(this.renderShader.defineValue, ret.renderShader.shaderState);
+        this.cloneObject(this.renderShader.constValues, ret.renderShader.constValues);
+
+        return ret as this;
+    }
+
     debug() {
     }
 }

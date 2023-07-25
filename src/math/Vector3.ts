@@ -463,6 +463,18 @@ export class Vector3 {
     }
 
     /**
+     * Calculate the square distance between two vectors
+     * @param pt1 Vector 1
+     * @param pt2 Vector 2
+     * @returns number The square distance between two vectors
+     */
+    public static squareDistance(pt1: Vector3, pt2: Vector3): number {
+        var x: number = pt1.x - pt2.x;
+        var y: number = pt1.y - pt2.y;
+        var z: number = pt1.z - pt2.z;
+        return x * x + y * y + z * z;
+    }
+    /**
      * Calculate the distance between two vectors XZ axes
      * @param pt1 Vector 1
      * @param pt2 Vector 2
