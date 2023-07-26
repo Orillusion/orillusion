@@ -31,6 +31,7 @@ export class InstanceDrawComponent extends RenderNode {
             const mr = meshRenders[i];
             mr.enable = false;
 
+
             let key = mr.geometry.instanceID;
             for (let j = 0; j < mr.materials.length; j++) {
                 const mat = mr.materials[j];
@@ -63,11 +64,6 @@ export class InstanceDrawComponent extends RenderNode {
 
     public nodeUpdate(view: View3D, passType: RendererType, renderPassState: RendererPassState, clusterLightingBuffer?: ClusterLightingBuffer): void {
         this._keyRenderGroup.forEach((v, k) => {
-            // for (let i = 0; i < v.length; i++) {
-            //     const element = v[i];
-            //     if (!element.transform.static)
-            //         element.transform.worldMatrix;
-            // }
             let instanceMatrixBuffer = this._keyBufferGroup.get(k);
             let renderNode = v[0];
             for (let i = 0; i < renderNode.materials.length; i++) {
@@ -76,7 +72,6 @@ export class InstanceDrawComponent extends RenderNode {
                 if (passes) {
                     for (let i = 0; i < passes.length; i++) {
                         const renderShader = passes[i].renderShader;
-
                         renderShader.setDefine("USE_INSTANCEDRAW", true);
                         renderShader.setStorageBuffer(`instanceDrawID`, instanceMatrixBuffer);
                     }
@@ -84,7 +79,7 @@ export class InstanceDrawComponent extends RenderNode {
             }
             renderNode.nodeUpdate(view, passType, renderPassState, clusterLightingBuffer);
         })
-        super.nodeUpdate(view, passType, renderPassState, clusterLightingBuffer);
+        this.preInit = false;
     }
 
 
@@ -139,44 +134,3 @@ export class InstanceDrawComponent extends RenderNode {
         }
     }
 }
-
- // for (let ii = 0; ii < v.length; ii++) {
-            //     const renderNode = v[ii];
-            //     renderNode.object3D.transform.updateWorldMatrix()
-            // }
-            // for (let i = 0; i < renderNode.materials.length; i++) {
-            //     const material = renderNode.materials[i];
-            //     let passes = material.renderPasses.get(passType);
-
-            //     if (!passes || passes.length == 0) continue;
-
-            //     GPUContext.bindGeometryBuffer(renderEncoder.encoder, renderNode.geometry);
-            //     let worldMatrix = renderNode.object3D.transform._worldMatrix;
-            //     for (let j = 0; j < passes.length; j++) {
-            //         if (!passes || passes.length == 0) continue;
-            //         let matPass = passes[j];
-            //         if (!matPass.enable) continue;
-
-            //         for (let jj = passes.length > 1 ? 1 : 0; jj < passes.length; jj++) {
-            //             const renderShader = matPass.renderShader;
-            //             if (renderShader.shaderState.splitTexture) {
-
-            //                 renderEncoder.endRenderPass();
-            //                 RTResourceMap.WriteSplitColorTexture(renderNode.instanceID);
-            //                 renderEncoder.beginRenderPass();
-
-            //                 GPUContext.bindCamera(renderEncoder.encoder, view.camera);
-            //                 GPUContext.bindGeometryBuffer(renderEncoder.encoder, renderNode.geometry);
-            //             }
-            //             GPUContext.bindPipeline(renderEncoder.encoder, renderShader);
-            //             let subGeometries = renderNode.geometry.subGeometries;
-            //             for (let k = 0; k < subGeometries.length; k++) {
-            //                 const subGeometry = subGeometries[k];
-            //                 let lodInfos = subGeometry.lodLevels;
-            //                 let lodInfo = lodInfos[renderNode.lodLevel];
-
-            //                 GPUContext.drawIndexed(renderEncoder.encoder, lodInfo.indexCount, v.length, lodInfo.indexStart, 0, 0);
-            //             }
-            //         }
-            //     }
-            // }

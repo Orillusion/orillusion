@@ -206,8 +206,10 @@ export class Transform extends ComponentBase {
     */
     public notifyLocalChange() {
         this._localChange = true;
-        for (let child of this.object3D.entityChildren) {
-            child.transform.notifyLocalChange();
+        if (this.object3D) {
+            for (let child of this.object3D.entityChildren) {
+                child.transform.notifyLocalChange();
+            }
         }
         this.eventDispatcher.dispatchEvent(this.eventLocalChange);
     }
@@ -621,9 +623,9 @@ export class Transform extends ComponentBase {
     }
 
     public set localPosition(v: Vector3) {
-        this.x = v.x;
-        this.y = v.y;
-        this.z = v.z;
+        this._localPos.x = v.x;
+        this._localPos.y = v.y;
+        this._localPos.z = v.z;
         this.notifyLocalChange();
         this.onPositionChange?.();
 

@@ -99,7 +99,7 @@ class Sample_drawCall {
         // let material = new LitMaterial();
 
         let group = new Object3D();
-        let count = 50000;
+        let count = 10000;
         // let count = 70000;
         for (let i = 0; i < count; i++) {
             let pos = Vector3Ex.sphereXYZ(50, 100, 100, 10, 100);

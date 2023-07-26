@@ -62,18 +62,11 @@ class Sample_SphereDraw {
     private _list: Object3D[] = [];
     initScene() {
         let shareGeometry = new BoxGeometry();
-        // let material = new UnLitMaterial();
         let materials = [
             new LambertMaterial(),
-            new LambertMaterial(),
-            new LambertMaterial(),
-            new LambertMaterial(),
-            new LambertMaterial(),
-            new LambertMaterial(),
-            new LambertMaterial(),
-            new LambertMaterial(),
-            new LambertMaterial(),
-            new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
         ];
 
         for (let i = 0; i < materials.length; i++) {
@@ -86,7 +79,7 @@ class Sample_SphereDraw {
         let group = new Object3D();
         this.scene.addChild(group);
         // let count = 150000;
-        let count = 100000;
+        let count = 10000;
         for (let i = 0; i < count; i++) {
             let pos = Vector3Ex.sphere(100);
             // let pos = Vector3Ex.getRandomXYZ(-2, 2);
@@ -107,7 +100,7 @@ class Sample_SphereDraw {
             obj.transform.scaleZ = Math.random() * 5 + 1;
 
             obj.transform.forward = d;
-            // obj.transform.rotationX = Math.random() * 360;
+            // obj.transform.rotationX = Math.random() * 360; 
             // obj.transform.rotationY = Math.random() * 360;
             // obj.transform.rotationZ = Math.random() * 360;
 

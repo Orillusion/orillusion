@@ -1,8 +1,6 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { Object3D, Scene3D, Engine3D, CameraUtil, HoverCameraController, View3D, AtmosphericComponent, DirectLight, KelvinUtil, MeshRenderer, LitMaterial, SphereGeometry, Color, SkyRenderer } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
-import { EditorPluginManager, SceneEditorPlugin, PropertyEditorPlugin, CreatorPlugin, SlideRenderStateScript } from "@orillusion/editor";
-import { IEditorPlugin } from "@orillusion/editor/IEditorPlugin";
 
 class Sample_ClearCoat {
     lightObj3D: Object3D;
@@ -34,7 +32,6 @@ class Sample_ClearCoat {
         let camera = CameraUtil.createCamera3DObject(this.scene);
         camera.perspective(60, Engine3D.aspect, 1, 5000.0);
 
-        this.scene.addComponent(SlideRenderStateScript);
 
         camera.object3D.addComponent(HoverCameraController).setCamera(-25, -5, 300);
 
@@ -111,16 +108,6 @@ class Sample_ClearCoat {
                 obj.x = space * i - space * 10 * 0.5;
             }
         }
-
-
-        EditorPluginManager.instance.setUp<IEditorPlugin>([SceneEditorPlugin, PropertyEditorPlugin, CreatorPlugin]);
-
-        let sceneEditorPlugin = EditorPluginManager.instance.getPlugin(SceneEditorPlugin);
-        let creatorPlugin = EditorPluginManager.instance.getPlugin(CreatorPlugin);
-        sceneEditorPlugin.setData(this.scene);
-        creatorPlugin.setData(this.scene);
-
-        EditorPluginManager.instance.start()
     }
 }
 

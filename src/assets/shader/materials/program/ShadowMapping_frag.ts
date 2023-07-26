@@ -41,7 +41,7 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
               var shadowPosTmp = globalUniform.shadowMatrix[shadowIndex] * vec4<f32>(ORI_VertexVarying.vWorldPos.xyz, 1.0);
               var shadowPos = shadowPosTmp.xyz / shadowPosTmp.w;
               var varying_shadowUV = shadowPos.xy * vec2<f32>(0.5, -0.5) + vec2<f32>(0.5, 0.5);
-              var bias = max(shadowBias * (1.0 - dot(ORI_ShadingInput.Normal, light.direction)), 0.000005);
+              var bias = min(shadowBias * (1.0 - dot(ORI_ShadingInput.Normal, light.direction)), 0.0005);
               if (varying_shadowUV.x <= 1.0 && varying_shadowUV.x >= 0.0 && varying_shadowUV.y <= 1.0 && varying_shadowUV.y >= 0.0 && shadowPosTmp.z <= 1.0) {
                 var texelSize = 1.0 / vec2<f32>(globalUniform.shadowMapSize);
                 var oneOverShadowDepthTextureSize = texelSize;
@@ -62,7 +62,7 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
                   }
                 }
                 visibility /= f32(sizeBlockA);
-                shadowStrut.directShadowVisibility[0] = visibility + 0.001;
+                shadowStrut.directShadowVisibility[i] = visibility + 0.001;
               }
             #endif
           }
