@@ -59,7 +59,7 @@ export class ShaderBase {
     public uniforms: { [name: string]: UniformNode };
 
     protected _bufferDic: Map<string, GPUBufferBase>;
-    protected _shaderChange: boolean = false;
+    protected _shaderChange: boolean = true;
     protected _stateChange: boolean = false;
 
     constructor() {

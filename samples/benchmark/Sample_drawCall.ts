@@ -91,15 +91,15 @@ class Sample_drawCall {
 
         for (let i = 0; i < materials.length; i++) {
             const element = materials[i];
-            element.metallic = 0.97;
-            element.roughness = 0.15;
+            // element.metallic = 0.97;
+            // element.roughness = 0.15;
             element.baseColor = new Color().hexToRGB(Color.GOLD);
         }
 
         // let material = new LitMaterial();
 
         let group = new Object3D();
-        let count = 45000;
+        let count = 50000;
         // let count = 70000;
         for (let i = 0; i < count; i++) {
             let pos = Vector3Ex.sphereXYZ(50, 100, 100, 10, 100);

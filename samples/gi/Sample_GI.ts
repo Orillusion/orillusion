@@ -59,9 +59,9 @@ class Sample_GI {
         GUIUtil.renderDirLight(exampleScene.light);
 
         let postProcessing = this.scene.addComponent(PostProcessingComponent);
-        postProcessing.addPost(TAAPost);
+        // postProcessing.addPost(TAAPost);
         // postProcessing.addPost(GTAOPost);
-        postProcessing.addPost(HDRBloomPost);
+        // postProcessing.addPost(HDRBloomPost);
 
     }
 

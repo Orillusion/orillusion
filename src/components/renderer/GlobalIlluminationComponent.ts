@@ -44,42 +44,42 @@ export class GlobalIlluminationComponent extends ComponentBase {
         let debugGeo = new SphereGeometry(4, 16, 16);
         let position: Vector3 = new Vector3();
         this._probes = [];
-        for (let x = 0; x < xCount; x++) {
-            for (let y = 0; y < yCount; y++) {
-                for (let z = 0; z < zCount; z++) {
-                    let index = x + z * xCount + y * (xCount * zCount);
-                    let probe = new Probe();
-                    probe.index = index;
+        // for (let x = 0; x < xCount; x++) {
+        //     for (let y = 0; y < yCount; y++) {
+        //         for (let z = 0; z < zCount; z++) {
+        //             let index = x + z * xCount + y * (xCount * zCount);
+        //             let probe = new Probe();
+        //             probe.index = index;
 
-                    probe.name = `${x}_${y}_${z}`;
-                    let mr = probe.addComponent(MeshRenderer);
-                    mr.material = new GIProbeMaterial(GIProbeMaterialType.CastGI, index);
-                    // mr.material = new GIProbeMaterial(GIProbeMaterialType.CastDepth, index);
-                    // mr.material = unlitMat;
-                    mr.geometry = debugGeo;
-                    mr.castGI = false;
-                    mr.castShadow = false;
+        //             probe.name = `${x}_${y}_${z}`;
+        //             let mr = probe.addComponent(MeshRenderer);
+        //             mr.material = new GIProbeMaterial(GIProbeMaterialType.CastGI, index);
+        //             // mr.material = new GIProbeMaterial(GIProbeMaterialType.CastDepth, index);
+        //             // mr.material = unlitMat;
+        //             mr.geometry = debugGeo;
+        //             mr.castGI = false;
+        //             mr.castShadow = false;
 
-                    this._debugMr.push(mr);
+        //             this._debugMr.push(mr);
 
-                    this.object3D.addChild(probe);
+        //             this.object3D.addChild(probe);
 
-                    this._volume.calcPosition(x, y, z, position);
+        //             this._volume.calcPosition(x, y, z, position);
 
-                    probe.x = position.x;
-                    probe.y = position.y;
-                    probe.z = position.z;
+        //             probe.x = position.x;
+        //             probe.y = position.y;
+        //             probe.z = position.z;
 
-                    this._probes[index] = probe;
+        //             this._probes[index] = probe;
 
-                    this._debugMr.push(mr);
-                }
-            }
-        }
+        //             this._debugMr.push(mr);
+        //         }
+        //     }
+        // }
 
-        for (let i = 0; i < this._probes.length; i++) {
-            EntityCollect.instance.addGIProbe(this.transform.scene3D, this._probes[i]);
-        }
+        // for (let i = 0; i < this._probes.length; i++) {
+        //     EntityCollect.instance.addGIProbe(this.transform.scene3D, this._probes[i]);
+        // }
 
         this.object3D.transform.enable = false;
 

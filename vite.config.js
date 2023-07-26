@@ -4,7 +4,7 @@ import { readFile, writeFile, readdir, lstat } from 'fs/promises'
 import { resolve, parse } from 'path'
 import basicSsl from '@vitejs/plugin-basic-ssl'
 
-export default defineConfig( option => ({
+export default defineConfig(option => ({
     server: {
         host: '0.0.0.0',
         port: 8000,
@@ -39,7 +39,7 @@ export default defineConfig( option => ({
                 return ts
             }
             async function autoIndex(file) {
-                if(file && !tsFile.test(file.replace(/\\/g, '/'))) // fix windows path
+                if (file && !tsFile.test(file.replace(/\\/g, '/'))) // fix windows path
                     return
                 let ts = await dir('./src')
                 ts.sort() // make sure same sort on windows and unix
@@ -55,9 +55,9 @@ export default defineConfig( option => ({
             }
             server.httpServer.on('listening', autoIndex)
             server.watcher.on('change', autoIndex)
-            server.watcher.on('unlink', autoIndex) 
+            server.watcher.on('unlink', autoIndex)
         }
-    }],
+    }, basicSsl()],
     build: {
         lib: {
             entry: resolve(__dirname, './src/index.ts'),

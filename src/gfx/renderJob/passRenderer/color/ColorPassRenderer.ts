@@ -113,24 +113,6 @@ export class ColorPassRenderer extends RendererBase {
 
     public drawNodes(view: View3D, renderContext: RenderContext, nodes: RenderNode[], occlusionSystem: OcclusionSystem, clusterLightingBuffer: ClusterLightingBuffer) {
         {
-            // let viewRenderList = RenderShaderCollect.renderShaderUpdateList.get(view);
-            // for (const renderList of viewRenderList) {
-            //     let pice = renderList[1];
-            //     for (const map of pice) {
-            //         let nodes = map[1];
-            //         for (const nodeMap of nodes) {
-            //             const node = nodeMap[1];
-            //             node.nodeUpdate(view, this._rendererType, this.rendererPassState, clusterLightingBuffer);
-            //             // break;
-            //         }
-            //     }
-            // }
-
-            // let viewRenderList = RenderShaderCollect.renderList.get(view);
-            // for (const node of viewRenderList) {
-            //     node.nodeUpdate(view, this._rendererType, this.rendererPassState, clusterLightingBuffer);
-            // }
-
             let viewRenderList = EntityCollect.instance.getRenderShaderCollect(view);
             for (const renderList of viewRenderList) {
                 let nodeMap = renderList[1];
@@ -151,7 +133,6 @@ export class ColorPassRenderer extends RendererBase {
                     continue;
                 if (!renderNode.enable)
                     continue;
-                // renderNode.transform.updateWorldMatrix(true);
 
                 if (!renderNode.preInit) {
                     renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState, clusterLightingBuffer);

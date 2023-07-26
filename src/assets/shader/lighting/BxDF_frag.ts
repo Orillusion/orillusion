@@ -112,7 +112,7 @@ export let BxDF_frag: string = /*wgsl*/ `
 
       ORI_FragmentOutput.color = vec4<f32>(0.0);
 
-      // // Using stripped down, 'pure log', formula. Parameterized by grey points and dynamic range covered.
+      // Using stripped down, 'pure log', formula. Parameterized by grey points and dynamic range covered.
       #if USEGBUFFER
           var normal_rgba8unorm = (ORI_VertexVarying.vWorldNormal + 1.0) * 0.5;
           normal_rgba8unorm = clamp(normal_rgba8unorm, vec3<f32>(0.0), vec3<f32>(1.0));
@@ -142,6 +142,7 @@ export let BxDF_frag: string = /*wgsl*/ `
       #endif
    
       ORI_FragmentOutput.color = vec4<f32>(LinearToGammaSpace(color.rgb),fragData.Albedo.a) ;
+      // ORI_FragmentOutput.color = ORI_ShadingInput.BaseColor * vec4<f32>(specColor,1.0) * shadowStrut.directShadowVisibility[0] ;
   }
 
  

@@ -28,7 +28,11 @@ fn directLighting( albedo:vec3<f32>, N:vec3<f32>, V:vec3<f32>,  roughness:f32 , 
       var att = light.intensity / LUMEN ;
       if(light.castShadow>=0){
           #if USE_SHADOWMAPING
-            att *= shadowStrut.directShadowVisibility[light.castShadow] ; 
+            for (var j: i32 = 0; j < 8; j += 1) {
+                if(j == light.castShadow){
+                  att *= shadowStrut.directShadowVisibility[j] ; 
+                }
+            }
           #endif
       }
 
@@ -58,7 +62,13 @@ fn pointLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, rough
         atten *= 1.0 / max(light.radius,0.001) * light.intensity / LUMEN;
         if( light.castShadow >= 0 )
         {
-            atten *= shadowStrut.pointShadows[light.castShadow] ;
+            #if USE_SHADOWMAPING
+              for (var j: i32 = 0; j < 8; j += 1) {
+                  if(j == light.castShadow){
+                    atten *= shadowStrut.pointShadows[j] ; 
+                  }
+              }
+            #endif
         }
 
         #if USE_IES_PROFILE
@@ -112,7 +122,13 @@ fn spotLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, roughn
 
         if( light.castShadow >= 0 )
         {
-            atten *= shadowStrut.pointShadows[light.castShadow] ;
+            #if USE_SHADOWMAPING
+            for (var j: i32 = 0; j < 8; j += 1) {
+                if(j == light.castShadow){
+                  atten *= shadowStrut.pointShadows[j] ; 
+                }
+            }
+          #endif
         }
 
         #if USE_IES_PROFILE
