@@ -68,6 +68,9 @@ export class ColorPassRenderer extends RendererBase {
 
             if (!maskTr && EntityCollect.instance.sky) {
                 GPUContext.bindCamera(renderPassEncoder, camera);
+                if (!EntityCollect.instance.sky.preInit) {
+                    EntityCollect.instance.sky.nodeUpdate(view, this._rendererType, this.rendererPassState, clusterLightingBuffer);
+                }
                 EntityCollect.instance.sky.renderPass2(view, this._rendererType, this.rendererPassState, clusterLightingBuffer, renderPassEncoder);
             }
 
@@ -105,6 +108,7 @@ export class ColorPassRenderer extends RendererBase {
             }
 
             this.renderContext.endRenderPass();
+
             ProfilerUtil.end("ColorPass Draw Transparent");
         }
 

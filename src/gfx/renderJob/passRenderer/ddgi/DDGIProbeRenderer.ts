@@ -245,8 +245,10 @@ export class DDGIProbeRenderer extends RendererBase {
         this.volume.isVolumeFrameChange = false;
         this.volume.uploadBuffer();
 
-        let sky = EntityCollect.instance.sky;
-        sky && sky.nodeUpdate(view, this.passType, this.rendererPassState, null);
+        // let sky = EntityCollect.instance.sky;
+        // if (sky && !sky.preInit) {
+        //     sky.nodeUpdate(view, this.passType, this.rendererPassState, null);
+        // }
 
         this.rendProbe(view);
         let probeBeRendered = this.probeRenderResult.count > 0;

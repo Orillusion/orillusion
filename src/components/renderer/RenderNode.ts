@@ -376,7 +376,7 @@ export class RenderNode extends ComponentBase {
 
     public recordRenderPass2(view: View3D, passType: RendererType, rendererPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer, encoder: GPURenderPassEncoder, useBundle: boolean = false) {
         if (!this.enable) return;
-        this.nodeUpdate(view, passType, rendererPassState, clusterLightingBuffer);
+        // this.nodeUpdate(view, passType, rendererPassState, clusterLightingBuffer);
 
         let node = this;
         for (let i = 0; i < this.materials.length; i++) {

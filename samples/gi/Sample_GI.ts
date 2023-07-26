@@ -49,13 +49,13 @@ class Sample_GI {
         let param = createSceneParam();
         param.camera.distance = 200;
         let exampleScene = createExampleScene(param);
-        exampleScene.atmosphericSky.exposure = 0.5;
+        // exampleScene.atmosphericSky.exposure = 0.5;
         this.scene = exampleScene.scene;
         Engine3D.startRenderViews([exampleScene.view]);
         let job = Engine3D.getRenderJob(exampleScene.view);
         await this.initScene();
         this.addGIProbes();
-        GUIUtil.renderAtomosphericSky(exampleScene.atmosphericSky);
+        // GUIUtil.renderAtomosphericSky(exampleScene.atmosphericSky);
         GUIUtil.renderDirLight(exampleScene.light);
 
         let postProcessing = this.scene.addComponent(PostProcessingComponent);

@@ -24,16 +24,14 @@ export class SkyRenderer extends MeshRenderer {
      */
     public skyMaterial: SkyMaterial;
 
-    constructor() {
-        super();
+
+    public init(): void {
+        super.init();
         this.castShadow = false;
         this.castGI = true;
         this.addRendererMask(RendererMask.Sky);
         this.alwaysRender = true;
-    }
 
-    public init(): void {
-        super.init();
         this.object3D.bound = new BoundingBox(Vector3.ZERO.clone(), Vector3.MAX);
         this.geometry = new SphereGeometry(Engine3D.setting.sky.defaultFar, 20, 20);
         this.skyMaterial ||= new SkyMaterial();

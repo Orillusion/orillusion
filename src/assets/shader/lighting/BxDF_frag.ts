@@ -17,7 +17,7 @@ export let BxDF_frag: string = /*wgsl*/ `
  
   //ORI_ShadingInput
   fn initFragData() {
-      fragData.Albedo = ORI_ShadingInput.BaseColor ;
+      fragData.Albedo = ORI_ShadingInput.BaseColor * ORI_ShadingInput.BaseColor.a ;
       fragData.Ao = ORI_ShadingInput.AmbientOcclusion ; 
       fragData.Roughness = clamp(ORI_ShadingInput.Roughness,0.003,1.0) ; 
       fragData.Metallic = ORI_ShadingInput.Metallic ; 
@@ -142,7 +142,7 @@ export let BxDF_frag: string = /*wgsl*/ `
       #endif
    
       ORI_FragmentOutput.color = vec4<f32>(LinearToGammaSpace(color.rgb),fragData.Albedo.a) ;
-      // ORI_FragmentOutput.color = ORI_ShadingInput.BaseColor * vec4<f32>(specColor,1.0) * shadowStrut.directShadowVisibility[0] ;
+      // ORI_FragmentOutput.color = vec4<f32>(irradiance.rgb,fragData.Albedo.a) ;
   }
 
  
