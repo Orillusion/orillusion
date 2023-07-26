@@ -8,7 +8,7 @@ import { RendererType } from '../../gfx/renderJob/passRenderer/state/RendererTyp
 import { MaterialBase } from '../../materials/MaterialBase';
 import { MorphTargetData } from '../anim/morphAnim/MorphTargetData';
 import { RenderNode } from './RenderNode';
-import { Reference } from '../..';
+import { EditorInspector } from '../../util/SerializeDecoration';
 
 /**
  * The mesh renderer component is a component used to render the mesh
@@ -33,13 +33,26 @@ export class MeshRenderer extends RenderNode {
         super.onDisable();
     }
 
+    public cloneTo(obj: Object3D): void {
+        let component = obj.addComponent(MeshRenderer);
+        component.copyComponent(this);
+    }
+
+    public copyComponent(from: this): this {
+        super.copyComponent(from);
+        this.receiveShadow = from.receiveShadow;
+        return this;
+    }
+
     /**
      * The geometry of the mesh determines its shape
      */
+    @EditorInspector
     public get geometry(): GeometryBase {
         return this._geometry;
     }
 
+    @EditorInspector
     public set geometry(value: GeometryBase) {
         //this must use super geometry has reference in super
         super.geometry = value;
@@ -66,10 +79,12 @@ export class MeshRenderer extends RenderNode {
     /**
      * material
      */
+    @EditorInspector
     public get material(): MaterialBase {
         return this._materials[0];
     }
 
+    @EditorInspector
     public set material(value: MaterialBase) {
         this.materials = [value];
     }

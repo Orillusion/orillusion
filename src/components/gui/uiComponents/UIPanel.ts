@@ -118,14 +118,12 @@ export class UIPanel extends UIImage {
     private _collectTransform: UITransform[] = [];
     private rebuildGUIMesh(view: View3D) {
         let panel = this;
-        let screenWidth = webGPUContext.canvas.clientWidth;
-        let screenHeight = webGPUContext.canvas.clientHeight;
+
         let transforms: UITransform[] = panel._collectTransform;
         transforms.length = 0;
         panel.object3D.getComponents(UITransform, transforms);
         if (transforms.length > 0) {
             panel._rebuild.build(transforms, panel, panel.needUpdateGeometry);
-            this._uiMaterial.setScreenSize(screenWidth, screenHeight);
             for (const t of transforms) {
                 t.needUpdateQuads = false;
             }
@@ -142,6 +140,8 @@ export class UIPanel extends UIImage {
 
         //update material
         let material = panel._uiMaterial;
+        material.setGUISolution(GUIConfig.solution, GUIConfig.pixelRatio);
+        material.setScreenSize(webGPUContext.canvas.clientWidth, webGPUContext.canvas.clientHeight);
         material.setLimitVertex(panel._limitVertexCount);
         material.setScissorEnable(panel.scissorEnable);
         if (panel.scissorEnable) {

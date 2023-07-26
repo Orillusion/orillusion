@@ -77,8 +77,8 @@ class Sample_drawCall {
         let shareGeometry = new BoxGeometry();
         // let material = new UnLitMaterial();
         let materials = [
-            new LitMaterial(),
-            // new LambertMaterial(),
+            // new LitMaterial(),
+            new LambertMaterial(),
             // new LambertMaterial(),
             // new LambertMaterial(),
             // new LambertMaterial(),
@@ -138,9 +138,9 @@ class Sample_drawCall {
             let i = 0;
             for (let i = 0; i < this._list.length; i++) {
                 const element = this._list[i];
-                element.transform.rotationY += Time.delta * 0.01 * this._rotList[i];
-                // element.transform._localRot.y += Time.delta * 0.01 * this._rotList[i];
-                // element.transform._localChange = true;
+                // element.transform.rotationY += Time.delta * 0.01 * this._rotList[i];
+                element.transform._localRot.y += Time.delta * 0.01 * this._rotList[i];
+                element.transform._localChange = true;
             }
         }
     }

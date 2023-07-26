@@ -17,7 +17,8 @@ import { ShaderLib } from './assets/shader/ShaderLib';
 import { ShaderUtil } from './gfx/graphics/webGpu/shader/util/ShaderUtil';
 import { ComponentCollect } from './gfx/renderJob/collect/ComponentCollect';
 import { ShadowLightsCollect } from './gfx/renderJob/collect/ShadowLightsCollect';
-import { RenderShaderCollect, Transform } from '.';
+import { GUIConfig } from './components/gui/GUIConfig';
+import { Transform } from './components/Transform';
 
 /** 
  * Orillusion 3D Engine
@@ -400,10 +401,21 @@ export class Engine3D {
         this.resume();
     }
 
+    private static updateGUIPixelRatio(screenWidth: number, screenHeight: number) {
+        let xyRatioSolution = GUIConfig.solution.x / GUIConfig.solution.y;
+        let xyRatioCurrent = screenWidth / screenHeight;
+        if (xyRatioSolution < xyRatioCurrent) {
+            GUIConfig.pixelRatio = screenHeight / GUIConfig.solution.y;
+        } else {
+            GUIConfig.pixelRatio = screenWidth / GUIConfig.solution.x;
+        }
+    }
+
     private static updateFrame(time: number) {
         Time.delta = time - Time.time;
         Time.time = time;
         Time.frame += 1;
+        this.updateGUIPixelRatio(webGPUContext.canvas.clientWidth, webGPUContext.canvas.clientHeight);
 
         Interpolator.tick(Time.delta);
         if (this._beforeRender) this._beforeRender();
