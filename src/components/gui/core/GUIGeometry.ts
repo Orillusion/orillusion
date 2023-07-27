@@ -194,7 +194,7 @@ export class GUIGeometry extends GeometryBase {
         spriteArray[offset + 2] = uvRec.z;
         spriteArray[offset + 3] = uvRec.w;
 
-        spriteArray[offset + 4] = uvBorder.w;
+        spriteArray[offset + 4] = uvBorder.x;
         spriteArray[offset + 5] = uvBorder.y;
         spriteArray[offset + 6] = uvBorder.z;
         spriteArray[offset + 7] = uvBorder.w;

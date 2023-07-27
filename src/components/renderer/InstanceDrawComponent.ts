@@ -12,40 +12,50 @@ import { ClusterLightingBuffer } from "../../gfx/renderJob/passRenderer/cluster/
 
 export class InstanceDrawComponent extends RenderNode {
 
-    private _keyGroup: Map<string, MeshRenderer[]>;
-    private _instanceMatrixBuffer: StorageGPUBuffer;
+    private _keyRenderGroup: Map<string, MeshRenderer[]>;
+    private _keyBufferGroup: Map<string, StorageGPUBuffer>;
+    private _keyIdsGroup: Map<string, number[]>;
     public init(param?: any): void {
-        this._keyGroup = new Map<string, MeshRenderer[]>();
+        this._keyRenderGroup = new Map<string, MeshRenderer[]>();
+        this._keyBufferGroup = new Map<string, StorageGPUBuffer>();
+        this._keyIdsGroup = new Map<string, number[]>();
     }
 
     public start(): void {
 
         let meshRenders: MeshRenderer[] = [];
         this.object3D.getComponents(MeshRenderer, meshRenders, true);
-        this._instanceMatrixBuffer = new StorageGPUBuffer(meshRenders.length);
-        this._instanceMatrixBuffer.visibility = GPUShaderStage.VERTEX;
-        let idArray = new Int32Array(meshRenders.length);
+
+        // let idArray = new Int32Array(meshRenders.length);
         for (let i = 0; i < meshRenders.length; i++) {
             const mr = meshRenders[i];
-            mr.transform.enable = false;
+            mr.enable = false;
 
-            idArray[i] = mr.transform.worldMatrix.index;
-            let key = mr.geometry.uuid;
+
+            let key = mr.geometry.instanceID;
             for (let j = 0; j < mr.materials.length; j++) {
                 const mat = mr.materials[j];
                 key += mat.instanceID;
             }
 
-            if (!this._keyGroup.has(key)) {
-                this._keyGroup.set(key, [mr]);
+            if (!this._keyRenderGroup.has(key)) {
+                let matrixBuffer = new StorageGPUBuffer(meshRenders.length);
+                matrixBuffer.visibility = GPUShaderStage.VERTEX;
+                this._keyRenderGroup.set(key, [mr]);
+                this._keyBufferGroup.set(key, matrixBuffer);
+                this._keyIdsGroup.set(key, [mr.transform.worldMatrix.index]);
             } else {
-                this._keyGroup.get(key).push(mr);
+                this._keyRenderGroup.get(key).push(mr);
+                this._keyIdsGroup.get(key).push(mr.transform.worldMatrix.index);
             }
         }
 
-        this.instanceCount = meshRenders.length;
-        this._instanceMatrixBuffer.setInt32Array("matrixIDs", idArray);
-        this._instanceMatrixBuffer.apply();
+        this._keyBufferGroup.forEach((v, k) => {
+            let ids = this._keyIdsGroup.get(k);
+            let instanceMatrixBuffer = this._keyBufferGroup.get(k);
+            instanceMatrixBuffer.setInt32Array("matrixIDs", new Int32Array(ids));
+            instanceMatrixBuffer.apply();
+        })
     }
 
     public stop(): void {
@@ -53,73 +63,74 @@ export class InstanceDrawComponent extends RenderNode {
     }
 
     public nodeUpdate(view: View3D, passType: RendererType, renderPassState: RendererPassState, clusterLightingBuffer?: ClusterLightingBuffer): void {
-
-
-        this._keyGroup.forEach((v, k) => {
+        this._keyRenderGroup.forEach((v, k) => {
+            let instanceMatrixBuffer = this._keyBufferGroup.get(k);
             let renderNode = v[0];
             for (let i = 0; i < renderNode.materials.length; i++) {
                 let material = renderNode.materials[i];
                 let passes = material.renderPasses.get(passType);
                 if (passes) {
                     for (let i = 0; i < passes.length; i++) {
-                        const renderShader = passes[i].renderShader;// RenderShader.getShader(passes[i].shaderID);
-
+                        const renderShader = passes[i].renderShader;
                         renderShader.setDefine("USE_INSTANCEDRAW", true);
-                        renderShader.setStorageBuffer(`instanceDrawID`, this._instanceMatrixBuffer);
+                        renderShader.setStorageBuffer(`instanceDrawID`, instanceMatrixBuffer);
                     }
                 }
             }
             renderNode.nodeUpdate(view, passType, renderPassState, clusterLightingBuffer);
         })
-        super.nodeUpdate(view, passType, renderPassState, clusterLightingBuffer);
+        this.preInit = false;
     }
 
 
-    public renderPass(view: View3D, passType: RendererType, renderEncoder: RenderContext) {
-        this._keyGroup.forEach((v, k) => {
+    public renderPass(view: View3D, passType: RendererType, renderContext: RenderContext) {
+        this._keyRenderGroup.forEach((v, k) => {
             let renderNode = v[0];
-            // for (let ii = 0; ii < v.length; ii++) {
-            //     const renderNode = v[ii];
-            //     renderNode.object3D.transform.updateWorldMatrix()
-            // }
-            for (let i = 0; i < renderNode.materials.length; i++) {
-                const material = renderNode.materials[i];
-                let passes = material.renderPasses.get(passType);
+            renderNode.instanceCount = v.length;
+            this.renderItem(view, passType, renderNode, renderContext);
+        })
+    }
 
-                if (!passes || passes.length == 0) continue;
+    public renderItem(view: View3D, passType: RendererType, renderNode: RenderNode, renderContext: RenderContext) {
+        let worldMatrix = renderNode.transform._worldMatrix;
 
-                GPUContext.bindGeometryBuffer(renderEncoder.encoder, renderNode.geometry);
-                let worldMatrix = renderNode.object3D.transform._worldMatrix;
-                for (let j = 0; j < passes.length; j++) {
-                    if (!passes || passes.length == 0) continue;
-                    let matPass = passes[j];
-                    if (!matPass.enable) continue;
+        for (let i = 0; i < renderNode.materials.length; i++) {
+            const material = renderNode.materials[i];
+            let passes = material.renderPasses.get(passType);
 
-                    for (let jj = passes.length > 1 ? 1 : 0; jj < passes.length; jj++) {
-                        const renderShader = matPass.renderShader;
-                        if (renderShader.shaderState.splitTexture) {
+            if (!passes || passes.length == 0)
+                continue;
 
-                            renderEncoder.endRenderPass();
-                            RTResourceMap.WriteSplitColorTexture(renderNode.instanceID);
-                            renderEncoder.beginRenderPass();
+            for (let j = 0; j < passes.length; j++) {
+                if (!passes || passes.length == 0)
+                    continue;
+                let matPass = passes[j];
+                if (!matPass.enable)
+                    continue;
 
-                            GPUContext.bindCamera(renderEncoder.encoder, view.camera);
-                            GPUContext.bindGeometryBuffer(renderEncoder.encoder, renderNode.geometry);
-                        }
-                        GPUContext.bindPipeline(renderEncoder.encoder, renderShader);
-                        let subGeometries = renderNode.geometry.subGeometries;
-                        for (let k = 0; k < subGeometries.length; k++) {
-                            const subGeometry = subGeometries[k];
-                            let lodInfos = subGeometry.lodLevels;
-                            let lodInfo = lodInfos[renderNode.lodLevel];
+                GPUContext.bindGeometryBuffer(renderContext.encoder, renderNode.geometry);
+                const renderShader = matPass.renderShader;
+                if (renderShader.shaderState.splitTexture) {
+                    renderContext.endRenderPass();
+                    RTResourceMap.WriteSplitColorTexture(renderNode.instanceID);
+                    renderContext.beginRenderPass();
 
-                            GPUContext.drawIndexed(renderEncoder.encoder, lodInfo.indexCount, v.length, lodInfo.indexStart, 0, 0);
-                        }
-                    }
+                    GPUContext.bindCamera(renderContext.encoder, view.camera);
+                    GPUContext.bindGeometryBuffer(renderContext.encoder, renderNode.geometry);
+                }
+                GPUContext.bindPipeline(renderContext.encoder, renderShader);
+                let subGeometries = renderNode.geometry.subGeometries;
+
+                const subGeometry = subGeometries[i];
+                let lodInfos = subGeometry.lodLevels;
+                let lodInfo = lodInfos[renderNode.lodLevel];
+
+                if (renderNode.instanceCount > 0) {
+                    GPUContext.drawIndexed(renderContext.encoder, lodInfo.indexCount, renderNode.instanceCount, lodInfo.indexStart, 0, 0);
+                } else {
+                    GPUContext.drawIndexed(renderContext.encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
                 }
             }
-        })
-
+        }
     }
 }
-

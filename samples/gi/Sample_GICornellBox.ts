@@ -30,8 +30,8 @@ class Sample_GICornellBox {
         Engine3D.setting.gi.depthSharpness = 1;
         Engine3D.setting.gi.autoRenderProbe = true;
 
-        Engine3D.setting.shadow.shadowBound = 50;
-        Engine3D.setting.shadow.shadowBias = 0.001;
+        Engine3D.setting.shadow.shadowBound = 80;
+        Engine3D.setting.shadow.shadowBias = 0.000035;
         Engine3D.setting.shadow.debug = true;
 
         Engine3D.setting.shadow.autoUpdate = true;
@@ -53,6 +53,7 @@ class Sample_GICornellBox {
         param.camera.distance = 40;
 
         let exampleScene = createExampleScene(param);
+        exampleScene.hoverCtrl.setCamera(0, 0, 20);
         this.scene = exampleScene.scene;
         this.addGIProbes();
         Engine3D.startRenderViews([exampleScene.view]);

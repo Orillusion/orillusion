@@ -193,15 +193,34 @@ export class DDGIProbeRenderer extends RendererBase {
         let drawMin = Math.max(0, Engine3D.setting.render.drawOpMin);
         let drawMax = Math.min(Engine3D.setting.render.drawOpMax, collectInfo.opaqueList.length);
 
+        let viewRenderList = EntityCollect.instance.getRenderShaderCollect(view);
+        for (const renderList of viewRenderList) {
+            let nodeMap = renderList[1];
+            for (const iterator of nodeMap) {
+                let node = iterator[1];
+                if (node.preInit) {
+                    node.nodeUpdate(view, this.passType, this.rendererPassState, null);
+                    break;
+                }
+            }
+        }
+
         for (let i = drawMin; i < drawMax; ++i) {
             let renderNode = collectInfo.opaqueList[i];
             if (renderNode.enable && renderNode.transform.enable) {
+                if (!renderNode.preInit) {
+                    renderNode.nodeUpdate(view, this.passType, this.rendererPassState, null);
+                }
                 renderNode.renderPass2(view, this.passType, this.rendererPassState, null, encoder);
             }
         }
 
-        if (EntityCollect.instance.sky)
+        if (EntityCollect.instance.sky) {
+            if (!EntityCollect.instance.sky.preInit) {
+                EntityCollect.instance.sky.nodeUpdate(view, this.passType, this.rendererPassState, null);
+            }
             EntityCollect.instance.sky.renderPass2(view, this.passType, this.rendererPassState, null, encoder);
+        }
 
         drawMin = Math.max(0, Engine3D.setting.render.drawTrMin);
         drawMax = Math.min(Engine3D.setting.render.drawTrMax, collectInfo.transparentList.length);
@@ -209,6 +228,9 @@ export class DDGIProbeRenderer extends RendererBase {
         for (let i = drawMin; i < drawMax; ++i) {
             let renderNode = collectInfo.transparentList[i];
             if (renderNode.enable && renderNode.transform.enable) {
+                if (!renderNode.preInit) {
+                    renderNode.nodeUpdate(view, this.passType, this.rendererPassState, null);
+                }
                 renderNode.renderPass2(view, this.passType, this.rendererPassState, null, encoder);
             }
         }
@@ -223,8 +245,10 @@ export class DDGIProbeRenderer extends RendererBase {
         this.volume.isVolumeFrameChange = false;
         this.volume.uploadBuffer();
 
-        let sky = EntityCollect.instance.sky;
-        sky && sky.nodeUpdate(view, this.passType, this.rendererPassState, null);
+        // let sky = EntityCollect.instance.sky;
+        // if (sky && !sky.preInit) {
+        //     sky.nodeUpdate(view, this.passType, this.rendererPassState, null);
+        // }
 
         this.rendProbe(view);
         let probeBeRendered = this.probeRenderResult.count > 0;

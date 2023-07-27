@@ -120,22 +120,24 @@ export class Color {
      * update this color rgb from hexadecimal no alpha
      * @param value 
      */
-    public hexToRGB(value: number) {
+    public hexToRGB(value: number): Color {
         //this.a = ((value >> 24) & 0xff ) / 255;
         this.r = ((value >> 16) & 0xff) / 255;
         this.g = ((value >> 8) & 0xff) / 255;
         this.b = (value & 0xff) / 255;
+        return this;
     }
 
     /**
      * update this color rgb from hexadecimal has alpha
      * @param value 
      */
-    public hexToRGBA(value: number) {
+    public hexToRGBA(value: number): Color {
         this.a = ((value >> 24) & 0xff) / 255;
         this.r = ((value >> 16) & 0xff) / 255;
         this.g = ((value >> 8) & 0xff) / 255;
         this.b = (value & 0xff) / 255;
+        return this;
     }
 
     /**

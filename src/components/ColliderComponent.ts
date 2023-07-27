@@ -1,9 +1,10 @@
+import { ComponentCollect, View3D } from "..";
 import { Engine3D } from "../Engine3D";
 import { Ray } from "../math/Ray";
 import { Vector3 } from "../math/Vector3";
 import { ComponentBase } from "./ComponentBase";
 import { BoxColliderShape } from "./shape/BoxColliderShape";
-import { ColliderShape } from "./shape/ColliderShape";
+import { ColliderShape, HitInfo } from "./shape/ColliderShape";
 
 /**
  * collider component
@@ -25,6 +26,14 @@ export class ColliderComponent extends ComponentBase {
         }
     }
 
+    public onEnable(view?: View3D) {
+        ComponentCollect.bindEnablePick(view, this, null);
+    }
+
+    public onDisable(view?: View3D) {
+        ComponentCollect.unBindEnablePick(view, this);
+    }
+
     /**
      * Returns the shape of collider
      */
@@ -44,7 +53,7 @@ export class ColliderComponent extends ComponentBase {
      * @param ray
      * @returns
      */
-    public rayPick(ray: Ray): { intersect: boolean; intersectPoint?: Vector3; distance: number } {
+    public rayPick(ray: Ray): HitInfo {
         if (this._enable) {
             return this._shape.rayPick(ray, this.transform.worldMatrix);
         }

@@ -1,5 +1,5 @@
 
-import { Lambert_shader } from '../assets/shader/materials/Lambert_shader';
+import { LambertShader } from '..';
 import { ShaderLib } from '../assets/shader/ShaderLib';
 import { Engine3D } from '../Engine3D';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
@@ -20,28 +20,31 @@ export class LambertMaterial extends MaterialBase {
      */
     constructor() {
         super();
-        ShaderLib.register("lambert_vert_wgsl", Lambert_shader.lambert_vert_wgsl);
-        ShaderLib.register("lambert_frag_wgsl", Lambert_shader.lambert_frag_wgsl);
 
-        let shader = this.setShader(`lambert_vert_wgsl`, `lambert_frag_wgsl`);
+        ShaderLib.register("LambertShader", LambertShader);
+        let shader = this.setShader(`LambertShader`, `LambertShader`);
+        shader.setShaderEntry(`VertMain`, `FragMain`)
+
         shader.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));
         shader.setUniformVector4(`transformUV2`, new Vector4(0, 0, 1, 1));
-        shader.setUniformColor(`baseColor`, new Color());
-        shader.setUniformVector4(`dirLight`, new Vector4(0, 0, 1, 1));
-        shader.setUniformColor(`dirLightColor`, new Color());
+        shader.setUniformColor(`baseColor`, new Color(1, 1, 1, 1));
         shader.setUniformFloat(`alphaCutoff`, 0.5);
-        shader.setUniformFloat(`shadowBias`, 0.00035);
-
         let shaderState = shader.shaderState;
-        shaderState.acceptShadow = true;
-        shaderState.castShadow = true;
+        shaderState.acceptShadow = false;
         shaderState.receiveEnv = false;
         shaderState.acceptGI = false;
-        shaderState.useLight = true;
+        shaderState.useLight = false;
+
+        // let shaderState = shader.shaderState;
+        // shaderState.acceptShadow = true;
+        // shaderState.castShadow = true;
+        // shaderState.receiveEnv = false;
+        // shaderState.acceptGI = false;
+        // shaderState.useLight = true;
 
         // default value
-        this.baseMap = Engine3D.res.whiteTexture;
-        this.emissiveMap = Engine3D.res.blackTexture;
+        // this.baseMap = Engine3D.res.whiteTexture;
+        // this.emissiveMap = Engine3D.res.blackTexture;
         this.baseMap = Engine3D.res.grayTexture;
     }
 

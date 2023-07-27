@@ -12,6 +12,7 @@ export let Inline_vert: string = /*wgsl*/ `
     var<private> ORI_CAMERAMATRIX: mat4x4<f32>;
     var<private> ORI_NORMALMATRIX: mat3x3<f32>;
     var<private> ORI_CameraWorldDir: vec3<f32>;
+    var<private> ORI_ViewDir: vec3<f32>;
 
     var<private> TIME: vec4<f32>;
     var<private> MOUSE: vec4<f32>;

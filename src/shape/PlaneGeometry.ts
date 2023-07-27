@@ -64,7 +64,14 @@ export class PlaneGeometry extends GeometryBase {
         let position_arr = new Float32Array(vertexCount * 3);
         let normal_arr = new Float32Array(vertexCount * 3);
         let uv_arr = new Float32Array(vertexCount * 2);
-        let indices_arr = new Uint16Array(this.segmentW * this.segmentH * 2 * 3);
+
+        let indices_arr: any;
+        let totalIndexCount = this.segmentW * this.segmentH * 2 * 3;
+        if (totalIndexCount >= Uint16Array.length) {
+            indices_arr = new Uint32Array(this.segmentW * this.segmentH * 2 * 3);
+        } else {
+            indices_arr = new Uint16Array(this.segmentW * this.segmentH * 2 * 3);
+        }
 
         numIndices = 0;
         var indexP: number = 0;

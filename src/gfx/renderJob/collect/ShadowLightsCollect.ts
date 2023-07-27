@@ -192,7 +192,7 @@ export class ShadowLightsCollect {
         let nDirShadowEnd: number = 0;
         let nPointShadowStart: number = 0;
         let nPointShadowEnd: number = 0;
-        shadowLights.fill(-1);
+        shadowLights.fill(0);
         if (directionLightList) {
             for (let i = 0; i < directionLightList.length; i++) {
                 const light = directionLightList[i];

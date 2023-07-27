@@ -48,14 +48,13 @@ export class PropertyAnimation extends ComponentBase {
      */
     init() {
         this._animator = new AnimationMonitor(this);
-
     }
     /**
      * @internal
      */
     onUpdate() {
         if (this.enable) {
-            this._animator && this._animator.update(Time.time, Time.delta);
+            this._animator.update(Time.time, Time.delta);
         }
     }
 
@@ -65,7 +64,6 @@ export class PropertyAnimation extends ComponentBase {
      */
     public appendClip(clip: PropertyAnimClip) {
         this._clips.push(clip);
-        this._animator.addClip(clip);
     }
 
     private statusCall(tag: number, last: number, now: number): void {
@@ -104,14 +102,14 @@ export class PropertyAnimation extends ComponentBase {
      * stop playing
      */
     public stop(): void {
-        this._animator && this._animator.stop();
+        this._animator.stop();
     }
 
     /**
      * stop or resume playing
      */
     public toggle(): void {
-        this._animator && this._animator.toggle();
+        this._animator.toggle();
     }
 
     /**
@@ -119,21 +117,22 @@ export class PropertyAnimation extends ComponentBase {
      * @param clip name of PropertyAnimClip
      * @returns 
      */
-    public getClip(clip: string): PropertyAnimClip {
-        if (this._animator) {
-            return this._animator.getClip(clip);
+    public getClip(name: string): PropertyAnimClip {
+        let clip: PropertyAnimClip;
+        for (let item of this._clips) {
+            if (item.name == name) {
+                clip = item;
+                break;
+            }
         }
-        return null;
+        return clip;
     }
 
     /**
      * get animation clip which is playing now
      */
     public get currentClip(): PropertyAnimClip {
-        if (this._animator) {
-            return this._animator.currentClip;
-        }
-        return null;
+        return this._animator.currentClip;
     }
 
     /**
@@ -148,20 +147,20 @@ export class PropertyAnimation extends ComponentBase {
      * @param time assign time
      */
     public seek(time: number) {
-        if (this._animator) {
-            this._animator.seek(time);
-        }
+        this._animator.seek(time);
     }
 
     /**
      * play animation by given name
-     * @param clip animation name
+     * @param name animation name
      * @param reset if true, play the animation from time 0
      * @returns 
      */
-    public play(clip: string, reset: boolean = true): PropertyAnimClip {
-        if (this._animator) {
-            return this._animator.play(clip, reset);
+    public play(name: string, reset: boolean = true): PropertyAnimClip {
+        let clip = this.getClip(name);
+        if (clip) {
+            this._animator.play(clip, reset);
+            return clip;
         }
         return null;
     }
@@ -171,10 +170,19 @@ export class PropertyAnimation extends ComponentBase {
      *
      */
     public start() {
-        super.start();
         if (this.autoPlay) {
             this.play(this.defaultClip);
         }
+    }
+
+    public copyComponent(from: this): this {
+        this.autoPlay = from.autoPlay;
+        this.defaultClip = from.defaultClip;
+        let clips = from._clips;
+        for (let i: number = 0, count = clips.length; i < count; i++) {
+            this.appendClip(clips[i]);
+        }
+        return this;
     }
 
     /**
@@ -184,10 +192,6 @@ export class PropertyAnimation extends ComponentBase {
      */
     public cloneTo(obj: Object3D) {
         let animator = obj.addComponent(PropertyAnimation);
-        animator.autoPlay = this.autoPlay;
-        animator.defaultClip = this.defaultClip;
-        for (let i: number = 0, count = this._clips.length; i < count; i++) {
-            animator.appendClip(this._clips[i]);
-        }
+        animator.copyComponent(this);
     }
 }

@@ -53,6 +53,10 @@ export class Transform extends ComponentBase {
     * @internal
     */
     public static ADD_ONCHANGE: string = 'ADD_ONCHANGE';
+    /**
+     * @internal
+     */
+    public static LOCAL_ONCHANGE: string = 'LOCAL_ONCHANGE';
 
     /**
     * @internal
@@ -66,6 +70,10 @@ export class Transform extends ComponentBase {
     * @internal
     */
     public eventScaleChange: CEvent = new CEvent(Transform.SCALE_ONCHANGE);
+    /**
+    * @internal
+    */
+    public eventLocalChange: CEvent = new CEvent(Transform.LOCAL_ONCHANGE);
     /**
     * @internal
     */
@@ -84,10 +92,11 @@ export class Transform extends ComponentBase {
     private _parent: Transform;
 
     private _localPos: Vector3;
-    private _localRot: Vector3;
+    public _localRot: Vector3;
     private _localRotQuat: Quaternion;
     private _localScale: Vector3;
     // public localMatrix: Matrix4;
+    public _localChange: boolean = true;
 
     private _forward: Vector3 = new Vector3();
     private _back: Vector3 = new Vector3();
@@ -96,9 +105,13 @@ export class Transform extends ComponentBase {
     private _up: Vector3 = new Vector3();
     private _down: Vector3 = new Vector3();
     public readonly _worldMatrix: Matrix4;
-    private _localChange: boolean = true;
+
+    public rotatingX: number = 0;
+    public rotatingY: number = 0;
+    public rotatingZ: number = 0;
 
     private _targetPos: Vector3;
+    public static: boolean = false;
 
     public get targetPos(): Vector3 {
         return this._targetPos;
@@ -128,18 +141,19 @@ export class Transform extends ComponentBase {
             });
         }
 
-        this.object3D.entityChildren.forEach((v) => {
-            v.transform.parent = value ? this : null;
-        });
-
-        if (value) {
-            this.transform.updateWorldMatrix();
+        for (let child of this.object3D.entityChildren) {
+            child.transform.parent = value ? this : null;
         }
+
+        // if (value) {
+        //     this.transform.updateWorldMatrix();
+        // }
 
         //notify parent change
         this.object3D.components.forEach((c) => {
             c.onParentChange?.(lastParent, this._parent?.object3D);
         });
+        this.notifyLocalChange();
     }
 
     public set enable(value: boolean) {
@@ -148,9 +162,9 @@ export class Transform extends ComponentBase {
         } else {
             super.enable = false;
         }
-        this.object3D.entityChildren.forEach((v) => {
-            v.transform.enable = value;
-        });
+        for (let child of this.object3D.entityChildren) {
+            child.transform.enable = value;
+        }
     }
     public get enable(): boolean {
         return this._enable;
@@ -186,20 +200,18 @@ export class Transform extends ComponentBase {
 
     stop() { }
 
-    // update() { }
-
-    // lateUpdate() { }
 
     /**
     * @internal
     */
     public notifyLocalChange() {
         this._localChange = true;
-        let entityChildren = this.object3D.entityChildren;
-        for (let i = 0, len = entityChildren.length; i < len; i++) {
-            const transform = entityChildren[i].transform;
-            transform.notifyLocalChange();
+        if (this.object3D) {
+            for (let child of this.object3D.entityChildren) {
+                child.transform.notifyLocalChange();
+            }
         }
+        this.eventDispatcher.dispatchEvent(this.eventLocalChange);
     }
 
     public get up(): Vector3 {
@@ -210,10 +222,7 @@ export class Transform extends ComponentBase {
     public set up(value: Vector3) {
         this._up.copyFrom(value);
         this.notifyLocalChange();
-
-        if (this.onRotationChange) {
-            this.onRotationChange();
-        }
+        this.onRotationChange?.();
 
         if (this.eventRotationChange) {
             this.eventDispatcher.dispatchEvent(this.eventRotationChange);
@@ -229,9 +238,7 @@ export class Transform extends ComponentBase {
         this._down.copyFrom(value);
         this.notifyLocalChange();
 
-        if (this.onRotationChange) {
-            this.onRotationChange();
-        }
+        this.onRotationChange?.();
 
         if (this.eventRotationChange) {
             this.eventDispatcher.dispatchEvent(this.eventRotationChange);
@@ -248,10 +255,7 @@ export class Transform extends ComponentBase {
         MathUtil.fromToRotation(Vector3.FORWARD, this._forward, Quaternion.HELP_0);
         this.transform.localRotQuat = Quaternion.HELP_0;
         this.notifyLocalChange();
-
-        if (this.onRotationChange) {
-            this.onRotationChange();
-        }
+        this.onRotationChange?.();
 
         if (this.eventRotationChange) {
             this.eventDispatcher.dispatchEvent(this.eventRotationChange);
@@ -268,10 +272,7 @@ export class Transform extends ComponentBase {
         MathUtil.fromToRotation(Vector3.BACK, this._back, Quaternion.HELP_0);
         this.transform.localRotQuat = Quaternion.HELP_0;
         this.notifyLocalChange();
-
-        if (this.onRotationChange) {
-            this.onRotationChange();
-        }
+        this.onRotationChange?.();
 
         if (this.eventRotationChange) {
             this.eventDispatcher.dispatchEvent(this.eventRotationChange);
@@ -286,11 +287,7 @@ export class Transform extends ComponentBase {
     public set left(value: Vector3) {
         this._left.copyFrom(value);
         this.notifyLocalChange();
-
-        if (this.onRotationChange) {
-            this.onRotationChange();
-        }
-
+        this.onRotationChange?.();
         if (this.eventRotationChange) {
             this.eventDispatcher.dispatchEvent(this.eventRotationChange);
         }
@@ -304,10 +301,7 @@ export class Transform extends ComponentBase {
     public set right(value: Vector3) {
         this._right.copyFrom(value);
         this.notifyLocalChange();
-
-        if (this.onRotationChange) {
-            this.onRotationChange();
-        }
+        this.onRotationChange?.();
 
         if (this.eventRotationChange) {
             this.eventDispatcher.dispatchEvent(this.eventRotationChange);
@@ -327,10 +321,7 @@ export class Transform extends ComponentBase {
         this._localRotQuat.getEulerAngles(this._localRot);
 
         this.notifyLocalChange();
-
-        if (this.onRotationChange) {
-            this.onRotationChange();
-        }
+        this.onRotationChange?.();
 
         if (this.eventRotationChange) {
             this.eventDispatcher.dispatchEvent(this.eventRotationChange);
@@ -342,9 +333,9 @@ export class Transform extends ComponentBase {
      */
     public notifyChange(): void {
         this.notifyLocalChange();
-        if (this.onRotationChange) {
-            this.onRotationChange();
-        }
+        this.onRotationChange?.();
+        this.onScaleChange?.();
+        this.onPositionChange?.();
 
         if (this.eventRotationChange) {
             this.eventDispatcher.dispatchEvent(this.eventRotationChange);
@@ -372,22 +363,36 @@ export class Transform extends ComponentBase {
     public updateWorldMatrix(force: boolean = false) {
         if (this._localChange || force) {
             if (this.parent) {
+                // this._localRot.y += this.rotatingY;
                 makeMatrix44(this._localRot, this._localPos, this.localScale, this._worldMatrix);
                 append(this._worldMatrix, this.parent.worldMatrix, this._worldMatrix);
-
                 // WasmMatrix4.makeMatrix44Append(this._localRot, this._localPos, this.localScale, this._worldMatrix, this._worldMatrix, this.parent.worldMatrix, this._worldMatrix);
-                this._localChange = false;
             } else {
+                this._localRot.y += this.rotatingY;
                 makeMatrix44(this._localRot, this._localPos, this.localScale, this._worldMatrix);
                 // WasmMatrix4.makeMatrix44(this._localRot, this._localPos, this.localScale, this._worldMatrix);
-                this._localChange = false;
             }
+        }
+        this._localChange = false;
+    }
+
+    public static updateChildTransform(transform: Transform) {
+        if (!transform.view3D || !transform.enable) {
+            return;
+        }
+        if (transform._localChange)
+            transform.updateWorldMatrix();
+        let children = transform.object3D.entityChildren;
+        let i = 0;
+        let len = children.length;
+        for (i = 0; i < len; i++) {
+            const node = children[i];
+            Transform.updateChildTransform(node.transform);
         }
     }
 
     public lookTarget(target: Vector3, up: Vector3 = Vector3.UP) {
-        let worldPosition = this.transform.worldPosition;
-        this.lookAt(worldPosition, target, up);
+        this.lookAt(this.transform.worldPosition, target, up);
     }
 
     /**
@@ -422,7 +427,7 @@ export class Transform extends ComponentBase {
 
         transform.localScale.copyFrom(prs[2]);
         transform.localScale = transform.localScale;
-        this.updateWorldMatrix();
+        // this.updateWorldMatrix();
         return this;
     }
 
@@ -441,10 +446,7 @@ export class Transform extends ComponentBase {
         if (this._localPos.x != value) {
             this._localPos.x = value;
             this.notifyLocalChange();
-
-            if (this.onPositionChange) {
-                this.onPositionChange();
-            }
+            this.onPositionChange?.();
 
             if (this.eventPositionChange) {
                 this.eventDispatcher.dispatchEvent(this.eventPositionChange);
@@ -463,10 +465,7 @@ export class Transform extends ComponentBase {
         if (this._localPos.y != value) {
             this._localPos.y = value;
             this.notifyLocalChange();
-
-            if (this.onPositionChange) {
-                this.onPositionChange();
-            }
+            this.onPositionChange?.();
 
             if (this.eventPositionChange) {
                 this.eventDispatcher.dispatchEvent(this.eventPositionChange);
@@ -485,10 +484,7 @@ export class Transform extends ComponentBase {
         if (this._localPos.z != value) {
             this._localPos.z = value;
             this.notifyLocalChange();
-
-            if (this.onPositionChange) {
-                this.onPositionChange();
-            }
+            this.onPositionChange?.();
 
             if (this.eventPositionChange) {
                 this.eventDispatcher.dispatchEvent(this.eventPositionChange);
@@ -507,6 +503,7 @@ export class Transform extends ComponentBase {
         if (this._localScale.x != value) {
             this._localScale.x = value;
             this.notifyLocalChange();
+            this.onScaleChange?.();
 
             if (this.eventScaleChange) {
                 this.eventDispatcher.dispatchEvent(this.eventScaleChange);
@@ -525,6 +522,7 @@ export class Transform extends ComponentBase {
         if (this._localScale.y != value) {
             this._localScale.y = value;
             this.notifyLocalChange();
+            this.onScaleChange?.();
 
             if (this.eventScaleChange) {
                 this.eventDispatcher.dispatchEvent(this.eventScaleChange);
@@ -543,6 +541,7 @@ export class Transform extends ComponentBase {
         if (this._localScale.z != value) {
             this._localScale.z = value;
             this.notifyLocalChange();
+            this.onScaleChange?.();
 
             if (this.eventScaleChange) {
                 this.eventDispatcher.dispatchEvent(this.eventScaleChange);
@@ -562,10 +561,7 @@ export class Transform extends ComponentBase {
         if (this._localRot.x != value) {
             this._localRot.x = value;
             this.notifyLocalChange();
-
-            if (this.onRotationChange) {
-                this.onRotationChange();
-            }
+            this.onRotationChange?.();
 
             if (this.eventRotationChange) {
                 this.eventDispatcher.dispatchEvent(this.eventRotationChange);
@@ -584,10 +580,7 @@ export class Transform extends ComponentBase {
         if (this._localRot.y != value) {
             this._localRot.y = value;
             this.notifyLocalChange();
-
-            if (this.onRotationChange) {
-                this.onRotationChange();
-            }
+            this.onRotationChange?.();
 
             if (this.eventRotationChange) {
                 this.eventDispatcher.dispatchEvent(this.eventRotationChange);
@@ -606,10 +599,7 @@ export class Transform extends ComponentBase {
         if (this._localRot.z != value) {
             this._localRot.z = value;
             this.notifyLocalChange();
-
-            if (this.onRotationChange) {
-                this.onRotationChange();
-            }
+            this.onRotationChange?.();
 
             if (this.eventRotationChange) {
                 this.eventDispatcher.dispatchEvent(this.eventRotationChange);
@@ -628,21 +618,16 @@ export class Transform extends ComponentBase {
      * world position
      */
     public get worldPosition(): Vector3 {
-        if (this._localChange) {
-            this.updateWorldMatrix();
-        }
+        this.updateWorldMatrix();
         return this._worldMatrix.position;
     }
 
     public set localPosition(v: Vector3) {
-        this.x = v.x;
-        this.y = v.y;
-        this.z = v.z;
+        this._localPos.x = v.x;
+        this._localPos.y = v.y;
+        this._localPos.z = v.z;
         this.notifyLocalChange();
-
-        if (this.onPositionChange) {
-            this.onPositionChange();
-        }
+        this.onPositionChange?.();
 
         if (this.eventPositionChange) {
             this.eventDispatcher.dispatchEvent(this.eventPositionChange);
@@ -661,10 +646,7 @@ export class Transform extends ComponentBase {
         this.rotationY = v.y;
         this.rotationZ = v.z;
         this.notifyLocalChange();
-
-        if (this.onRotationChange) {
-            this.onRotationChange();
-        }
+        this.onRotationChange?.();
 
         if (this.eventRotationChange) {
             this.eventDispatcher.dispatchEvent(this.eventRotationChange);
@@ -684,6 +666,7 @@ export class Transform extends ComponentBase {
         this.scaleY = v.y;
         this.scaleZ = v.z;
         this.notifyLocalChange();
+        this.onScaleChange?.();
 
         if (this.eventScaleChange) {
             this.eventDispatcher.dispatchEvent(this.eventScaleChange);

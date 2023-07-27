@@ -6,6 +6,7 @@ import { GUIPickHelper } from '../GUIPickHelper';
 import { Object3D } from '../../../core/entities/Object3D';
 import { Vector3 } from '../../../math/Vector3';
 import { UIPanel } from './UIPanel';
+import { HitInfo } from '../../shape/ColliderShape';
 
 /**
  * The basic class of interactive GUI component
@@ -41,7 +42,7 @@ export class UIInteractive extends UIComponentBase implements IUIInteractive {
         super.destroy();
     }
 
-    public rayPick(ray: Ray, panel: UIPanel, screenPos: Vector2, screenSize: Vector2): { intersect: boolean; intersectPoint?: Vector3; distance: number } {
+    public rayPick(ray: Ray, panel: UIPanel, screenPos: Vector2, screenSize: Vector2): HitInfo {
         return GUIPickHelper.rayPick(ray, screenPos, screenSize, panel.space, this._uiTransform, panel.transform.worldMatrix);
     }
 

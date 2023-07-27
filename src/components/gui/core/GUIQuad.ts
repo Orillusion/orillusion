@@ -15,6 +15,7 @@ let gui_help_mtx3: Matrix3;
  * @group GPU GUI
  */
 export class GUIQuad {
+
     public x: number = 0;
     public y: number = 0;
     public z: number = 0;
@@ -34,6 +35,7 @@ export class GUIQuad {
     private _imageType: ImageType = ImageType.Simple;
     public dirtyAttributes: GUIQuadAttrEnum = GUIQuadAttrEnum.MAX;
 
+    public cacheTextureId: number = -1;
     private static textPool: PoolNode<GUIQuad>;
 
     static get quadPool(): PoolNode<GUIQuad> {
@@ -47,6 +49,7 @@ export class GUIQuad {
         quad.x = 0;
         quad.y = 0;
         quad.z = -1;
+        quad.cacheTextureId = -1;
         GUIQuad.quadPool.pushBack(quad);
     }
 

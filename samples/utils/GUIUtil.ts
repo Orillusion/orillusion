@@ -4,6 +4,7 @@ import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
 
+
     //render AtmosphericComponent
     public static renderAtomosphericSky(component: AtmosphericComponent, open: boolean = true, name?: string) {
         name ||= 'AtmosphericSky';
@@ -32,12 +33,16 @@ export class GUIUtil {
         });
         GUIHelp.add(fog, 'start', -0.0, 1000.0, 0.0001);
         GUIHelp.add(fog, 'end', -0.0, 1000.0, 0.0001);
-        GUIHelp.add(fog, 'height', -1000.0, 1000.0, 0.0001);
+        GUIHelp.add(fog, 'fogHeightScale', 0.0001, 1.0, 0.0001);
         GUIHelp.add(fog, 'density', 0.0, 1.0, 0.0001);
         GUIHelp.add(fog, 'ins', 0.0, 5.0, 0.0001);
         GUIHelp.add(fog, 'skyFactor', 0.0, 1.0, 0.0001);
         GUIHelp.add(fog, 'skyRoughness', 0.0, 1.0, 0.0001);
         GUIHelp.add(fog, 'overrideSkyFactor', 0.0, 1.0, 0.0001);
+        GUIHelp.add(fog, 'falloff', 0.0, 100.0, 0.01);
+        GUIHelp.add(fog, 'rayLength', 0.01, 2000.0, 0.01);
+        GUIHelp.add(fog, 'scatteringExponent', 1, 40.0, 0.001);
+        GUIHelp.add(fog, 'dirHeightLine', 0.0, 20.0, 0.01);
         GUIHelp.addColor(fog, 'fogColor');
         open && GUIHelp.open();
         GUIHelp.endFolder();

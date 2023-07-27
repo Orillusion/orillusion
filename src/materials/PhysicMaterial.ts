@@ -187,7 +187,9 @@ export class PhysicMaterial extends MaterialBase {
      * A_chanel -> C
      */
     public set maskMap(value: Texture) {
-        this.renderShader.setDefine(`USE_ARMC`, true);
+        // USE_MR
+        // USE_ARMC
+        this.renderShader.setDefine(`USE_MR`, true);
         this.renderShader.setTexture(`maskMap`, value);
     }
 
@@ -214,6 +216,8 @@ export class PhysicMaterial extends MaterialBase {
      */
     public set clearCoatRoughnessMap(value: Texture) {
         if (!value) return;
+        console.log("USE_CLEARCOAT_ROUGHNESS");
+
         this.renderShader.setTexture(`clearCoatRoughnessMap`, value);
         this.renderShader.setDefine(`USE_CLEARCOAT_ROUGHNESS`, true);
     }
@@ -294,6 +298,7 @@ export class PhysicMaterial extends MaterialBase {
      */
     public set clearcoatFactor(value: number) {
         this.renderShader.setUniformFloat(`clearcoatFactor`, value);
+        this.useCleanCoat();
     }
 
     /**
@@ -308,6 +313,7 @@ export class PhysicMaterial extends MaterialBase {
      */
     public set clearcoatRoughnessFactor(value: number) {
         this.renderShader.setUniformFloat(`clearcoatRoughnessFactor`, value);
+        this.useCleanCoat();
     }
 
     /**
@@ -322,6 +328,7 @@ export class PhysicMaterial extends MaterialBase {
      */
     public set clearcoatWeight(value: number) {
         this.renderShader.setUniformFloat(`clearcoatWeight`, value);
+        this.useCleanCoat();
     }
 
     /**
@@ -336,6 +343,7 @@ export class PhysicMaterial extends MaterialBase {
      */
     public set clearcoatColor(value: Color) {
         this.renderShader.setUniformColor(`clearcoatColor`, value);
+        this.useCleanCoat();
     }
 
     /**

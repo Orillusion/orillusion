@@ -7,9 +7,9 @@ import { Vector3 } from './Vector3';
  * @group Math
  */
 export class Quaternion {
-    public static HELP_0: Quaternion = new Quaternion();
-    public static HELP_1: Quaternion = new Quaternion();
-    public static HELP_2: Quaternion = new Quaternion();
+    public static HELP_0: Quaternion = new Quaternion(0, 0, 0, 1);
+    public static HELP_1: Quaternion = new Quaternion(0, 0, 0, 1);
+    public static HELP_2: Quaternion = new Quaternion(0, 0, 0, 1);
     public static _zero: Quaternion = new Quaternion(0, 0, 0, 1);
     public static CALCULATION_QUATERNION: Quaternion = new Quaternion();
     /**

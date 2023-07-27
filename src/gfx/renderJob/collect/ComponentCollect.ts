@@ -1,3 +1,4 @@
+import { ColliderComponent } from "../../..";
 import { IComponent } from "../../../components/IComponent";
 import { View3D } from "../../../core/View3D";
 import { Object3D } from "../../../core/entities/Object3D";
@@ -27,6 +28,11 @@ export class ComponentCollect {
     /**
      * @internal
      */
+    public static componentsEnablePickerList: Map<View3D, Map<ColliderComponent, Function>>;
+
+    /**
+     * @internal
+     */
     public static graphicComponent: Map<View3D, Map<IComponent, Function>>;
 
     /**
@@ -41,15 +47,15 @@ export class ComponentCollect {
     private static init() {
         if (!this._init) {
             this._init = true;
-            this.componentsUpdateList = new Map<View3D, Map<IComponent, Function>>();
-            this.componentsLateUpdateList = new Map<View3D, Map<IComponent, Function>>();
-            this.componentsBeforeUpdateList = new Map<View3D, Map<IComponent, Function>>();
-            this.componentsComputeList = new Map<View3D, Map<IComponent, Function>>();
-            this.graphicComponent = new Map<View3D, Map<IComponent, Function>>();
+            ComponentCollect.componentsUpdateList = new Map<View3D, Map<IComponent, Function>>();
+            ComponentCollect.componentsLateUpdateList = new Map<View3D, Map<IComponent, Function>>();
+            ComponentCollect.componentsBeforeUpdateList = new Map<View3D, Map<IComponent, Function>>();
+            ComponentCollect.componentsComputeList = new Map<View3D, Map<IComponent, Function>>();
+            ComponentCollect.componentsEnablePickerList = new Map<View3D, Map<ColliderComponent, Function>>();
+            ComponentCollect.graphicComponent = new Map<View3D, Map<IComponent, Function>>();
             this.waitStartComponentBak = new Map<Object3D, IComponent[]>();
             this.waitStartComponentBody = new Map<Object3D, IComponent[]>();
-            this.waitStartComponent = this.waitStartComponentBody;
-        }
+            this.waitStartComponent = this.waitStartComponentBody;        }
     }
 
     public static bindUpdate(view: View3D, component: IComponent, call: Function) {
@@ -152,6 +158,24 @@ export class ComponentCollect {
             if (index == -1) {
                 arr.push(component);
             }
+        }
+    }
+
+    public static bindEnablePick(view: View3D, component: ColliderComponent, call: Function) {
+        this.init();
+        let list = ComponentCollect.componentsEnablePickerList.get(view);
+        if (!list) {
+            list = new Map<ColliderComponent, Function>();
+            ComponentCollect.componentsEnablePickerList.set(view, list);
+        }
+        list.set(component, call);
+    }
+
+    public static unBindEnablePick(view: View3D, component: ColliderComponent) {
+        this.init();
+        let list = ComponentCollect.componentsEnablePickerList.get(view);
+        if (list) {
+            list.delete(component);
         }
     }
 

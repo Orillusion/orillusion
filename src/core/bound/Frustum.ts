@@ -176,8 +176,6 @@ export class Frustum {
         let d;
         let p;
 
-        obj.updateBound();
-
         let r = Math.max(box.size.x, box.size.y, box.size.z);
         let sr = r * 2;
         let scx = box.center.x;
