@@ -53,7 +53,6 @@ export class ComponentCollect {
             this.componentsComputeList = new Map<View3D, Map<IComponent, Function>>();
             this.componentsEnablePickerList = new Map<View3D, Map<ColliderComponent, Function>>();
             this.graphicComponent = new Map<View3D, Map<IComponent, Function>>();
-            this.waitStartComponent = new Map<Object3D, IComponent[]>();
             this.waitStartComponentBak = new Map<Object3D, IComponent[]>();
             this.waitStartComponentBody = new Map<Object3D, IComponent[]>();
             this.waitStartComponent = this.waitStartComponentBody;
