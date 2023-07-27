@@ -8,6 +8,7 @@ export interface IComponent {
     eventDispatcher: CEventDispatcher;
     transform: Transform;
     enable: boolean;
+    isDestroyed?: boolean;
     init(param?: any);
     start();
     stop();
@@ -20,7 +21,7 @@ export interface IComponent {
     onGraphic?(view?: View3D);
     cloneTo(obj: Object3D);
     destroy(force?: boolean);
-    beforeDestroy?(force?: boolean);
+    beforeDestroy(force?: boolean);
     onParentChange?(lastParent?: Object3D, currentParent?: Object3D);
 
 }
