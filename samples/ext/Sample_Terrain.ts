@@ -31,19 +31,19 @@ class Sample_Terrain {
 
         this.post = this.view.scene.addComponent(PostProcessingComponent);
         let fog = this.post.addPost(GlobalFog);
-        fog.start = 223;
-        fog.end = 113;
-        fog.fogHeightScale = 0.0692;
-        fog.density = 0.1241;
+        fog.start = 116;
+        fog.end = 0;
+        fog.fogHeightScale = 0.116;
+        fog.density = 0.094;
         fog.ins = 0.1041;
-        fog.skyFactor = 0.7959;
-        fog.overrideSkyFactor = 0.0764;
+        fog.skyFactor = 0.35;
+        fog.overrideSkyFactor = 0.7;
 
         fog.fogColor = new Color(136 / 255, 215 / 255, 236 / 255, 1);
-        fog.fogHeightScale = -0.017;
+        fog.fogHeightScale = 0.1;
         fog.falloff = 0.626;
-        fog.scatteringExponent = 3;
-        fog.dirHeightLine = 10;
+        fog.scatteringExponent = 8;
+        fog.dirHeightLine = 6.5;
         // post.addPost(TAAPost);
 
         this.createScene(this.view.scene);
