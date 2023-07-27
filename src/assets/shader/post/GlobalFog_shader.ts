@@ -192,6 +192,7 @@ fn computeFog(z:f32) -> f32
     scatter *= (1.0-saturate(exp2(-global.dirHeightLine)));
     return vec3<f32>(scatter*sunColor);
   }
+
 `;
 
 

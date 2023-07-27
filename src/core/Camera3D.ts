@@ -505,7 +505,7 @@ export class Camera3D extends ComponentBase {
 
     public getWorldDirection(target?: Vector3) {
         target ||= new Vector3();
-        this.transform.updateWorldMatrix();
+        // this.transform.updateWorldMatrix();
         const e = this.transform._worldMatrix.rawData;
         return target.set(-e[8], -e[9], -e[10]).normalize();
     }

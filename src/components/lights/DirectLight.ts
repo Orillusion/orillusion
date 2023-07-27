@@ -23,6 +23,7 @@ export class DirectLight extends LightBase {
         this.radius = 9999999;// Number.MAX_SAFE_INTEGER;
         this.lightData.lightType = LightType.DirectionLight;
         this.lightData.linear = 0;
+        this.lightData.quadratic = 0.3;
     }
 
     public start(): void {

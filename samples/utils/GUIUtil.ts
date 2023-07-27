@@ -4,6 +4,7 @@ import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
 
+
     //render AtmosphericComponent
     public static renderAtomosphericSky(component: AtmosphericComponent, open: boolean = true, name?: string) {
         name ||= 'AtmosphericSky';

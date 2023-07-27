@@ -55,12 +55,12 @@ class Sample_GI {
         let job = Engine3D.getRenderJob(exampleScene.view);
         await this.initScene();
         this.addGIProbes();
-        GUIUtil.renderAtomosphericSky(exampleScene.atmosphericSky);
+        // GUIUtil.renderAtomosphericSky(exampleScene.atmosphericSky);
         GUIUtil.renderDirLight(exampleScene.light);
 
         let postProcessing = this.scene.addComponent(PostProcessingComponent);
         postProcessing.addPost(TAAPost);
-        // postProcessing.addPost(GTAOPost);
+        postProcessing.addPost(GTAOPost);
         postProcessing.addPost(HDRBloomPost);
 
     }
@@ -82,12 +82,12 @@ class Sample_GI {
             this.scene.addChild(floor);
         }
 
-
+        let obj3dList: Object3D[] = [];
         {
             let greenBall = Object3DUtil.GetSingleSphere(30, 0.1, 0.8, 0.2);
-            this.scene.addChild(greenBall);
             greenBall.x = -70;
             greenBall.y = 40;
+            obj3dList.push(greenBall);
         }
 
         {
@@ -95,7 +95,7 @@ class Sample_GI {
             chair.scaleX = chair.scaleY = chair.scaleZ = 100;
             chair.rotationZ = chair.rotationX = 130;
             chair.z = -120;
-            this.scene.addChild(chair);
+            obj3dList.push(chair);
         }
 
         {
@@ -104,15 +104,18 @@ class Sample_GI {
             Duck.transform.y = 0;
             Duck.transform.x = 0;
             Duck.transform.z = 80;
-            this.scene.addChild(Duck);
+            obj3dList.push(Duck);
         }
-
 
         {
             let car = await Engine3D.res.loadGltf('gltfs/pbrCar/pbrCar.gltf');
             car.scaleX = car.scaleY = car.scaleZ = 1.5;
-            this.scene.addChild(car);
             car.x = 20;
+            obj3dList.push(car);
+        }
+
+        for (let obj3D of obj3dList) {
+            this.scene.addChild(obj3D);
         }
     }
 }

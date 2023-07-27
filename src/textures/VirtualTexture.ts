@@ -148,6 +148,7 @@ export class VirtualTexture extends Texture {
         );
 
         let arryBuffer = textureBuffer.getMappedRange(0, td.byteLength);
+        return arryBuffer;
     }
 
 }

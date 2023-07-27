@@ -183,6 +183,7 @@ export class GLTFSubParserConverter {
                     if (`enableBlend` in primitive.material) {
                         if (primitive.material[`enableBlend`]) {
                             physicMaterial.blendMode = BlendMode.NORMAL;
+                            physicMaterial.shaderState.depthWriteEnabled = false;
                         } else {
                             physicMaterial.blendMode = BlendMode.NONE;
                         }
@@ -191,6 +192,7 @@ export class GLTFSubParserConverter {
                             if (primitive.material.defines.indexOf(`ALPHA_BLEND`) != -1) {
                                 physicMaterial.blendMode = BlendMode.ALPHA;
                                 physicMaterial.transparent = true;
+                                physicMaterial.shaderState.depthWriteEnabled = false;
                             }
                         }
                     }
@@ -199,6 +201,7 @@ export class GLTFSubParserConverter {
                         physicMaterial.alphaCutoff = alphaCutoff;
                         physicMaterial.blendMode = BlendMode.NORMAL;
                         physicMaterial.transparent = true;
+                        physicMaterial.shaderState.depthWriteEnabled = false;
                     }
 
                     if (primitive.material.transformUV1) physicMaterial.uvTransform_1 = primitive.material.transformUV1;
@@ -211,6 +214,8 @@ export class GLTFSubParserConverter {
                     physicMaterial.metallic = metallicFactor;
 
                     physicMaterial.doubleSide = doubleSided;
+
+                    physicMaterial.ao = 1;
 
                     if (baseColorTexture) {
                         physicMaterial.baseMap = baseColorTexture;

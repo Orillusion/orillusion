@@ -70,7 +70,7 @@ export class GUIRenderer extends MeshRenderer {
     }
 
     public onUpdate(view?: View3D) {
-        this.transform.updateWorldMatrix();
+        // this.transform.updateWorldMatrix();
     }
 
 }

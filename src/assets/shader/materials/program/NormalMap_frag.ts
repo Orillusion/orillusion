@@ -22,7 +22,7 @@ export let NormalMap_frag: string = /*wgsl*/ `
     fn unpackNormalMap( normal : vec3<f32> ) -> vec3<f32>
     {
         var normalTex = vec3<f32>( normal.xyz * 2.0 - 1.0 ) ;
-        return normalize(normalTex);
+        return (normalTex);
     }
 
     fn unPackNormal(normal : vec3<f32> , height:f32 ) -> vec3<f32>{

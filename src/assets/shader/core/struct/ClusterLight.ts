@@ -1,4 +1,4 @@
-export let LightStructFrag: string = /*wgsl*/ `
+export let ClusterLight: string = /*wgsl*/ `
     struct LightData {
         index:f32,
         lightType:i32,
@@ -27,20 +27,19 @@ export let LightStructFrag: string = /*wgsl*/ `
     const DirectLightType = 2;
     const SpotLightType = 3;
 
-    struct ClusterBox{
+    struct ClusterBox {
         minPoint:vec4<f32>,
         maxPoint:vec4<f32>
     };
 
-    struct LightIndex
-    {
-        count:f32,
-        start:f32,
-        empty0:f32,
-        empty1:f32,
+    struct LightIndex {
+            count:f32,
+            start:f32,
+            empty0:f32,
+            empty1:f32,
     };
 
-    struct ClustersUniform{
+    struct ClustersUniform {
         clusterTileX:f32,
         clusterTileY:f32,
         clusterTileZ:f32,
@@ -66,7 +65,7 @@ export let LightStructFrag: string = /*wgsl*/ `
         var<storage,read> clusterBuffer : array<ClusterBox>;
     #endif
 
-    fn getLight( index:i32 ) -> LightData{
+    fn getLight( index:i32 ) -> LightData {
         let lightId = i32(lightAssignBuffer[index]);
         var lightData = lightBuffer[lightId];
         return lightData ;
@@ -84,16 +83,16 @@ export let LightStructFrag: string = /*wgsl*/ `
         let sliceBias = -(f32(clustersUniform.clusterTileZ) * log2(globalUniform.near) / log2(globalUniform.far / globalUniform.near));
         let zTile = u32(max(log2(coord.z) * sliceScale + sliceBias, 0.0));
         return vec3<u32>(u32(coord.x / (clustersUniform.screenWidth / f32(clustersUniform.clusterTileX))),
-                        u32(coord.y / (clustersUniform.screenHeight / f32(clustersUniform.clusterTileY))),
-                        zTile);
+                            u32(coord.y / (clustersUniform.screenHeight / f32(clustersUniform.clusterTileY))),
+                            zTile);
     }
 
     fn getCluster(fragCoord : vec4<f32>) -> LightIndex {
-    let tile = getTile(fragCoord);
-    let id = tile.x +
+        let tile = getTile(fragCoord);
+        let id = tile.x +
             tile.y * u32(clustersUniform.clusterTileX) +
             tile.z * u32(clustersUniform.clusterTileX) * u32(clustersUniform.clusterTileY);
-    return assignTable[id];
+        return assignTable[id];
     }
 
     #if DEBUG_CLUSTER

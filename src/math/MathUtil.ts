@@ -231,7 +231,7 @@ export class MathUtil {
      */
     public static fromToRotation(fromDirection: Vector3, toDirection: Vector3, target: Quaternion = null): Quaternion {
         target ||= new Quaternion();
-        let mat: Matrix4 = new Matrix4();
+        let mat: Matrix4 = Matrix4.help_matrix_2;
         Matrix4.fromToRotation(fromDirection, toDirection, mat);
         target.fromMatrix(mat);
         return target;

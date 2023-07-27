@@ -1,3 +1,4 @@
+import { GPUPrimitiveTopology } from '..';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
 import { ShaderState } from '../gfx/graphics/webGpu/shader/value/ShaderState';
 import { RendererType } from '../gfx/renderJob/passRenderer/state/RendererType';

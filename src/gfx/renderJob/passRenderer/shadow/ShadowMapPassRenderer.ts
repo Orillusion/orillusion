@@ -78,6 +78,10 @@ export class ShadowMapPassRenderer extends RendererBase {
             return;
 
         camera.transform.updateWorldMatrix();
+
+
+
+
         //*********************/
         //***shadow light******/
         //*********************/
@@ -89,6 +93,18 @@ export class ShadowMapPassRenderer extends RendererBase {
                 continue;
 
             this.rendererPassState = this.rendererPassStates[light.shadowIndex];
+            let viewRenderList = EntityCollect.instance.getRenderShaderCollect(view);
+            for (const renderList of viewRenderList) {
+                let nodeMap = renderList[1];
+                for (const iterator of nodeMap) {
+                    let node = iterator[1];
+                    if (node.preInit) {
+                        node.nodeUpdate(view, this._rendererType, this.rendererPassState, null);
+                        break;
+                    }
+                }
+            }
+
             if ((light.castShadow && light.needUpdateShadow || this._forceUpdate) || (light.castShadow && Engine3D.setting.shadow.autoUpdate)) {
                 light.needUpdateShadow = false;
                 let shadowFar = clamp(Engine3D.setting.shadow.shadowFar, camera.near, camera.far);
@@ -142,7 +158,7 @@ export class ShadowMapPassRenderer extends RendererBase {
         let command = GPUContext.beginCommandEncoder();
         let encoder = GPUContext.beginRenderPass(command, this.rendererPassState);
 
-        shadowCamera.transform.updateWorldMatrix();
+        // shadowCamera.transform.updateWorldMatrix();
         occlusionSystem.update(shadowCamera, view.scene);
         GPUContext.bindCamera(encoder, shadowCamera);
         let op_bundleList = this.renderShadowBundleOp(view, shadowCamera);
@@ -201,30 +217,33 @@ export class ShadowMapPassRenderer extends RendererBase {
         return [];
     }
 
-
     protected recordShadowRenderBundleNode(view: View3D, shadowCamera: Camera3D, encoder, nodes: RenderNode[], clusterLightingBuffer?: ClusterLightingBuffer) {
         GPUContext.bindCamera(encoder, shadowCamera);
         GPUContext.bindGeometryBuffer(encoder, nodes[0].geometry);
-        for (let i = 0; i < nodes.length; ++i) {
-            let renderNode = nodes[i];
-            let matrixIndex = renderNode.transform.worldMatrix.index;
-            if (!renderNode.transform.enable)
-                continue;
-            renderNode.recordRenderPass2(view, this._rendererType, this.rendererPassState, clusterLightingBuffer, encoder);
+        if (nodes) {
+            for (let i = 0; i < nodes.length; ++i) {
+                let renderNode = nodes[i];
+                let matrixIndex = renderNode.transform.worldMatrix.index;
+                if (!renderNode.transform.enable)
+                    continue;
+                renderNode.recordRenderPass2(view, this._rendererType, this.rendererPassState, clusterLightingBuffer, encoder);
+            }
         }
     }
 
     protected drawShadowRenderNodes(view: View3D, shadowCamera: Camera3D, encoder: GPURenderPassEncoder, nodes: RenderNode[], clusterLightingBuffer?: ClusterLightingBuffer) {
         GPUContext.bindCamera(encoder, shadowCamera);
-        for (let i = Engine3D.setting.render.drawOpMin; i < Math.min(nodes.length, Engine3D.setting.render.drawOpMax); ++i) {
-            let renderNode = nodes[i];
-            // let matrixIndex = renderNode.transform.worldMatrix.index;
-            // if (!occlusionSystem.renderCommitTesting(camera,renderNode) ) continue;
-            if (!renderNode.transform.enable)
-                continue;
-            if (!renderNode.enable)
-                continue;
-            renderNode.renderPass2(view, this._rendererType, this.rendererPassState, clusterLightingBuffer, encoder);
+        if (nodes) {
+            for (let i = Engine3D.setting.render.drawOpMin; i < Math.min(nodes.length, Engine3D.setting.render.drawOpMax); ++i) {
+                let renderNode = nodes[i];
+                // let matrixIndex = renderNode.transform.worldMatrix.index;
+                // if (!occlusionSystem.renderCommitTesting(camera,renderNode) ) continue;
+                if (!renderNode.transform.enable)
+                    continue;
+                if (!renderNode.enable)
+                    continue;
+                renderNode.renderPass2(view, this._rendererType, this.rendererPassState, clusterLightingBuffer, encoder);
+            }
         }
     }
 }

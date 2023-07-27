@@ -269,8 +269,7 @@ export let Irradiance_frag: string = /*wgsl*/ `
         irradiance *= (1.0 / accumulatedWeights);   
         irradiance *= irradiance;                   
 
-        //irradiance *= 6.2831853071795864;
-        irradiance *= PI;
+        irradiance *= 6.2831853071795864;
         irradiance *= irradianceData.indirectIntensity;
         return vec4<f32>(irradiance,1.0) ;
     }
