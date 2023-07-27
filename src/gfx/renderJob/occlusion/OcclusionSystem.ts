@@ -53,14 +53,11 @@ export class OcclusionSystem {
             this._renderList.set(camera, cameraViewRenderList);
         }
         cameraViewRenderList.clear();
-        // EntityCollect.instance.autoSortRenderNodes(scene);
+        EntityCollect.instance.autoSortRenderNodes(scene);
         let nodes = EntityCollect.instance.getRenderNodes(scene);
 
         if (nodes.opaqueList) {
-            for (let i = 0; i < nodes.opaqueList.length; i++) {
-                const node = nodes.opaqueList[i];
-                // cameraViewRenderList.set(node, 1);
-
+            for (let node of nodes.opaqueList) {
                 let inRender = 0;
 
                 if (node.enable && node.transform.enable && node.object3D.bound) {
@@ -74,9 +71,7 @@ export class OcclusionSystem {
         }
 
         if (nodes.transparentList) {
-            for (let i = 0; i < nodes.transparentList.length; i++) {
-                const node = nodes.transparentList[i];
-                // cameraViewRenderList.set(node, 1);
+            for (let node of nodes.transparentList) {
 
                 let inRender = 0;
                 if (node.enable && node.transform.enable && node.object3D.bound) {

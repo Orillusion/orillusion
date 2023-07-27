@@ -360,8 +360,7 @@ export class RenderNode extends ComponentBase {
                 return;
 
             if (this.drawType == 2) {
-                for (let j = 0; j < passes.length; j++) {
-                    let matPass = passes[j];
+                for (let matPass of passes) {
                     if (!matPass.enable)
                         continue;
 
@@ -372,8 +371,7 @@ export class RenderNode extends ComponentBase {
                 }
             } else {
                 GPUContext.bindGeometryBuffer(encoder, node._geometry);
-                for (let j = 0; j < passes.length; j++) {
-                    let matPass = passes[j];
+                for (let matPass of passes) {
                     if (!matPass.enable)
                         continue;
 

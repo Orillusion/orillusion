@@ -216,17 +216,15 @@ export class PointLightShadowRenderer extends RendererBase {
                     continue;
                 // renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState);
 
-                for (let i = 0; i < renderNode.materials.length; i++) {
-                    const material = renderNode.materials[i];
+                for (let material of renderNode.materials) {
                     let passes = material.renderPasses.get(this._rendererType);
                     if (!passes || passes.length == 0)
                         continue;
 
                     GPUContext.bindGeometryBuffer(encoder, renderNode.geometry);
                     let worldMatrix = renderNode.object3D.transform._worldMatrix;
-                    for (let i = 0; i < passes.length; i++) {
-                        const renderShader = passes[i].renderShader;
-
+                    for (let pass of passes) {
+                        const renderShader = pass.renderShader;
                         if (renderShader.pipeline) {
                             renderShader.setUniformFloat("cameraFar", shadowCamera.far);
                             renderShader.setUniformVector3("lightWorldPos", shadowCamera.transform.worldPosition);
@@ -234,8 +232,7 @@ export class PointLightShadowRenderer extends RendererBase {
 
                             GPUContext.bindPipeline(encoder, renderShader);
                             let subGeometries = renderNode.geometry.subGeometries;
-                            for (let k = 0; k < subGeometries.length; k++) {
-                                const subGeometry = subGeometries[k];
+                            for (const subGeometry of subGeometries) {
                                 let lodInfos = subGeometry.lodLevels;
                                 let lodInfo = lodInfos[renderNode.lodLevel];
                                 GPUContext.drawIndexed(encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);

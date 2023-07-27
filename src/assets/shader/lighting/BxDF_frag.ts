@@ -94,16 +94,17 @@ export let BxDF_frag: string = /*wgsl*/ `
       let env =  materialUniform.envIntensity * approximateSpecularIBL( F , fragData.Roughness , fragData.R , fragData.NoV ) ;
 
       //***********indirect-specular part********* 
-      var surfaceReduction = 1.0/(fragData.Roughness*fragData.Roughness+1.0);            //压暗非金属的反射
+      
+      var surfaceReduction = 1.0/(fragData.Roughness*fragData.Roughness+1.0);   //Reduce the reflection coefficient of non-metallic materials     
       var oneMinusReflectivity = materialUniform.materialF0.a - materialUniform.materialF0.a * fragData.Metallic ;
       var grazingTerm= clamp((1.0 - fragData.Roughness ) + (1.0 - oneMinusReflectivity),0.0,1.0);
       var t = pow5(1.0-fragData.NoV);
-      var fresnelLerp = mix(fragData.F0,vec3<f32>(grazingTerm),t);                   //控制反射的菲涅尔和金属色
+      var fresnelLerp = mix(fragData.F0,vec3<f32>(grazingTerm),t);   //Controlling Fresnel and metallic reflections
       var iblSpecularResult = surfaceReduction*env*fresnelLerp ;
       //***********indirect-specular part********* 
       
       //***********indirect-ambient part********* 
-      var kdLast = (1.0 - F) * (1.0 - fragData.Metallic);                   //压暗边缘，边缘处应当有更多的镜面反射
+      var kdLast = (1.0 - F) * (1.0 - fragData.Metallic);     //Dim the edges, there should be more specular reflection at the edges
       var iblDiffuseResult = irradiance * kdLast * fragData.Albedo.rgb ;
       //***********indirect-ambient part********* 
       let sunLight = lightBuffer[0] ;
