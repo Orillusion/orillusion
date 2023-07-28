@@ -18,7 +18,6 @@ import { ShaderUtil } from './gfx/graphics/webGpu/shader/util/ShaderUtil';
 import { ComponentCollect } from './gfx/renderJob/collect/ComponentCollect';
 import { ShadowLightsCollect } from './gfx/renderJob/collect/ShadowLightsCollect';
 import { GUIConfig } from './components/gui/GUIConfig';
-import { Transform, UpdateChildTransform } from './components/Transform';
 
 /** 
  * Orillusion 3D Engine
@@ -453,7 +452,6 @@ export class Engine3D {
         for (i = 0; i < views.length; i++) {
             const view = views[i];
             view.scene.transform.updateChildTransform()
-            // UpdateChildTransform();
         }
         // for (const iterator of RenderShaderCollect.renderNodeList) {
         //     let nodes = iterator[1];

@@ -383,8 +383,11 @@ export class Transform extends ComponentBase {
         }
         if (self.object3D.numChildren > 0) {
             let i = 0;
-            for (i = 0; i < self.object3D.numChildren; i++) {
-                self.object3D.entityChildren[i].transform.updateChildTransform();
+            // for (i = 0; i < self.object3D.numChildren; i++) {
+            //     self.object3D.entityChildren[i].transform.updateChildTransform();
+            // }
+            for (const child of self.object3D.entityChildren) {
+                child.transform.updateChildTransform();
             }
         }
     }
@@ -792,15 +795,3 @@ export class Transform extends ComponentBase {
 
 }
 
-
-export let UpdateChildTransform = function (transform: Transform) {
-    if (transform._localChange)
-        transform.updateWorldMatrix();
-    if (transform.object3D.numChildren > 0) {
-        let children = transform.object3D.entityChildren;
-        let i = 0;
-        for (i = 0; i < transform.object3D.numChildren; i++) {
-            UpdateChildTransform(children[i].transform);
-        }
-    }
-}
