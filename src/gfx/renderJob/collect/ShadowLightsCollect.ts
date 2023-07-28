@@ -133,27 +133,24 @@ export class ShadowLightsCollect {
                     50000,
                 );
             }
-            let has = list.indexOf(light) == -1;
-            if (has) {
-                if (list.length < 8) {
-                    light.lightData.castShadowIndex = list.length;
-                }
+            if (list.indexOf(light) == -1) {
                 list.push(light);
             }
             return list;
         } else if (light.lightData.lightType == LightType.PointLight || light.lightData.lightType == LightType.SpotLight) {
             let list = this.pointLightList.get(scene);
+            if (list && list.length >= 8) {
+                return list;
+            }
             if (!list) {
                 list = [];
                 this.pointLightList.set(scene, list);
             }
-            let has = list.indexOf(light) == -1;
-            if (has) {
-                if (list.length < 8) {
-                    light.lightData.castShadowIndex = list.length;
-                }
+            if (list.indexOf(light) == -1) {
                 list.push(light);
             }
+
+
             return list;
         }
     }
@@ -168,6 +165,7 @@ export class ShadowLightsCollect {
                     list.splice(index, 1);
                 }
             }
+            light.lightData.castShadowIndex = -1;
             return list;
         } else if (light.lightData.lightType == LightType.PointLight || light.lightData.lightType == LightType.SpotLight) {
             let list = this.pointLightList.get(light.transform.view3D.scene);
@@ -177,6 +175,7 @@ export class ShadowLightsCollect {
                     list.splice(index, 1);
                 }
             }
+            light.lightData.castShadowIndex = -1;
             return list;
         }
     }
@@ -194,9 +193,11 @@ export class ShadowLightsCollect {
         let nPointShadowEnd: number = 0;
         shadowLights.fill(0);
         if (directionLightList) {
+            let j = 0;
             for (let i = 0; i < directionLightList.length; i++) {
                 const light = directionLightList[i];
                 shadowLights[i] = light.lightData.index;
+                light.lightData.castShadowIndex = j++;
             }
             nDirShadowEnd = directionLightList.length;
         }
@@ -205,9 +206,11 @@ export class ShadowLightsCollect {
 
         if (pointLightList) {
             nPointShadowStart = nDirShadowEnd;
+            let j = 0;
             for (let i = nPointShadowStart; i < pointLightList.length; i++) {
                 const light = pointLightList[i];
                 shadowLights[i] = light.lightData.index;
+                light.lightData.castShadowIndex = j++;
             }
             nPointShadowEnd = nPointShadowStart + pointLightList.length;
         }
