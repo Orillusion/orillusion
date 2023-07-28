@@ -132,7 +132,7 @@ export class Transform extends ComponentBase {
         let hasRoot = value ? value.scene3D : null;
         if (!hasRoot) {
             this.object3D.components.forEach((c) => {
-                // c[`__stop`]();
+                c[`__stop`]();
             });
         } else {
             this._scene3d = hasRoot;
