@@ -2,7 +2,7 @@ import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { AtmosphericComponent, BoxGeometry, CameraUtil, Color, Engine3D, HoverCameraController, LitMaterial, MeshRenderer, Object3D, Object3DUtil, PointLight, Scene3D, SphereGeometry, View3D, } from "@orillusion/core";
 import { PointLightsScript } from "./PointLightsScript";
 
-class Sample_AddRemovePointLight {
+class Sample_LightEnable {
     scene: Scene3D;
     hoverCameraController: HoverCameraController;
     lightObj: any;
@@ -62,35 +62,34 @@ class Sample_AddRemovePointLight {
         let floor = Object3DUtil.GetSingleCube(2000, 1, 2000, 0.5, 0.5, 0.5);
         this.scene.addChild(floor);
 
-        let list: Object3D[] = [];
-        GUIHelp.addButton("addPointLight", () => {
-            for (let i = 0; i < 5; i++) {
-                let pointLight = new Object3D();
-                let script = pointLight.addComponent(PointLight);
-                script.lightColor = Color.random();
-                script.intensity = 6 * Math.random() + 3;
-                script.range = 25 * Math.random() + 15;
-                script.castShadow = true;
-                pointLight.x = Math.random() * 200 - 100;
-                pointLight.y = 5;
-                pointLight.z = Math.random() * 200 - 100;
-                scene.addChild(pointLight);
-                list.push(pointLight);
-            }
-        });
+        for (let i = 0; i < 5; i++) {
+            let pointLight = new Object3D();
+            pointLight.name = "pointLight_" + i;
+            let script = pointLight.addComponent(PointLight);
+            script.lightColor = Color.random();
+            script.intensity = 6 * Math.random() + 3;
+            script.range = 45 * Math.random() + 80;
+            script.castShadow = true;
+            pointLight.x = i * 55 + 15;
+            pointLight.y = 5;
+            pointLight.z = 0;
+            scene.addChild(pointLight);
 
-        GUIHelp.addButton("removePointLight", () => {
-            for (let i = 0; i < Math.min(1, list.length); i++) {
-                let index = Math.floor(list.length * Math.random());
-                let obj = list[index];
-                if (obj) {
-                    list.splice(index, 1)
-                    scene.removeChild(obj)
-                    obj.destroy();
-                }
-            }
-        });
+            let obj = {};
+            obj[pointLight.name + ":enable"] = true;
+            GUIHelp.add(obj, pointLight.name + ":enable").onChange((e) => {
+                script.enable = e;
+            });
+
+            let obj2 = {};
+            obj2[pointLight.name + ":castShadow"] = true;
+            GUIHelp.add(obj2, pointLight.name + ":castShadow").onChange((e) => {
+                script.castShadow = e;
+            });
+        }
+
+
     }
 }
 
-new Sample_AddRemovePointLight().run();
+new Sample_LightEnable().run();

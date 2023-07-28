@@ -106,10 +106,6 @@ export class Transform extends ComponentBase {
     private _down: Vector3 = new Vector3();
     public readonly _worldMatrix: Matrix4;
 
-    public rotatingX: number = 0;
-    public rotatingY: number = 0;
-    public rotatingZ: number = 0;
-
     private _targetPos: Vector3;
     public static: boolean = false;
 
@@ -368,7 +364,6 @@ export class Transform extends ComponentBase {
                 append(this._worldMatrix, this.parent.worldMatrix, this._worldMatrix);
                 // WasmMatrix4.makeMatrix44Append(this._localRot, this._localPos, this.localScale, this._worldMatrix, this._worldMatrix, this.parent.worldMatrix, this._worldMatrix);
             } else {
-                this._localRot.y += this.rotatingY;
                 makeMatrix44(this._localRot, this._localPos, this.localScale, this._worldMatrix);
                 // WasmMatrix4.makeMatrix44(this._localRot, this._localPos, this.localScale, this._worldMatrix);
             }

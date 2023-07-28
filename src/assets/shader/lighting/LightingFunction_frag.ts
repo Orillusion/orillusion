@@ -63,6 +63,7 @@ fn pointLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, rough
         if( light.castShadow >= 0 )
         {
             #if USE_SHADOWMAPING
+              // atten *= shadowStrut.pointShadows[light.castShadow] ; 
               for (var j: i32 = 0; j < 8; j += 1) {
                   if(j == light.castShadow){
                     atten *= shadowStrut.pointShadows[j] ; 

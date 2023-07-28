@@ -162,7 +162,6 @@ class Sample_drawCall {
             // }
 
             this._rotList.push((Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 100);
-            obj.transform.rotatingY = 16 * 0.01 * this._rotList[i];
 
             if (i % 10000 == 0) {
                 ii++;
@@ -171,7 +170,6 @@ class Sample_drawCall {
 
         group.addComponent(InstanceDrawComponent);
         this._rotList.push(1.0);
-        group.transform.rotatingY = 16 * 0.01 * 1;
 
         group.bound = new BoundingBox(Vector3.SAFE_MIN, Vector3.SAFE_MAX);
         this._list.push(group);
