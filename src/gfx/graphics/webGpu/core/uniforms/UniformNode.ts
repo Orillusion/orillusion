@@ -90,7 +90,7 @@ export class UniformNode {
     }
 
     public get vector2(): Vector2 {
-        return new Vector2(this._data.x, this._data.y);
+        return this._data;//new Vector2(this._data.x, this._data.y);
     }
 
     public set vector2(value: Vector2) {
@@ -102,7 +102,7 @@ export class UniformNode {
     }
 
     public get vector3(): Vector3 {
-        return new Vector3(this._data.x, this._data.y, this._data.z);
+        return this._data;//new Vector3(this._data.x, this._data.y, this._data.z);
     }
 
     public set vector3(value: Vector3) {
@@ -116,7 +116,7 @@ export class UniformNode {
 
     public get vector4(): Vector4 {
         // this.onChange();
-        return new Vector4(this._data.x, this._data.y, this._data.z, this._data.w);
+        return this._data;//new Vector4(this._data.x, this._data.y, this._data.z, this._data.w);
     }
 
     public set vector4(value: Vector4) {
