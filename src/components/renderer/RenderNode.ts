@@ -16,7 +16,7 @@ import { RendererMask, RendererMaskUtil } from "../../gfx/renderJob/passRenderer
 import { RendererPassState } from "../../gfx/renderJob/passRenderer/state/RendererPassState";
 import { RendererType } from "../../gfx/renderJob/passRenderer/state/RendererType";
 import { MaterialBase } from "../../materials/MaterialBase";
-import { UUID } from "../../util/Global";
+import { GetCountInstanceID, UUID } from "../../util/Global";
 import { Reference } from "../../util/Reference";
 import { ComponentBase } from "../ComponentBase";
 import { IESProfiles } from "../lights/IESProfiles";
@@ -53,7 +53,7 @@ export class RenderNode extends ComponentBase {
 
     public init() {
         this.rendererMask = RendererMask.Default;
-        this.instanceID = UUID();
+        this.instanceID = GetCountInstanceID().toString();
     }
 
     public copyComponent(from: this): this {

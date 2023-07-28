@@ -389,7 +389,7 @@ export class Graphic3D extends Object3D {
             let nearRB = new Vector3().copyFrom(f2).multiplyScalar(near).add(pos);
             let nearRT = new Vector3().copyFrom(f3).multiplyScalar(near).add(pos);
 
-            let custom = this.createCustomShape(`CameraFrustum_${camera.object3D.uuid}`);
+            let custom = this.createCustomShape(`CameraFrustum_${camera.object3D.instanceID}`);
             custom.buildLines([nearLT, farLT], color);
             custom.buildLines([nearLB, farLB], color);
             custom.buildLines([nearRT, farRT], color);
@@ -410,7 +410,7 @@ export class Graphic3D extends Object3D {
             let nearRT = worldMatrix.transformVector(new Vector3(camera.viewPort.width * 0.5, camera.viewPort.height * 0.5, camera.near));
             let nearRB = worldMatrix.transformVector(new Vector3(camera.viewPort.width * 0.5, camera.viewPort.height * -0.5, camera.near));
 
-            let custom = this.createCustomShape(`CameraFrustum_${camera.object3D.uuid}`);
+            let custom = this.createCustomShape(`CameraFrustum_${camera.object3D.instanceID}`);
             custom.buildLines([nearLT, farLT], color);
             custom.buildLines([nearLB, farLB], color);
             custom.buildLines([nearRT, farRT], color);
@@ -427,7 +427,7 @@ export class Graphic3D extends Object3D {
      */
     public drawObjectBoundingBox(obj: Object3D, color: Color = Color.COLOR_WHITE) {
         let boundingBox = BoundUtil.genMeshBounds(obj);
-        this.drawBox(`Bounds_${obj.uuid}`, boundingBox.min, boundingBox.max, color);
+        this.drawBox(`Bounds_${obj.instanceID}`, boundingBox.min, boundingBox.max, color);
     }
 
     /**

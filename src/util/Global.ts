@@ -34,6 +34,39 @@ export let UUID = function (len = 16, radix = 16) {
     return uuid.join('');
 };
 
+
+let _instanceID = 1000000;
+
+export let GetCountInstanceID = function () {
+    _instanceID++;
+    return _instanceID;
+}
+
+export let ArrayHas = function (array: any[], item: any) {
+    let i = 0;
+    let len = array.length;
+    for (i = 0; i < len; i++) {
+        const element = array[i];
+        if (element == item) {
+            return true;
+        }
+    }
+    return false;
+}
+
+export let ArrayItemIndex = function (array: any[], item: any) {
+    let i = 0;
+    let len = array.length;
+    for (i = 0; i < len; i++) {
+        const element = array[i];
+        if (element == item) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+
 /**
  * Constructor
  */

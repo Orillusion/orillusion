@@ -10,6 +10,7 @@ class Sample_SphereDraw {
     public anim: boolean = false;
     async run() {
         // init engine
+        Engine3D.setting.pick.enable = false;
         await Engine3D.init({ renderLoop: () => this.renderLoop() });
         // create new Scene
         this.scene = new Scene3D();

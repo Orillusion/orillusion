@@ -132,7 +132,7 @@ export class Transform extends ComponentBase {
         let hasRoot = value ? value.scene3D : null;
         if (!hasRoot) {
             this.object3D.components.forEach((c) => {
-                c[`__stop`]();
+                // c[`__stop`]();
             });
         } else {
             this._scene3d = hasRoot;
@@ -376,18 +376,16 @@ export class Transform extends ComponentBase {
         this._localChange = false;
     }
 
-    public static updateChildTransform(transform: Transform) {
-        if (!transform.view3D || !transform.enable) {
-            return;
+    public updateChildTransform() {
+        let self = this;
+        if (self._localChange) {
+            self.updateWorldMatrix();
         }
-        if (transform._localChange)
-            transform.updateWorldMatrix();
-        let children = transform.object3D.entityChildren;
-        let i = 0;
-        let len = children.length;
-        for (i = 0; i < len; i++) {
-            const node = children[i];
-            Transform.updateChildTransform(node.transform);
+        if (self.object3D.numChildren > 0) {
+            let i = 0;
+            for (i = 0; i < self.object3D.numChildren; i++) {
+                self.object3D.entityChildren[i].transform.updateChildTransform();
+            }
         }
     }
 
@@ -792,4 +790,17 @@ export class Transform extends ComponentBase {
     //     return this._rotateAroundAxisZ ;
     // }
 
+}
+
+
+export let UpdateChildTransform = function (transform: Transform) {
+    if (transform._localChange)
+        transform.updateWorldMatrix();
+    if (transform.object3D.numChildren > 0) {
+        let children = transform.object3D.entityChildren;
+        let i = 0;
+        for (i = 0; i < transform.object3D.numChildren; i++) {
+            UpdateChildTransform(children[i].transform);
+        }
+    }
 }
