@@ -139,7 +139,7 @@ export class ShadowLightsCollect {
             return list;
         } else if (light.lightData.lightType == LightType.PointLight || light.lightData.lightType == LightType.SpotLight) {
             let list = this.pointLightList.get(scene);
-            if (list.length >= 8) {
+            if (list && list.length >= 8) {
                 return list;
             }
             if (!list) {
