@@ -42,6 +42,8 @@ export class GeometryBase {
     private _attributes: string[];
     private _indicesBuffer: GeometryIndicesBuffer;
     private _vertexBuffer: GeometryVertexBuffer;
+    private _onChange: boolean = true;
+
     constructor() {
         this.instanceID = UUID();
 
@@ -138,9 +140,12 @@ export class GeometryBase {
      * @param shaderReflection ShaderReflection
      */
     generate(shaderReflection: ShaderReflection) {
-        this._indicesBuffer.upload(this.getAttribute(VertexAttributeName.indices).data);
-        this._vertexBuffer.createVertexBuffer(this._attributeMap, shaderReflection);
-        this._vertexBuffer.updateAttributes(this._attributeMap);
+        if (this._onChange) {
+            this._onChange = false;
+            this._indicesBuffer.upload(this.getAttribute(VertexAttributeName.indices).data);
+            this._vertexBuffer.createVertexBuffer(this._attributeMap, shaderReflection);
+            this._vertexBuffer.updateAttributes(this._attributeMap);
+        }
     }
 
     public setIndices(data: ArrayBufferData) {

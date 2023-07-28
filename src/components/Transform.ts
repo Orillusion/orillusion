@@ -376,18 +376,19 @@ export class Transform extends ComponentBase {
         this._localChange = false;
     }
 
-    public static updateChildTransform(transform: Transform) {
-        if (!transform.view3D || !transform.enable) {
-            return;
+    public updateChildTransform() {
+        let self = this;
+        if (self._localChange) {
+            self.updateWorldMatrix();
         }
-        if (transform._localChange)
-            transform.updateWorldMatrix();
-        let children = transform.object3D.entityChildren;
-        let i = 0;
-        let len = children.length;
-        for (i = 0; i < len; i++) {
-            const node = children[i];
-            Transform.updateChildTransform(node.transform);
+        if (self.object3D.numChildren > 0) {
+            let i = 0;
+            // for (i = 0; i < self.object3D.numChildren; i++) {
+            //     self.object3D.entityChildren[i].transform.updateChildTransform();
+            // }
+            for (const child of self.object3D.entityChildren) {
+                child.transform.updateChildTransform();
+            }
         }
     }
 
@@ -793,3 +794,4 @@ export class Transform extends ComponentBase {
     // }
 
 }
+

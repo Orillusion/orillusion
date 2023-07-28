@@ -1,6 +1,6 @@
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { Stats } from '@orillusion/stats'
-import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D, Vector3, Vector3Ex, UnLitMaterial, InstanceDrawComponent, LambertMaterial, Time, BoundingBox, Color, OcclusionSystem, PostProcessingComponent, GlobalFog } from '@orillusion/core';
+import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D, Vector3, Vector3Ex, UnLitMaterial, InstanceDrawComponent, LambertMaterial, Time, BoundingBox, Color, OcclusionSystem, PostProcessingComponent, GlobalFog, SphereGeometry } from '@orillusion/core';
 import { GUIUtil } from '@samples/utils/GUIUtil';
 
 // simple base demo
@@ -8,6 +8,8 @@ class Sample_drawCall {
     scene: Scene3D;
     public anim: boolean = false;
     async run() {
+
+        Engine3D.setting.pick.enable = false;
         // init engine
         await Engine3D.init({ renderLoop: () => this.renderLoop() });
 
@@ -28,7 +30,7 @@ class Sample_drawCall {
 
         // add a basic camera controller
         let hoverCameraController = mainCamera.object3D.addComponent(HoverCameraController);
-        hoverCameraController.setCamera(15, -15, 100);
+        hoverCameraController.setCamera(15, -15, 300);
 
         // add a basic direct light
         let lightObj = new Object3D();
@@ -51,7 +53,6 @@ class Sample_drawCall {
         // start render
         Engine3D.startRenderView(view);
         GUIHelp.init();
-
         // let post = view.scene.addComponent(PostProcessingComponent);
         // let fog = post.addPost(GlobalFog);
         // fog.fogColor = new Color(136 / 255, 215 / 255, 236 / 255, 1);
@@ -66,6 +67,8 @@ class Sample_drawCall {
         GUIHelp.add(this, "anim").onChange = () => {
             this.anim != this.anim;
         };
+
+
 
         this.initScene();
     }
@@ -87,26 +90,61 @@ class Sample_drawCall {
             // new LambertMaterial(),
             // new LambertMaterial(),
             // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
+            // new LambertMaterial(),
         ];
 
         for (let i = 0; i < materials.length; i++) {
             const element = materials[i];
             // element.metallic = 0.97;
             // element.roughness = 0.15;
-            element.baseColor = new Color().hexToRGB(Color.GOLD);
+            // element.baseColor = new Color().hexToRGB(Color.GOLD);
+            element.baseColor = new Color(
+                Math.random(),
+                Math.random(),
+                Math.random(),
+            );
         }
 
         // let material = new LitMaterial();
 
         let group = new Object3D();
-        let count = 10000;
+        let count = 50000;
+
+        GUIHelp.addFolder('info');
+        GUIHelp.open();
+        GUIHelp.addInfo(`count `, count);
+
+        let ii = 0;
         // let count = 70000;
         for (let i = 0; i < count; i++) {
-            let pos = Vector3Ex.sphereXYZ(50, 100, 100, 10, 100);
+            let pos = Vector3Ex.sphereXYZ(ii * 60 + 20, ii * 60 + 100, 100, i * 0.001 + 10, 100);
             // let pos = Vector3Ex.getRandomXYZ(-2, 2);
             let obj = new Object3D();
             let mr = obj.addComponent(MeshRenderer);
-            mr.geometry = shareGeometry;
+            mr.geometry = shareGeometry;// Math.random() > 0.5 ? new BoxGeometry(Math.random() + 0.5, Math.random() + 0.5, Math.random() + 0.5) : new SphereGeometry(Math.random() + 0.5, Math.floor(Math.random() * 15 + 8), Math.floor(Math.random() * 15 + 8));
+            // mr.geometry = Math.random() > 0.5 ? new BoxGeometry(Math.random() + 0.5, Math.random() + 0.5, Math.random() + 0.5) : new SphereGeometry(Math.random() + 0.5, Math.floor(Math.random() * 15 + 8), Math.floor(Math.random() * 15 + 8));
             mr.material = materials[Math.floor(Math.random() * materials.length)];
             obj.localPosition = pos;
             group.addChild(obj);
@@ -119,12 +157,19 @@ class Sample_drawCall {
             obj.transform.rotationX = Math.random() * 360;
             obj.transform.rotationY = Math.random() * 360;
             obj.transform.rotationZ = Math.random() * 360;
+            // if (i < count - 1) {
+            //     obj.localPosition = Vector3.ZERO;
+            // }
 
             this._rotList.push((Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 100);
             obj.transform.rotatingY = 16 * 0.01 * this._rotList[i];
+
+            if (i % 10000 == 0) {
+                ii++;
+            }
         }
 
-        // group.addComponent(InstanceDrawComponent);
+        group.addComponent(InstanceDrawComponent);
         this._rotList.push(1.0);
         group.transform.rotatingY = 16 * 0.01 * 1;
 

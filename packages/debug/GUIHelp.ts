@@ -33,7 +33,7 @@ class _GUIHelp {
         let dgui = this._current ? this._current : this.gui;
 
         let tobj = {
-            [label] : obj[property]
+            [label]: obj[property]
         }
         dgui.add(tobj, label, c, d, e).onChange((v) => {
             obj[property] = v;
@@ -51,6 +51,15 @@ class _GUIHelp {
         if (!this.debug)
             return this._nullBind;
         GUIHelp.add({ label: label }, 'label');
+    }
+
+    addInfo(label: string, value: any) {
+        if (!this.debug)
+            return this._nullBind;
+
+        let obj = {};
+        obj[label] = value.toString();
+        GUIHelp.add(obj, label);
     }
 
     addColor(target: any, key: string) {
