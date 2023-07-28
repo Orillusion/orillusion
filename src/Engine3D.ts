@@ -453,13 +453,6 @@ export class Engine3D {
             const view = views[i];
             view.scene.transform.updateChildTransform()
         }
-        // for (const iterator of RenderShaderCollect.renderNodeList) {
-        //     let nodes = iterator[1];
-        //     for (const node of nodes) {
-        //         let item = node[1];
-        //         item.transform.updateWorldMatrix();
-        //     }
-        // }
 
         /****** auto update global matrix share buffer write to gpu *****/
         let globalMatrixBindGroup = GlobalBindGroup.modelMatrixBindGroup;
