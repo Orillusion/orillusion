@@ -69,10 +69,12 @@ export class PickFire extends CEventDispatcher {
     * start this manager
     */
     public start() {
-        Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_DOWN, this.onTouchStart, this);
-        Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_UP, this.onTouchEnd, this);
-        Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_CLICK, this.onTouchOnce, this);
-        Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_MOVE, this.onTouchMove, this);
+        if (Engine3D.setting.pick.enable) {
+            Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_DOWN, this.onTouchStart, this);
+            Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_UP, this.onTouchEnd, this);
+            Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_CLICK, this.onTouchOnce, this);
+            Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_MOVE, this.onTouchMove, this);
+        }
 
         if (Engine3D.setting.pick.mode == `pixel`) {
             this._pickCompute = new PickCompute();
