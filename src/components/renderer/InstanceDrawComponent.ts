@@ -31,7 +31,6 @@ export class InstanceDrawComponent extends RenderNode {
             const mr = meshRenders[i];
             mr.enable = false;
 
-
             let key = mr.geometry.instanceID;
             for (let j = 0; j < mr.materials.length; j++) {
                 const mat = mr.materials[j];

@@ -9,8 +9,8 @@ export class CollectInfo {
     public offset: number = 0;
     public sky: RenderNode;
     public clean() {
-        this.opaqueList.length = 0;
-        this.transparentList.length = 0;
+        this.opaqueList = null;
+        this.transparentList = null;
         this.offset = 0;
     }
 }

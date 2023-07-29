@@ -1,8 +1,8 @@
+import { WasmMatrix } from '..';
 import { DEGREES_TO_RADIANS, clamp, RADIANS_TO_DEGREES } from './MathUtil';
 import { Orientation3D } from './Orientation3D';
 import { Quaternion } from './Quaternion';
 import { Vector3 } from './Vector3';
-
 const EPSILON: number = 0.000001;
 
 /**
@@ -24,12 +24,12 @@ export class Matrix4 {
     /**
      * matrix do total count 
      */
-    public static allocCount: number = 0;
+    public static allocCount: number = 60000;
 
     /**
      * matrix has max limit count
      */
-    public static maxCount: number = 200000;
+    public static maxCount: number = 60000;
 
     /**
      * current matrix use count 
@@ -122,9 +122,9 @@ export class Matrix4 {
     public static allocMatrix(allocCount: number) {
         this.allocCount = allocCount;
 
-        Matrix4.dynamicMatrixBytes = new Float32Array(allocCount * 16);
+        Matrix4.dynamicMatrixBytes = WasmMatrix.matrixBuffer;
         Matrix4.buffer = Matrix4.dynamicMatrixBytes.buffer;
-        Matrix4.wasmMatrixPtr = 0;
+        Matrix4.wasmMatrixPtr = WasmMatrix.matrixBufferPtr;
 
         this.dynamicGlobalMatrixRef ||= [];
         this.dynamicGlobalMatrixRef.forEach((m) => {
@@ -320,7 +320,7 @@ export class Matrix4 {
     constructor(doMatrix: boolean = false) {
         // if (doMatrix) {
         if (Matrix4.useCount >= Matrix4.allocCount) {
-            Matrix4.allocMatrix(Matrix4.allocCount + 5000);
+            Matrix4.allocMatrix(Matrix4.allocCount + 200000);
         }
 
         this.index = Matrix4.useCount;

@@ -2,6 +2,7 @@
 import { defineConfig } from 'vite'
 import { readFile, writeFile, readdir, lstat } from 'fs/promises'
 import { resolve, parse } from 'path'
+import basicSsl from '@vitejs/plugin-basic-ssl'
 
 export default defineConfig(option => ({
     server: {

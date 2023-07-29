@@ -185,7 +185,7 @@ class Sample_drawCall {
                 const element = this._list[i];
                 // element.transform.rotationY += Time.delta * 0.01 * this._rotList[i];
                 element.transform._localRot.y += Time.delta * 0.01 * this._rotList[i];
-                element.transform._localChange = true;
+                element.transform.localChange = true;
             }
         }
     }

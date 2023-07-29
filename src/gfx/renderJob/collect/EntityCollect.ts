@@ -245,12 +245,12 @@ export class EntityCollect {
 
         let list2 = this._source_opaqueRenderNodes.get(scene);
         if (list2) {
-            this._collectInfo.opaqueList = list2.concat();
+            this._collectInfo.opaqueList = list2;
             this._collectInfo.offset = list2.length;
         }
         let list5 = this._source_transparentRenderNodes.get(scene);
         if (list5) {
-            this._collectInfo.transparentList = list5.concat();
+            this._collectInfo.transparentList = list5;
         }
 
         return this._collectInfo;

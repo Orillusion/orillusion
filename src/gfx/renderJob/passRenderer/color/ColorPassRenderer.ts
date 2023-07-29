@@ -137,6 +137,7 @@ export class ColorPassRenderer extends RendererBase {
                     continue;
                 if (!renderNode.enable)
                     continue;
+                // renderNode.transform.updateWorldMatrix(true);
 
                 if (!renderNode.preInit) {
                     renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState, clusterLightingBuffer);

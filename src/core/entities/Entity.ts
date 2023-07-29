@@ -309,7 +309,9 @@ export class Entity extends CEventDispatcher {
     }
 
     public get bound(): IBound {
-        this.updateBound();
+        if (this._isBoundChange) {
+            this.updateBound();
+        }
         return this._boundWorld;
     }
 

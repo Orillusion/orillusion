@@ -24,10 +24,11 @@ export class ColliderShape {
 
 
     protected static v3_help_0: Vector3 = new Vector3();
-    protected static helpMatrix: Matrix4 = new Matrix4();
+    protected static helpMatrix: Matrix4;
     protected static helpRay: Ray = new Ray();
 
     constructor() {
+        ColliderShape.helpMatrix ||= new Matrix4();
         this._center = new Vector3();
         this._size = new Vector3();
         this._halfSize = new Vector3();

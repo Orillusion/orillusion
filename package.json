@@ -53,5 +53,8 @@
         "typescript": "^5.0.4",
         "vite": "^4.3.9",
         "xvfb-maybe": "^0.2.1"
+    },
+    "dependencies": {
+        "@vitejs/plugin-basic-ssl": "^1.0.1"
     }
 }

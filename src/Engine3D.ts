@@ -17,6 +17,7 @@ import { ShaderLib } from './assets/shader/ShaderLib';
 import { ShaderUtil } from './gfx/graphics/webGpu/shader/util/ShaderUtil';
 import { ComponentCollect } from './gfx/renderJob/collect/ComponentCollect';
 import { ShadowLightsCollect } from './gfx/renderJob/collect/ShadowLightsCollect';
+import { Matrix4, Transform, WasmMatrix } from '.';
 import { GUIConfig } from './components/gui/GUIConfig';
 
 /** 
@@ -297,6 +298,10 @@ export class Engine3D {
 
         this.setting = { ...this.setting, ...descriptor.engineSetting }
 
+        await WasmMatrix.isReady();
+        WasmMatrix.init(Matrix4.allocCount);
+        Matrix4.allocMatrix(Matrix4.allocCount);
+
         await webGPUContext.init(descriptor.canvasConfig);
 
         ShaderLib.init();
@@ -447,16 +452,10 @@ export class Engine3D {
         webGPUContext.device.queue.submit([command.finish()]);
 
         /* update all transform */
-        let views = this.views;
-        let i = 0;
-        for (i = 0; i < views.length; i++) {
-            const view = views[i];
-            view.scene.transform.updateChildTransform()
-        }
 
         /****** auto update global matrix share buffer write to gpu *****/
-        let globalMatrixBindGroup = GlobalBindGroup.modelMatrixBindGroup;
-        globalMatrixBindGroup.writeBuffer();
+        // let globalMatrixBindGroup = GlobalBindGroup.modelMatrixBindGroup;
+        // globalMatrixBindGroup.writeBuffer();
 
         /****** auto update with component list *****/
         for (const iterator of ComponentCollect.componentsUpdateList) {
@@ -474,6 +473,20 @@ export class Engine3D {
         if (this._renderLoop) {
             this._renderLoop();
         }
+
+        /* update all transform */
+        WasmMatrix.updateAllContinueTransform(0, Matrix4.allocCount);
+        // let views = this.views;
+        // let i = 0;
+        // for (i = 0; i < views.length; i++) {
+        //     const view = views[i];
+        //     view.scene.transform.updateChildTransform()
+        // }
+
+
+        /****** auto update global matrix share buffer write to gpu *****/
+        let globalMatrixBindGroup = GlobalBindGroup.modelMatrixBindGroup;
+        globalMatrixBindGroup.writeBuffer();
 
         this.renderJobs.forEach((v, k) => {
             v.renderFrame();

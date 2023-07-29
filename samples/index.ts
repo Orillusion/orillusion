@@ -1,4 +1,8 @@
+import { Matrix4 } from "../src";
+import { WasmMatrix } from "../src/math/WasmMatrix";
+
 /******** Load all samples in /src/sample/ ********/
+
 {
     // find all demos in /sample
     const modules = import.meta.glob(['./*/*.ts', '!./*/_*.ts'])
