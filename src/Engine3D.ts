@@ -17,6 +17,7 @@ import { ShaderLib } from './assets/shader/ShaderLib';
 import { ShaderUtil } from './gfx/graphics/webGpu/shader/util/ShaderUtil';
 import { ComponentCollect } from './gfx/renderJob/collect/ComponentCollect';
 import { ShadowLightsCollect } from './gfx/renderJob/collect/ShadowLightsCollect';
+import { GUIConfig } from './components/gui/GUIConfig';
 
 /** 
  * Orillusion 3D Engine
@@ -135,15 +136,19 @@ export class Engine3D {
                     debug: false,
                     enable: false,
                     fogType: 0.0,
-                    height: 100,
-                    start: 800,
-                    end: 200,
+                    fogHeightScale: 0.1,
+                    start: 400,
+                    end: 10,
                     density: 0.02,
-                    ins: 1,
+                    ins: 0.5,
                     skyFactor: 0.5,
                     skyRoughness: 0.4,
                     overrideSkyFactor: 0.8,
                     fogColor: new Color(112 / 255, 61 / 255, 139 / 255, 1),
+                    falloff: 0.7,
+                    rayLength: 200.0,
+                    scatteringExponent: 2.7,
+                    dirHeightLine: 10.0,
                 },
                 ssao: {
                     enable: false,
@@ -264,7 +269,7 @@ export class Engine3D {
             type: 'HDRSKY',
             sky: null,
             skyExposure: 1.0,
-            defaultFar: 65536,//can't be to big
+            defaultFar: 65536,//can't be too big
             defaultNear: 1,
         },
         light: {
@@ -395,45 +400,76 @@ export class Engine3D {
         this.resume();
     }
 
+    private static updateGUIPixelRatio(screenWidth: number, screenHeight: number) {
+        let xyRatioSolution = GUIConfig.solution.x / GUIConfig.solution.y;
+        let xyRatioCurrent = screenWidth / screenHeight;
+        if (xyRatioSolution < xyRatioCurrent) {
+            GUIConfig.pixelRatio = screenHeight / GUIConfig.solution.y;
+        } else {
+            GUIConfig.pixelRatio = screenWidth / GUIConfig.solution.x;
+        }
+    }
+
     private static updateFrame(time: number) {
         Time.delta = time - Time.time;
         Time.time = time;
         Time.frame += 1;
+        this.updateGUIPixelRatio(webGPUContext.canvas.clientWidth, webGPUContext.canvas.clientHeight);
 
         Interpolator.tick(Time.delta);
         if (this._beforeRender) this._beforeRender();
 
         /****** auto before update with component list *****/
-        ComponentCollect.componentsBeforeUpdateList.forEach((v, k) => {
-            v.forEach((c, f) => {
+        for (const iterator of ComponentCollect.componentsBeforeUpdateList) {
+            let k = iterator[0];
+            let v = iterator[1];
+            for (const iterator2 of v) {
+                let f = iterator2[0];
+                let c = iterator2[1];
                 if (f.enable) {
                     c(k);
                 };
-            })
-        });
+            }
+        }
 
         let command = webGPUContext.device.createCommandEncoder();
-        ComponentCollect.componentsComputeList.forEach((v, k) => {
-            v.forEach((c, f) => {
+        for (const iterator of ComponentCollect.componentsComputeList) {
+            let k = iterator[0];
+            let v = iterator[1];
+            for (const iterator2 of v) {
+                let f = iterator2[0];
+                let c = iterator2[1];
                 if (f.enable) {
                     c(k, command);
                 };
-            })
-        });
+            }
+        }
         webGPUContext.device.queue.submit([command.finish()]);
+
+        /* update all transform */
+        let views = this.views;
+        let i = 0;
+        for (i = 0; i < views.length; i++) {
+            const view = views[i];
+            view.scene.transform.updateChildTransform()
+        }
 
         /****** auto update global matrix share buffer write to gpu *****/
         let globalMatrixBindGroup = GlobalBindGroup.modelMatrixBindGroup;
         globalMatrixBindGroup.writeBuffer();
 
         /****** auto update with component list *****/
-        ComponentCollect.componentsUpdateList.forEach((v, k) => {
-            v.forEach((c, f) => {
+        for (const iterator of ComponentCollect.componentsUpdateList) {
+            let k = iterator[0];
+            let v = iterator[1];
+            for (const iterator2 of v) {
+                let f = iterator2[0];
+                let c = iterator2[1];
                 if (f.enable) {
                     c(k);
                 };
-            })
-        });
+            }
+        }
 
         if (this._renderLoop) {
             this._renderLoop();
@@ -444,13 +480,17 @@ export class Engine3D {
         });
 
         /****** auto late update with component list *****/
-        ComponentCollect.componentsLateUpdateList.forEach((v, k) => {
-            v.forEach((c, f) => {
+        for (const iterator of ComponentCollect.componentsLateUpdateList) {
+            let k = iterator[0];
+            let v = iterator[1];
+            for (const iterator2 of v) {
+                let f = iterator2[0];
+                let c = iterator2[1];
                 if (f.enable) {
                     c(k);
                 };
-            })
-        });
+            }
+        }
 
         if (this._lateRender) this._lateRender();
     }

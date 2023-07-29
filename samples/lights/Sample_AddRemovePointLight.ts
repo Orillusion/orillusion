@@ -29,8 +29,6 @@ class Sample_AddRemovePointLight {
         view.camera = mainCamera;
 
         Engine3D.startRenderViews([view]);
-        sky.relativeTransform = this.lightObj.transform;
-
     }
 
     initScene(scene: Scene3D) {
@@ -82,7 +80,7 @@ class Sample_AddRemovePointLight {
         });
 
         GUIHelp.addButton("removePointLight", () => {
-            for (let i = 0; i < Math.min(5, list.length); i++) {
+            for (let i = 0; i < Math.min(1, list.length); i++) {
                 let index = Math.floor(list.length * Math.random());
                 let obj = list[index];
                 if (obj) {

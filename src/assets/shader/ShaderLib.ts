@@ -1,7 +1,6 @@
 import { Bloom_shader } from './post/Bloom_shader';
 import { ClusterDebug_frag } from './materials/program/ClusterDebug_frag';
 import { CubeSky_Shader } from './sky/CubeSky_Shader';
-import { LightStructFrag } from './core/struct/LightStructFrag';
 import { LightingFunction_frag } from './lighting/LightingFunction_frag';
 import { MathShader } from './math/MathShader';
 import { PhysicMaterialUniform_frag } from './materials/uniforms/PhysicMaterialUniform_frag';
@@ -35,6 +34,7 @@ import { BxdfDebug_frag } from './materials/program/BxdfDebug_frag';
 import { Quad_depth2d_frag_wgsl, Quad_depthCube_frag_wgsl, Quad_frag_wgsl, Quad_vert_wgsl } from './quad/Quad_shader';
 import { ColorUtil } from './utils/ColorUtil';
 import { GenerayRandomDir } from './utils/GenerayRandomDir';
+import { ClusterLight, MatrixShader } from '../..';
 
 /**
  * @internal
@@ -44,6 +44,7 @@ export class ShaderLib {
     public static init() {
         ShaderLib.register('MathShader', MathShader);
         ShaderLib.register('FastMathShader', FastMathShader);
+        ShaderLib.register('MatrixShader', MatrixShader);
 
         ShaderLib.register('GlobalUniform', GlobalUniform);
         ShaderLib.register('WorldMatrixUniform', WorldMatrixUniform);
@@ -63,7 +64,7 @@ export class ShaderLib {
         ShaderLib.register('FragmentVarying', FragmentVarying);
         ShaderLib.register('ColorPassFragmentOutput', ColorPassFragmentOutput);
 
-        ShaderLib.register('LightStruct', LightStructFrag);
+        ShaderLib.register('ClusterLight', ClusterLight);
         ShaderLib.register('ShadingInput', ShadingInput);
         ShaderLib.register('IESProfiles_frag', IESProfiles_frag);
 
@@ -82,7 +83,6 @@ export class ShaderLib {
         ShaderLib.register('Clearcoat_frag', Clearcoat_frag);
         ShaderLib.register('LitShader', LitShader);
         ShaderLib.register('PBRLItShader', PBRLItShader);
-
 
         ShaderLib.register('ClusterDebug_frag', ClusterDebug_frag);
         ShaderLib.register('BxdfDebug_frag', BxdfDebug_frag);

@@ -1,16 +1,26 @@
 {
     "name": "@orillusion/core",
-    "version": "0.6.6",
+    "version": "0.6.7",
     "author": "Orillusion",
     "description": "Orillusion WebGPU Engine",
     "main": "./dist/orillusion.umd.js",
     "module": "./dist/orillusion.es.js",
-    "types": "./dist/src/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/types/index.d.ts",
+            "import": "./dist/orillusion.es.js",
+            "require": "./dist/orillusion.umd.js"
+        },
+        "./dev": {
+            "types": "./dist/types/index.d.ts",
+            "import": "./dist/orillusion.es.max.js",
+            "require": "./dist/orillusion.umd.max.js"
+        },
+        "./dist/*": "./dist/*"
+    },
+    "types": "./dist/types/index.d.ts",
     "files": [
-        "dist/src",
-        "dist/orillusion.umd.js",
-        "dist/orillusion.es.js",
-        "tsconfig.json"
+        "dist"
     ],
     "license": "MIT",
     "repository": {
@@ -19,10 +29,10 @@
     },
     "scripts": {
         "dev": "vite",
-        "build": "tsc --p tsconfig.build.json && vite build && npm run build:types && npm run minify:es",
+        "build": "tsc --p tsconfig.build.json && vite build && npm run build:types && npm run minify",
         "build:test": "tsc --p tsconfig.build.json && vite build",
-        "build:types": "tsc --emitDeclarationOnly -p tsconfig.build.json",
-        "minify:es": "uglifyjs dist/orillusion.es.js -o dist/orillusion.es.js -c -m",
+        "build:types": "tsc --emitDeclarationOnly -p tsconfig.build.json && mv dist/src dist/types",
+        "minify": "./node_modules/vite/node_modules/.bin/esbuild dist/orillusion.es.max.js --minify --outfile=dist/orillusion.es.js && ./node_modules/vite/node_modules/.bin/esbuild dist/orillusion.umd.max.js --minify --outfile=dist/orillusion.umd.js",
         "test": "electron test/ci/main.js",
         "test:ci": "xvfb-maybe -- electron --enable-unsafe-webgpu --enable-features=Vulkan --use-vulkan=swiftshader --use-webgpu-adapter=swiftshader --no-sandbox test/ci/main.js",
         "docs": "npm run docs:core && npm run docs:physics && npm run docs:media && npm run docs:stats && npm run docs:particle",
@@ -36,13 +46,12 @@
     },
     "devDependencies": {
         "@webgpu/types": "^0.1.32",
+        "conventional-changelog-cli": "^2.2.2",
+        "electron": "^25.2.0",
         "typedoc": "^0.24.7",
         "typedoc-plugin-markdown": "^3.15.3",
         "typescript": "^5.0.4",
         "vite": "^4.3.9",
-        "conventional-changelog-cli": "^2.2.2",
-        "electron": "^25.0.1",
-        "uglify-js": "^3.17.4",
         "xvfb-maybe": "^0.2.1"
     }
 }

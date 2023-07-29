@@ -44,20 +44,20 @@ export class GUIShader {
         var<private> uvSlice: vec2<f32>;
         var<private> EPSILON: f32 = 0.001;
         
-        fn sliceBorder(s0:f32, scale:f32, border0:vec2<f32>) -> f32 
+        fn sliceBorder(uv:f32, scale:f32, border:vec2<f32>) -> f32 
         {
-          var s = s0;
-          var border = border0;
-          var borderScale = vec2<f32>(border.x / scale, 1.0 - (1.0 - border.y) / scale);
-          if(s < borderScale.x){
-            s *= scale;
-          }else if(s < borderScale.y){
-            var t = (s - borderScale.x) / (borderScale.y - borderScale.x);
-            s = t * (border.y - border.x) + border.x;
-          }else{
-            s = 1.0 - (1.0 - s) * scale;
-          }
-          return s;
+            var s = uv * scale;
+            if(s > border.x){
+                s -= border.x;
+                let centerPartMax = scale - border.x - border.y;
+                let centerPartMin = 1.0 - border.x - border.y;
+                if(s < centerPartMax){
+                    s = border.x + (s / centerPartMax) * centerPartMin;
+                }else{
+                    s = s - centerPartMax + border.x + centerPartMin;
+                }
+            }
+            return s;
         }
 
         fn isInsideAlpha(coord:vec2<f32>, rect:vec4<f32>, cornerRadius0:f32, fadeOutSize0:f32) -> f32
@@ -174,10 +174,15 @@ export class GUIShader {
                 
         struct MaterialUniform{
             scissorRect:vec4<f32>,
-            screen:vec2<f32>,
+
+            screenSize:vec2<f32>,
+            guiSolution:vec2<f32>,
+            
             scissorCornerRadius:f32,
             scissorFadeOutSize:f32,
+
             limitVertex:f32,
+            pixelRatio:f32,
         }
         
         struct VertexOutput {
@@ -244,7 +249,7 @@ export class GUIShader {
             var op = vec2<f32>(0.0001);
             let isValidVertex = vSpriteData.vVisible > 0.5 && vertexIndex < materialUniform.limitVertex;
             if(isValidVertex){
-                op = 2.0 * vertexPosition / materialUniform.screen;
+                op = 2.0 * vertexPosition * materialUniform.pixelRatio  / materialUniform.screenSize;
             }
 
             vertexOut.vLocalPos = vertexPosition;

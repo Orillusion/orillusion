@@ -8,6 +8,8 @@ import { PickCompute } from './picker/PickCompute';
 import { ColliderComponent } from '../components/ColliderComponent';
 import { View3D } from '../core/View3D';
 import { PointerEvent3D } from '../event/eventConst/PointerEvent3D';
+import { HitInfo } from '../components/shape/ColliderShape';
+
 /**
  * Management and triggering for picking 3D objects
  * @group IO
@@ -67,10 +69,12 @@ export class PickFire extends CEventDispatcher {
     * start this manager
     */
     public start() {
-        Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_DOWN, this.onTouchStart, this);
-        Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_UP, this.onTouchEnd, this);
-        Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_CLICK, this.onTouchOnce, this);
-        Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_MOVE, this.onTouchMove, this);
+        if (Engine3D.setting.pick.enable) {
+            Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_DOWN, this.onTouchStart, this);
+            Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_UP, this.onTouchEnd, this);
+            Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_CLICK, this.onTouchOnce, this);
+            Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_MOVE, this.onTouchMove, this);
+        }
 
         if (Engine3D.setting.pick.mode == `pixel`) {
             this._pickCompute = new PickCompute();
@@ -158,7 +162,7 @@ export class PickFire extends CEventDispatcher {
 
         if (target != this._lastFocus) {
             if (this._lastFocus && this._lastFocus.object3D) {
-                this._outEvent.target = target.object3D;
+                this._outEvent.target = this._lastFocus.object3D;
                 this._outEvent.data = { pick: this._lastFocus, pickInfo: this.getPickInfo(), mouseCode: this._mouseCode };
                 this._outEvent.ctrlKey = e.ctrlKey;
                 this.dispatchEvent(this._outEvent);
@@ -200,17 +204,21 @@ export class PickFire extends CEventDispatcher {
         this._lastDownTarget = null;
     }
 
-    private findNearestObj(list: ColliderComponent[], camera: Camera3D): ColliderComponent {
-        let target: ColliderComponent = null;
-        let minDistance: number = Number.MAX_VALUE;
-        for (const item of list) {
-            let curDistance = Vector3.distance(item.object3D.transform.worldPosition, camera.transform.worldPosition);
-            if (curDistance < minDistance) {
-                target = item;
-                minDistance = curDistance;
-            }
-        }
-        return target;
+    private findNearestObj(list: HitInfo[], camera: Camera3D): ColliderComponent {
+        // let target: ColliderComponent = null;
+        // let minDistance: number = Number.MAX_VALUE;
+        // for (const item of list) {
+        //     let curDistance = Vector3.distance(item.object3D.transform.worldPosition, camera.transform.worldPosition);
+        //     if (curDistance < minDistance) {
+        //         target = item;
+        //         minDistance = curDistance;
+        //     }
+        // }
+        list.sort((a, b) => {
+            return a.distance > b.distance ? 1 : -1;
+        });
+
+        return list[0]?.collider;
     }
 
     private _colliderOut: ColliderComponent[] = [];
@@ -221,7 +229,7 @@ export class PickFire extends CEventDispatcher {
         return this._colliderOut;
     }
 
-    private _interestList: ColliderComponent[] = [];
+    private _interestList: HitInfo[] = [];
 
     private pick(colliders: ColliderComponent[], camera: Camera3D) {
         this._interestList.length = 0;
@@ -230,16 +238,22 @@ export class PickFire extends CEventDispatcher {
             let meshID = this._pickCompute.getPickMeshID();
             let iterator = this.mouseEnableMap.get(meshID);
             if (iterator) {
-                this._interestList.push(iterator);
+                let position = this._pickCompute.getPickWorldPosition();
+                let distance = Vector3.distance(position, this.ray.origin);
+                this._interestList.push({ distance: distance, collider: iterator, intersectPoint: position });
             }
         } else if (Engine3D.setting.pick.mode == `bound`) {
             this.ray = camera.screenPointToRay(Engine3D.inputSystem.mouseX, Engine3D.inputSystem.mouseY);
-            let intersect: { intersect: boolean; intersectPoint?: Vector3; distance: number };
-            for (const iterator of colliders) {
-                intersect = iterator.enable && iterator.rayPick(this.ray);
-                if (intersect) {
-                    this._interestList.push(iterator);
+            let intersect: HitInfo;
+            for (const collider of colliders) {
+                if (collider.enable) {
+                    intersect = collider.rayPick(this.ray);
+                    if (intersect) {
+                        intersect.collider = collider;
+                        this._interestList.push(intersect);
+                    }
                 }
+
             }
         }
     }

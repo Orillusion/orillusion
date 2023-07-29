@@ -14,9 +14,10 @@ class Context3D {
     public windowHeight: number;
     public canvasConfig: CanvasConfig;
     public super: number = 1.0;
+    private _pixelRatio: number = 1.0;
     // initSize: number[];
     public get pixelRatio() {
-        return this.canvasConfig?.devicePixelRatio || window.devicePixelRatio || 1
+        return this._pixelRatio;
     }
     /**
      * Configure canvas by CanvasConfig
@@ -25,18 +26,19 @@ class Context3D {
      */
     async init(canvasConfig?: CanvasConfig): Promise<boolean> {
         this.canvasConfig = canvasConfig;
+
         if (canvasConfig && canvasConfig.canvas) {
             this.canvas = canvasConfig.canvas;
             if (this.canvas === null)
                 throw new Error('no Canvas')
-            
+
             // check if external canvas has initial with and height style
             const _width = this.canvas.clientWidth, _height = this.canvas.clientHeight
             this.resize(this.canvas.clientWidth, this.canvas.clientHeight)
             // set a initial style if size changed
-            if(_width != this.canvas.clientWidth)
+            if (_width != this.canvas.clientWidth)
                 this.canvas.style.width = _width + 'px'
-            if(_height != this.canvas.clientHeight)
+            if (_height != this.canvas.clientHeight)
                 this.canvas.style.width = _height + 'px'
         } else {
             this.canvas = document.createElement('canvas');
@@ -62,7 +64,7 @@ class Context3D {
 
         // check webgpu support
         if (navigator.gpu === undefined) {
-            throw new Error( `Your browser is not support webgpu!` );
+            throw new Error('Your browser does not support WebGPU!');
         }
         // request adapter
         this.adapter = await navigator.gpu.requestAdapter({
@@ -70,19 +72,29 @@ class Context3D {
             // powerPreference: 'low-power',
         });
         if (this.adapter == null) {
-            throw new Error( `Your browser is not support webgpu!` );
+            throw new Error('Your browser does not support WebGPU!');
         }
         // request device
         this.device = await this.adapter.requestDevice({
-            //requiredFeatures: [`texture-compression-bc`],
+            requiredFeatures: [
+                "bgra8unorm-storage",
+                "depth-clip-control",
+                "depth32float-stencil8",
+                "indirect-first-instance",
+                "rg11b10ufloat-renderable",
+                "texture-compression-bc"
+            ],
             requiredLimits: {
                 minUniformBufferOffsetAlignment: 256,
                 maxStorageBufferBindingSize: this.adapter.limits.maxStorageBufferBindingSize
             }
         });
         if (this.device == null) {
-            throw new Error( `Your browser is not support webgpu!` );
+            throw new Error('Your browser does not support WebGPU!');
         }
+
+        this._pixelRatio = this.canvasConfig?.devicePixelRatio || window.devicePixelRatio || 1;
+        this._pixelRatio = Math.min(this._pixelRatio, 2.0);
 
         // configure webgpu context
         this.device.label = 'device';
@@ -93,7 +105,7 @@ class Context3D {
             format: this.presentationFormat,
             usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
             alphaMode: 'premultiplied',
-            colorSpace: `display-p3`
+            colorSpace: `display-p3`,
         });
 
         // resize canvas size, aspect

@@ -6,7 +6,7 @@ import { ComponentCollect } from '../../gfx/renderJob/collect/ComponentCollect';
 import { RenderLayer } from '../../gfx/renderJob/config/RenderLayer';
 import { Vector3 } from '../../math/Vector3';
 import { BoundUtil } from '../../util/BoundUtil';
-import { UUID } from '../../util/Global';
+import { GetCountInstanceID, UUID } from '../../util/Global';
 import { BoundingBox } from '../bound/BoundingBox';
 import { IBound } from '../bound/IBound';
 import { Object3D } from './Object3D';
@@ -24,13 +24,13 @@ export class Entity extends CEventDispatcher {
      */
     public name: string = '';
 
-    protected readonly _uuid: string = '';
+    protected readonly _instanceID: string = '';
 
     /**
      * The unique identifier of the object.
      */
-    public get uuid(): string {
-        return this._uuid;
+    public get instanceID(): string {
+        return this._instanceID;
     }
 
     /**
@@ -40,18 +40,6 @@ export class Entity extends CEventDispatcher {
      * When using a ray projector, this attribute can also be used to filter out unwanted objects in ray intersection testing.
      */
     private _renderLayer: RenderLayer = RenderLayer.None;
-
-    public get renderLayer(): RenderLayer {
-        return this._renderLayer;
-    }
-
-    public set renderLayer(value: RenderLayer) {
-        for (let i = 0; i < this.entityChildren.length; i++) {
-            const element = this.entityChildren[i];
-            element.renderLayer = value;
-        }
-        this._renderLayer = value;
-    }
 
     /**
      *
@@ -74,6 +62,9 @@ export class Entity extends CEventDispatcher {
      */
     public components: Map<any, IComponent>;
 
+    public numChildren: number = 0;
+
+
     protected waitDisposeComponents: IComponent[];
 
     /**
@@ -82,8 +73,21 @@ export class Entity extends CEventDispatcher {
      */
     protected _bound: IBound;
     protected _boundWorld: IBound;
+    protected _isBoundChange: boolean = true;
     private _dispose: boolean = false;
     // private _visible: boolean = true;
+
+    public get renderLayer(): RenderLayer {
+        return this._renderLayer;
+    }
+
+    public set renderLayer(value: RenderLayer) {
+        for (let i = 0; i < this.entityChildren.length; i++) {
+            const element = this.entityChildren[i];
+            element.renderLayer = value;
+        }
+        this._renderLayer = value;
+    }
 
     /**
      *
@@ -120,15 +124,7 @@ export class Entity extends CEventDispatcher {
         this.entityChildren = [];
         this.components = new Map<any, IComponent>();
         this.waitDisposeComponents = [];
-        this._uuid = UUID();
-    }
-
-    /**
-     *
-     * Returns the number of child objects of an object
-     */
-    public get numChildren(): number {
-        return this.entityChildren.length;
+        this._instanceID = GetCountInstanceID().toString();
     }
 
     /**
@@ -153,7 +149,7 @@ export class Entity extends CEventDispatcher {
             }
             child.transform.parent = this.transform;
             this.entityChildren.push(child);
-            child.transform.notifyLocalChange();
+            this.numChildren = this.entityChildren.length;
             return child;
         }
         return null;
@@ -171,6 +167,7 @@ export class Entity extends CEventDispatcher {
         if (index != -1) {
             this.entityChildren.splice(index, 1);
             child.transform.parent = null;
+            this.numChildren = this.entityChildren.length;
         }
     }
 
@@ -307,25 +304,32 @@ export class Entity extends CEventDispatcher {
         }
     }
 
+    protected onTransformLocalChange(e) {
+        this._isBoundChange = true;
+    }
+
     public get bound(): IBound {
-        if (!this._bound) {
-            this.updateBound();
-        }
+        this.updateBound();
         return this._boundWorld;
     }
 
     public set bound(value: IBound) {
         this._bound = value;
         this._boundWorld = this._bound.clone();
-        this.updateBound();
+        this._isBoundChange = true;
     }
 
-    public updateBound() {
+    private updateBound(): IBound {
         if (!this._bound) {
             this._bound = new BoundingBox(Vector3.ZERO.clone(), Vector3.ONE.clone());
             this._boundWorld = this._bound.clone();
+            this._isBoundChange = true;
         }
-        BoundUtil.transformBound(this.transform.worldMatrix, this._bound as BoundingBox, this._boundWorld as BoundingBox);
+        if (this._isBoundChange) {
+            BoundUtil.transformBound(this.transform.worldMatrix, this._bound as BoundingBox, this._boundWorld as BoundingBox);
+            this._isBoundChange = false;
+        }
+        return this._boundWorld;
     }
 
     /**

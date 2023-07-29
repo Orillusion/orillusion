@@ -1,3 +1,26 @@
+## [0.6.7](https://github.com/Orillusion/orillusion/compare/v0.6.6...v0.6.7) (2023-07-28)
+
+### Bug Fixes
+
+* **engine:** Fixed a series of errors ([#255](https://github.com/Orillusion/orillusion/issues/255)) ([1b30982](https://github.com/Orillusion/orillusion/commit/1b30982659fda063057cada726a01d22e5d56830)) ([#264](https://github.com/Orillusion/orillusion/issues/264)) ([6ae06db](https://github.com/Orillusion/orillusion/commit/6ae06db0878066a3e146eddfcbc7e3b8554c5980)) ([#258](https://github.com/Orillusion/orillusion/issues/258)) ([e5153df](https://github.com/Orillusion/orillusion/commit/e5152df138456696547605f18b526b2ccc977fc4)) 
+* **light:** fix light enable ([#266](https://github.com/Orillusion/orillusion/issues/266)) ([50429ea](https://github.com/Orillusion/orillusion/commit/50429eafcb6a10a3102795f8be40bf1b99a9dc43))
+* **AtmosphericScattering:** fix sky Rendering error on Mac ([#254](https://github.com/Orillusion/orillusion/issues/254)) ([5b57016](https://github.com/Orillusion/orillusion/commit/5b57016f086868a410b7a4f6a61f74b5947d8909))
+
+### Features
+
+* **build:** add non-minified dist version ([acb1c7c](https://github.com/Orillusion/orillusion/commit/acb1c7c673a5c0f0fd018bb5410934f1b737ffdf))
+* **samples:** new graphic/grass/terrain/drawcall/physics samples ([#265](https://github.com/Orillusion/orillusion/issues/265)) ([6e51c74](https://github.com/Orillusion/orillusion/commit/6e51c74f2b8371a20bce957cfdefe27fad8952ee)) ([#258](https://github.com/Orillusion/orillusion/issues/258)) ([e5153df](https://github.com/Orillusion/orillusion/commit/e5152df138456696547605f18b526b2ccc977fc4))
+* **globalFog:** add feature of height fog ([#250](https://github.com/Orillusion/orillusion/issues/250)) ([e9e2f83](https://github.com/Orillusion/orillusion/commit/e9e2f830c0d6e6f9148313c5a2254a2a23718581))
+* **grass:** add grass system ([#258](https://github.com/Orillusion/orillusion/issues/258)) ([e5153df](https://github.com/Orillusion/orillusion/commit/e5152df138456696547605f18b526b2ccc977fc4))
+* **material:** add LambertMaterial ([#258](https://github.com/Orillusion/orillusion/issues/258)) ([e5153df](https://github.com/Orillusion/orillusion/commit/e5152df138456696547605f18b526b2ccc977fc4))
+* **collider:** support MeshCollider ([#264](https://github.com/Orillusion/orillusion/issues/264)) ([6ae06db](https://github.com/Orillusion/orillusion/commit/6ae06db0878066a3e146eddfcbc7e3b8554c5980))
+
+
+### Performance Improvements
+
+* **BoundingBox:** add isBoundChange tag to Entity ([#257](https://github.com/Orillusion/orillusion/issues/257)) ([70ece43](https://github.com/Orillusion/orillusion/commit/70ece43d27afebbaee6e95d46666021afe6604c7))
+
+
 ## [0.6.6](https://github.com/Orillusion/orillusion/compare/v0.6.5...v0.6.6) (2023-06-28)
 
 ### Bug Fixes

@@ -59,7 +59,7 @@ export class ShaderBase {
     public uniforms: { [name: string]: UniformNode };
 
     protected _bufferDic: Map<string, GPUBufferBase>;
-    protected _shaderChange: boolean = false;
+    protected _shaderChange: boolean = true;
     protected _stateChange: boolean = false;
 
     constructor() {
@@ -132,8 +132,13 @@ export class ShaderBase {
      * @param value 
      */
     public setDefine(defineName: string, value: any) {
+        if (this.defineValue[defineName] == null || this.defineValue[defineName] != value) {
+            this.defineValue[defineName] = value;
+            this.noticeStateChange();
+            this.noticeShaderChange();
+            // console.log("USE_CLEARCOAT");
+        }
         this.defineValue[defineName] = value;
-        this.noticeShaderChange();
     }
 
     /**

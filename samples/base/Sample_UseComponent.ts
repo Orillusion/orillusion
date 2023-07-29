@@ -1,5 +1,6 @@
 import { Engine3D, Scene3D, CameraUtil, View3D, AtmosphericComponent, ComponentBase, Time, AxisObject, Object3DUtil, KelvinUtil, DirectLight, Object3D, HoverCameraController } from "@orillusion/core";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
+import { GUIUtil } from "@samples/utils/GUIUtil";
 
 // sample use component
 class Sample_UseComponent {
@@ -37,6 +38,23 @@ class Sample_UseComponent {
         GUIHelp.init();
         GUIHelp.add(component, 'enable');
         GUIHelp.open();
+
+        /******** light *******/
+        {
+            let lightObj3D = new Object3D();
+            lightObj3D.x = 0;
+            lightObj3D.y = 30;
+            lightObj3D.z = -40;
+            lightObj3D.rotationX = 45;
+            lightObj3D.rotationY = 0;
+            lightObj3D.rotationZ = 0;
+            let directLight = lightObj3D.addComponent(DirectLight);
+            directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
+            directLight.castShadow = true;
+            directLight.intensity = 40;
+            GUIUtil.renderDirLight(directLight);
+            scene.addChild(lightObj3D);
+        }
     }
 }
 

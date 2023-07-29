@@ -13,5 +13,6 @@ export enum VertexAttributeStride {
     joints1 = 4,
     weights1 = 4,
     vIndex = 1,
+    weight = 1,
     a_morphPositions_0 = 3,
 }

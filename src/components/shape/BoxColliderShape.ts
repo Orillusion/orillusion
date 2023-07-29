@@ -2,7 +2,7 @@ import { BoundingBox } from "../../core/bound/BoundingBox";
 import { Matrix4 } from "../../math/Matrix4";
 import { Ray } from "../../math/Ray";
 import { Vector3 } from "../../math/Vector3";
-import { ColliderShape, ColliderShapeType } from "./ColliderShape";
+import { ColliderShape, ColliderShapeType, HitInfo } from "./ColliderShape";
 
 
 /**
@@ -11,12 +11,8 @@ import { ColliderShape, ColliderShapeType } from "./ColliderShape";
  * @group Collider
  */
 export class BoxColliderShape extends ColliderShape {
-    private _pickRet: { intersect: boolean; intersectPoint?: Vector3; distance: number };
+    private _pickRet: HitInfo;
     private readonly box: BoundingBox;
-
-    private static v3_help_0: Vector3 = new Vector3();
-    private static helpMatrix: Matrix4 = new Matrix4();
-    private static helpRay: Ray = new Ray();
 
     /**
      * @constructor
@@ -33,24 +29,23 @@ export class BoxColliderShape extends ColliderShape {
      * @param fromMatrix 
      * @returns 
      */
-    public rayPick(ray: Ray, fromMatrix: Matrix4): { intersect: boolean; intersectPoint?: Vector3; distance: number } {
+    public rayPick(ray: Ray, fromMatrix: Matrix4): HitInfo {
         let box = this.box;
         box.setFromCenterAndSize(this.center, this.size);
 
-        let helpMatrix = BoxColliderShape.helpMatrix;
+        let helpMatrix = ColliderShape.helpMatrix;
         helpMatrix.copyFrom(fromMatrix).invert();
 
-        let helpRay = BoxColliderShape.helpRay.copy(ray);
+        let helpRay = ColliderShape.helpRay.copy(ray);
         helpRay.applyMatrix(helpMatrix);
 
-        let pick = helpRay.intersectBox(this.box, BoxColliderShape.v3_help_0);
+        let pick = helpRay.intersectBox(this.box, ColliderShape.v3_help_0);
         if (pick) {
             if (!this._pickRet) {
-                this._pickRet = { intersect: false, intersectPoint: new Vector3(), distance: 0 };
+                this._pickRet = { intersectPoint: new Vector3(), distance: 0 };
             }
-            this._pickRet.intersect = true;
             this._pickRet.intersectPoint = pick;
-            this._pickRet.distance = Vector3.distance(helpRay.origin, BoxColliderShape.v3_help_0);
+            this._pickRet.distance = Vector3.distance(helpRay.origin, ColliderShape.v3_help_0);
             return this._pickRet;
         }
         return null;

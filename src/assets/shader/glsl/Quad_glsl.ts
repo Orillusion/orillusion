@@ -37,7 +37,7 @@ layout(set = 0, binding = 0) uniform ConstUniform {
     mat4 pvMatrixInv;
     float frame;
     float time;
-    float detail;
+    float delta;
     float shadowBias;
     float skyExposure;
     float renderPassState;

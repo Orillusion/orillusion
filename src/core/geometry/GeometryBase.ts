@@ -31,7 +31,7 @@ export class SubGeometry {
  */
 export class GeometryBase {
 
-    public uuid: string;
+    public instanceID: string;
     public name: string;
     public subGeometries: SubGeometry[] = [];
     public morphTargetsRelative: boolean;
@@ -42,8 +42,10 @@ export class GeometryBase {
     private _attributes: string[];
     private _indicesBuffer: GeometryIndicesBuffer;
     private _vertexBuffer: GeometryVertexBuffer;
+    private _onChange: boolean = true;
+
     constructor() {
-        this.uuid = UUID();
+        this.instanceID = UUID();
 
         this._attributeMap = new Map<string, VertexAttributeData>();
         this._attributes = [];
@@ -138,9 +140,12 @@ export class GeometryBase {
      * @param shaderReflection ShaderReflection
      */
     generate(shaderReflection: ShaderReflection) {
-        this._indicesBuffer.upload(this.getAttribute(VertexAttributeName.indices).data);
-        this._vertexBuffer.createVertexBuffer(this._attributeMap, shaderReflection);
-        this._vertexBuffer.updateAttributes(this._attributeMap);
+        if (this._onChange) {
+            this._onChange = false;
+            this._indicesBuffer.upload(this.getAttribute(VertexAttributeName.indices).data);
+            this._vertexBuffer.createVertexBuffer(this._attributeMap, shaderReflection);
+            this._vertexBuffer.updateAttributes(this._attributeMap);
+        }
     }
 
     public setIndices(data: ArrayBufferData) {
@@ -266,7 +271,7 @@ export class GeometryBase {
     }
 
     destroy(force?: boolean) {
-        this.uuid = null;
+        this.instanceID = null;
         this.name = null;
         this.subGeometries = null;
         this.morphTargetDictionary = null;

@@ -1,6 +1,6 @@
 export let LightingFunction_frag: string = /*wgsl*/ `
 #include "BRDF_frag"
-#include "LightStruct"
+#include "ClusterLight"
 #include "ShadowMapping_frag"
 
 #if USE_IES_PROFILE
@@ -19,7 +19,7 @@ fn calcAttenuation( d : f32 ,  falloffStart : f32 ,  falloffEnd : f32)-> f32
     return saturate((falloffEnd-d) / (falloffEnd - falloffStart));
 }
 
-fn directLighting( albedo:vec3<f32>, N:vec3<f32>, V:vec3<f32>,  roughness:f32 , light:LightData , shadowBias:f32 ) -> vec3<f32> {
+fn directLighting( albedo:vec3<f32>, N:vec3<f32>, V:vec3<f32>,  roughness:f32 , metallic:f32 , light:LightData , shadowBias:f32 ) -> vec3<f32> {
     var color = vec3<f32>(0.0) ;
     #if USE_LIGHT
       var L = -normalize(light.direction.xyz) ;
@@ -28,7 +28,11 @@ fn directLighting( albedo:vec3<f32>, N:vec3<f32>, V:vec3<f32>,  roughness:f32 , 
       var att = light.intensity / LUMEN ;
       if(light.castShadow>=0){
           #if USE_SHADOWMAPING
-            att *= shadowStrut.directShadowVisibility[light.castShadow] ; 
+            for (var j: i32 = 0; j < 8; j += 1) {
+                if(j == light.castShadow){
+                  att *= shadowStrut.directShadowVisibility[j] ; 
+                }
+            }
           #endif
       }
 
@@ -37,13 +41,13 @@ fn directLighting( albedo:vec3<f32>, N:vec3<f32>, V:vec3<f32>,  roughness:f32 , 
       #endif 
 
       #if USE_BRDF
-        color = simpleBRDF(albedo,N,V,L,att,lightColor,fragData.Roughness) ;
+        color = simpleBRDF(albedo,N,V,L,att,lightColor,roughness,metallic) ;
       #endif 
     #endif 
     return color ;
 }
 
-fn pointLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, roughness:f32 , light:LightData ) -> vec3<f32> {
+fn pointLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, roughness:f32 , metallic:f32 ,light:LightData ) -> vec3<f32> {
     var color = vec3<f32>(0.0) ;
     let lightPos = light.position.xyz;
     var dir = lightPos.xyz - WP ;
@@ -58,7 +62,14 @@ fn pointLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, rough
         atten *= 1.0 / max(light.radius,0.001) * light.intensity / LUMEN;
         if( light.castShadow >= 0 )
         {
-            atten *= shadowStrut.pointShadows[light.castShadow] ;
+            #if USE_SHADOWMAPING
+              // atten *= shadowStrut.pointShadows[light.castShadow] ; 
+              for (var j: i32 = 0; j < 8; j += 1) {
+                  if(j == light.castShadow){
+                    atten *= shadowStrut.pointShadows[j] ; 
+                  }
+              }
+            #endif
         }
 
         #if USE_IES_PROFILE
@@ -67,14 +78,13 @@ fn pointLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, rough
 
         var lightColor = light.lightColor.rgb  ;
         lightColor = getHDRColor(lightColor , light.linear )  ;
-        // lightColor = LinearToSrgbBranchless(lightColor.rgb) ;
 
         #if USE_LAMBERT
           color = vec3<f32>(1.0,0.5,1.0) ;
         #endif 
 
         #if USE_BRDF
-          color = (simpleBRDF(albedo,N,V,L,atten,lightColor,fragData.Roughness))  ;
+          color = (simpleBRDF(albedo,N,V,L,atten,lightColor,roughness,metallic))  ;
         #endif 
     } 
     return color ;
@@ -84,7 +94,7 @@ fn getDistanceAtten(  light:LightData , dist : f32 ) -> f32 {
   return 1.0 - smoothstep(0.0,light.range,dist) ;
 }
 
-fn spotLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, roughness:f32 , light:LightData ) -> vec3<f32> {
+fn spotLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, roughness:f32 , metallic:f32 ,light:LightData ) -> vec3<f32> {
     let lightPos = light.position.xyz;
     var dir = lightPos.xyz - WP ;
     let dist = length(dir) ;
@@ -108,12 +118,18 @@ fn spotLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, roughn
           
           }
         }else{
-          atten = 0.0 ;
+            atten = 0.0 ;
         }
 
         if( light.castShadow >= 0 )
         {
-            atten *= shadowStrut.pointShadows[light.castShadow] ;
+            #if USE_SHADOWMAPING
+            for (var j: i32 = 0; j < 8; j += 1) {
+                if(j == light.castShadow){
+                  atten *= shadowStrut.pointShadows[j] ; 
+                }
+            }
+          #endif
         }
 
         #if USE_IES_PROFILE
@@ -127,7 +143,7 @@ fn spotLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, roughn
         #endif 
 
         #if USE_BRDF
-          color = (simpleBRDF(albedo,N,V,L,atten,lightColor,fragData.Roughness)) ;
+          color = (simpleBRDF(albedo,N,V,L,atten,lightColor,roughness,metallic)) ;
         #endif 
     }
     return  color ;

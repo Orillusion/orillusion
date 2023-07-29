@@ -69,7 +69,7 @@ export class RayCastMeshDetail {
         let E2 = v2.subtract(v0, Vector3.HELP_4);
 
         // P
-        let P = ray.direction.cross(E2, Vector3.HELP_5);
+        let P = ray.direction.crossProduct(E2, Vector3.HELP_5);
 
         // determinant
         let det = dot(E1, P);
@@ -106,7 +106,7 @@ export class RayCastMeshDetail {
         }
 
         // Q
-        let Q = T.cross(E1, Vector3.HELP_1);
+        let Q = T.crossProduct(E1, Vector3.HELP_1);
 
         // Calculate v and make sure u + v <= 1
         let v = dot(ray.direction, Q);

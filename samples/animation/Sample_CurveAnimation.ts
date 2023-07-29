@@ -49,7 +49,7 @@ class Sample_AnimCurve {
             let directLight = this.lightObj3D.addComponent(DirectLight);
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             directLight.castShadow = true;
-            directLight.intensity = 10;
+            directLight.intensity = 30;
             this.scene.addChild(this.lightObj3D);
 
             //create animation curve 1
@@ -88,6 +88,7 @@ class Sample_AnimCurve {
         // load a gltf model
         this.Duck = (await Engine3D.res.loadGltf('PBR/Duck/Duck.gltf')) as Object3D;
         this.Duck.scaleX = this.Duck.scaleY = this.Duck.scaleZ = 0.3;
+        this.Duck.name = "Duck"
         this.scene.addChild(this.Duck);
     }
 

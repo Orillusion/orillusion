@@ -19,7 +19,15 @@ export class ComponentBase implements IComponent {
     /**
      * @internal
      */
-    public eventDispatcher: CEventDispatcher;
+    protected _eventDispatcher: CEventDispatcher;
+    public get eventDispatcher() {
+        this._eventDispatcher ||= new CEventDispatcher();
+        return this._eventDispatcher;
+    }
+
+    public set eventDispatcher(value) {
+        console.error('The eventDispatcher should not be set externally!');
+    }
 
     /**
      * @internal
@@ -28,9 +36,6 @@ export class ComponentBase implements IComponent {
 
     private __isStart: boolean = false;
 
-    constructor() {
-        this.eventDispatcher = new CEventDispatcher();
-    }
 
     /**
      * Return the Transform component attached to the Object3D.
@@ -46,9 +51,9 @@ export class ComponentBase implements IComponent {
         if (this._enable != value) {
             this._enable = value;
             if (this._enable) {
-                this.onEnable?.();
+                this.onEnable?.(this.transform.view3D);
             } else {
-                this.onDisable?.();
+                this.onDisable?.(this.transform.view3D);
             }
         }
     }
@@ -69,8 +74,8 @@ export class ComponentBase implements IComponent {
             this.start?.();
             this.__isStart = true;
         }
-        if (this.transform && this.transform.scene3D) {
-            this.onEnable?.();
+        if (this.transform && this.transform.scene3D && this._enable) {
+            this.onEnable?.(this.transform.view3D);
         }
         if (this.onUpdate) {
             this._onUpdate(this.onUpdate.bind(this));
@@ -91,7 +96,7 @@ export class ComponentBase implements IComponent {
 
     private __stop() {
         if (this.transform && this.transform.scene3D) {
-            this.onDisable?.();
+            this.onDisable?.(this.transform.view3D);
         }
         this._onUpdate(null);
         this._onLateUpdate(null);
@@ -119,6 +124,8 @@ export class ComponentBase implements IComponent {
      * @param obj target object3D
      */
     public cloneTo(obj: Object3D) { }
+
+    public copyComponent(from: this): this { return this; }
 
     /**
      * internal

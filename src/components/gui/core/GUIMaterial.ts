@@ -16,7 +16,7 @@ import { GUIShader } from "./GUIShader";
  */
 export class GUIMaterial extends MaterialBase {
     private _scissorRect: Vector4;
-    private _screenSize: Vector2 = new Vector2();
+    private _screenSize: Vector2 = new Vector2(1024, 768);
     private _scissorEnable: boolean = false;
     constructor(space: GUISpace) {
         super();
@@ -28,11 +28,13 @@ export class GUIMaterial extends MaterialBase {
         let shader = this.setShader(shaderKey, shaderKey);
         shader.setShaderEntry(`VertMain`, `FragMain`);
 
-        shader.setUniformVector2('screen', new Vector2(1024, 1024));
+        shader.setUniformVector2('screenSize', this._screenSize);
+        shader.setUniformVector2('guiSolution', this._screenSize);
         shader.setUniformVector4('scissorRect', new Vector4());
         shader.setUniformFloat('scissorCornerRadius', 0.0);
         shader.setUniformFloat('scissorFadeOutSize', 0.0);
-        shader.setUniformFloat('limitVertex', 0);//count: (quadCount + 1) * QuadStruct.vertexCount
+        shader.setUniformFloat('limitVertex', 0);
+        shader.setUniformFloat('pixelRatio', 1);
 
         let shaderState = shader.shaderState;
         // shaderState.useZ = false;
@@ -50,6 +52,11 @@ export class GUIMaterial extends MaterialBase {
     */
     public setLimitVertex(vertexCount: number) {
         this.renderShader.setUniformFloat('limitVertex', vertexCount);
+    }
+
+    public setGUISolution(value: Vector2, pixelRatio: number) {
+        this.renderShader.setUniformVector2('guiSolution', value);
+        this.renderShader.setUniformFloat('pixelRatio', pixelRatio);
     }
 
     public setScissorRect(left: number, bottom: number, right: number, top: number) {
@@ -76,11 +83,11 @@ export class GUIMaterial extends MaterialBase {
     }
 
     /**
-     * Write screen size to the shader
+     * Write screenSize size to the shader
      */
     public setScreenSize(width: number, height: number): this {
         this._screenSize.set(width, height);
-        this.renderShader.setUniformVector2('screen', this._screenSize);
+        this.renderShader.setUniformVector2('screenSize', this._screenSize);
         return this;
     }
 

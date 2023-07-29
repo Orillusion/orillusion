@@ -50,12 +50,12 @@ export class Matrix4 {
     /**
      * matrix do use share bytesArray
      */
-    public static matrixBytes: Float32Array;
+    public static dynamicMatrixBytes: Float32Array;
 
     /**
      * cache all use do matrix 
      */
-    public static globalMatrixRef: Matrix4[];
+    public static dynamicGlobalMatrixRef: Matrix4[];
 
     /**
      * @internal
@@ -122,14 +122,14 @@ export class Matrix4 {
     public static allocMatrix(allocCount: number) {
         this.allocCount = allocCount;
 
-        Matrix4.matrixBytes = new Float32Array(allocCount * 16);
-        Matrix4.buffer = Matrix4.matrixBytes.buffer;
+        Matrix4.dynamicMatrixBytes = new Float32Array(allocCount * 16);
+        Matrix4.buffer = Matrix4.dynamicMatrixBytes.buffer;
         Matrix4.wasmMatrixPtr = 0;
 
-        this.globalMatrixRef ||= [];
-        this.globalMatrixRef.forEach((m) => {
+        this.dynamicGlobalMatrixRef ||= [];
+        this.dynamicGlobalMatrixRef.forEach((m) => {
             let rawData = m.rawData;
-            m.rawData = new Float32Array(Matrix4.matrixBytes.buffer, m.offset, 16);
+            m.rawData = new Float32Array(Matrix4.dynamicMatrixBytes.buffer, m.offset, 16);
             for (let i = 0; i < rawData.length; i++) {
                 m.rawData[i] = rawData[i];
             }
@@ -320,16 +320,16 @@ export class Matrix4 {
     constructor(doMatrix: boolean = false) {
         // if (doMatrix) {
         if (Matrix4.useCount >= Matrix4.allocCount) {
-            Matrix4.allocMatrix(Matrix4.allocCount + 1000);
+            Matrix4.allocMatrix(Matrix4.allocCount + 5000);
         }
 
         this.index = Matrix4.useCount;
         this.offset = Matrix4.useCount * Matrix4.blockBytes + Matrix4.wasmMatrixPtr;
 
-        Matrix4.globalMatrixRef[this.index] = this;
+        Matrix4.dynamicGlobalMatrixRef[this.index] = this;
         Matrix4.useCount++;
         // console.log(this.index);
-        this.rawData = new Float32Array(Matrix4.matrixBytes.buffer, this.offset, 16);
+        this.rawData = new Float32Array(Matrix4.dynamicMatrixBytes.buffer, this.offset, 16);
         // } else {
         //     this.rawData = new Float32Array(16);
         // }
@@ -364,7 +364,7 @@ export class Matrix4 {
             zAxis.normalize();
         }
 
-        xAxis = up.cross(zAxis, xAxis).normalize();
+        xAxis = up.crossProduct(zAxis, xAxis).normalize();
 
         let yAxis = zAxis.crossProduct(xAxis, Vector3.HELP_2).normalize();
 
@@ -725,7 +725,7 @@ export class Matrix4 {
         let data = this.rawData;
 
         let EPSILON: number = 0.000001;
-        let v: Vector3 = Vector3.HELP_0;
+        let v: Vector3 = Vector3.ZERO;
         toDirection.crossProduct(fromDirection, v);
         let e: number = toDirection.dotProduct(fromDirection);
 
@@ -813,7 +813,8 @@ export class Matrix4 {
             let hvxz;
             let hvyz;
 
-            let h = (1.0 - e) / v.dotProduct(v);
+            let v2 = v.dotProduct(v);
+            let h = (1.0 - e) / v2;
             hvx = h * v.x;
             hvz = h * v.z;
             hvxy = hvx * v.y;

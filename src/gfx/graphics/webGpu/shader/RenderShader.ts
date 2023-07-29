@@ -274,11 +274,19 @@ export class RenderShader extends ShaderBase {
             }
             this._textureChange = true;
             this.textures[name] = texture;
+            if (name == "envMap") {
+                this.envMap = texture;
+            } else if (name == "prefilterMap") {
+                this.prefilterMap = texture;
+            }
             texture.bindStateChange(() => {
                 this._textureChange = true;
             }, this);
         }
     }
+
+    public envMap: Texture;
+    public prefilterMap: Texture;
 
     /**
      * Get the texture used in the Render Shader code

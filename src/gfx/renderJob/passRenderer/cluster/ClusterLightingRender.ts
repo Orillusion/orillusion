@@ -86,10 +86,10 @@ export class ClusterLightingRender extends RendererBase {
             this._clusterLightingCompute.workerSizeX = this.clusterTileZ;
         }
 
-        if (lights.length > 0) {
-            let command = GPUContext.beginCommandEncoder();
-            GPUContext.computeCommand(command, [this._clusterGenerateCompute, this._clusterLightingCompute]);
-            GPUContext.endCommandEncoder(command);
-        }
+        // if (lights.length > 0) {
+        let command = GPUContext.beginCommandEncoder();
+        GPUContext.computeCommand(command, [this._clusterGenerateCompute, this._clusterLightingCompute]);
+        GPUContext.endCommandEncoder(command);
+        // }
     }
 }
