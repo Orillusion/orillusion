@@ -63,7 +63,8 @@ export class UniformNode {
             this._type = UniformType.Float32Array;
         } else {
             this.size = 1;
-            this._x = value.x;
+            this._x = value;
+            this._data = value;
             this._type = UniformType.Number;
         }
     }
