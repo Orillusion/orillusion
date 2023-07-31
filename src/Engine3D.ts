@@ -18,6 +18,8 @@ import { ShaderUtil } from './gfx/graphics/webGpu/shader/util/ShaderUtil';
 import { ComponentCollect } from './gfx/renderJob/collect/ComponentCollect';
 import { ShadowLightsCollect } from './gfx/renderJob/collect/ShadowLightsCollect';
 import { GUIConfig } from './components/gui/GUIConfig';
+import { WasmMatrix } from '@orillusion/wasm-matrix/WasmMatrix';
+import { Matrix4 } from '.';
 
 /** 
  * Orillusion 3D Engine
@@ -297,6 +299,10 @@ export class Engine3D {
 
         this.setting = { ...this.setting, ...descriptor.engineSetting }
 
+        await WasmMatrix.isReady();
+
+        await WasmMatrix.init(Matrix4.maxCount);
+
         await webGPUContext.init(descriptor.canvasConfig);
 
         ShaderLib.init();
@@ -447,16 +453,14 @@ export class Engine3D {
         webGPUContext.device.queue.submit([command.finish()]);
 
         /* update all transform */
-        let views = this.views;
-        let i = 0;
-        for (i = 0; i < views.length; i++) {
-            const view = views[i];
-            view.scene.transform.updateChildTransform()
-        }
+        // let views = this.views;
+        // let i = 0;
+        // for (i = 0; i < views.length; i++) {
+        //     const view = views[i];
+        //     view.scene.transform.updateChildTransform()
+        // }
 
-        /****** auto update global matrix share buffer write to gpu *****/
-        let globalMatrixBindGroup = GlobalBindGroup.modelMatrixBindGroup;
-        globalMatrixBindGroup.writeBuffer();
+
 
         /****** auto update with component list *****/
         for (const iterator of ComponentCollect.componentsUpdateList) {
@@ -474,6 +478,13 @@ export class Engine3D {
         if (this._renderLoop) {
             this._renderLoop();
         }
+
+        WasmMatrix.updateAllContinueTransform(0, Matrix4.useCount);
+
+        /****** auto update global matrix share buffer write to gpu *****/
+        let globalMatrixBindGroup = GlobalBindGroup.modelMatrixBindGroup;
+        globalMatrixBindGroup.writeBuffer();
+
 
         this.renderJobs.forEach((v, k) => {
             v.renderFrame();

@@ -1,3 +1,4 @@
+import { WasmMatrix } from "@orillusion/wasm-matrix/WasmMatrix";
 import { Scene3D } from "../core/Scene3D";
 import { View3D } from "../core/View3D";
 import { Object3D } from "../core/entities/Object3D";
@@ -95,8 +96,24 @@ export class Transform extends ComponentBase {
     public _localRot: Vector3;
     private _localRotQuat: Quaternion;
     private _localScale: Vector3;
+
+
+    private _localDetailPos: Vector3;
+    private _localDetailRot: Vector3;
+    private _localDetailScale: Vector3;
+
+
+    index: number;
     // public localMatrix: Matrix4;
-    public _localChange: boolean = true;
+    // private _localChange: boolean = true;
+    public get localChange(): boolean {
+        return WasmMatrix.matrixStateBuffer[this.index * 2] != 0;
+    }
+
+    public set localChange(value: boolean) {
+        // WasmMatrix.matrixStateBuffer[this.index * 2] = value ? WasmMatrix.matrixStateBuffer[this.index * 2] | 0x01 | 0x02 | 0x04 : 0;
+        WasmMatrix.matrixStateBuffer[this.index * 2] |= value ? 0x01 | 0x02 | 0x04 : 0;
+    }
 
     private _forward: Vector3 = new Vector3();
     private _back: Vector3 = new Vector3();
@@ -125,6 +142,8 @@ export class Transform extends ComponentBase {
         //if (this._parent !== value){}
         let lastParent = this._parent?.object3D;
         this._parent = value;
+        WasmMatrix.setParent(this.index, value ? value.worldMatrix.index : -1);
+        // WasmMatrix.setParent(this.index, value ? value.worldMatrix.index : -1);
         let hasRoot = value ? value.scene3D : null;
         if (!hasRoot) {
             this.object3D.components.forEach((c) => {
@@ -184,10 +203,15 @@ export class Transform extends ComponentBase {
     constructor() {
         super();
         this._worldMatrix = new Matrix4(true);
+        this.index = this._worldMatrix.index;
         this._localPos = new Vector3();
         this._localRot = new Vector3();
         this._localRotQuat = new Quaternion();
         this._localScale = new Vector3(1, 1, 1);
+
+        WasmMatrix.setScale(this.index, this._localScale.x, this._localScale.y, this._localScale.z);
+        WasmMatrix.setRotation(this.index, this._localRot.x, this._localRot.y, this._localRot.z);
+        WasmMatrix.setTranslate(this.index, this._localPos.x, this._localPos.y, this._localPos.z);
     }
 
     awake() { }
@@ -201,13 +225,15 @@ export class Transform extends ComponentBase {
     * @internal
     */
     public notifyLocalChange() {
-        this._localChange = true;
+        this.localChange = true;
         if (this.object3D) {
-            for (let child of this.object3D.entityChildren) {
-                child.transform.notifyLocalChange();
+            let entityChildren = this.object3D.entityChildren;
+            let i = 0, len = entityChildren.length;
+            for (i = 0; i < len; i++) {
+                const transform = entityChildren[i].transform;
+                transform.notifyLocalChange();
             }
         }
-        this.eventDispatcher.dispatchEvent(this.eventLocalChange);
     }
 
     public get up(): Vector3 {
@@ -357,23 +383,21 @@ export class Transform extends ComponentBase {
      * Update the matrix4 in world space
      */
     public updateWorldMatrix(force: boolean = false) {
-        if (this._localChange || force) {
+        if (this.localChange || force) {
             if (this.parent) {
                 // this._localRot.y += this.rotatingY;
                 makeMatrix44(this._localRot, this._localPos, this.localScale, this._worldMatrix);
                 append(this._worldMatrix, this.parent.worldMatrix, this._worldMatrix);
-                // WasmMatrix4.makeMatrix44Append(this._localRot, this._localPos, this.localScale, this._worldMatrix, this._worldMatrix, this.parent.worldMatrix, this._worldMatrix);
             } else {
                 makeMatrix44(this._localRot, this._localPos, this.localScale, this._worldMatrix);
-                // WasmMatrix4.makeMatrix44(this._localRot, this._localPos, this.localScale, this._worldMatrix);
             }
+            this.localChange = false;
         }
-        this._localChange = false;
     }
 
     public updateChildTransform() {
         let self = this;
-        if (self._localChange) {
+        if (self.localChange) {
             self.updateWorldMatrix();
         }
         if (self.object3D.numChildren > 0) {
@@ -441,6 +465,8 @@ export class Transform extends ComponentBase {
     public set x(value: number) {
         if (this._localPos.x != value) {
             this._localPos.x = value;
+
+            WasmMatrix.setTranslate(this.index, this._localPos.x, this._localPos.y, this._localPos.z);
             this.notifyLocalChange();
             this.onPositionChange?.();
 
@@ -460,6 +486,7 @@ export class Transform extends ComponentBase {
     public set y(value: number) {
         if (this._localPos.y != value) {
             this._localPos.y = value;
+            WasmMatrix.setTranslate(this.index, this._localPos.x, this._localPos.y, this._localPos.z);
             this.notifyLocalChange();
             this.onPositionChange?.();
 
@@ -479,6 +506,7 @@ export class Transform extends ComponentBase {
     public set z(value: number) {
         if (this._localPos.z != value) {
             this._localPos.z = value;
+            WasmMatrix.setTranslate(this.index, this._localPos.x, this._localPos.y, this._localPos.z);
             this.notifyLocalChange();
             this.onPositionChange?.();
 
@@ -498,6 +526,7 @@ export class Transform extends ComponentBase {
     public set scaleX(value: number) {
         if (this._localScale.x != value) {
             this._localScale.x = value;
+            WasmMatrix.setScale(this.index, this._localScale.x, this._localScale.y, this._localScale.z);
             this.notifyLocalChange();
             this.onScaleChange?.();
 
@@ -517,6 +546,7 @@ export class Transform extends ComponentBase {
     public set scaleY(value: number) {
         if (this._localScale.y != value) {
             this._localScale.y = value;
+            WasmMatrix.setScale(this.index, this._localScale.x, this._localScale.y, this._localScale.z);
             this.notifyLocalChange();
             this.onScaleChange?.();
 
@@ -536,6 +566,7 @@ export class Transform extends ComponentBase {
     public set scaleZ(value: number) {
         if (this._localScale.z != value) {
             this._localScale.z = value;
+            WasmMatrix.setScale(this.index, this._localScale.x, this._localScale.y, this._localScale.z);
             this.notifyLocalChange();
             this.onScaleChange?.();
 
@@ -556,6 +587,7 @@ export class Transform extends ComponentBase {
     public set rotationX(value: number) {
         if (this._localRot.x != value) {
             this._localRot.x = value;
+            WasmMatrix.setRotation(this.index, this._localRot.x, this._localRot.y, this._localRot.z);
             this.notifyLocalChange();
             this.onRotationChange?.();
 
@@ -575,6 +607,7 @@ export class Transform extends ComponentBase {
     public set rotationY(value: number) {
         if (this._localRot.y != value) {
             this._localRot.y = value;
+            WasmMatrix.setRotation(this.index, this._localRot.x, this._localRot.y, this._localRot.z);
             this.notifyLocalChange();
             this.onRotationChange?.();
 
@@ -594,6 +627,7 @@ export class Transform extends ComponentBase {
     public set rotationZ(value: number) {
         if (this._localRot.z != value) {
             this._localRot.z = value;
+            WasmMatrix.setRotation(this.index, this._localRot.x, this._localRot.y, this._localRot.z);
             this.notifyLocalChange();
             this.onRotationChange?.();
 
@@ -614,7 +648,9 @@ export class Transform extends ComponentBase {
      * world position
      */
     public get worldPosition(): Vector3 {
-        this.updateWorldMatrix();
+        if (this.localChange) {
+            this.updateWorldMatrix();
+        }
         return this._worldMatrix.position;
     }
 
@@ -622,6 +658,9 @@ export class Transform extends ComponentBase {
         this._localPos.x = v.x;
         this._localPos.y = v.y;
         this._localPos.z = v.z;
+
+        WasmMatrix.setTranslate(this.index, v.x, v.y, v.z);
+
         this.notifyLocalChange();
         this.onPositionChange?.();
 
@@ -641,6 +680,9 @@ export class Transform extends ComponentBase {
         this.rotationX = v.x;
         this.rotationY = v.y;
         this.rotationZ = v.z;
+
+        WasmMatrix.setRotation(this.index, v.x, v.y, v.z);
+
         this.notifyLocalChange();
         this.onRotationChange?.();
 
@@ -661,6 +703,9 @@ export class Transform extends ComponentBase {
         this.scaleX = v.x;
         this.scaleY = v.y;
         this.scaleZ = v.z;
+
+        WasmMatrix.setScale(this.index, v.x, v.y, v.z);
+
         this.notifyLocalChange();
         this.onScaleChange?.();
 
@@ -675,6 +720,34 @@ export class Transform extends ComponentBase {
     public get localScale(): Vector3 {
         return this._localScale;
     }
+
+
+    public get localDetailScale(): Vector3 {
+        return this._localDetailScale;
+    }
+
+    public set localDetailScale(value: Vector3) {
+        this._localDetailScale = value;
+        WasmMatrix.setContinueScale(this.index, value.x, value.y, value.z);
+    }
+
+    public get localDetailRot(): Vector3 {
+        return this._localDetailRot;
+    }
+
+    public set localDetailRot(value: Vector3) {
+        this._localDetailRot = value;
+        WasmMatrix.setContinueRotation(this.index, value.x, value.y, value.z);
+    }
+
+    public get localDetailPos(): Vector3 {
+        return this._localDetailPos;
+    }
+    public set localDetailPos(value: Vector3) {
+        this._localDetailPos = value;
+        WasmMatrix.setContinueTranslate(this.index, value.x, value.y, value.z);
+    }
+
 
     public beforeDestroy(force?: boolean) {
         if (this.parent && this.parent.object3D) {
@@ -705,88 +778,8 @@ export class Transform extends ComponentBase {
         this._left = null;
         this._up = null;
         this._down = null;
-        this._localChange = null;
+        this.localChange = null;
         this._targetPos = null;
     }
-
-    // private _rotateAroundAxisX:number = 0 ;
-    // public set rotateAroundAxisX(value:number){
-    //     this._rotateAroundAxisX = value;
-    //     this.notifyLocalChange();
-
-    //     let quat = Quaternion.HELP_0 ;
-    //     quat.fromAxisAngle(this.right,value);
-    //     // quat.fromEulerAngles(this._rotateAroundAxisX,this._rotateAroundAxisY,this._rotateAroundAxisZ);
-    //     quat.toEulerAngles(this._localRot);
-
-    //     this.notifyLocalChange();
-    //     if( this.onRotationChange ){
-    //         this.onRotationChange();
-    //     }
-
-    //     if (this.events_rot) {
-    //         this.events.dispatchEvent(this.events_rot);
-    //     }
-    // }
-
-    // /**
-    //  *
-    //  */
-    // public get rotateAroundAxisX():number {
-    //     return this._rotateAroundAxisX ;
-    // }
-
-    // private _rotateAroundAxisY:number = 0 ;
-    // public set rotateAroundAxisY(value:number){
-    //     this._rotateAroundAxisY = value;
-    //     this.notifyLocalChange();
-
-    //     let quat = Quaternion.HELP_0 ;
-    //     quat.fromEulerAngles(this._rotateAroundAxisX,this._rotateAroundAxisY,this._rotateAroundAxisZ);
-    //     quat.toEulerAngles(this._localRot);
-
-    //     this.notifyLocalChange();
-    //     if( this.onRotationChange ){
-    //         this.onRotationChange();
-    //     }
-
-    //     if (this.events_rot) {
-    //         this.events.dispatchEvent(this.events_rot);
-    //     }
-    // }
-
-    // /**
-    //  *
-    //  */
-    // public get rotateAroundAxisY():number {
-    //     return this._rotateAroundAxisY ;
-    // }
-
-    // private _rotateAroundAxisZ:number = 0 ;
-    // public set rotateAroundAxisZ(value:number){
-    //     this._rotateAroundAxisZ = value;
-    //     this.notifyLocalChange();
-
-    //     let quat = Quaternion.HELP_0 ;
-    //     quat.fromEulerAngles(this._rotateAroundAxisX,this._rotateAroundAxisY,this._rotateAroundAxisZ);
-    //     quat.toEulerAngles(this._localRot);
-
-    //     this.notifyLocalChange();
-    //     if( this.onRotationChange ){
-    //         this.onRotationChange();
-    //     }
-
-    //     if (this.events_rot) {
-    //         this.events.dispatchEvent(this.events_rot);
-    //     }
-    // }
-
-    // /**
-    //  *
-    //  */
-    // public get rotateAroundAxisZ():number {
-    //     return this._rotateAroundAxisZ ;
-    // }
-
 }
 

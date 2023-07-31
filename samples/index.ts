@@ -20,6 +20,12 @@
     menu.innerHTML = list
     document.body.appendChild(menu)
 
+    const script = document.createElement('script');
+    script.async = true;
+    script.type = "text/javascript";
+    script.src = "packages/wasm-matrix/matrix.js";
+    document.body.appendChild(script)
+
     // change sessionStorage.target on click, and reload iframe
     menu.addEventListener('click', (e: Event) => {
         const button = e.target as HTMLElement

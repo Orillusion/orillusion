@@ -74,7 +74,7 @@ class Sample_drawCall {
         )
 
         let group = new Object3D();
-        let count = 50000;
+        let count = 150000;
 
         GUIHelp.addFolder('info');
         GUIHelp.open();
@@ -103,12 +103,17 @@ class Sample_drawCall {
 
             this._rotList.push((Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 100);
 
+            obj.transform.localDetailRot = new Vector3(
+                (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 50,
+                (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 50,
+                (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 50);
             if (i % 10000 == 0) {
                 ii++;
             }
         }
 
         group.addComponent(InstanceDrawComponent);
+        group.transform.localDetailRot = new Vector3(0, 1.0, 0);
         this._rotList.push(1.0);
 
         group.bound = new BoundingBox(Vector3.SAFE_MIN, Vector3.SAFE_MAX);
@@ -122,8 +127,8 @@ class Sample_drawCall {
             for (let i = 0; i < this._list.length; i++) {
                 const element = this._list[i];
                 // element.transform.rotationY += Time.delta * 0.01 * this._rotList[i];
-                element.transform._localRot.y += Time.delta * 0.01 * this._rotList[i];
-                element.transform._localChange = true;
+                // element.transform._localRot.y += Time.delta * 0.01 * this._rotList[i];
+                element.transform.localChange = true;
             }
         }
     }
