@@ -116,7 +116,14 @@ export class Transform extends ComponentBase {
     public readonly _worldMatrix: Matrix4;
 
     public rotatingX: number = 0;
-    public rotatingY: number = 0;
+    private _rotatingY: number = 0;
+    public get rotatingY(): number {
+        return this._rotatingY;
+    }
+    public set rotatingY(value: number) {
+        this._rotatingY = value;
+        WasmMatrix.setContinueRotation(this.index, 0, this.rotatingY, 0);
+    }
     public rotatingZ: number = 0;
 
     private _targetPos: Vector3;
@@ -139,6 +146,7 @@ export class Transform extends ComponentBase {
         let lastParent = this._parent?.object3D;
         this._parent = value;
         WasmMatrix.setParent(this.index, value ? value.worldMatrix.index : -1);
+        // WasmMatrix.setParent(this.index, value ? value.worldMatrix.index : -1);
         let hasRoot = value ? value.scene3D : null;
         if (!hasRoot) {
             this.object3D.components.forEach((c) => {
@@ -654,6 +662,9 @@ export class Transform extends ComponentBase {
         this._localPos.x = v.x;
         this._localPos.y = v.y;
         this._localPos.z = v.z;
+
+        WasmMatrix.setTranslate(this.index, v.x, v.y, v.z);
+
         this.notifyLocalChange();
         this.onPositionChange?.();
 
@@ -673,6 +684,9 @@ export class Transform extends ComponentBase {
         this.rotationX = v.x;
         this.rotationY = v.y;
         this.rotationZ = v.z;
+
+        WasmMatrix.setRotation(this.index, v.x, v.y, v.z);
+
         this.notifyLocalChange();
         this.onRotationChange?.();
 
@@ -693,6 +707,9 @@ export class Transform extends ComponentBase {
         this.scaleX = v.x;
         this.scaleY = v.y;
         this.scaleZ = v.z;
+
+        WasmMatrix.setScale(this.index, v.x, v.y, v.z);
+
         this.notifyLocalChange();
         this.onScaleChange?.();
 

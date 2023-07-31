@@ -119,18 +119,18 @@ class Sample_drawCall {
             const element = materials[i];
             // element.metallic = 0.97;
             // element.roughness = 0.15;
-            // element.baseColor = new Color().hexToRGB(Color.GOLD);
-            element.baseColor = new Color(
-                Math.random(),
-                Math.random(),
-                Math.random(),
-            );
+            element.baseColor = new Color().hexToRGB(Color.GOLD);
+            // element.baseColor = new Color(
+            //     Math.random(),
+            //     Math.random(),
+            //     Math.random(),
+            // );
         }
 
         // let material = new LitMaterial();
 
         let group = new Object3D();
-        let count = 50000;
+        let count = 180000;
 
         GUIHelp.addFolder('info');
         GUIHelp.open();
@@ -139,7 +139,7 @@ class Sample_drawCall {
         let ii = 0;
         // let count = 70000;
         for (let i = 0; i < count; i++) {
-            let pos = Vector3Ex.sphereXYZ(ii * 60 + 20, ii * 60 + 100, 100, i * 0.001 + 10, 100);
+            let pos = Vector3Ex.sphereXYZ(ii * 100 + 60, ii * 100 + 150, 100, 10, 100);
             // let pos = Vector3Ex.getRandomXYZ(-2, 2);
             let obj = new Object3D();
             let mr = obj.addComponent(MeshRenderer);
@@ -164,7 +164,7 @@ class Sample_drawCall {
             this._rotList.push((Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 100);
             obj.transform.rotatingY = 16 * 0.01 * this._rotList[i];
 
-            if (i % 10000 == 0) {
+            if (i % 20000 == 0) {
                 ii++;
             }
         }
@@ -184,7 +184,8 @@ class Sample_drawCall {
             for (let i = 0; i < this._list.length; i++) {
                 const element = this._list[i];
                 // element.transform.rotationY += Time.delta * 0.01 * this._rotList[i];
-                element.transform._localRot.y += Time.delta * 0.01 * this._rotList[i];
+                // element.transform._localRot.y += Time.delta * 0.01 * this._rotList[i];
+                // element.transform.rotationY += Time.delta * 0.01 * this._rotList[i];
                 element.transform.localChange = true;
             }
         }

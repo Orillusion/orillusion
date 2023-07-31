@@ -166,9 +166,9 @@ export class Vector3Ex {
         return randomDir;
     }
 
-    public static sphereXYZ(radiusMin: number, radiusMax: number, x: number = 1, y: number = 1, z: number = 1) {
+    public static sphereXYZ(radiusMin: number, radiusMax: number, dirX: number = 1, dirY: number = 1, dirZ: number = 1) {
         let r = radiusMin + (radiusMax - radiusMin) * Math.random();
-        let randomDir = new Vector3(Math.random() * x - x * 0.5, Math.random() * y - y * 0.5, Math.random() * z - z * 0.5);
+        let randomDir = new Vector3(Math.random() * dirX - dirX * 0.5, Math.random() * dirY - dirY * 0.5, Math.random() * dirZ - dirZ * 0.5);
         randomDir.normalize();
         randomDir.scaleBy(r);
         return randomDir;

@@ -29,8 +29,7 @@ class Sample_AddRemovePointLight {
         view.camera = mainCamera;
 
         Engine3D.startRenderViews([view]);
-        sky.relativeTransform = this.lightObj.transform;
-
+        // sky.relativeTransform = this.lightObj.transform;
     }
 
     initScene(scene: Scene3D) {
