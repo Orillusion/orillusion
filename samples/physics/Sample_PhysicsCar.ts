@@ -103,7 +103,7 @@ class Sample_PhysicsCar {
             }
 
             keyDown(e) {
-                console.log(e.keyCode);
+                // console.log(e.keyCode);
                 switch (e.keyCode) {
                     case KeyCode.Key_Up:
                         this.actions[this.keysActions['KeyUp']] = true;
@@ -242,7 +242,7 @@ class Sample_PhysicsCar {
 
                 breakingForce = 0;
                 engineForce = 0;
-                console.log(actions);
+                // console.log(actions);
                 if (actions['acceleration']) {
                     if (speed < -1) breakingForce = maxBreakingForce;
                     else engineForce = maxEngineForce;

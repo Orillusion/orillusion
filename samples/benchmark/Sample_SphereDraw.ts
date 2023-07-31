@@ -64,10 +64,7 @@ class Sample_SphereDraw {
         initScene() {
                 let shareGeometry = new BoxGeometry();
                 let materials = [
-                        new LambertMaterial(),
-                        // new LambertMaterial(),
-                        // new LambertMaterial(),
-                        // new LambertMaterial(),
+                        new LambertMaterial()
                 ];
 
                 for (let i = 0; i < materials.length; i++) {
@@ -101,16 +98,8 @@ class Sample_SphereDraw {
                         obj.transform.scaleZ = Math.random() * 5 + 1;
 
                         obj.transform.forward = d;
-                        // obj.transform.rotationX = Math.random() * 360; 
-                        // obj.transform.rotationY = Math.random() * 360;
-                        // obj.transform.rotationZ = Math.random() * 360;
-
                         obj["rot"] = (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 20;
                 }
-                group.addComponent(InstanceDrawComponent);
-                group["rot"] = 1.0;
-                group.bound = new BoundingBox(Vector3.SAFE_MIN, Vector3.SAFE_MAX);
-                this._list.push(group);
         }
 
         renderLoop() {

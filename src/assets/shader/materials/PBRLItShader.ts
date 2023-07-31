@@ -27,13 +27,6 @@ export let PBRLItShader: string = /*wgsl*/ `
         var maskMap: texture_2d<f32>;
     #endif
 
-    #if USE_MR
-    @group(1) @binding(auto)
-    var maskMapSampler: sampler;
-    @group(1) @binding(auto)
-    var maskMap: texture_2d<f32>;
-    #endif
-
     #if USE_AOTEX
         @group(1) @binding(auto)
         var aoMapSampler: sampler;

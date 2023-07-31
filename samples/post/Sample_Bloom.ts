@@ -39,7 +39,7 @@ class Sample_Bloom {
 		post.blurX = 4;
 		post.blurY = 4;
 		post.luminosityThreshold = 1.5;
-		post.strength = 1.0;
+		post.strength = 4.0;
 		this.gui();
 	}
 
@@ -63,7 +63,7 @@ class Sample_Bloom {
 			mat.aoMap = Engine3D.res.whiteTexture;
 			mat.maskMap = Engine3D.res.createTexture(32, 32, 255.0, 255.0, 0.0, 1);
 			mat.emissiveMap = Engine3D.res.blackTexture;
-			mat.roughness = 1.0;
+			mat.roughness = 1.5;
 			mat.metallic = 0.0;
 
 			let floor = new Object3D();
@@ -104,7 +104,7 @@ class Sample_Bloom {
 					let litMat = new LitMaterial();
 					litMat.emissiveMap = Engine3D.res.whiteTexture;
 					litMat.emissiveColor = new Color(0.0, 0.0, 1.0);
-					litMat.emissiveIntensity = 2;
+					litMat.emissiveIntensity = 5.0;
 					let sp = new Object3D();
 					let mr = sp.addComponent(MeshRenderer);
 					mr.geometry = new SphereGeometry(15, 30, 30);
@@ -119,7 +119,7 @@ class Sample_Bloom {
 					let litMat = new LitMaterial();
 					litMat.emissiveMap = Engine3D.res.whiteTexture;
 					litMat.emissiveColor = new Color(1.0, 1.0, 0.0);
-					litMat.emissiveIntensity = 2;
+					litMat.emissiveIntensity = 5;
 					let sp = new Object3D();
 					let mr = sp.addComponent(MeshRenderer);
 					mr.geometry = new SphereGeometry(15, 30, 30);
@@ -142,7 +142,7 @@ class Sample_Bloom {
 		GUIHelp.add(post, "blurX", 0.0, 5, 1);
 		GUIHelp.add(post, "blurY", 0.0, 5, 1);
 		GUIHelp.add(post, "radius", 0.0, 5, 1);
-		GUIHelp.add(post, "luminosityThreshold", 0.0, 10, 0.001);
+		GUIHelp.add(post, "luminosityThreshold", 0.0, 5, 0.001);
 		GUIHelp.add(post, "strength", 0.0, 10, 0.001);
 		GUIHelp.endFolder();
 	}

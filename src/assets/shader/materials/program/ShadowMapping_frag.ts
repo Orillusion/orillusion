@@ -31,8 +31,11 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
         pointShadowMapCompare(globalUniform.pointShadowBias);
     }
 
+    const dirCount:i32 = 8 ;
+    const pointCount:i32 = 8 ;
     fn directShadowMaping(shadowBias: f32)  {
-        for (var i: i32 = 0; i < 8 ; i = i + 1) {
+       
+        for (var i: i32 = 0; i < dirCount ; i = i + 1) {
           if( i >= shadowBuffer.nDirShadowStart && i <= shadowBuffer.nDirShadowEnd ){
             let ldx = shadowBuffer.shadowLights[i];
             var light = lightBuffer[ldx];
@@ -72,17 +75,12 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
     fn pointShadowMapCompare(shadowBias: f32){
       let worldPos = ORI_VertexVarying.vWorldPos.xyz;
       let offset = 0.1;
-      // let lightIndex = getCluster(ORI_VertexVarying.fragCoord);
-      // let start = max(lightIndex.start, 0.0);
-      // let count = max(lightIndex.count, 0.0);
-      // let end = max(start + count, 0.0);
 
-      for (var i: i32 = 0; i < 8 ; i = i + 1) {
-        if( i >= shadowBuffer.nPointShadowStart && i <= shadowBuffer.nPointShadowEnd ){
+      for (var i: i32 = 0; i < pointCount ; i = i + 1) {
+        if( i >= shadowBuffer.nPointShadowStart && i < shadowBuffer.nPointShadowEnd ){
           let ldx = shadowBuffer.shadowLights[i];
           let light = lightBuffer[ldx] ;
-          shadowStrut.pointShadows[i] = 1.0;
-  
+
           #if USE_SHADOWMAPING
           let lightPos = light.position.xyz;
           var shadow = 0.0;
@@ -131,7 +129,11 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
           }
           #endif
   
-          shadowStrut.pointShadows[i] = 1.0 - shadow;
+          for (var j = 0; j < pointCount ; j+=1 ) {
+              if(i32(light.castShadow) == j){
+                shadowStrut.pointShadows[j] = 1.0 - shadow ;
+              }
+          }
           #endif
         }
         }
