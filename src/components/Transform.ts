@@ -127,14 +127,14 @@ export class Transform extends ComponentBase {
         this._parent = value;
         let hasRoot = value ? value.scene3D : null;
         if (!hasRoot) {
-            this.object3D.components.forEach((c) => {
+            for (let c of this.object3D.components.values()) {
                 c[`__stop`]();
-            });
+            }
         } else {
             this._scene3d = hasRoot;
-            this.object3D.components.forEach((c) => {
+            for (let c of this.object3D.components.values()) {
                 ComponentCollect.appendWaitStart(this.object3D, c);
-            });
+            }
         }
 
         for (let child of this.object3D.entityChildren) {

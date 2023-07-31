@@ -149,7 +149,6 @@ export class Frustum {
         let sphere: BoundingSphere = object3D.bound as BoundingSphere;
         let c: number = 0;
         let d: number;
-        let p: number;
 
         let worldPos = object3D.transform.worldPosition;
 
@@ -157,11 +156,8 @@ export class Frustum {
         let scx = sphere.center.x + worldPos.x;
         let scy = sphere.center.y + worldPos.y;
         let scz = sphere.center.z + worldPos.z;
-        let planes = this.planes;
-        let plane: Vector3;
 
-        for (p = 0; p < 6; p++) {
-            plane = planes[p];
+        for (let plane of this.planes) {
             d = plane.x * scx + plane.y * scy + plane.z * scz + plane.w;
             if (d <= -sr) return 0;
             if (d > sr) c++;
@@ -170,27 +166,34 @@ export class Frustum {
         return c === 6 ? 2 : 1;
     }
 
-    public containsBox(obj: Object3D) {
-        let box = obj.bound;
+    public containsBox(box): number {
         let c = 0;
         let d;
-        let p;
 
         let r = Math.max(box.size.x, box.size.y, box.size.z);
         let sr = r * 2;
         let scx = box.center.x;
         let scy = box.center.y;
         let scz = box.center.z;
-        let planes = this.planes;
-        let plane;
 
-        for (p = 0; p < 6; p++) {
-            plane = planes[p];
+        for (let plane of this.planes) {
             d = plane.x * scx + plane.y * scy + plane.z * scz + plane.w;
             if (d <= -sr) return 0;
             if (d > sr) c++;
         }
 
+        return c === 6 ? 2 : 1;
+    }
+
+    public containsBox2(box): number {
+        let c = 0;
+        let d;
+        let r = 1.74 * Math.max(box.extents.x, box.extents.y, box.extents.z);//sqrt(3)
+        for (let plane of this.planes) {
+            d = plane.x * box.center.x + plane.y * box.center.y + plane.z * box.center.z + plane.w;
+            if (d <= -r) return 0;
+            if (d > r) c++;
+        }
         return c === 6 ? 2 : 1;
     }
 }
