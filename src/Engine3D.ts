@@ -479,7 +479,7 @@ export class Engine3D {
             this._renderLoop();
         }
 
-        WasmMatrix.updateAllContinueTransform(0, Matrix4.useCount);
+        WasmMatrix.updateAllContinueTransform(0, Matrix4.useCount, Time.delta);
 
         /****** auto update global matrix share buffer write to gpu *****/
         let globalMatrixBindGroup = GlobalBindGroup.modelMatrixBindGroup;

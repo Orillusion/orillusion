@@ -37,7 +37,7 @@ export class WasmMatrix {
 
     public static init(count: number) {
         // this.wasm = window['wasmMatrix'];
-        this.wasm._initialize(count, 8);
+        this.wasm._initialize(count, 16);
 
         this.matrixBufferPtr = this.wasm._getMatrixBufferPtr();
         this.matrixSRTBufferPtr = this.wasm._getSRTPtr();
@@ -79,8 +79,8 @@ export class WasmMatrix {
         this.matrixSRTBuffer[matIndex * 9 + 2] = z;
     }
 
-    public static updateAllContinueTransform(start: number, end: number) {
-        this.wasm._updateAllMatrixContinueTransform(start, end);
+    public static updateAllContinueTransform(start: number, end: number, dt: number) {
+        this.wasm._updateAllMatrixContinueTransform(start, end, dt);
     }
 
     public static setContinueTranslate(matIndex: number, x: number, y: number, z: number) {

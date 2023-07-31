@@ -111,8 +111,7 @@ export class Transform extends ComponentBase {
     }
 
     public set localChange(value: boolean) {
-        // WasmMatrix.matrixStateBuffer[this.index * 2] = value ? WasmMatrix.matrixStateBuffer[this.index * 2] | 0x01 | 0x02 | 0x04 : 0;
-        WasmMatrix.matrixStateBuffer[this.index * 2] |= value ? 0x01 | 0x02 | 0x04 : 0;
+        WasmMatrix.matrixStateBuffer[this.index * 2] = value ? 1 : 0;
     }
 
     private _forward: Vector3 = new Vector3();

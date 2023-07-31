@@ -74,7 +74,7 @@ class Sample_drawCall {
         )
 
         let group = new Object3D();
-        let count = 150000;
+        let count = 18 * 10000;
 
         GUIHelp.addFolder('info');
         GUIHelp.open();
