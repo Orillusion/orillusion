@@ -48,11 +48,13 @@ export class Sample_OctTreeBox {
         GUIHelp.add(this.movingBox.center, 'x', -100, 100, 1).onChange(() => { updateBox(); });
         GUIHelp.add(this.movingBox.center, 'y', -100, 100, 1).onChange(() => { updateBox(); });
         GUIHelp.add(this.movingBox.center, 'z', -100, 100, 1).onChange(() => { updateBox(); });
+        GUIHelp.open();
         GUIHelp.endFolder();
         GUIHelp.addFolder('Size');
         GUIHelp.add(this.movingBox.size, 'x', 1, 200, 1).onChange(() => { updateBox(); });
         GUIHelp.add(this.movingBox.size, 'y', 1, 200, 1).onChange(() => { updateBox(); });
         GUIHelp.add(this.movingBox.size, 'z', 1, 200, 1).onChange(() => { updateBox(); });
+        GUIHelp.open();
         GUIHelp.endFolder();
     }
 

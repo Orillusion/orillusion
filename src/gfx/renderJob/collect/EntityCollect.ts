@@ -1,5 +1,5 @@
 
-import { View3D } from '../../..';
+import { Frustum, View3D } from '../../..';
 import { Engine3D } from '../../../Engine3D';
 import { ILight } from '../../../components/lights/ILight';
 import { RenderNode } from '../../../components/renderer/RenderNode';
@@ -74,7 +74,8 @@ export class EntityCollect {
         this._collectInfo = new CollectInfo();
         this._renderShaderCollect = new RenderShaderCollect();
         this._opaqueOctrees = new Map<Scene3D, Octree>();
-        this._transparentOctrees = new Map<Scene3D, Octree>();    }
+        this._transparentOctrees = new Map<Scene3D, Octree>();
+    }
 
     private getPashList(root: Scene3D, renderNode: RenderNode) {
         if (renderNode[`renderOrder`] < 3000) {
@@ -259,21 +260,22 @@ export class EntityCollect {
         this._collectInfo.clean();
         this._collectInfo.sky = this.sky;
 
+        if (Engine3D.setting.occlusionQuery.octree) {
+            this._collectInfo.opTree = this.getOctree(scene, false);
+            this._collectInfo.trTree = this.getOctree(scene, true);
+        }
+
         let list2 = this._op_RenderNodes.get(scene);
         if (list2) {
             this._collectInfo.opaqueList = list2.concat();
-            this._collectInfo.offset = list2.length;
         }
         let list5 = this._tr_RenderNodes.get(scene);
         if (list5) {
             this._collectInfo.transparentList = list5.concat();
         }
-        this._collectInfo.opTree = this.getOctree(scene, false);
-        this._collectInfo.trTree = this.getOctree(scene, true);
 
         return this._collectInfo;
     }
-
 
     public getOpRenderGroup(scene: Scene3D): EntityBatchCollect {
         return this._op_renderGroup.get(scene);

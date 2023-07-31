@@ -58,11 +58,12 @@ export class OcclusionSystem {
         }
         cameraViewRenderList.clear();
         EntityCollect.instance.autoSortRenderNodes(scene);
-        let nodes = EntityCollect.instance.getRenderNodes(scene);
+        // let nodes = EntityCollect.instance.getRenderNodes(scene);
 
         let collectInfo = EntityCollect.instance.getRenderNodes(scene);
         if (Engine3D.setting.occlusionQuery.octree) {
-            let fillterList: OctreeEntity[] = [];
+            let opaqueList: OctreeEntity[] = [];
+            let transparentList: OctreeEntity[] = [];
             // let now = performance.now();
             // {
             //     let range = camera.frustum.genBox(camera.pvMatrixInv);
@@ -72,12 +73,20 @@ export class OcclusionSystem {
             //     collectInfo.opTree.boxCasts(this._frustumBound, fillterList);
             //     collectInfo.trTree.boxCasts(this._frustumBound, fillterList);
             // }
-            collectInfo.opTree.frustumCasts(camera.frustum, fillterList);
-            collectInfo.trTree.frustumCasts(camera.frustum, fillterList);
+
+            collectInfo.opaqueList = [];
+            collectInfo.transparentList = [];
+            collectInfo.opTree.frustumCasts(camera.frustum, opaqueList);
+            collectInfo.trTree.frustumCasts(camera.frustum, transparentList);
 
             // console.log('cast', performance.now() - now, fillterList.length);
-            for (let item of fillterList) {
+            for (let item of opaqueList) {
                 cameraViewRenderList.set(item.renderer, 1);
+                collectInfo.opaqueList.push(item.renderer);
+            }
+            for (let item of transparentList) {
+                cameraViewRenderList.set(item.renderer, 1);
+                collectInfo.transparentList.push(item.renderer);
             }
         } else {
             // let now = performance.now();
