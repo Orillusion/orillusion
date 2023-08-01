@@ -15,11 +15,9 @@ export class OcclusionSystem {
     private _renderList: Map<Camera3D, Map<RenderNode, number>>;
 
     public static enable = true;
-    private _frustumBound: BoundingBox;
 
     constructor() {
         this._renderList = new Map<Camera3D, Map<RenderNode, number>>();
-        this._frustumBound = new BoundingBox();
     }
 
     /**
@@ -58,35 +56,26 @@ export class OcclusionSystem {
         }
         cameraViewRenderList.clear();
         EntityCollect.instance.autoSortRenderNodes(scene);
-        // let nodes = EntityCollect.instance.getRenderNodes(scene);
 
         let collectInfo = EntityCollect.instance.getRenderNodes(scene);
         if (Engine3D.setting.occlusionQuery.octree) {
-            let opaqueList: OctreeEntity[] = [];
-            let transparentList: OctreeEntity[] = [];
+            let rendererList: OctreeEntity[] = [];
             // let now = performance.now();
-            // {
-            //     let range = camera.frustum.genBox(camera.pvMatrixInv);
-            //     this._frustumBound.min.set(range.minX, range.minY, range.minZ);
-            //     this._frustumBound.max.set(range.maxX, range.maxY, range.maxZ);
-            //     this._frustumBound.setFromMinMax(this._frustumBound.min, this._frustumBound.max);
-            //     collectInfo.opTree.boxCasts(this._frustumBound, fillterList);
-            //     collectInfo.trTree.boxCasts(this._frustumBound, fillterList);
-            // }
+            // collectInfo.rendererOctree.boxCasts(camera.frustum.boundingBox, rendererList);
 
             collectInfo.opaqueList = [];
             collectInfo.transparentList = [];
-            collectInfo.opTree.frustumCasts(camera.frustum, opaqueList);
-            collectInfo.trTree.frustumCasts(camera.frustum, transparentList);
+            collectInfo.rendererOctree.frustumCasts(camera.frustum, rendererList);
 
             // console.log('cast', performance.now() - now, fillterList.length);
-            for (let item of opaqueList) {
+            for (let item of rendererList) {
                 cameraViewRenderList.set(item.renderer, 1);
-                collectInfo.opaqueList.push(item.renderer);
-            }
-            for (let item of transparentList) {
-                cameraViewRenderList.set(item.renderer, 1);
-                collectInfo.transparentList.push(item.renderer);
+                let renderer = item.renderer;
+                if (renderer.renderOrder >= 3000) {
+                    collectInfo.transparentList.push(item.renderer);
+                } else {
+                    collectInfo.opaqueList.push(item.renderer);
+                }
             }
         } else {
             // let now = performance.now();

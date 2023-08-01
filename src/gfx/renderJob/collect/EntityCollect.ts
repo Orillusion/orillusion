@@ -1,9 +1,9 @@
 
-import { Frustum, View3D } from '../../..';
 import { Engine3D } from '../../../Engine3D';
 import { ILight } from '../../../components/lights/ILight';
 import { RenderNode } from '../../../components/renderer/RenderNode';
 import { Scene3D } from '../../../core/Scene3D';
+import { View3D } from '../../../core/View3D';
 import { BoundingBox } from '../../../core/bound/BoundingBox';
 import { Octree } from '../../../core/tree/octree/Octree';
 import { Vector3 } from '../../../math/Vector3';
@@ -27,8 +27,7 @@ export class EntityCollect {
 
     private _op_RenderNodes: Map<Scene3D, RenderNode[]>;
     private _tr_RenderNodes: Map<Scene3D, RenderNode[]>;
-    private _opaqueOctrees: Map<Scene3D, Octree>;
-    private _transparentOctrees: Map<Scene3D, Octree>;
+    private _octreeRenderNodes: Map<Scene3D, Octree>;
 
     private _graphics: Graphic3DBatchRenderer[];
 
@@ -73,14 +72,13 @@ export class EntityCollect {
 
         this._collectInfo = new CollectInfo();
         this._renderShaderCollect = new RenderShaderCollect();
-        this._opaqueOctrees = new Map<Scene3D, Octree>();
-        this._transparentOctrees = new Map<Scene3D, Octree>();
+        this._octreeRenderNodes = new Map<Scene3D, Octree>();
     }
 
     private getPashList(root: Scene3D, renderNode: RenderNode) {
-        if (renderNode[`renderOrder`] < 3000) {
+        if (renderNode.renderOrder < 3000) {
             return this._op_RenderNodes.get(root);
-        } else if (renderNode[`renderOrder`] >= 3000) {
+        } else if (renderNode.renderOrder >= 3000) {
             return this._tr_RenderNodes.get(root);
         }
     }
@@ -88,7 +86,7 @@ export class EntityCollect {
     private sortRenderNode(list: RenderNode[], renderNode: RenderNode) {
         for (let i = list.length - 1; i > 0; i--) {
             const element = list[i];
-            if (element[`renderOrder`] < renderNode[`renderOrder`]) {
+            if (element.renderOrder < renderNode.renderOrder) {
                 list.push(renderNode);
                 return;
             }
@@ -98,7 +96,7 @@ export class EntityCollect {
 
     public addRenderNode(root: Scene3D, renderNode: RenderNode) {
         if (!root) return;
-        let isTransparent: boolean = renderNode[`renderOrder`] >= 3000;
+        let isTransparent: boolean = renderNode.renderOrder >= 3000;
         if (renderNode.hasMask(RendererMask.Sky)) {
             this.sky = renderNode;
         } else if (renderNode instanceof Graphic3DBatchRenderer) {
@@ -121,7 +119,7 @@ export class EntityCollect {
             map.get(root).push(renderNode);
 
             if (Engine3D.setting.occlusionQuery.octree) {
-                renderNode.attachSceneOctree(this.getOctree(root, isTransparent));
+                renderNode.attachSceneOctree(this.getOctree(root));
             }
 
             let list = this.getPashList(root, renderNode);
@@ -135,18 +133,17 @@ export class EntityCollect {
         this._renderShaderCollect.collect_add(renderNode);
     }
 
-    private getOctree(root: Scene3D, transparency?: boolean) {
+    private getOctree(root: Scene3D) {
         let octree: Octree;
         let setting = Engine3D.setting.occlusionQuery.octree;
         if (setting) {
-            let tree = transparency ? this._transparentOctrees : this._opaqueOctrees;
-            octree = tree.get(root);
+            octree = this._octreeRenderNodes.get(root);
             if (!octree) {
                 let center = new Vector3(setting.x, setting.y, setting.z);
                 let size = new Vector3(setting.width, setting.height, setting.depth);
                 let bound = new BoundingBox(center, size);
                 octree = new Octree(bound);
-                tree.set(root, octree);
+                this._octreeRenderNodes.set(root, octree);
             }
         }
         return octree;
@@ -261,8 +258,7 @@ export class EntityCollect {
         this._collectInfo.sky = this.sky;
 
         if (Engine3D.setting.occlusionQuery.octree) {
-            this._collectInfo.opTree = this.getOctree(scene, false);
-            this._collectInfo.trTree = this.getOctree(scene, true);
+            this._collectInfo.rendererOctree = this.getOctree(scene);
         }
 
         let list2 = this._op_RenderNodes.get(scene);
