@@ -33,13 +33,7 @@ export class Entity extends CEventDispatcher {
         return this._instanceID;
     }
 
-    /**
-     *
-     * The layer membership of the object.
-     *  The object is only visible when it has at least one common layer with the camera in use.
-     * When using a ray projector, this attribute can also be used to filter out unwanted objects in ray intersection testing.
-     */
-    private _renderLayer: RenderLayer = RenderLayer.None;
+
 
     /**
      *
@@ -77,17 +71,7 @@ export class Entity extends CEventDispatcher {
     private _dispose: boolean = false;
     // private _visible: boolean = true;
 
-    public get renderLayer(): RenderLayer {
-        return this._renderLayer;
-    }
 
-    public set renderLayer(value: RenderLayer) {
-        for (let i = 0; i < this.entityChildren.length; i++) {
-            const element = this.entityChildren[i];
-            element.renderLayer = value;
-        }
-        this._renderLayer = value;
-    }
 
     /**
      *

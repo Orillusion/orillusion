@@ -20,6 +20,7 @@ import { GetCountInstanceID, UUID } from "../../util/Global";
 import { Reference } from "../../util/Reference";
 import { ComponentBase } from "../ComponentBase";
 import { IESProfiles } from "../lights/IESProfiles";
+import { RenderLayer } from "../../gfx/renderJob/config/RenderLayer";
 
 
 /**
@@ -50,6 +51,13 @@ export class RenderNode extends ComponentBase {
     public needSortOnCameraZ?: boolean;
 
     public preInit: boolean = false;
+    /**
+     *
+     * The layer membership of the object.
+     *  The object is only visible when it has at least one common layer with the camera in use.
+     * When using a ray projector, this attribute can also be used to filter out unwanted objects in ray intersection testing.
+     */
+    private _renderLayer: RenderLayer = RenderLayer.None;
 
     public init() {
         this.rendererMask = RendererMask.Default;
@@ -68,6 +76,18 @@ export class RenderNode extends ComponentBase {
         this.castGI = from.castGI;
         this.rendererMask = from.rendererMask;
         return this;
+    }
+
+    public get renderLayer(): RenderLayer {
+        return this._renderLayer;
+    }
+
+    public set renderLayer(value: RenderLayer) {
+        // for (let i = 0; i < this.object3D.entityChildren.length; i++) {
+        //     const element = this.object3D.entityChildren[i];
+        //     element.renderLayer = value;
+        // }
+        this._renderLayer = value;
     }
 
     public get renderOrder(): number {

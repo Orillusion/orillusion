@@ -98,7 +98,7 @@ export class EntityCollect {
             if (this._graphics.indexOf(renderNode) == -1) {
                 this._graphics.push(renderNode);
             }
-        } else if (!RenderLayerUtil.hasMask(renderNode.object3D.renderLayer, RenderLayer.None)) {
+        } else if (!RenderLayerUtil.hasMask(renderNode.renderLayer, RenderLayer.None)) {
             this.removeRenderNode(root, renderNode);
             if (renderNode[`renderOrder`] < 3000) {
                 if (!this._op_renderGroup.has(root)) {
@@ -139,7 +139,7 @@ export class EntityCollect {
     public removeRenderNode(root: Scene3D, renderNode: RenderNode) {
         if (renderNode.hasMask(RendererMask.Sky)) {
             this.sky = null;
-        } else if (!RenderLayerUtil.hasMask(renderNode.object3D.renderLayer, RenderLayer.None)) {
+        } else if (!RenderLayerUtil.hasMask(renderNode.renderLayer, RenderLayer.None)) {
 
         } else {
             let list = this.getPashList(root, renderNode);

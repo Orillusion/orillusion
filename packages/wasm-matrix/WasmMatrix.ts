@@ -19,18 +19,25 @@ export class WasmMatrix {
     public static async isReady(): Promise<boolean> {
         return new Promise(
             (suc, fail) => {
-                let id = setInterval(() => {
-                    this.wasm = window['wasmMatrix'];
-                    if (this.wasm) {
-                        let ready = this.wasm['calledRun']
-                        if (ready) {
-                            clearInterval(id);
-                            suc(true);
-                        } else {
-                            fail(false);
+                const script = document.createElement('script');
+                script.async = true;
+                script.type = "text/javascript";
+                script.src = "packages/wasm-matrix/matrix.js";
+                document.body.appendChild(script)
+                script.onload = () => {
+                    let id = setInterval(() => {
+                        this.wasm = window['wasmMatrix'];
+                        if (this.wasm) {
+                            let ready = this.wasm['calledRun']
+                            if (ready) {
+                                clearInterval(id);
+                                suc(true);
+                            } else {
+                                // fail(false);
+                            }
                         }
-                    }
-                }, 16);
+                    }, 16);
+                }
             }
         )
     }

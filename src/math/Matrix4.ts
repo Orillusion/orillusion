@@ -24,12 +24,12 @@ export class Matrix4 {
     /**
      * matrix do total count 
      */
-    public static allocCount: number = 200000;
+    public static allocCount: number = 400000;
 
     /**
      * matrix has max limit count
      */
-    public static maxCount: number = 200000;
+    public static maxCount: number = 400000;
 
     /**
      * current matrix use count 

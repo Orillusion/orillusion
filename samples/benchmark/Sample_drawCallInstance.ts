@@ -4,7 +4,7 @@ import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraControl
 import { GUIUtil } from '@samples/utils/GUIUtil';
 
 // simple base demo
-class Sample_drawCall {
+class Sample_drawCallInstance {
     scene: Scene3D;
     public anim: boolean = false;
     async run() {
@@ -74,10 +74,11 @@ class Sample_drawCall {
         )
 
         let group = new Object3D();
-        let count = 18 * 10000;
+        let count = 30 * 10000;
 
         GUIHelp.addFolder('info');
         GUIHelp.open();
+        GUIHelp.addLabel(`use instance draw box`);
         GUIHelp.addInfo(`count `, count);
 
         let ii = 0;
@@ -104,16 +105,16 @@ class Sample_drawCall {
             this._rotList.push((Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 100);
 
             obj.transform.localDetailRot = new Vector3(
-                (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 50,
-                (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 50,
-                (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 50);
+                (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 50 * 0.001,
+                (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 50 * 0.001,
+                (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 50 * 0.001);
             if (i % 10000 == 0) {
                 ii++;
             }
         }
 
         group.addComponent(InstanceDrawComponent);
-        group.transform.localDetailRot = new Vector3(0, 1.0, 0);
+        group.transform.localDetailRot = new Vector3(0, 1.0 * 0.001, 0);
         this._rotList.push(1.0);
 
         group.bound = new BoundingBox(Vector3.SAFE_MIN, Vector3.SAFE_MAX);
@@ -134,4 +135,4 @@ class Sample_drawCall {
     }
 }
 
-new Sample_drawCall().run()
+new Sample_drawCallInstance().run()
