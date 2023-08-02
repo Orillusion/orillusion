@@ -75,6 +75,7 @@ class Sample_drawCallInstance {
 
         let group = new Object3D();
         let count = 30 * 10000;
+        // let count = 1;
 
         GUIHelp.addFolder('info');
         GUIHelp.open();
@@ -84,7 +85,8 @@ class Sample_drawCallInstance {
         let ii = 0;
         // let count = 70000;
         for (let i = 0; i < count; i++) {
-            let pos = Vector3Ex.sphereXYZ(ii * 60 + 20, ii * 60 + 100, 100, i * 0.001 + 10, 100);
+            let pos = Vector3Ex.sphereXYZ(20, 30, 0, 0, 10);
+            // let pos = Vector3Ex.sphereXYZ(ii * 60 + 20, ii * 60 + 100, 100, i * 0.001 + 10, 100);
             // let pos = Vector3Ex.getRandomXYZ(-2, 2);
             let obj = new Object3D();
             let mr = obj.addComponent(MeshRenderer);
@@ -94,9 +96,9 @@ class Sample_drawCallInstance {
             group.addChild(obj);
             this._list.push(obj);
 
-            obj.transform.scaleX = Math.random() * 2 + 0.2;
-            obj.transform.scaleY = Math.random() * 2 + 0.2;
-            obj.transform.scaleZ = Math.random() * 2 + 0.2;
+            obj.transform.scaleX = Math.random() * 2 + 10.2;
+            obj.transform.scaleY = Math.random() * 2 + 10.2;
+            obj.transform.scaleZ = Math.random() * 2 + 10.2;
 
             obj.transform.rotationX = Math.random() * 360;
             obj.transform.rotationY = Math.random() * 360;
@@ -125,11 +127,10 @@ class Sample_drawCallInstance {
     renderLoop() {
         if (this.anim) {
             let i = 0;
-            for (let i = 0; i < this._list.length; i++) {
-                const element = this._list[i];
-                // element.transform.rotationY += Time.delta * 0.01 * this._rotList[i];
-                // element.transform._localRot.y += Time.delta * 0.01 * this._rotList[i];
-                element.transform.localChange = true;
+            for (i = 0; i < this._list.length; i++) {
+                let element = this._list[i];
+                // element.transform.localChange = true;
+                element.transform.rotationY += 1;
             }
         }
     }

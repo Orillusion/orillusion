@@ -31,7 +31,7 @@ export class MatrixBindGroup {
 
     writeBuffer() {
         const matBytes = Matrix4.dynamicMatrixBytes;
-        this.matrixBufferDst.writeToGpu(matBytes);
+        this.matrixBufferDst.writeToGpu(matBytes, Matrix4.useCount * 16);
     }
 
     // writeBuffer() {

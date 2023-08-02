@@ -104,15 +104,10 @@ export class Transform extends ComponentBase {
 
 
     index: number;
+    index2: number;
     // public localMatrix: Matrix4;
     // private _localChange: boolean = true;
-    public get localChange(): boolean {
-        return WasmMatrix.matrixStateBuffer[this.index * 2] != 0;
-    }
 
-    public set localChange(value: boolean) {
-        WasmMatrix.matrixStateBuffer[this.index * 2] = value ? 1 : 0;
-    }
 
     private _forward: Vector3 = new Vector3();
     private _back: Vector3 = new Vector3();
@@ -124,6 +119,15 @@ export class Transform extends ComponentBase {
 
     private _targetPos: Vector3;
     public static: boolean = false;
+    public depthOrder: number = 0;
+
+    public get localChange(): boolean {
+        return WasmMatrix.matrixStateBuffer[this.index2] != 0;
+    }
+
+    public set localChange(value: boolean) {
+        WasmMatrix.matrixStateBuffer[this.index2] = value ? 1 : 0;
+    }
 
     public get targetPos(): Vector3 {
         return this._targetPos;
@@ -138,35 +142,33 @@ export class Transform extends ComponentBase {
 
     public set parent(value: Transform) {
         //why don't it need to compare the data
-        //if (this._parent !== value){}
         let lastParent = this._parent?.object3D;
         this._parent = value;
-        WasmMatrix.setParent(this.index, value ? value.worldMatrix.index : -1);
-        // WasmMatrix.setParent(this.index, value ? value.worldMatrix.index : -1);
-        let hasRoot = value ? value.scene3D : null;
-        if (!hasRoot) {
+        this.depthOrder = value.depthOrder + 1;
+        WasmMatrix.setParent(this.index, value ? value.worldMatrix.index : -1, this.depthOrder);
+        this.localChange = true;
+        if (this.object3D) {
+            let hasRoot = value ? value.scene3D : null;
+            if (!hasRoot) {
+                this.object3D.components.forEach((c) => {
+                    c[`__stop`]();
+                });
+            } else {
+                this._scene3d = hasRoot;
+                this.object3D.components.forEach((c) => {
+                    ComponentCollect.appendWaitStart(this.object3D, c);
+                });
+            }
+
+            for (let child of this.object3D.entityChildren) {
+                child.transform.parent = value ? this : null;
+            }
+
+            //notify parent change
             this.object3D.components.forEach((c) => {
-                c[`__stop`]();
-            });
-        } else {
-            this._scene3d = hasRoot;
-            this.object3D.components.forEach((c) => {
-                ComponentCollect.appendWaitStart(this.object3D, c);
+                c.onParentChange?.(lastParent, this._parent?.object3D);
             });
         }
-
-        for (let child of this.object3D.entityChildren) {
-            child.transform.parent = value ? this : null;
-        }
-
-        // if (value) {
-        //     this.transform.updateWorldMatrix();
-        // }
-
-        //notify parent change
-        this.object3D.components.forEach((c) => {
-            c.onParentChange?.(lastParent, this._parent?.object3D);
-        });
         this.notifyLocalChange();
     }
 
@@ -203,6 +205,7 @@ export class Transform extends ComponentBase {
         super();
         this._worldMatrix = new Matrix4(true);
         this.index = this._worldMatrix.index;
+        this.index2 = this._worldMatrix.index * WasmMatrix.stateStruct;
         this._localPos = new Vector3();
         this._localRot = new Vector3();
         this._localRotQuat = new Quaternion();

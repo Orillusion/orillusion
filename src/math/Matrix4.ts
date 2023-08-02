@@ -2315,7 +2315,6 @@ export class Matrix4 {
         te[3] = n41; te[7] = n42; te[11] = n43; te[15] = n44;
 
         return this;
-
     }
 
     /**

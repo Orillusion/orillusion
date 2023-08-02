@@ -452,13 +452,7 @@ export class Engine3D {
         }
         webGPUContext.device.queue.submit([command.finish()]);
 
-        /* update all transform */
-        // let views = this.views;
-        // let i = 0;
-        // for (i = 0; i < views.length; i++) {
-        //     const view = views[i];
-        //     view.scene.transform.updateChildTransform()
-        // }
+
 
 
 
@@ -479,12 +473,19 @@ export class Engine3D {
             this._renderLoop();
         }
 
+
+        /* update all transform */
+        // let views = this.views;
+        // let i = 0;
+        // for (i = 0; i < views.length; i++) {
+        //     const view = views[i];
+        //     view.scene.transform.updateChildTransform()
+        // }
         WasmMatrix.updateAllContinueTransform(0, Matrix4.useCount, Time.delta);
 
         /****** auto update global matrix share buffer write to gpu *****/
         let globalMatrixBindGroup = GlobalBindGroup.modelMatrixBindGroup;
         globalMatrixBindGroup.writeBuffer();
-
 
         this.renderJobs.forEach((v, k) => {
             v.renderFrame();

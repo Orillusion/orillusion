@@ -11,11 +11,8 @@ export class WasmMatrix {
     static matrixContinuedSRTBufferPtr: number;
     static matrixStateBufferPtr: number;
     static wasm: any;
+    static stateStruct: number = 4;
 
-    // if (!Module['workerID']) {
-    //     console.log("is mamin");
-    //     window[0]['wasmMatrix'] = Module;
-    // }
     public static async isReady(): Promise<boolean> {
         return new Promise(
             (suc, fail) => {
@@ -44,7 +41,7 @@ export class WasmMatrix {
 
     public static init(count: number) {
         // this.wasm = window['wasmMatrix'];
-        this.wasm._initialize(count, 16);
+        this.wasm._initialize(count, 2);
 
         this.matrixBufferPtr = this.wasm._getMatrixBufferPtr();
         this.matrixSRTBufferPtr = this.wasm._getSRTPtr();
@@ -54,18 +51,14 @@ export class WasmMatrix {
         this.matrixBuffer = new Float32Array(this.wasm.HEAPF32.buffer, this.matrixBufferPtr, 16 * count);
         this.matrixSRTBuffer = new Float32Array(this.wasm.HEAPF32.buffer, this.matrixSRTBufferPtr, (3 * 3) * count);
         this.matrixContinuedSRTBuffer = new Float32Array(this.wasm.HEAPF32.buffer, this.matrixContinuedSRTBufferPtr, (3 * 3) * count);
-        this.matrixStateBuffer = new Int32Array(this.wasm.HEAP32.buffer, this.matrixStateBufferPtr, (2) * count);
+        this.matrixStateBuffer = new Int32Array(this.wasm.HEAP32.buffer, this.matrixStateBufferPtr, (3) * count);
 
         Matrix4.allocMatrix(count);
     }
 
-    public static updateAllMatrixTransform(start: number, end: number) {
-        this.wasm._updateAllMatrixTransform(start, end);
-    }
-
-    public static setParent(matIndex: number, x: number) {
-        this.matrixStateBuffer[matIndex * 2 + 0] = 0x08;
-        this.matrixStateBuffer[matIndex * 2 + 1] = x >= 0 ? x : -1;
+    public static setParent(matIndex: number, x: number, depthOrder: number) {
+        this.matrixStateBuffer[matIndex * WasmMatrix.stateStruct + 2] = x >= 0 ? x : -1;
+        this.matrixStateBuffer[matIndex * WasmMatrix.stateStruct + 3] = depthOrder;
     }
 
     public static setTranslate(matIndex: number, x: number, y: number, z: number) {
@@ -91,21 +84,30 @@ export class WasmMatrix {
     }
 
     public static setContinueTranslate(matIndex: number, x: number, y: number, z: number) {
-        this.matrixContinuedSRTBuffer[matIndex * 9 + 6] = x;
-        this.matrixContinuedSRTBuffer[matIndex * 9 + 7] = y;
-        this.matrixContinuedSRTBuffer[matIndex * 9 + 8] = z;
+        if (x != 0 || y != 0 || z != 0) {
+            this.matrixContinuedSRTBuffer[matIndex * 9 + 6] = x;
+            this.matrixContinuedSRTBuffer[matIndex * 9 + 7] = y;
+            this.matrixContinuedSRTBuffer[matIndex * 9 + 8] = z;
+            this.matrixStateBuffer[matIndex * WasmMatrix.stateStruct + 1] = 1;
+        }
     }
 
     public static setContinueRotation(matIndex: number, x: number, y: number, z: number) {
-        this.matrixContinuedSRTBuffer[matIndex * 9 + 3] = x;
-        this.matrixContinuedSRTBuffer[matIndex * 9 + 4] = y;
-        this.matrixContinuedSRTBuffer[matIndex * 9 + 5] = z;
+        if (x != 0 || y != 0 || z != 0) {
+            this.matrixContinuedSRTBuffer[matIndex * 9 + 3] = x;
+            this.matrixContinuedSRTBuffer[matIndex * 9 + 4] = y;
+            this.matrixContinuedSRTBuffer[matIndex * 9 + 5] = z;
+            this.matrixStateBuffer[matIndex * WasmMatrix.stateStruct + 1] = 1;
+        }
     }
 
     public static setContinueScale(matIndex: number, x: number, y: number, z: number) {
-        this.matrixContinuedSRTBuffer[matIndex * 9 + 0] = x;
-        this.matrixContinuedSRTBuffer[matIndex * 9 + 1] = y;
-        this.matrixContinuedSRTBuffer[matIndex * 9 + 2] = z;
+        if (x != 0 || y != 0 || z != 0) {
+            this.matrixContinuedSRTBuffer[matIndex * 9 + 0] = x;
+            this.matrixContinuedSRTBuffer[matIndex * 9 + 1] = y;
+            this.matrixContinuedSRTBuffer[matIndex * 9 + 2] = z;
+            this.matrixStateBuffer[matIndex * WasmMatrix.stateStruct + 1] = 1;
+        }
     }
 
 }
