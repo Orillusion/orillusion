@@ -41,7 +41,7 @@ export class WasmMatrix {
 
     public static init(count: number) {
         // this.wasm = window['wasmMatrix'];
-        this.wasm._initialize(count, 2);
+        this.wasm._initialize(count, 8);
 
         this.matrixBufferPtr = this.wasm._getMatrixBufferPtr();
         this.matrixSRTBufferPtr = this.wasm._getSRTPtr();
@@ -51,7 +51,7 @@ export class WasmMatrix {
         this.matrixBuffer = new Float32Array(this.wasm.HEAPF32.buffer, this.matrixBufferPtr, 16 * count);
         this.matrixSRTBuffer = new Float32Array(this.wasm.HEAPF32.buffer, this.matrixSRTBufferPtr, (3 * 3) * count);
         this.matrixContinuedSRTBuffer = new Float32Array(this.wasm.HEAPF32.buffer, this.matrixContinuedSRTBufferPtr, (3 * 3) * count);
-        this.matrixStateBuffer = new Int32Array(this.wasm.HEAP32.buffer, this.matrixStateBufferPtr, (3) * count);
+        this.matrixStateBuffer = new Int32Array(this.wasm.HEAP32.buffer, this.matrixStateBufferPtr, (WasmMatrix.stateStruct) * count);
 
         Matrix4.allocMatrix(count);
     }
@@ -59,6 +59,7 @@ export class WasmMatrix {
     public static setParent(matIndex: number, x: number, depthOrder: number) {
         this.matrixStateBuffer[matIndex * WasmMatrix.stateStruct + 2] = x >= 0 ? x : -1;
         this.matrixStateBuffer[matIndex * WasmMatrix.stateStruct + 3] = depthOrder;
+        console.warn(`${matIndex} -> ${depthOrder}`);
     }
 
     public static setTranslate(matIndex: number, x: number, y: number, z: number) {
