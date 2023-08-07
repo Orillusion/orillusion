@@ -2,9 +2,10 @@ import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { Engine3D, View3D, Scene3D, CameraUtil, AtmosphericComponent, webGPUContext, HoverCameraController, Object3D, DirectLight, KelvinUtil, PlaneGeometry, VertexAttributeName, LitMaterial, MeshRenderer, Vector4, Vector3, Matrix3, PostProcessingComponent, TAAPost, BitmapTexture2D, GlobalFog, Color } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { GrassComponent, TerrainGeometry } from "@orillusion/effect";
+import { Stats } from "@orillusion/stats";
 
 // An sample of custom vertex attribute of geometry
-class Sample_Grass {
+export class Sample_Grass {
     view: View3D;
     post: PostProcessingComponent;
     async run() {
@@ -21,6 +22,7 @@ class Sample_Grass {
         this.view = new View3D();
         this.view.scene = new Scene3D();
         this.view.scene.addComponent(AtmosphericComponent);
+        this.view.scene.addComponent(Stats);
 
         this.view.camera = CameraUtil.createCamera3DObject(this.view.scene);
         this.view.camera.perspective(60, webGPUContext.aspect, 1, 5000.0);
@@ -174,4 +176,4 @@ class Sample_Grass {
 
 }
 
-new Sample_Grass().run();
+// new Sample_Grass().run();

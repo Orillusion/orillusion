@@ -197,11 +197,11 @@ export class GlobalFog extends PostBase {
      * @internal
      */
     public setInputTexture(positionMap: VirtualTexture, normalMap: VirtualTexture) {
-        const renderShader = this.viewQuad.material.renderShader;
-        renderShader.setTexture('positionMap', positionMap);
-        renderShader.setTexture('normalMap', normalMap);
+        const pass = this.viewQuad.pass;
+        pass.setTexture('positionMap', positionMap);
+        pass.setTexture('normalMap', normalMap);
         this._lastSkyTexture = this.getSkyTexture();
-        renderShader.setTexture(`prefilterMap`, this._lastSkyTexture);
+        pass.setTexture(`prefilterMap`, this._lastSkyTexture);
     }
 
     private _lastSkyTexture: Texture;
@@ -216,14 +216,14 @@ export class GlobalFog extends PostBase {
      * @internal
      */
     render(view: View3D, command: GPUCommandEncoder) {
-        const renderShader = this.viewQuad.material.renderShader;
+        const pass = this.viewQuad.pass;
         let skyTexture = this.getSkyTexture();
         if (skyTexture != this._lastSkyTexture) {
             this._lastSkyTexture = skyTexture;
-            renderShader.setTexture(`prefilterMap`, this._lastSkyTexture);
+            pass.setTexture(`prefilterMap`, this._lastSkyTexture);
         }
-        renderShader.setTexture('colorMap', this.getOutTexture());
-        renderShader.setUniformFloat('isSkyHDR', skyTexture.isHDRTexture ? 1 : 0);
+        pass.setTexture('colorMap', this.getOutTexture());
+        pass.setUniformFloat('isSkyHDR', skyTexture.isHDRTexture ? 1 : 0);
         this.viewQuad.renderTarget(view, this.viewQuad, command);
     }
 

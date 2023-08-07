@@ -4,7 +4,7 @@ import { BoxGeometry } from '../shape/BoxGeometry';
 import { SphereGeometry } from '../shape/SphereGeometry';
 import { LitMaterial } from '../materials/LitMaterial';
 import { Color } from '../math/Color';
-import { MaterialBase } from '../materials/MaterialBase';
+import { Material } from '..';
 
 export class Object3DUtil {
     private static boxGeo: BoxGeometry;
@@ -80,7 +80,7 @@ export class Object3DUtil {
         return obj;
     }
 
-    public static GetSingleCube2(mat: MaterialBase, size: number = 10) {
+    public static GetSingleCube2(mat: Material, size: number = 10) {
         this.initHeap();
 
         let obj = new Object3D();

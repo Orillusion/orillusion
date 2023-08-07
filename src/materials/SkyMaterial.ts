@@ -1,50 +1,52 @@
-import { Engine3D } from '../Engine3D';
-import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
-import { GPUCompareFunction, GPUCullMode } from '../gfx/graphics/webGpu/WebGPUConst';
-import { Vector3 } from '../math/Vector3';
-import { MaterialBase } from './MaterialBase';
-import { registerMaterial } from "./MaterialRegister";
+import { ShaderUtil } from "..";
+import { Engine3D } from "../Engine3D";
+import { GPUCompareFunction, GPUCullMode } from "../gfx/graphics/webGpu/WebGPUConst";
+import { Texture } from "../gfx/graphics/webGpu/core/texture/Texture";
+import { RenderShader } from "../gfx/graphics/webGpu/shader/RenderShader";
+import { RendererType } from "../gfx/renderJob/passRenderer/state/RendererType";
+import { Vector3 } from "../math/Vector3";
+import { Material } from "./Material";
 
 /**
  * @internal
  * @group Material
  */
-export class SkyMaterial extends MaterialBase {
-    transparency: number;
-    // roughness: number;
-    metallic: number;
+export class SkyMaterial extends Material {
 
     constructor() {
         super();
 
-        this.setShader('sky_vs_frag_wgsl', 'sky_fs_frag_wgsl');
-        this.getShader().setUniformVector3(`eyesPos`, new Vector3());
-        this.getShader().setUniformFloat(`exposure`, 1.0);
-        this.getShader().setUniformFloat(`roughness`, 0.0);
+        let colorPass = new RenderShader('sky_vs_frag_wgsl', 'sky_fs_frag_wgsl');
+        this.defaultPass = colorPass;
+        colorPass.setUniformVector3(`eyesPos`, new Vector3());
+        colorPass.setUniformFloat(`exposure`, 1.0);
+        colorPass.setUniformFloat(`roughness`, 0.0);
 
-        let shaderState = this.getShader().shaderState;
-        shaderState.frontFace = `cw`;
+        let shaderState = colorPass.shaderState;
+        shaderState.frontFace = `ccw`;
         shaderState.cullMode = GPUCullMode.back;
         shaderState.depthWriteEnabled = false;
         shaderState.depthCompare = GPUCompareFunction.less;
+
+        this.addPass(RendererType.COLOR, colorPass);
     }
 
     /**
      *  Set base map(main map)
      */
     public set baseMap(texture: Texture) {
-        super.baseMap = texture;
+        this.defaultPass.setTexture(`baseMap`, texture);
         const key = 'IS_HDR_SKY';
-        if (this.renderShader.defineValue[key] != texture?.isHDRTexture) {
-            this.renderShader.setDefine(key, texture?.isHDRTexture ? true : false);
+        if (this.defaultPass.defineValue[key] != texture?.isHDRTexture) {
+            this.defaultPass.setDefine(key, texture?.isHDRTexture ? true : false);
         }
     }
 
     /**
      * Get base map(main map)
-     */
+    //  */
     public get baseMap(): Texture {
-        return super.baseMap;
+        return this.defaultPass.getTexture(`baseMap`);
     }
 
     public set envMap(texture: Texture) {
@@ -63,11 +65,9 @@ export class SkyMaterial extends MaterialBase {
     }
 
     public get roughness() {
-        return this.renderShader.uniforms[`roughness`].value;
+        return this.defaultPass.uniforms[`roughness`].value;
     }
     public set roughness(value: number) {
-        if (`roughness` in this.renderShader.uniforms) this.renderShader.uniforms[`roughness`].value = value;
+        if (`roughness` in this.defaultPass.uniforms) this.defaultPass.uniforms[`roughness`].value = value;
     }
 }
-
-registerMaterial('SkyMaterial', SkyMaterial);

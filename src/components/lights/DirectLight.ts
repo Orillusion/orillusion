@@ -20,7 +20,7 @@ export class DirectLight extends LightBase {
         if (this.object3D.name == "") {
             this.object3D.name = "DirectionLight_" + UUID();
         }
-        this.radius = 9999999;// Number.MAX_SAFE_INTEGER;
+        this.radius = 999999999;// Number.MAX_SAFE_INTEGER;
         this.lightData.lightType = LightType.DirectionLight;
         this.lightData.linear = 0;
         this.lightData.quadratic = 0.3;

@@ -65,6 +65,7 @@ class Sample_drawCallInstance {
     private _list: Object3D[] = [];
     private _rotList: number[] = [];
     initScene() {
+
         let shareGeometry = new BoxGeometry();
         let material = new LambertMaterial();
         material.baseColor = new Color(
@@ -74,8 +75,8 @@ class Sample_drawCallInstance {
         )
 
         let group = new Object3D();
-        let count = 30 * 10000;
-        // let count = 1;
+        let count = 10 * 10000;
+        // let count = 200;
 
         GUIHelp.addFolder('info');
         GUIHelp.open();
@@ -85,8 +86,8 @@ class Sample_drawCallInstance {
         let ii = 0;
         // let count = 70000;
         for (let i = 0; i < count; i++) {
-            let pos = Vector3Ex.sphereXYZ(20, 30, 0, 0, 10);
-            // let pos = Vector3Ex.sphereXYZ(ii * 60 + 20, ii * 60 + 100, 100, i * 0.001 + 10, 100);
+            // let pos = Vector3Ex.sphereXYZ(20, 30, 0, 0, 10);
+            let pos = Vector3Ex.sphereXYZ(ii * 60 + 20, ii * 60 + 100, 100, i * 0.001 + 10, 100);
             // let pos = Vector3Ex.getRandomXYZ(-2, 2);
             let obj = new Object3D();
             let mr = obj.addComponent(MeshRenderer);
@@ -96,9 +97,9 @@ class Sample_drawCallInstance {
             group.addChild(obj);
             this._list.push(obj);
 
-            obj.transform.scaleX = Math.random() * 2 + 10.2;
-            obj.transform.scaleY = Math.random() * 2 + 10.2;
-            obj.transform.scaleZ = Math.random() * 2 + 10.2;
+            obj.transform.scaleX = Math.random() * 2 + 1.2;
+            obj.transform.scaleY = Math.random() * 2 + 1.2;
+            obj.transform.scaleZ = Math.random() * 2 + 1.2;
 
             obj.transform.rotationX = Math.random() * 360;
             obj.transform.rotationY = Math.random() * 360;
@@ -129,8 +130,8 @@ class Sample_drawCallInstance {
             let i = 0;
             for (i = 0; i < this._list.length; i++) {
                 let element = this._list[i];
-                // element.transform.localChange = true;
-                element.transform.rotationY += 1;
+                // element.transform.rotationY += 1;
+                element.transform.localChange = true;
             }
         }
     }

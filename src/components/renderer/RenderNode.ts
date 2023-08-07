@@ -4,7 +4,6 @@ import { View3D } from "../../core/View3D";
 import { GeometryBase } from "../../core/geometry/GeometryBase";
 import { PassGenerate } from "../../gfx/generate/PassGenerate";
 import { GlobalBindGroup } from "../../gfx/graphics/webGpu/core/bindGroups/GlobalBindGroup";
-import { RenderShader } from "../../gfx/graphics/webGpu/shader/RenderShader";
 import { ShaderReflection } from "../../gfx/graphics/webGpu/shader/value/ShaderReflectionInfo";
 import { GPUContext } from "../../gfx/renderJob/GPUContext";
 import { EntityCollect } from "../../gfx/renderJob/collect/EntityCollect";
@@ -15,12 +14,12 @@ import { ClusterLightingBuffer } from "../../gfx/renderJob/passRenderer/cluster/
 import { RendererMask, RendererMaskUtil } from "../../gfx/renderJob/passRenderer/state/RendererMask";
 import { RendererPassState } from "../../gfx/renderJob/passRenderer/state/RendererPassState";
 import { RendererType } from "../../gfx/renderJob/passRenderer/state/RendererType";
-import { MaterialBase } from "../../materials/MaterialBase";
 import { GetCountInstanceID, UUID } from "../../util/Global";
 import { Reference } from "../../util/Reference";
 import { ComponentBase } from "../ComponentBase";
 import { IESProfiles } from "../lights/IESProfiles";
 import { RenderLayer } from "../../gfx/renderJob/config/RenderLayer";
+import { Material } from "../../materials/Material";
 
 
 /**
@@ -35,7 +34,7 @@ export class RenderNode extends ComponentBase {
     public drawType: number = 0;
 
     protected _geometry: GeometryBase;
-    protected _materials: MaterialBase[] = [];
+    protected _materials: Material[] = [];
     protected _castShadow: boolean = true;
     protected _castReflection: boolean = false;
     protected _castGI: boolean = false;
@@ -137,11 +136,11 @@ export class RenderNode extends ComponentBase {
     }
 
     @EditorInspector
-    public get materials(): MaterialBase[] {
+    public get materials(): Material[] {
         return this._materials;
     }
 
-    public set materials(value: MaterialBase[]) {
+    public set materials(value: Material[]) {
         this._readyPipeline = false;
 
         for (let i = 0; i < this._materials.length; i++) {
@@ -209,14 +208,14 @@ export class RenderNode extends ComponentBase {
             let index = 0;
             for (let j = 0; j < this._materials.length; j++) {
                 const material = this._materials[j];
-                let passList = material.addPass(RendererType.COLOR, material);
+                let passList = material.getPass(RendererType.COLOR);
                 for (let i = 0; i < passList.length; i++) {
                     const pass = passList[i];
-                    let shader = RenderShader.getShader(pass.shaderID);
-                    if (!shader.shaderReflection) {
-                        shader.preCompile(this._geometry);
+                    // let shader = RenderShader.getShader(pass.instanceID);
+                    if (!pass.shaderReflection) {
+                        pass.preCompile(this._geometry);
                     }
-                    this._geometry.generate(shader.shaderReflection);
+                    this._geometry.generate(pass.shaderReflection);
                 }
                 this.object3D.bound = this._geometry.bounds.clone();
             }
@@ -226,13 +225,14 @@ export class RenderNode extends ComponentBase {
             let sort = 0;
             for (let i = 0; i < this.materials.length; i++) {
                 const element = this.materials[i];
-                transparent = element.transparent;
+                const passArray = element.renderPasses.get(RendererType.COLOR);
+                const pass = passArray[0];
                 if (element.transparent) {
                     sort = sort > element.sort ? sort : element.sort;
                 } else {
                     sort = Math.max(sort - 3000, 0);
                 }
-                this.castNeedPass(element.getShader());
+                this.castNeedPass();
             }
             this.renderOrder = sort;
 
@@ -243,7 +243,7 @@ export class RenderNode extends ComponentBase {
         }
     }
 
-    protected castNeedPass(shader: RenderShader) {
+    protected castNeedPass() {
         if (this.castGI) {
             for (let i = 0; i < this.materials.length; i++) {
                 const mat = this.materials[i];
@@ -251,19 +251,19 @@ export class RenderNode extends ComponentBase {
             }
         }
 
-        if (this.castShadow) {
-            for (let i = 0; i < this.materials.length; i++) {
-                const mat = this.materials[i];
-                if (mat.shaderState.castShadow) {
-                    PassGenerate.createShadowPass(this, mat);
-                }
+        // if (this.castShadow) {
+        for (let i = 0; i < this.materials.length; i++) {
+            const mat = this.materials[i];
+            if (mat.castShadow) {
+                PassGenerate.createShadowPass(this, mat);
             }
         }
+        // }
 
         if (this.castReflection) {
             for (let i = 0; i < this.materials.length; i++) {
                 const mat = this.materials[i];
-                if (mat.shaderState.castShadow) {
+                if (mat.castShadow) {
                     PassGenerate.createShadowPass(this, mat);
                 }
             }
@@ -272,17 +272,17 @@ export class RenderNode extends ComponentBase {
 
         // add if alpha == 1
         let ignoreDepthPass = RendererMaskUtil.hasMask(this.rendererMask, RendererMask.IgnoreDepthPass);
-        if (!ignoreDepthPass && Engine3D.setting.render.zPrePass && shader.shaderState.useZ) {
-            for (let i = 0; i < this.materials.length; i++) {
-                const mat = this.materials[i];
-                PassGenerate.createDepthPass(this, mat);
-            }
-        } else {
-            for (let i = 0; i < this.materials.length; i++) {
-                const mat = this.materials[i];
-                mat.removePass(RendererType.DEPTH, 0);
-            }
+        // if (!ignoreDepthPass && Engine3D.setting.render.zPrePass && shader.shaderState.useZ) {
+        //     for (let i = 0; i < this.materials.length; i++) {
+        //         const mat = this.materials[i];
+        //         PassGenerate.createDepthPass(this, mat);
+        //     }
+        // } else {
+        for (let i = 0; i < this.materials.length; i++) {
+            const mat = this.materials[i];
+            mat.removePass(RendererType.DEPTH, 0);
         }
+        // }
     }
 
     @EditorInspector
@@ -318,6 +318,9 @@ export class RenderNode extends ComponentBase {
         let worldMatrix = renderNode.transform._worldMatrix;
         for (let i = 0; i < renderNode.materials.length; i++) {
             const material = renderNode.materials[i];
+            if (!material || material.enable == 0)
+                continue;
+
             let passes = material.renderPasses.get(passType);
 
             if (!passes || passes.length == 0)
@@ -328,11 +331,11 @@ export class RenderNode extends ComponentBase {
                 if (!passes || passes.length == 0)
                     continue;
                 let matPass = passes[j];
-                if (!matPass.enable)
-                    continue;
+                // if (!matPass.enable)
+                //     continue;
 
                 // for (let j = passes.length > 1 ? 1 : 0 ; j < passes.length; j++) {
-                const renderShader = matPass.renderShader;
+                const renderShader = matPass;
 
                 if (renderShader.pipeline) {
                     if (renderShader.shaderState.splitTexture) {
@@ -381,22 +384,22 @@ export class RenderNode extends ComponentBase {
 
             if (this.drawType == 2) {
                 for (let matPass of passes) {
-                    if (!matPass.enable)
-                        continue;
+                    // if (!matPass.enable)
+                    //     continue;
 
-                    if (matPass.renderShader.pipeline) {
-                        GPUContext.bindPipeline(encoder, matPass.renderShader);
+                    if (matPass.pipeline) {
+                        GPUContext.bindPipeline(encoder, matPass);
                         GPUContext.draw(encoder, 6, 1, 0, worldMatrix.index);
                     }
                 }
             } else {
                 GPUContext.bindGeometryBuffer(encoder, node._geometry);
                 for (let matPass of passes) {
-                    if (!matPass.enable)
-                        continue;
+                    // if (!matPass.enable)
+                    //     continue;
 
-                    if (matPass.renderShader.pipeline) {
-                        GPUContext.bindPipeline(encoder, matPass.renderShader);
+                    if (matPass.pipeline) {
+                        GPUContext.bindPipeline(encoder, matPass);
                         let subGeometries = node._geometry.subGeometries;
                         const subGeometry = subGeometries[i];
                         let lodInfos = subGeometry.lodLevels;
@@ -424,7 +427,7 @@ export class RenderNode extends ComponentBase {
 
             let worldMatrix = node.object3D.transform._worldMatrix;
             for (let j = 0; j < passes.length; j++) {
-                const renderShader = passes[j].renderShader;
+                const renderShader = passes[j];
                 GPUContext.bindPipeline(encoder, renderShader);
                 let subGeometries = node._geometry.subGeometries;
                 const subGeometry = subGeometries[i];
@@ -454,7 +457,7 @@ export class RenderNode extends ComponentBase {
                 for (let i = 0; i < passes.length; i++) {
                     const pass = passes[i];
 
-                    const renderShader = pass.renderShader;
+                    const renderShader = pass;
 
                     if (renderShader.shaderState.splitTexture) {
                         let splitTexture = RTResourceMap.CreateSplitTexture(node.instanceID);
@@ -470,7 +473,7 @@ export class RenderNode extends ComponentBase {
                     }
 
                     if (renderShader.pipeline) {
-                        renderShader.apply(node._geometry, pass, renderPassState, () => node.noticeShaderChange());
+                        renderShader.apply(node._geometry, renderPassState, () => node.noticeShaderChange());
                         continue;
                     }
 
@@ -515,7 +518,7 @@ export class RenderNode extends ComponentBase {
                         renderShader.setStorageBuffer(`clusterBuffer`, clusterLightingBuffer.clusterBuffer);
                     }
 
-                    renderShader.apply(node._geometry, pass, renderPassState);
+                    renderShader.apply(node._geometry, renderPassState);
 
                 }
             }

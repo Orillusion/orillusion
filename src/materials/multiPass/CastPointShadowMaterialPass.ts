@@ -1,30 +1,20 @@
-import { ShaderLib } from '../../assets/shader/ShaderLib';
-import { castPointShadowMap_vert, shadowCastMap_frag } from '../../assets/shader/core/pass/CastShadow_pass';
-import { Vector3 } from '../../math/Vector3';
-import { MaterialBase } from '../MaterialBase';
-import { registerMaterial } from "../MaterialRegister";
+import { RenderShader } from '../..';
 
 /**
  * @internal
  * CastPointShadowMaterialPass
  * @group Material
  */
-export class CastPointShadowMaterialPass extends MaterialBase {
-    transparency: number;
+export class CastPointShadowMaterialPass extends RenderShader {
     constructor() {
-        super();
-        this.isPassMaterial = true;
-        ShaderLib.register("castPointShadowMap_vert", castPointShadowMap_vert);
-        ShaderLib.register("shadowCastMap_frag", shadowCastMap_frag);
+        super(`castPointShadowMap_vert`, `shadowCastMap_frag`);
+        this.setShaderEntry("main", "main");
+        this.setUniformFloat("cameraFar", 5000);
+        // this.setUniformVector3("lightWorldPos", Vector3.ZERO);
+        this.shaderState.receiveEnv = false;
+        this.shaderState.castShadow = false;
+        this.shaderState.acceptShadow = false;
 
-        let shader = this.setShader(`castPointShadowMap_vert`, `shadowCastMap_frag`);
-        shader.setShaderEntry("main", "main");
-        shader.setUniformFloat("cameraFar", 5000);
-        shader.setUniformVector3("lightWorldPos", Vector3.ZERO);
-        let shaderState = shader.shaderState;
-        shaderState.receiveEnv = false;
-        // this.alphaCutoff = 0.5 ;
+        this.setDefine(`USE_ALPHACUT`, true);
     }
 }
-
-registerMaterial('CastShadowMaterialPass', CastPointShadowMaterialPass);

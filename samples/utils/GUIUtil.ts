@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AtmosphericComponent, BillboardType, Color, DirectLight, Engine3D, GPUCullMode, GlobalFog, GlobalIlluminationComponent, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
+import { AtmosphericComponent, BillboardType, Color, DirectLight, Engine3D, GPUCullMode, GlobalFog, GlobalIlluminationComponent, HDRBloomPost, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
@@ -62,6 +62,22 @@ export class GUIUtil {
         GUIHelp.add(transform, 'scaleY', 0.0, 2.0, 0.01);
         GUIHelp.add(transform, 'scaleZ', 0.0, 2.0, 0.01);
 
+        open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
+
+
+    //render bloom gui panel
+    public static renderBloom(bloom: HDRBloomPost, open: boolean = true, name?: string) {
+        name ||= 'HDRBloom';
+        GUIHelp.addFolder(name);
+        GUIHelp.add(bloom, 'enable');
+        GUIHelp.addColor(bloom, 'tintColor');
+        GUIHelp.add(bloom, 'luminosityThreshold');
+        GUIHelp.add(bloom, 'strength');
+        GUIHelp.add(bloom, 'radius');
+        GUIHelp.add(bloom, 'blurX');
+        GUIHelp.add(bloom, 'blurY');
         open && GUIHelp.open();
         GUIHelp.endFolder();
     }

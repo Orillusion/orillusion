@@ -1,64 +1,28 @@
-import { ShaderLib } from '../../assets/shader/ShaderLib';
-import { Texture } from '../../gfx/graphics/webGpu/core/texture/Texture';
 import { Color } from '../../math/Color';
-
 import { BlendMode } from '../BlendMode';
-import { MaterialBase } from '../MaterialBase';
-import { registerMaterial } from "../MaterialRegister";
 import { Engine3D } from '../../Engine3D';
-import { GBuffer_pass } from '../..';
+import { RenderShader } from '../../gfx/graphics/webGpu/shader/RenderShader';
 
 /**
  * @internal
  * GBufferPass
  * @group Material
  */
-export class GBufferPass extends MaterialBase {
+export class GBufferPass extends RenderShader {
     transparency: number;
 
     constructor() {
-        super();
-        this.isPassMaterial = true;
-        //OutLineSubPass
-
-        ShaderLib.register("gbuffer_vs", GBuffer_pass);
-        ShaderLib.register("gbuffer_fs", GBuffer_pass);
-        let shader = this.setShader(`gbuffer_vs`, `gbuffer_fs`);
-        shader.setShaderEntry(`VertMain`, `FragMain`)
-
+        super(`gbuffer_vs`, `gbuffer_fs`);
+        this.setShaderEntry(`VertMain`, `FragMain`)
         let shaderState = this.shaderState;
-        shaderState.cullMode = `none`;
+        // shaderState.cullMode = `none`;
 
-        this.renderShader.setUniformColor(`baseColor`, new Color());
-        this.renderShader.setUniformColor(`emissiveColor`, new Color());
-        this.renderShader.setUniformFloat(`emissiveIntensity`, 1);
-        this.renderShader.setUniformFloat(`normalScale`, 1);
-        this.renderShader.setUniformFloat(`alphaCutoff`, 1);
+        this.setUniformColor(`baseColor`, new Color());
+        this.setUniformColor(`emissiveColor`, new Color());
+        this.setUniformFloat(`emissiveIntensity`, 1);
+        this.setUniformFloat(`normalScale`, 1);
+        this.setUniformFloat(`alphaCutoff`, 1);
         this.blendMode = BlendMode.NONE;
-
-        this.renderShader.setTexture(`normalMap`, Engine3D.res.normalTexture);
-    }
-
-    public set shadowMap(texture: Texture) { }
-
-    public set envMap(texture: Texture) {
-        // super.envMap = texture;
-    }
-
-    public set normalScale(v: number) {
-        this.renderShader.setUniformFloat(`normalScale`, v);
-    }
-
-    public get normalScale(): number {
-        return this.renderShader.uniforms['normalScale'].value;
-    }
-
-    public set alphaCutoff(v: number) {
-        this.renderShader.setUniformFloat(`alphaCutoff`, v);
-    }
-
-    public get alphaCutoff(): number {
-        return this.renderShader.uniforms['alphaCutoff'].value;
+        this.setTexture(`normalMap`, Engine3D.res.normalTexture);
     }
 }
-registerMaterial('GBufferPass', GBufferPass);

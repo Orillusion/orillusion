@@ -173,23 +173,19 @@ var<uniform> materialUniform: MaterialUniform;
 
 @fragment
 fn main(@location(0) fragUV: vec2<f32> , @location(1) worldPos:vec3<f32> ) -> FragmentOutput {
-var distance = length(worldPos.xyz - materialUniform.lightWorldPos ) ;
-distance = distance / materialUniform.cameraFar ;
+    var distance = length(worldPos.xyz - materialUniform.lightWorldPos ) ;
+    distance = distance / materialUniform.cameraFar ;
+    var fragOut:FragmentOutput; 
 
-#if USE_ALPHACUT
-  let Albedo = textureSample(baseMap,baseMapSampler,fragUV);
-  var fragOut:FragmentOutput; 
-  if(Albedo.w > 0.5){
+  #if USE_ALPHACUT
+    let Albedo = textureSample(baseMap,baseMapSampler,fragUV);
+    if(Albedo.w > 0.5){
+      fragOut = FragmentOutput(vec4<f32>(0.0),distance);
+    }
+  #else
     fragOut = FragmentOutput(vec4<f32>(0.0),distance);
-  }
-//   if(Albedo.w > 0.5){
-//     fragOut = FragmentOutput(vec4<f32>(0.0),distance);
-//   }else{
-//     discard;
-//   }
-  return fragOut ;
-#else
-    fragOut = FragmentOutput(vec4<f32>(0.0),distance);
-#endif
+  #endif
+  
+    return fragOut ;
 }
 `

@@ -26,7 +26,7 @@ export class RenderShaderCollect {
 
                 mat.renderPasses.forEach((v) => {
                     v.forEach((pass) => {
-                        let key = `${node.geometry.instanceID + pass.renderShader.instanceID}`
+                        let key = `${node.geometry.instanceID + pass.instanceID}`
                         let nodeMap = rDic.get(key);
                         if (!nodeMap) {
                             nodeMap = new Map<string, RenderNode>();
@@ -47,7 +47,7 @@ export class RenderShaderCollect {
                 node.materials.forEach((mat) => {
                     mat.renderPasses.forEach((v) => {
                         v.forEach((pass) => {
-                            let key = `${node.geometry.instanceID + pass.renderShader.instanceID}`
+                            let key = `${node.geometry.instanceID + pass.instanceID}`
                             let nodeMap = rDic.get(key);
                             if (nodeMap) {
                                 nodeMap.delete(node.instanceID);

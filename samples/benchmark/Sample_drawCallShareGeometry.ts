@@ -4,7 +4,7 @@ import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraControl
 import { GUIUtil } from '@samples/utils/GUIUtil';
 
 // simple base demo
-class Sample_drawCallShareGeometry {
+export class Sample_drawCallShareGeometry {
     scene: Scene3D;
     public anim: boolean = false;
     async run() {
@@ -71,10 +71,12 @@ class Sample_drawCallShareGeometry {
         for (let i = 0; i < 1; i++) {
             const mat = new LambertMaterial();
             mat.baseColor = new Color(
-                Math.random(),
-                Math.random(),
-                Math.random(),
+                Math.random() * 0.85,
+                Math.random() * 0.85,
+                Math.random() * 0.85,
             )
+
+            // mat.baseColor = new Color().hexToRGB(0xcccccc)
             mats.push(mat);
         }
 
@@ -112,17 +114,17 @@ class Sample_drawCallShareGeometry {
             this._rotList.push((Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 100);
 
             obj.transform.localDetailRot = new Vector3(
-                (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 50 * 0.001,
-                (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 50 * 0.001,
-                (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 50 * 0.001);
+                (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 50 * 0.001 * 0.5,
+                (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 50 * 0.001 * 0.5,
+                (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 50 * 0.001 * 0.5);
             if (i % 10000 == 0) {
                 ii++;
             }
         }
 
         // group.addComponent(InstanceDrawComponent);
-        group.transform.localDetailRot = new Vector3(0, 1.0 * 0.001, 0);
-        this._rotList.push(1.0);
+        group.transform.localDetailRot = new Vector3(0, 1.0 * 0.001 * 0.15, 0);
+        this._rotList.push(1.0 * 0.35);
 
         group.bound = new BoundingBox(Vector3.SAFE_MIN, Vector3.SAFE_MAX);
         this._list.push(group);
@@ -142,4 +144,4 @@ class Sample_drawCallShareGeometry {
     }
 }
 
-new Sample_drawCallShareGeometry().run()
+// new Sample_drawCallShareGeometry().run()

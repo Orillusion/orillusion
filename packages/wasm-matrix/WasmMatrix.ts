@@ -1,4 +1,4 @@
-import { Matrix4 } from '../../src';
+import { DEGREES_TO_RADIANS, Matrix4 } from '../../src';
 
 export class WasmMatrix {
 
@@ -41,7 +41,7 @@ export class WasmMatrix {
 
     public static init(count: number) {
         // this.wasm = window['wasmMatrix'];
-        this.wasm._initialize(count, 8);
+        this.wasm._initialize(count, 0);
 
         this.matrixBufferPtr = this.wasm._getMatrixBufferPtr();
         this.matrixSRTBufferPtr = this.wasm._getSRTPtr();
@@ -56,10 +56,14 @@ export class WasmMatrix {
         Matrix4.allocMatrix(count);
     }
 
+    public static updateAllContinueTransform(start: number, end: number, dt: number) {
+        let count = this.wasm._updateAllMatrixContinueTransform(start, end, dt);
+    }
+
     public static setParent(matIndex: number, x: number, depthOrder: number) {
         this.matrixStateBuffer[matIndex * WasmMatrix.stateStruct + 2] = x >= 0 ? x : -1;
         this.matrixStateBuffer[matIndex * WasmMatrix.stateStruct + 3] = depthOrder;
-        console.warn(`${matIndex} -> ${depthOrder}`);
+        // console.warn(`${matIndex} -> ${depthOrder}`);
     }
 
     public static setTranslate(matIndex: number, x: number, y: number, z: number) {
@@ -69,9 +73,9 @@ export class WasmMatrix {
     }
 
     public static setRotation(matIndex: number, x: number, y: number, z: number) {
-        this.matrixSRTBuffer[matIndex * 9 + 3] = x;
-        this.matrixSRTBuffer[matIndex * 9 + 4] = y;
-        this.matrixSRTBuffer[matIndex * 9 + 5] = z;
+        this.matrixSRTBuffer[matIndex * 9 + 3] = (x % 360) * DEGREES_TO_RADIANS;
+        this.matrixSRTBuffer[matIndex * 9 + 4] = (y % 360) * DEGREES_TO_RADIANS;
+        this.matrixSRTBuffer[matIndex * 9 + 5] = (z % 360) * DEGREES_TO_RADIANS;
     }
 
     public static setScale(matIndex: number, x: number, y: number, z: number) {
@@ -80,9 +84,6 @@ export class WasmMatrix {
         this.matrixSRTBuffer[matIndex * 9 + 2] = z;
     }
 
-    public static updateAllContinueTransform(start: number, end: number, dt: number) {
-        this.wasm._updateAllMatrixContinueTransform(start, end, dt);
-    }
 
     public static setContinueTranslate(matIndex: number, x: number, y: number, z: number) {
         if (x != 0 || y != 0 || z != 0) {

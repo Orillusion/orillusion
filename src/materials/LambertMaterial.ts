@@ -1,12 +1,11 @@
 
-import { LambertShader } from '..';
+import { LambertShader, Material, RendererType, RenderShader } from '..';
 import { ShaderLib } from '../assets/shader/ShaderLib';
 import { Engine3D } from '../Engine3D';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
 import { Color } from '../math/Color';
 import { Vector4 } from '../math/Vector4';
 
-import { MaterialBase } from './MaterialBase';
 import { registerMaterial } from "./MaterialRegister";
 
 /**
@@ -14,23 +13,22 @@ import { registerMaterial } from "./MaterialRegister";
  * A non glossy surface material without specular highlights.
  * @group Material
  */
-export class LambertMaterial extends MaterialBase {
+export class LambertMaterial extends Material {
     /**
      * @constructor
      */
     constructor() {
         super();
+        let colorPass = new RenderShader(`LambertShader`, `LambertShader`);
+        colorPass.setShaderEntry(`VertMain`, `FragMain`)
 
-        ShaderLib.register("LambertShader", LambertShader);
-        let shader = this.setShader(`LambertShader`, `LambertShader`);
-        shader.setShaderEntry(`VertMain`, `FragMain`)
-
-        shader.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));
-        shader.setUniformVector4(`transformUV2`, new Vector4(0, 0, 1, 1));
-        shader.setUniformColor(`baseColor`, new Color(1, 1, 1, 1));
-        shader.setUniformFloat(`alphaCutoff`, 0.5);
-        let shaderState = shader.shaderState;
+        colorPass.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));
+        colorPass.setUniformVector4(`transformUV2`, new Vector4(0, 0, 1, 1));
+        colorPass.setUniformColor(`baseColor`, new Color(1, 1, 1, 1));
+        colorPass.setUniformFloat(`alphaCutoff`, 0.5);
+        let shaderState = colorPass.shaderState;
         shaderState.acceptShadow = false;
+        shaderState.castShadow = false;
         shaderState.receiveEnv = false;
         shaderState.acceptGI = false;
         shaderState.useLight = false;
@@ -45,21 +43,37 @@ export class LambertMaterial extends MaterialBase {
         // default value
         // this.baseMap = Engine3D.res.whiteTexture;
         // this.emissiveMap = Engine3D.res.blackTexture;
+        this.defaultPass = colorPass;
+        this.addPass(RendererType.COLOR, colorPass);
         this.baseMap = Engine3D.res.grayTexture;
+    }
+
+    /**
+     * set base color map texture
+     */
+    set baseMap(tex: Texture) {
+        this.defaultPass.setTexture(`baseMap`, tex);
+    }
+
+    /**
+     * get base color map texture
+     */
+    get baseMap() {
+        return this.defaultPass.getTexture(`baseMap`);
     }
 
     /**
      * set base color (tint color)
      */
     set baseColor(color: Color) {
-        this.renderShader.setUniformColor(`baseColor`, color);
+        this.defaultPass.setUniformColor(`baseColor`, color);
     }
 
     /**
      * get base color (tint color)
      */
     get baseColor() {
-        return this.renderShader.uniforms[`baseColor`].color;
+        return this.defaultPass.uniforms[`baseColor`].color;
     }
 
     /**
@@ -78,4 +92,3 @@ export class LambertMaterial extends MaterialBase {
     }
 
 }
-registerMaterial("LambertMaterial", LambertMaterial);

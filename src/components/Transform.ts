@@ -126,6 +126,7 @@ export class Transform extends ComponentBase {
     }
 
     public set localChange(value: boolean) {
+        // console.log(this.index2, value);
         WasmMatrix.matrixStateBuffer[this.index2] = value ? 1 : 0;
     }
 
@@ -144,7 +145,7 @@ export class Transform extends ComponentBase {
         //why don't it need to compare the data
         let lastParent = this._parent?.object3D;
         this._parent = value;
-        this.depthOrder = value.depthOrder + 1;
+        this.depthOrder = value ? value.depthOrder + 1 : 0;
         WasmMatrix.setParent(this.index, value ? value.worldMatrix.index : -1, this.depthOrder);
         this.localChange = true;
         if (this.object3D) {
@@ -387,7 +388,6 @@ export class Transform extends ComponentBase {
     public updateWorldMatrix(force: boolean = false) {
         if (this.localChange || force) {
             if (this.parent) {
-                // this._localRot.y += this.rotatingY;
                 makeMatrix44(this._localRot, this._localPos, this.localScale, this._worldMatrix);
                 append(this._worldMatrix, this.parent.worldMatrix, this._worldMatrix);
             } else {

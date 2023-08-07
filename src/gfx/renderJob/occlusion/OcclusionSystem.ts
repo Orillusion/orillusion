@@ -2,6 +2,7 @@ import { RenderNode } from '../../../components/renderer/RenderNode';
 import { Camera3D } from '../../../core/Camera3D';
 import { Scene3D } from '../../../core/Scene3D';
 import { Engine3D } from '../../../Engine3D';
+import { CollectInfo } from '../collect/CollectInfo';
 import { EntityCollect } from '../collect/EntityCollect';
 /**
  * @internal
@@ -56,6 +57,42 @@ export class OcclusionSystem {
         EntityCollect.instance.autoSortRenderNodes(scene);
         let nodes = EntityCollect.instance.getRenderNodes(scene);
 
+        if (nodes.opaqueList) {
+            for (let node of nodes.opaqueList) {
+                let inRender = 0;
+
+                if (node.enable && node.transform.enable && node.object3D.bound) {
+                    inRender = node.object3D.bound.containsFrustum(node.object3D, camera.frustum);
+                }
+
+                if (inRender) {
+                    cameraViewRenderList.set(node, inRender);
+                }
+            }
+        }
+
+        if (nodes.transparentList) {
+            for (let node of nodes.transparentList) {
+
+                let inRender = 0;
+                if (node.enable && node.transform.enable && node.object3D.bound) {
+                    inRender = node.object3D.bound.containsFrustum(node.object3D, camera.frustum);
+                }
+
+                if (inRender) {
+                    cameraViewRenderList.set(node, inRender);
+                }
+            }
+        }
+    }
+
+    collect(nodes: CollectInfo, camera: Camera3D) {
+        let cameraViewRenderList = this._renderList.get(camera);
+        if (!cameraViewRenderList) {
+            cameraViewRenderList = new Map<RenderNode, number>();
+            this._renderList.set(camera, cameraViewRenderList);
+        }
+        cameraViewRenderList.clear();
         if (nodes.opaqueList) {
             for (let node of nodes.opaqueList) {
                 let inRender = 0;

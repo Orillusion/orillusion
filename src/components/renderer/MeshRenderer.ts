@@ -9,6 +9,7 @@ import { MaterialBase } from '../../materials/MaterialBase';
 import { MorphTargetData } from '../anim/morphAnim/MorphTargetData';
 import { RenderNode } from './RenderNode';
 import { EditorInspector } from '../../util/SerializeDecoration';
+import { Material } from '../..';
 
 /**
  * The mesh renderer component is a component used to render the mesh
@@ -80,12 +81,12 @@ export class MeshRenderer extends RenderNode {
      * material
      */
     @EditorInspector
-    public get material(): MaterialBase {
+    public get material(): Material {
         return this._materials[0];
     }
 
     @EditorInspector
-    public set material(value: MaterialBase) {
+    public set material(value: Material) {
         this.materials = [value];
     }
 
@@ -131,8 +132,7 @@ export class MeshRenderer extends RenderNode {
                 let passes = material.renderPasses.get(passType);
                 if (passes) {
                     for (let j = 0; j < passes.length; j++) {
-                        const renderShader = passes[j].renderShader;
-                        this.morphData.applyRenderShader(renderShader);
+                        this.morphData.applyRenderShader(passes[j]);
                     }
                 }
             }

@@ -34,7 +34,7 @@ import { BxdfDebug_frag } from './materials/program/BxdfDebug_frag';
 import { Quad_depth2d_frag_wgsl, Quad_depthCube_frag_wgsl, Quad_frag_wgsl, Quad_vert_wgsl } from './quad/Quad_shader';
 import { ColorUtil } from './utils/ColorUtil';
 import { GenerayRandomDir } from './utils/GenerayRandomDir';
-import { ClusterLight, MatrixShader } from '../..';
+import { ClusterLight, GBuffer_pass, LambertShader, MatrixShader, QuadGlsl_fs, QuadGlsl_vs, SkyGBuffer_pass, UnLit, ZPassShader_fs, ZPassShader_vs, castPointShadowMap_vert, shadowCastMap_frag, shadowCastMap_vert } from '../..';
 
 /**
  * @internal
@@ -80,6 +80,7 @@ export class ShaderLib {
         ShaderLib.register('BRDF_frag', BRDF_frag);
         ShaderLib.register('BxDF_frag', BxDF_frag);
         ShaderLib.register('UnLit_frag', UnLit_frag);
+        ShaderLib.register('UnLit', UnLit);
         ShaderLib.register('Clearcoat_frag', Clearcoat_frag);
         ShaderLib.register('LitShader', LitShader);
         ShaderLib.register('PBRLItShader', PBRLItShader);
@@ -96,6 +97,25 @@ export class ShaderLib {
         ShaderLib.register('Bloom_Brightness_frag_wgsl', Bloom_shader.Bloom_Brightness_frag_wgsl);
         ShaderLib.register('Bloom_blur_frag_wgsl', Bloom_shader.Bloom_blur_frag_wgsl);
         ShaderLib.register('Bloom_composite_frag_wgsl', Bloom_shader.Bloom_composite_frag_wgsl);
+
+        ShaderLib.register("LambertShader", LambertShader);
+
+        ShaderLib.register("QuadGlsl_vs", QuadGlsl_vs);
+        ShaderLib.register("QuadGlsl_fs", QuadGlsl_fs);
+
+        ShaderLib.register("SkyGBuffer_fs", SkyGBuffer_pass);
+
+        ShaderLib.register("gbuffer_vs", GBuffer_pass);
+        ShaderLib.register("gbuffer_fs", GBuffer_pass);
+
+        ShaderLib.register("castPointShadowMap_vert", castPointShadowMap_vert);
+        ShaderLib.register("shadowCastMap_frag", shadowCastMap_frag);
+
+        ShaderLib.register("shadowCastMap_vert", shadowCastMap_vert);
+        ShaderLib.register("shadowCastMap_frag", shadowCastMap_frag);
+
+        ShaderLib.register("ZPass_shader_vs", ZPassShader_vs);
+        ShaderLib.register("ZPass_shader_fs", ZPassShader_fs);
     }
 
     public static register(keyName: string, code: string) {

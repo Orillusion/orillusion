@@ -63,7 +63,7 @@ class Sample_Matrix {
         }
 
         let time2 = performance.now();
-        WasmMatrix.updateAllContinueTransform(0, 300000, 0);
+        WasmMatrix.updateAllContinueTransform(0, Matrix4.useCount, 0);
         let count2 = performance.now() - time2;
         this.divB.innerText = "wasm :" + count2.toString();
         // console.log("wasm :", count2);

@@ -10,7 +10,7 @@ export class ShaderState {
     public blendMode?: BlendMode = BlendMode.NONE;
     public depthCompare?: GPUCompareFunction = GPUCompareFunction.less;
     public depthWriteEnabled?: boolean = true;
-    public frontFace?: GPUFrontFace = `ccw`;
+    public frontFace?: GPUFrontFace = `cw`;
     public cullMode?: GPUCullMode = GPUCullMode.back;
     public topology?: GPUPrimitiveTopology = GPUPrimitiveTopology.triangle_list;
     public depthBias?: number = 10;
@@ -32,6 +32,7 @@ export class ShaderState {
     public useZ: boolean = true;
 
     public splitTexture: boolean = false;
+    alphaCutoff: number;
 
     public setFromMapValues(values: Map<string, any>) {
         if (values.has('blendMode')) {

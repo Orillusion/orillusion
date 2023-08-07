@@ -82,7 +82,6 @@ class Context3D {
                 "depth32float-stencil8",
                 "indirect-first-instance",
                 "rg11b10ufloat-renderable",
-                "texture-compression-bc"
             ],
             requiredLimits: {
                 minUniformBufferOffsetAlignment: 256,
@@ -93,7 +92,7 @@ class Context3D {
             throw new Error('Your browser does not support WebGPU!');
         }
 
-        this._pixelRatio = this.canvasConfig?.devicePixelRatio || window.devicePixelRatio || 1;
+        this._pixelRatio = 1.5;//this.canvasConfig?.devicePixelRatio || window.devicePixelRatio || 1;
         this._pixelRatio = Math.min(this._pixelRatio, 2.0);
 
         // configure webgpu context
