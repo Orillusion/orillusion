@@ -209,14 +209,14 @@ export class HoverCameraController extends ComponentBase {
             this._targetPos.z += Vector3.HELP_1.z * this.mouseRightFactor;
 
             let f2 = this.camera.transform.right;
-            Vector3Ex.mulScale(f2, e.movementX * p, Vector3.HELP_1);
+            Vector3Ex.mulScale(f2, -e.movementX * p, Vector3.HELP_1);
             this._targetPos.x -= Vector3.HELP_1.x * this.mouseRightFactor;
             // this._targetPos.y -= Vector3.HELP_1.y;
             this._targetPos.z -= Vector3.HELP_1.z * this.mouseRightFactor;
         }
 
         if (this._mouseLeftDown) {
-            this.roll += e.movementX * Time.delta * 0.001 * this.mouseLeftFactor;
+            this.roll -= e.movementX * Time.delta * 0.001 * this.mouseLeftFactor;
             this.pitch -= e.movementY * Time.delta * 0.001 * this.mouseLeftFactor;
             this.pitch = clamp(this.pitch, this._topClamp, this._bottomClamp);
         }

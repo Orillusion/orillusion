@@ -246,6 +246,10 @@ export class Transform extends ComponentBase {
 
     public set up(value: Vector3) {
         this._up.copyFrom(value);
+
+        MathUtil.fromToRotation(Vector3.UP, this._up, Quaternion.HELP_0);
+        this.transform.localRotQuat = Quaternion.HELP_0;
+
         this.notifyLocalChange();
         this.onRotationChange?.();
 
@@ -261,8 +265,11 @@ export class Transform extends ComponentBase {
 
     public set down(value: Vector3) {
         this._down.copyFrom(value);
-        this.notifyLocalChange();
 
+        MathUtil.fromToRotation(Vector3.DOWN, this._down, Quaternion.HELP_0);
+        this.transform.localRotQuat = Quaternion.HELP_0;
+
+        this.notifyLocalChange();
         this.onRotationChange?.();
 
         if (this.eventRotationChange) {
@@ -277,8 +284,10 @@ export class Transform extends ComponentBase {
 
     public set forward(value: Vector3) {
         this._forward.copyFrom(value);
+
         MathUtil.fromToRotation(Vector3.FORWARD, this._forward, Quaternion.HELP_0);
         this.transform.localRotQuat = Quaternion.HELP_0;
+
         this.notifyLocalChange();
         this.onRotationChange?.();
 
@@ -294,8 +303,10 @@ export class Transform extends ComponentBase {
 
     public set back(value: Vector3) {
         this._back.copyFrom(value);
+
         MathUtil.fromToRotation(Vector3.BACK, this._back, Quaternion.HELP_0);
         this.transform.localRotQuat = Quaternion.HELP_0;
+
         this.notifyLocalChange();
         this.onRotationChange?.();
 
@@ -311,8 +322,13 @@ export class Transform extends ComponentBase {
 
     public set left(value: Vector3) {
         this._left.copyFrom(value);
+
+        MathUtil.fromToRotation(Vector3.LEFT, this._left, Quaternion.HELP_0);
+        this.transform.localRotQuat = Quaternion.HELP_0;
+
         this.notifyLocalChange();
         this.onRotationChange?.();
+
         if (this.eventRotationChange) {
             this.eventDispatcher.dispatchEvent(this.eventRotationChange);
         }
@@ -325,6 +341,10 @@ export class Transform extends ComponentBase {
 
     public set right(value: Vector3) {
         this._right.copyFrom(value);
+
+        MathUtil.fromToRotation(Vector3.RIGHT, this._right, Quaternion.HELP_0);
+        this.transform.localRotQuat = Quaternion.HELP_0;
+
         this.notifyLocalChange();
         this.onRotationChange?.();
 
@@ -344,13 +364,7 @@ export class Transform extends ComponentBase {
     public set localRotQuat(value: Quaternion) {
         this._localRotQuat = value;
         this._localRotQuat.getEulerAngles(this._localRot);
-
-        this.notifyLocalChange();
-        this.onRotationChange?.();
-
-        if (this.eventRotationChange) {
-            this.eventDispatcher.dispatchEvent(this.eventRotationChange);
-        }
+        this.localRotation = this._localRot;
     }
 
     /**
@@ -425,12 +439,15 @@ export class Transform extends ComponentBase {
      */
     public lookAt(pos: Vector3, target: Vector3, up: Vector3 = Vector3.UP) {
         this._targetPos ||= new Vector3();
+
         this._targetPos.copyFrom(target);
 
         this.localPosition = pos;
 
         Matrix4.helpMatrix.lookAt(pos, target, up);
+
         Matrix4.helpMatrix.invert();
+
         var prs: Vector3[] = Matrix4.helpMatrix.decompose(Orientation3D.QUATERNION);
 
         this.localRotQuat = Quaternion.CALCULATION_QUATERNION.copyFrom(prs[1]);
@@ -438,18 +455,13 @@ export class Transform extends ComponentBase {
 
     public decomposeFromMatrix(matrix: Matrix4, orientationStyle: string = 'eulerAngles'): this {
         let prs = matrix.decompose(orientationStyle);
-
         let transform = this.transform;
-
         transform.localRotQuat.copyFrom(prs[1]);
         transform.localRotQuat = transform.localRotQuat;
-
         transform.localPosition.copyFrom(prs[0]);
         transform.localPosition = transform.localPosition;
-
         transform.localScale.copyFrom(prs[2]);
         transform.localScale = transform.localScale;
-        // this.updateWorldMatrix();
         return this;
     }
 
@@ -459,15 +471,14 @@ export class Transform extends ComponentBase {
     * @param obj source Object3D
     */
     cloneTo(obj: Object3D) {
-        obj.transform.localPosition.copyFrom(this.localPosition);
-        obj.transform.localRotation.copyFrom(this.localRotation);
-        obj.transform.localScale.copyFrom(this.localScale);
+        obj.transform.localPosition = this.localPosition;
+        obj.transform.localRotation = this.localRotation;
+        obj.transform.localScale = this.localScale;
     }
 
     public set x(value: number) {
         if (this._localPos.x != value) {
             this._localPos.x = value;
-
             WasmMatrix.setTranslate(this.index, this._localPos.x, this._localPos.y, this._localPos.z);
             this.notifyLocalChange();
             this.onPositionChange?.();

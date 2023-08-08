@@ -10,7 +10,7 @@ export class ShaderState {
     public blendMode?: BlendMode = BlendMode.NONE;
     public depthCompare?: GPUCompareFunction = GPUCompareFunction.less;
     public depthWriteEnabled?: boolean = true;
-    public frontFace?: GPUFrontFace = `cw`;
+    public frontFace?: GPUFrontFace = `ccw`;
     public cullMode?: GPUCullMode = GPUCullMode.back;
     public topology?: GPUPrimitiveTopology = GPUPrimitiveTopology.triangle_list;
     public depthBias?: number = 10;
@@ -23,14 +23,12 @@ export class ShaderState {
     public castReflection: boolean = false;
     public receiveEnv: boolean = false;
     public renderLayer: number = 1000;
-    public renderOrder: number = 0;
+    public renderOrder: number = 2000;
     public unclippedDepth: boolean = false;
-
+    public transparent: boolean = false;
     public multisample: number = 0;
-
     public label: string;
     public useZ: boolean = true;
-
     public splitTexture: boolean = false;
     alphaCutoff: number;
 

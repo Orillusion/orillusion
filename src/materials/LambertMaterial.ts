@@ -44,7 +44,6 @@ export class LambertMaterial extends Material {
         // this.baseMap = Engine3D.res.whiteTexture;
         // this.emissiveMap = Engine3D.res.blackTexture;
         this.defaultPass = colorPass;
-        this.addPass(RendererType.COLOR, colorPass);
         this.baseMap = Engine3D.res.grayTexture;
     }
 

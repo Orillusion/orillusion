@@ -16,7 +16,7 @@ class Sample_Matrix {
 
         // add an Atmospheric sky enviroment
         let sky = scene.addComponent(AtmosphericComponent);
-        sky.sunY = 0.6
+        sky.sunY = 0.6;
 
         // init camera3D
         let mainCamera = CameraUtil.createCamera3D(null, scene);

@@ -66,19 +66,17 @@ export class ClusterLightingRender extends RendererBase {
         this._clusterLightingCompute.setStorageBuffer(`assignTable`, this.clusterLightingBuffer.assignTableBuffer);
 
 
-        GUIHelp.addButton("clusterBuffer", () => {
-            let od = this.clusterLightingBuffer.clusterBuffer.readBuffer();
-            console.log(od);
-
-            let byteLength = 2 * 4;
-            for (let i = 0; i < numClusters; i++) {
-                const element = new Float32Array(od.buffer, i * byteLength * 4, byteLength);
-                let min = new Vector3(element[0], element[1], element[2], element[3]);
-                let max = new Vector3(element[4], element[5], element[6], element[7]);
-                view.graphic3D.drawBox(i + "-box", min, max);
-            }
-        });
-
+        // GUIHelp.addButton("clusterBuffer", () => {
+        //     let od = this.clusterLightingBuffer.clusterBuffer.readBuffer();
+        //     console.log(od);
+        //     let byteLength = 2 * 4;
+        //     for (let i = 0; i < numClusters; i++) {
+        //         const element = new Float32Array(od.buffer, i * byteLength * 4, byteLength);
+        //         let min = new Vector3(element[0], element[1], element[2], element[3]);
+        //         let max = new Vector3(element[4], element[5], element[6], element[7]);
+        //         view.graphic3D.drawBox(i + "-box", min, max);
+        //     }
+        // });
     }
 
     render(view: View3D, occlusionSystem: OcclusionSystem) {

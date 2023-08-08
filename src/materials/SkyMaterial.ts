@@ -23,12 +23,11 @@ export class SkyMaterial extends Material {
         colorPass.setUniformFloat(`roughness`, 0.0);
 
         let shaderState = colorPass.shaderState;
-        shaderState.frontFace = `ccw`;
+        shaderState.frontFace = `cw`;
         shaderState.cullMode = GPUCullMode.back;
         shaderState.depthWriteEnabled = false;
         shaderState.depthCompare = GPUCompareFunction.less;
 
-        this.addPass(RendererType.COLOR, colorPass);
     }
 
     /**

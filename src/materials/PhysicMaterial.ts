@@ -14,7 +14,6 @@ export class PhysicMaterial extends Material {
 
     constructor() {
         super();
-
     }
 
     /**
@@ -72,10 +71,10 @@ export class PhysicMaterial extends Material {
     }
 
     public get doubleSide(): boolean {
-        return this.defaultPass.shaderState.cullMode == `none`;
+        return this.defaultPass.doubleSide;
     }
-    public set doubleSide(value: GPUCullMode) {
-        this.defaultPass.shaderState.cullMode = value ? `none` : `back`;
+    public set doubleSide(value: boolean) {
+        this.defaultPass.doubleSide = value;
     }
 
     public get alphaCutoff(): any {
@@ -88,12 +87,15 @@ export class PhysicMaterial extends Material {
     public get emissiveColor(): Color {
         return this.defaultPass.getUniform(`emissiveColor`);
     }
+
     public set emissiveColor(value: Color) {
         this.defaultPass.setUniform(`emissiveColor`, value);
     }
+
     public get emissiveIntensity(): number {
         return this.defaultPass.getUniform(`emissiveIntensity`);
     }
+
     public set emissiveIntensity(value: number) {
         this.defaultPass.setUniform(`emissiveIntensity`, value);
     }

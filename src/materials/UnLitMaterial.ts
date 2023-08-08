@@ -20,7 +20,6 @@ export class UnLitMaterial extends Material {
         let colorPass = new RenderShader(`UnLit`, `UnLit`);
         this.defaultPass = colorPass;
         colorPass.setShaderEntry(`VertMain`, `FragMain`)
-        this.addPass(RendererType.COLOR, colorPass);
 
         colorPass.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));
         colorPass.setUniformVector4(`transformUV2`, new Vector4(0, 0, 1, 1));
@@ -43,7 +42,6 @@ export class UnLitMaterial extends Material {
         // default value
         // this.emissiveMap = Engine3D.res.blackTexture;
         this.defaultPass = colorPass;
-        this.addPass(RendererType.COLOR, colorPass);
         // this.baseMap = Engine3D.res.grayTexture;
         this.baseMap = Engine3D.res.whiteTexture;
     }

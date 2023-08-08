@@ -50,7 +50,6 @@ export class GUIMaterial extends Material {
 
         this.defaultPass = colorPass;
 
-        this.addPass(RendererType.COLOR, colorPass);
     }
 
     /**

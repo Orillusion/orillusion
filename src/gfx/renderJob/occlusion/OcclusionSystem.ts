@@ -48,13 +48,18 @@ export class OcclusionSystem {
 
     public update(camera: Camera3D, scene: Scene3D) {
         if (!OcclusionSystem.enable) return;
+
         let cameraViewRenderList = this._renderList.get(camera);
+
         if (!cameraViewRenderList) {
             cameraViewRenderList = new Map<RenderNode, number>();
             this._renderList.set(camera, cameraViewRenderList);
         }
+
         cameraViewRenderList.clear();
+
         EntityCollect.instance.autoSortRenderNodes(scene);
+
         let nodes = EntityCollect.instance.getRenderNodes(scene);
 
         if (nodes.opaqueList) {

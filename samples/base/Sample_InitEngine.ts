@@ -1,4 +1,4 @@
-import { AtmosphericComponent, BoxGeometry, CameraUtil, DirectLight, Engine3D, GTAOPost, HDRBloomPost, HoverCameraController, KelvinUtil, LambertMaterial, LitMaterial, MeshRenderer, Object3D, OcclusionSystem, PlaneGeometry, PostProcessingComponent, Scene3D, SphereGeometry, UnLitMaterial, Vector3Ex, View3D } from '@orillusion/core';
+import { AtmosphericComponent, BoxGeometry, CameraUtil, DirectLight, Engine3D, GTAOPost, HDRBloomPost, HoverCameraController, KelvinUtil, LambertMaterial, LitMaterial, MeshRenderer, Object3D, OcclusionSystem, PlaneGeometry, PostProcessingComponent, Quaternion, Scene3D, SphereGeometry, UnLitMaterial, Vector3, Vector3Ex, View3D } from '@orillusion/core';
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { Stats } from '@orillusion/stats';
 import { GUIUtil } from '@samples/utils/GUIUtil';
@@ -11,6 +11,7 @@ export class Sample_InitEngine {
         OcclusionSystem.enable = false;
 
         Engine3D.setting.shadow.shadowBound = 256
+        Engine3D.setting.shadow.shadowBias = 0.002
         // init engine
         await Engine3D.init({ renderLoop: () => this.update() });
 
@@ -41,6 +42,7 @@ export class Sample_InitEngine {
         let post2 = postCom.addPost(GTAOPost) as GTAOPost;
 
         GUIUtil.renderBloom(post);
+        GUIUtil.renderShadowSetting();
         await this.test();
     }
 
@@ -80,31 +82,41 @@ export class Sample_InitEngine {
             this.view.scene.addChild(floor);
         }
 
-        let shareGeometry = new BoxGeometry();
-        // let mat = new LambertMaterial();
-        let mat = new LitMaterial();
+        // let shareGeometry = new BoxGeometry();
+        // let mat = new LitMaterial();
 
         // let count = 100 * 1000;
-        let count = 1 * 1000;
-        for (let i = 0; i < count; i++) {
-            let box = new Object3D();
-            let mr = box.addComponent(MeshRenderer);
-            mr.geometry = shareGeometry;
-            mr.material = mat;
-            mr.castShadow = true;
-            box.scaleX = 2;
-            box.scaleY = 2;
-            box.scaleZ = 2;
+        // let count = 1 * 1000;
+        // for (let i = 0; i < count; i++) {
+        //     let box = new Object3D();
+        //     let mr = box.addComponent(MeshRenderer);
+        //     mr.geometry = shareGeometry;
+        //     mr.material = mat;
+        //     mr.castShadow = true;
+        //     box.scaleX = 2;
+        //     box.scaleY = 2;
+        //     box.scaleZ = 2;
 
-            box.rotationX = Math.random() * 360;
-            box.rotationY = Math.random() * 360;
-            box.rotationZ = Math.random() * 360;
+        //     box.rotationX = Math.random() * 360;
+        //     box.rotationY = Math.random() * 360;
+        //     box.rotationZ = Math.random() * 360;
 
-            this.updateList.push(box);
+        //     this.updateList.push(box);
 
-            box.localPosition = Vector3Ex.sphereXYZ(10, 300, 1, 1, 1);
-            this.view.scene.addChild(box);
-        }
+        //     box.localPosition = Vector3Ex.sphereXYZ(10, 300, 1, 1, 1);
+        //     this.view.scene.addChild(box);
+        // }
+
+        let box = await Engine3D.res.loadGltf('gltfs/cornellBox/cornellBox.gltf') as Object3D;
+        box.localScale = new Vector3(10, 10, 10);
+        let q = new Quaternion();
+        q.fromEulerAngles(45, 45, 0);
+        box.localQuaternion = q;
+
+        // box.rotationX = 45;
+        // box.rotationY = 45;
+        // box.rotationZ = 0;
+        this.view.scene.addChild(box);
     }
 
     public updateList: Object3D[] = [];

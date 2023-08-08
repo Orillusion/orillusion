@@ -4,6 +4,14 @@ import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
 
+    public static renderShadowSetting(open: boolean = true) {
+        GUIHelp.addFolder('ShadowSetting');
+        let setting = Engine3D.setting.shadow;
+        GUIHelp.add(setting, 'shadowBound', 0, 2048, 1);
+        GUIHelp.add(setting, 'shadowBias', 0, 0.2, 0.0000001);
+        open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
 
     //render AtmosphericComponent
     public static renderAtomosphericSky(component: AtmosphericComponent, open: boolean = true, name?: string) {

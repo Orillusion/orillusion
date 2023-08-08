@@ -589,7 +589,7 @@ export class Matrix4 {
         let angle: number = (fov * DEGREES_TO_RADIANS) / 2.0;
         let f = Math.cos(angle) / Math.sin(angle);
         // 0.5 / tan
-        data[0] = f / aspect;
+        data[0] = -f / aspect;
         // data[0] = xScale;
         data[1] = 0;
         data[2] = 0;
@@ -620,7 +620,7 @@ export class Matrix4 {
     public frustum(l: number, r: number, b: number, t: number, n: number, f: number) {
         var m = this.rawData;
 
-        m[0] = 2 * n / (r - l);
+        m[0] = -2 * n / (r - l);
         m[1] = 0;
         m[2] = 0;
         m[3] = 0;

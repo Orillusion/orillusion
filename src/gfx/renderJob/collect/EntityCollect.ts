@@ -71,9 +71,9 @@ export class EntityCollect {
     }
 
     private getPashList(root: Scene3D, renderNode: RenderNode) {
-        if (renderNode[`renderOrder`] < 3000) {
+        if (renderNode.renderOrder < 3000) {
             return this._source_opaqueRenderNodes.get(root);
-        } else if (renderNode[`renderOrder`] >= 3000) {
+        } else if (renderNode.renderOrder >= 3000) {
             return this._source_transparentRenderNodes.get(root);
         }
     }
@@ -81,7 +81,7 @@ export class EntityCollect {
     private sortRenderNode(list: RenderNode[], renderNode: RenderNode) {
         for (let i = list.length - 1; i > 0; i--) {
             const element = list[i];
-            if (element[`renderOrder`] < renderNode[`renderOrder`]) {
+            if (element.renderOrder < renderNode.renderOrder) {
                 list.push(renderNode);
                 return;
             }
@@ -100,12 +100,12 @@ export class EntityCollect {
             }
         } else if (!RenderLayerUtil.hasMask(renderNode.renderLayer, RenderLayer.None)) {
             this.removeRenderNode(root, renderNode);
-            if (renderNode[`renderOrder`] < 3000) {
+            if (renderNode.renderOrder < 3000) {
                 if (!this._op_renderGroup.has(root)) {
                     this._op_renderGroup.set(root, new EntityBatchCollect());
                 }
                 this._op_renderGroup.get(root).collect_add(renderNode);
-            } else if (renderNode[`renderOrder`] >= 3000) {
+            } else if (renderNode.renderOrder >= 3000) {
                 if (!this._tr_renderGroup.has(root)) {
                     this._tr_renderGroup.set(root, new EntityBatchCollect());
                 }
@@ -113,12 +113,12 @@ export class EntityCollect {
             }
         } else {
             this.removeRenderNode(root, renderNode);
-            if (renderNode[`renderOrder`] < 3000) {
+            if (renderNode.renderOrder < 3000) {
                 if (!this._source_opaqueRenderNodes.has(root)) {
                     this._source_opaqueRenderNodes.set(root, []);
                 }
                 this._source_opaqueRenderNodes.get(root).push(renderNode);
-            } else if (renderNode[`renderOrder`] >= 3000) {
+            } else if (renderNode.renderOrder >= 3000) {
                 if (!this._source_transparentRenderNodes.has(root)) {
                     this._source_transparentRenderNodes.set(root, []);
                 }
@@ -212,6 +212,7 @@ export class EntityCollect {
         let renderList: RenderNode[] = this._source_transparentRenderNodes.get(scene);
         if (!renderList)
             return;
+
         let needSort = false;
         for (const renderNode of renderList) {
             if (renderNode.isRenderOrderChange || renderNode.needSortOnCameraZ) {
@@ -219,6 +220,7 @@ export class EntityCollect {
                 break;
             }
         }
+
         if (needSort) {
             for (const renderNode of renderList) {
                 let __renderOrder = renderNode.renderOrder;

@@ -57,7 +57,7 @@ export class GUIRenderer extends MeshRenderer {
             let vColor = this._guiGeometry.vColorBuffer;
             if (passes) {
                 for (let j = 0; j < passes.length; j++) {
-                    const renderShader = passes[j].renderShader;
+                    const renderShader = passes[j];
                     if (!renderShader.pipeline) {
                         renderShader.setStorageBuffer('vPositionBuffer', vPosition);
                         renderShader.setStorageBuffer('vSpriteBuffer', vSprite);

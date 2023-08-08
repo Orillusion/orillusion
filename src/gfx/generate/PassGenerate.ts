@@ -103,7 +103,7 @@ export class PassGenerate {
                 let castPointShadowPass = new CastPointShadowMaterialPass();
                 castPointShadowPass.setTexture(`baseMap`, colorPass.getTexture(`baseMap`));
                 castPointShadowPass.setUniform(`alphaCutoff`, colorPass.getUniform(`alphaCutoff`));
-                castPointShadowPass.setDefine("USE_ALPHACUT", colorPass.shaderState.alphaCutoff < 1.0);
+                castPointShadowPass.setDefine("USE_ALPHACUT", 1);
                 // castPointShadowPass.doubleSide = false ;
                 for (let j = 0; j < 1; j++) {
                     if (useTangent) {

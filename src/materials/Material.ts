@@ -18,30 +18,59 @@ export class Material {
 
     public renderPasses: Map<RendererType, RenderShader[]>;
 
-    public transparent: any;
+    public enable: boolean = true;
 
-    public sort: number;
-
-
-
-    public enable: number;
-    public blendMode: BlendMode;
-
-
-    protected defaultPass: RenderShader;
-
+    private _defaultPass: RenderShader;
 
     constructor() {
         this.renderPasses = new Map<RendererType, RenderShader[]>();
     }
 
+    public get defaultPass(): RenderShader {
+        return this._defaultPass;
+    }
+
+    public set defaultPass(value: RenderShader) {
+        this._defaultPass = value;
+        this.addPass(RendererType.COLOR, value);
+    }
+
+    public get doubleSide(): boolean {
+        return this._defaultPass.doubleSide;
+    }
+
+    public set doubleSide(value: boolean) {
+        this._defaultPass.doubleSide = value;
+    }
+
     public get castShadow(): boolean {
-        let colorPass = this.renderPasses.get(RendererType.COLOR)[0];
+        let colorPass = this.defaultPass;
         return colorPass.shaderState.castShadow;
     }
+
     public set castShadow(value: boolean) {
-        let colorPass = this.renderPasses.get(RendererType.COLOR)[0];
+        let colorPass = this.defaultPass;
         colorPass.shaderState.castShadow = value;
+    }
+
+    public get blendMode(): BlendMode {
+        let colorPass = this.defaultPass;
+        return colorPass.blendMode;
+    }
+
+    public set blendMode(value: BlendMode) {
+        let colorPass = this.defaultPass;
+        colorPass.blendMode = value;
+    }
+
+    public get cullMode(): GPUCullMode {
+        let colorPass = this.defaultPass;
+        return colorPass.cullMode;
+    }
+
+    public set cullMode(value: GPUCullMode) {
+        let colorPass = this.defaultPass;
+        colorPass.cullMode = value;
     }
 
     /**
@@ -60,6 +89,9 @@ export class Material {
         if (!this.renderPasses.has(passType)) this.renderPasses.set(passType, []);
 
         let passList = this.renderPasses.get(passType);
+        if (passType == RendererType.COLOR && passList.length == 0) {
+            this._defaultPass = pass;
+        }
 
         let has = passList.indexOf(pass) != -1;
         if (!has) {

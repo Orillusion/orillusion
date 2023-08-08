@@ -44,8 +44,8 @@ export class RenderNode extends ComponentBase {
     protected _combineShaderRefection: ShaderReflection;
     protected _ignoreEnvMap?: boolean;
     protected _ignorePrefilterMap?: boolean;
-    private __renderOrder: number = 0;//cameraDepth + _renderOrder
-    private _renderOrder: number = 0;
+    protected __renderOrder: number = 0;//cameraDepth + _renderOrder
+    protected _renderOrder: number = 0;
     public isRenderOrderChange?: boolean;
     public needSortOnCameraZ?: boolean;
 
@@ -58,7 +58,9 @@ export class RenderNode extends ComponentBase {
      */
     private _renderLayer: RenderLayer = RenderLayer.None;
 
+
     public init() {
+        this.renderOrder = 0;
         this.rendererMask = RendererMask.Default;
         this.instanceID = GetCountInstanceID().toString();
     }
@@ -87,18 +89,6 @@ export class RenderNode extends ComponentBase {
         //     element.renderLayer = value;
         // }
         this._renderLayer = value;
-    }
-
-    public get renderOrder(): number {
-        return this._renderOrder;
-    }
-
-    public set renderOrder(value: number) {
-        if (value != this._renderOrder) {
-            this.isRenderOrderChange = true;
-            this._renderOrder = value;
-            this.__renderOrder = value;
-        }
     }
 
     public get geometry(): GeometryBase {
@@ -135,6 +125,18 @@ export class RenderNode extends ComponentBase {
         this._rendererMask = value;
     }
 
+    public get renderOrder(): number {
+        return this._renderOrder;
+    }
+
+    public set renderOrder(value: number) {
+        if (value != this._renderOrder) {
+            this.isRenderOrderChange = true;
+            this.__renderOrder = value;
+        }
+        this._renderOrder = value;
+    }
+
     @EditorInspector
     public get materials(): Material[] {
         return this._materials;
@@ -155,11 +157,14 @@ export class RenderNode extends ComponentBase {
         this._materials = value;
         let transparent = false;
         let sort = 0;
+
         for (let i = 0; i < value.length; i++) {
             const element = value[i];
-            if (element.transparent) {
+            const passArray = element.getPass(RendererType.COLOR);
+            const pass = passArray[0];
+            if (pass.shaderState.transparent) {
                 transparent = true;
-                sort = sort > element.sort ? sort : element.sort;
+                sort = sort > pass.shaderState.renderOrder ? sort : pass.shaderState.renderOrder;
             }
         }
         this.renderOrder = transparent ? this.renderOrder : sort;
@@ -225,10 +230,10 @@ export class RenderNode extends ComponentBase {
             let sort = 0;
             for (let i = 0; i < this.materials.length; i++) {
                 const element = this.materials[i];
-                const passArray = element.renderPasses.get(RendererType.COLOR);
+                const passArray = element.getPass(RendererType.COLOR);
                 const pass = passArray[0];
-                if (element.transparent) {
-                    sort = sort > element.sort ? sort : element.sort;
+                if (pass.shaderState.transparent) {
+                    sort = sort > pass.shaderState.renderOrder ? sort : pass.shaderState.renderOrder;
                 } else {
                     sort = Math.max(sort - 3000, 0);
                 }
@@ -318,10 +323,10 @@ export class RenderNode extends ComponentBase {
         let worldMatrix = renderNode.transform._worldMatrix;
         for (let i = 0; i < renderNode.materials.length; i++) {
             const material = renderNode.materials[i];
-            if (!material || material.enable == 0)
+            if (!material || !material.enable)
                 continue;
 
-            let passes = material.renderPasses.get(passType);
+            let passes = material.getPass(passType);
 
             if (!passes || passes.length == 0)
                 continue;
@@ -378,7 +383,7 @@ export class RenderNode extends ComponentBase {
         let worldMatrix = node.object3D.transform._worldMatrix;
         for (let i = 0; i < this.materials.length; i++) {
             const material = this.materials[i];
-            let passes = material.renderPasses.get(passType);
+            let passes = material.getPass(passType);
             if (!passes || passes.length == 0)
                 return;
 
