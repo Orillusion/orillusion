@@ -163,6 +163,7 @@ export class Engine3D {
                     groupCount: 4,
                     outlinePixel: 2,
                     fadeOutlinePixel: 4,
+                    textureScale: 0.7,
                     useAddMode: false,
                     debug: true,
                 },
