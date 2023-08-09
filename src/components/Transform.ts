@@ -680,7 +680,7 @@ export class Transform extends ComponentBase {
         if (this.parent && this.parent.object3D) {
             this.parent.object3D.removeChild(this.object3D);
         }
-        super.beforeDestroy?.(force);
+        super.beforeDestroy(force);
     }
 
     destroy(): void {
