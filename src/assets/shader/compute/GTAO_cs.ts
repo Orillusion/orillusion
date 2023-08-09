@@ -16,7 +16,6 @@ export let GTAO_cs: string = /*wgsl*/ `
       slot2: f32,
     }
 
-    @group(0) @binding(0) var<uniform> standUniform: GlobalUniform;
     @group(0) @binding(1) var<uniform> gtaoData: GTAO;
     @group(0) @binding(2) var<storage, read_write> directions : array<vec2<f32>>;
     @group(0) @binding(3) var<storage, read_write> aoBuffer : array<f32>;
@@ -41,7 +40,6 @@ export let GTAO_cs: string = /*wgsl*/ `
           return;
       }
       wNormal = textureLoad(normalTex, fragCoord, 0);
-      wNormal = vec4<f32>(wNormal.rgb,wNormal.w) ;
       var oc = textureLoad(inTex, fragCoord, 0);
       let index = fragCoord.x + fragCoord.y * i32(texSize.x);
       let lastFactor = aoBuffer[index];
@@ -50,7 +48,7 @@ export let GTAO_cs: string = /*wgsl*/ `
           
       }else{
           wPosition = textureLoad(posTex, fragCoord, 0).xyz;
-          let ndc = standUniform.projMat * standUniform.viewMat * vec4<f32>(wPosition, 1.0);
+          let ndc = globalUniform.projMat * globalUniform.viewMat * vec4<f32>(wPosition, 1.0);
           let ndcZ = ndc.z / ndc.w;
           maxPixelScaled = calcPixelByNDC(ndcZ);
           newFactor = rayMarch();

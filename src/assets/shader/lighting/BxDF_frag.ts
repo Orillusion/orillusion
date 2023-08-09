@@ -108,7 +108,7 @@ export let BxDF_frag: string = /*wgsl*/ `
       var iblDiffuseResult = irradiance * kdLast * fragData.Albedo.rgb ;
       //***********indirect-ambient part********* 
       let sunLight = lightBuffer[0] ;
-      var indirectResult = (iblSpecularResult + iblDiffuseResult) * fragData.Ao * sunLight.quadratic ;
+      var indirectResult = (iblSpecularResult + iblDiffuseResult) * fragData.Ao * max(sunLight.quadratic,0.05) ;
 
 
       ORI_FragmentOutput.color = vec4<f32>(0.0);

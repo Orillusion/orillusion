@@ -320,7 +320,7 @@ export class Matrix4 {
     constructor(doMatrix: boolean = false) {
         // if (doMatrix) {
         if (Matrix4.useCount >= Matrix4.allocCount) {
-            Matrix4.allocMatrix(Matrix4.allocCount + 1000);
+            Matrix4.allocMatrix(Matrix4.allocCount + 5000);
         }
 
         this.index = Matrix4.useCount;

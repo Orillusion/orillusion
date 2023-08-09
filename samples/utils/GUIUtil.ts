@@ -52,9 +52,9 @@ export class GUIUtil {
     public static renderTransform(transform: Transform, open: boolean = true, name?: string) {
         name ||= 'Transform';
         GUIHelp.addFolder(name);
-        GUIHelp.add(transform, 'x', -10.0, 10.0, 0.01);
-        GUIHelp.add(transform, 'y', -10.0, 10.0, 0.01);
-        GUIHelp.add(transform, 'z', -10.0, 10.0, 0.01);
+        GUIHelp.add(transform, 'x', -100.0, 100.0, 0.01);
+        GUIHelp.add(transform, 'y', -100.0, 100.0, 0.01);
+        GUIHelp.add(transform, 'z', -100.0, 100.0, 0.01);
         GUIHelp.add(transform, 'rotationX', 0.0, 360.0, 0.01);
         GUIHelp.add(transform, 'rotationY', 0.0, 360.0, 0.01);
         GUIHelp.add(transform, 'rotationZ', 0.0, 360.0, 0.01);

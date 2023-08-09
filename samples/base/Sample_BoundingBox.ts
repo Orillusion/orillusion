@@ -13,7 +13,6 @@ class Sample_BoundingBox {
         await Engine3D.init({ renderLoop: () => { this.loop() } });
         GUIHelp.init();
         let param = createSceneParam();
-        param.camera.distance = 1;
         param.camera.near = 0.01;
         param.camera.far = 100;
         param.camera.distance = 2;
@@ -47,8 +46,8 @@ class Sample_BoundingBox {
     red = new Color(1, 0, 0, 1);
     gree = new Color(0, 1, 0, 1);
     loop() {
-        this.view.graphic3D.drawBoundingBox(this.box.uuid, this.box.bound as any, this.gree);
-        this.view.graphic3D.drawBoundingBox(this.container.uuid, this.container.bound as any, this.red);
+        this.view.graphic3D.drawBoundingBox(this.box.instanceID, this.box.bound as any, this.gree);
+        this.view.graphic3D.drawBoundingBox(this.container.instanceID, this.container.bound as any, this.red);
     }
 }
 

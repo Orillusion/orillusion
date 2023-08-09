@@ -16,10 +16,13 @@ import { RendererMask, RendererMaskUtil } from "../../gfx/renderJob/passRenderer
 import { RendererPassState } from "../../gfx/renderJob/passRenderer/state/RendererPassState";
 import { RendererType } from "../../gfx/renderJob/passRenderer/state/RendererType";
 import { MaterialBase } from "../../materials/MaterialBase";
-import { UUID } from "../../util/Global";
+import { GetCountInstanceID, UUID } from "../../util/Global";
 import { Reference } from "../../util/Reference";
 import { ComponentBase } from "../ComponentBase";
 import { IESProfiles } from "../lights/IESProfiles";
+import { Octree } from "../../core/tree/octree/Octree";
+import { OctreeEntity } from "../../core/tree/octree/OctreeEntity";
+import { Transform } from "../Transform";
 
 
 /**
@@ -48,12 +51,30 @@ export class RenderNode extends ComponentBase {
     private _renderOrder: number = 0;
     public isRenderOrderChange?: boolean;
     public needSortOnCameraZ?: boolean;
+    private _octreeBinder: { octree: Octree, entity: OctreeEntity };
 
     public preInit: boolean = false;
 
     public init() {
         this.rendererMask = RendererMask.Default;
-        this.instanceID = UUID();
+        this.instanceID = GetCountInstanceID().toString();
+    }
+
+    public attachSceneOctree(octree: Octree) {
+        this._octreeBinder = { octree, entity: new OctreeEntity(this) };
+        this.transform.eventDispatcher.addEventListener(Transform.LOCAL_ONCHANGE, this.updateOctreeEntity, this);
+    }
+
+    public detachSceneOctree() {
+        if (this._octreeBinder) {
+            this._octreeBinder.entity?.leaveNode();
+            this.transform.eventDispatcher.removeEventListener(Transform.LOCAL_ONCHANGE, this.updateOctreeEntity, this);
+            this._octreeBinder = null;
+        }
+    }
+
+    protected updateOctreeEntity(e?) {
+        this._octreeBinder?.entity?.update(this._octreeBinder.octree);
     }
 
     public copyComponent(from: this): this {
@@ -165,6 +186,7 @@ export class RenderNode extends ComponentBase {
             this.initPipeline();
         }
         EntityCollect.instance.addRenderNode(this.transform.scene3D, this);
+        this.updateOctreeEntity();
     }
 
     public onDisable(): void {

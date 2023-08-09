@@ -22,7 +22,7 @@ export interface IBound {
     containsPoint(point: Vector3): boolean;
     setFromCenterAndSize(center: Vector3, size: Vector3 | number);
 
-    containsFrustum(object3D: Object3D, frustum: Frustum);
+    inFrustum(object3D: Object3D, frustum: Frustum);
 
     updateBound();
 }

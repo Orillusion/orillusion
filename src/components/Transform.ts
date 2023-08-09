@@ -106,10 +106,6 @@ export class Transform extends ComponentBase {
     private _down: Vector3 = new Vector3();
     public readonly _worldMatrix: Matrix4;
 
-    public rotatingX: number = 0;
-    public rotatingY: number = 0;
-    public rotatingZ: number = 0;
-
     private _targetPos: Vector3;
     public static: boolean = false;
 
@@ -131,14 +127,14 @@ export class Transform extends ComponentBase {
         this._parent = value;
         let hasRoot = value ? value.scene3D : null;
         if (!hasRoot) {
-            this.object3D.components.forEach((c) => {
+            for (let c of this.object3D.components.values()) {
                 c[`__stop`]();
-            });
+            }
         } else {
             this._scene3d = hasRoot;
-            this.object3D.components.forEach((c) => {
-                ComponentCollect.appendWaitStart(c);
-            });
+            for (let c of this.object3D.components.values()) {
+                ComponentCollect.appendWaitStart(this.object3D, c);
+            }
         }
 
         for (let child of this.object3D.entityChildren) {
@@ -368,7 +364,6 @@ export class Transform extends ComponentBase {
                 append(this._worldMatrix, this.parent.worldMatrix, this._worldMatrix);
                 // WasmMatrix4.makeMatrix44Append(this._localRot, this._localPos, this.localScale, this._worldMatrix, this._worldMatrix, this.parent.worldMatrix, this._worldMatrix);
             } else {
-                this._localRot.y += this.rotatingY;
                 makeMatrix44(this._localRot, this._localPos, this.localScale, this._worldMatrix);
                 // WasmMatrix4.makeMatrix44(this._localRot, this._localPos, this.localScale, this._worldMatrix);
             }
@@ -376,18 +371,19 @@ export class Transform extends ComponentBase {
         this._localChange = false;
     }
 
-    public static updateChildTransform(transform: Transform) {
-        if (!transform.view3D || !transform.enable) {
-            return;
+    public updateChildTransform() {
+        let self = this;
+        if (self._localChange) {
+            self.updateWorldMatrix();
         }
-        if (transform._localChange)
-            transform.updateWorldMatrix();
-        let children = transform.object3D.entityChildren;
-        let i = 0;
-        let len = children.length;
-        for (i = 0; i < len; i++) {
-            const node = children[i];
-            Transform.updateChildTransform(node.transform);
+        if (self.object3D.numChildren > 0) {
+            let i = 0;
+            // for (i = 0; i < self.object3D.numChildren; i++) {
+            //     self.object3D.entityChildren[i].transform.updateChildTransform();
+            // }
+            for (const child of self.object3D.entityChildren) {
+                child.transform.updateChildTransform();
+            }
         }
     }
 
@@ -793,3 +789,4 @@ export class Transform extends ComponentBase {
     // }
 
 }
+

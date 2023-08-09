@@ -37,6 +37,9 @@ export class ComponentBase implements IComponent {
     private __isStart: boolean = false;
     public isDestroyed?: boolean;
 
+    public get isStart(): boolean {
+        return this.__isStart;
+    }
 
     /**
      * Return the Transform component attached to the Object3D.
