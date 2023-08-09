@@ -99,7 +99,7 @@ export class BoundingSphere implements IBound {
     }
 
 
-    public containsFrustum(obj: Object3D, frustum: Frustum) {
+    public inFrustum(obj: Object3D, frustum: Frustum) {
         return frustum.containsSphere(obj);
     }
 

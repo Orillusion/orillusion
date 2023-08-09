@@ -67,9 +67,6 @@ export class Ray {
     // }
 
     public intersectBox(box: IBound, target?: Vector3): Vector3 {
-        if (!target) {
-            target = new Vector3();
-        }
         let direction = this.direction;
         let origin = this.origin;
         let tMin: number;
@@ -88,7 +85,7 @@ export class Ray {
         tYMin = ((invDirY >= 0 ? min.y : max.y) - origin.y) * invDirY;
         tYMax = ((invDirY >= 0 ? max.y : min.y) - origin.y) * invDirY;
         if (tMin > tYMax || tYMin > tMax) {
-            return null
+            return null;
         }
         if (tYMin > tMin) {
             tMin = tYMin;
@@ -99,7 +96,7 @@ export class Ray {
         tZMin = ((invDirZ >= 0 ? min.z : max.z) - origin.z) * invDirZ;
         tZMax = ((invDirZ >= 0 ? max.z : min.z) - origin.z) * invDirZ;
         if (tMin > tZMax || tZMin > tMax) {
-            return null
+            return null;
         }
         if (tZMin > tMin) {
             tMin = tZMin;
@@ -110,6 +107,7 @@ export class Ray {
         if (tMax < 0) {
             return null;
         }
+        target ||= new Vector3();
         return this.pointAt(tMin >= 0 ? tMin : tMax, target);
     }
 
@@ -119,10 +117,8 @@ export class Ray {
      * @param target output target
      * @returns result
      */
-    public pointAt(t: number, target: Vector3) {
-        if (!target) {
-            target = new Vector3();
-        }
+    public pointAt(t: number, target?: Vector3) {
+        target ||= new Vector3();
         target.copy(this.direction);
         target.multiplyScalar(t);
         target.add(this.origin, target);
