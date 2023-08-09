@@ -1,41 +1,9 @@
 export let DDGILighting_shader = /*wgsl*/`
 
+#include "GlobalUniform"
 #include "MathShader"
 #include "FastMathShader"
 #include "ColorUtil"
-struct GlobalUniform {
-   projMat: mat4x4<f32>,
-   viewMat: mat4x4<f32>,
-   cameraWorldMatrix: mat4x4<f32>,
-   pvMatrixInv : mat4x4<f32>,
-   shadowMatrix: array<mat4x4<f32>,8>,
-   CameraPos: vec3<f32>,
-   
-   frame: f32,
-   time: f32,
-   delta: f32,
-   shadowBias: f32,
-   skyExposure: f32,
-   renderPassState:f32,
-   quadScale: f32,
-   hdrExposure: f32,
-  
-   renderState_left: i32,
-   renderState_right: i32,
-   renderState_split: f32,
-
-   mouseX: f32,
-   mouseY: f32,
-   windowWidth: f32,
-   windowHeight: f32,
-
-   near: f32,
-   far: f32,
-
-   pointShadowBias: f32,
-   shadowMapSize: f32,
-   shadowSoft: f32,
- };
 
 struct ConstUniform{
    screenWidth:f32,
@@ -74,10 +42,9 @@ const PointLightType = 1;
 const DirectLightType = 2;
 const SpotLightType = 3;
 
-@group(0) @binding(0) var outputBuffer : texture_storage_2d<rgba16float, write>;
-@group(0) @binding(1) var prefilterMapSampler: sampler;
-@group(0) @binding(2) var prefilterMap: texture_cube<f32>;
-@group(0) @binding(3) var<uniform> globalUniform: GlobalUniform;
+@group(0) @binding(1) var outputBuffer : texture_storage_2d<rgba16float, write>;
+@group(0) @binding(2) var prefilterMapSampler: sampler;
+@group(0) @binding(3) var prefilterMap: texture_cube<f32>;
 
 @group(1) @binding(0) var positionMapSampler : sampler;
 @group(1) @binding(1) var positionMap : texture_2d<f32>;
