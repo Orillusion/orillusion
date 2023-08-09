@@ -24,7 +24,7 @@ export class Matrix4 {
     /**
      * matrix do total count 
      */
-    public static allocCount: number = 400000;
+    public static allocCount: number = 20000;
 
     /**
      * matrix do total count 
@@ -34,7 +34,7 @@ export class Matrix4 {
     /**
      * matrix has max limit count
      */
-    public static maxCount: number = 400000;
+    public static maxCount: number = 20000;
 
     /**
      * current matrix use count 

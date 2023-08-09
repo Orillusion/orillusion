@@ -1,4 +1,5 @@
-import { GeometryBase, MaterialBase, MaterialPass, RenderNode, RenderShader, View3D } from "../../..";
+import { RenderNode } from "../../../components/renderer/RenderNode";
+import { View3D } from "../../../core/View3D";
 
 
 export type RenderShaderList = Map<string, Map<string, RenderNode>>;
@@ -24,17 +25,17 @@ export class RenderShaderCollect {
                 }
                 renderGlobalMap.set(node.instanceID, node);
 
-                mat.renderPasses.forEach((v) => {
-                    v.forEach((pass) => {
-                        let key = `${node.geometry.instanceID + pass.instanceID}`
-                        let nodeMap = rDic.get(key);
-                        if (!nodeMap) {
-                            nodeMap = new Map<string, RenderNode>();
-                            rDic.set(key, nodeMap);
-                        }
-                        nodeMap.set(node.instanceID, node);
-                    })
-                });
+                let colorPassList = mat.getAllPass();
+                for (let i = 0; i < colorPassList.length; i++) {
+                    const pass = colorPassList[i];
+                    let key = `${node.geometry.instanceID + pass.instanceID}`
+                    let nodeMap = rDic.get(key);
+                    if (!nodeMap) {
+                        nodeMap = new Map<string, RenderNode>();
+                        rDic.set(key, nodeMap);
+                    }
+                    nodeMap.set(node.instanceID, node);
+                }
             });
         }
     }
@@ -45,15 +46,17 @@ export class RenderShaderCollect {
             let rDic = this.renderShaderUpdateList.get(view);
             if (rDic) {
                 node.materials.forEach((mat) => {
-                    mat.renderPasses.forEach((v) => {
-                        v.forEach((pass) => {
-                            let key = `${node.geometry.instanceID + pass.instanceID}`
-                            let nodeMap = rDic.get(key);
-                            if (nodeMap) {
-                                nodeMap.delete(node.instanceID);
-                            }
-                        })
-                    });
+                    let colorPassList = mat.getAllPass();
+                    for (let i = 0; i < colorPassList.length; i++) {
+                        const pass = colorPassList[i];
+                        let key = `${node.geometry.instanceID + pass.instanceID}`
+                        rDic.delete(key);
+                        // if (!nodeMap) {
+                        //     nodeMap = new Map<string, RenderNode>();
+                        //     rDic.set(key, nodeMap);
+                        // }
+                        // nodeMap.set(node.instanceID, node);
+                    }
                 });
             }
         }

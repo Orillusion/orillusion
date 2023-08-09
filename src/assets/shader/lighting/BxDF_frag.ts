@@ -41,9 +41,6 @@ export let BxDF_frag: string = /*wgsl*/ `
       fragData.Indirect = 0.0 ;
       fragData.Reflectance = 1.0 ;
 
-      fragData.DiffuseColor = fragData.Albedo.rgb * (1.0 - fragData.Metallic);
-      fragData.SpecularColor = mix(vec3<f32>(1.0), fragData.Albedo.rgb, fragData.Metallic);
-
       fragData.ClearcoatRoughness = materialUniform.clearcoatRoughnessFactor ;
       #if USE_CLEARCOAT_ROUGHNESS
         fragData.ClearcoatRoughness = getClearcoatRoughnees() * materialUniform.clearcoatRoughnessFactor;
@@ -141,9 +138,9 @@ export let BxDF_frag: string = /*wgsl*/ `
         let clearCoatLayer = ClearCoat_BRDF( color , materialUniform.clearcoatColor.rgb , materialUniform.ior , clearNormal , -sunLight.direction ,-fragData.V , materialUniform.clearcoatWeight , clearcoatRoughness , att );
         color = vec3<f32>(clearCoatLayer.rgb/fragData.Albedo.a) ; 
       #endif
-   
+      
       ORI_FragmentOutput.color = vec4<f32>(LinearToGammaSpace(color.rgb),fragData.Albedo.a) ;
-      // ORI_FragmentOutput.color = vec4<f32>(irradiance.rgb,fragData.Albedo.a) ;
+      // ORI_FragmentOutput.color = vec4<f32>(fragData.Albedo.rgb,fragData.Albedo.a) ;
   }
 
  

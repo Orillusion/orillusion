@@ -20,6 +20,7 @@ import { ComponentBase } from "../ComponentBase";
 import { IESProfiles } from "../lights/IESProfiles";
 import { RenderLayer } from "../../gfx/renderJob/config/RenderLayer";
 import { Material } from "../../materials/Material";
+import { ComponentCollect } from "../..";
 
 
 /**
@@ -427,7 +428,7 @@ export class RenderNode extends ComponentBase {
         for (let i = 0; i < this.materials.length; i++) {
             let material = this.materials[i];
 
-            let passes = material.renderPasses.get(passType);
+            let passes = material.getPass(passType);
             if (!passes || passes.length == 0) return;
 
             let worldMatrix = node.object3D.transform._worldMatrix;
@@ -457,7 +458,7 @@ export class RenderNode extends ComponentBase {
 
         for (let j = 0; j < node.materials.length; j++) {
             let material = node.materials[j];
-            let passes = material.renderPasses.get(passType);
+            let passes = material.getPass(passType);
             if (passes) {
                 for (let i = 0; i < passes.length; i++) {
                     const pass = passes[i];
@@ -547,6 +548,7 @@ export class RenderNode extends ComponentBase {
     }
 
     public destroy(force?: boolean) {
+
         super.destroy(force);
         this._geometry = null;
         this._materials = null;

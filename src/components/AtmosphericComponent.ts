@@ -166,4 +166,11 @@ export class AtmosphericComponent extends SkyRenderer {
         }
 
     }
+
+    public destroy(force?: boolean): void {
+        super.destroy(force);
+        this._atmosphericScatteringSky.destroy();
+        this._atmosphericScatteringSky = null;
+        this._onChange = null;
+    }
 }

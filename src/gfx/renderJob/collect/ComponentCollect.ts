@@ -158,6 +158,17 @@ export class ComponentCollect {
         }
     }
 
+    public static removeWaitStart(obj: Object3D, component: IComponent) {
+        this.init();
+        let arr = ComponentCollect.waitStartComponent.get(obj);
+        if (arr) {
+            let index = arr.indexOf(component);
+            if (index != -1) {
+                arr.splice(index);
+            }
+        }
+    }
+
     public static bindEnablePick(view: View3D, component: ColliderComponent, call: Function) {
         this.init();
         let list = ComponentCollect.componentsEnablePickerList.get(view);

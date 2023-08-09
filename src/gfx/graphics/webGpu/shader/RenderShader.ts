@@ -76,8 +76,7 @@ export class RenderShader extends ShaderBase {
     protected _fsShaderModule: GPUShaderModule;
     protected _textureGroup: number = -1;
     protected _textureChange: boolean = false;
-
-    private _groupsShaderReflectionVarInfos: ShaderReflectionVarInfo[][];
+    protected _groupsShaderReflectionVarInfos: ShaderReflectionVarInfo[][];
 
     constructor(vs: string, fs: string) {
         super();

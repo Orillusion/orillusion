@@ -16,7 +16,7 @@ import { CastPointShadowMaterialPass, CastShadowMaterialPass, GBufferPass, Mater
 export class PassGenerate {
     public static createGIPass(renderNode: RenderNode, material: Material) {
         if (RendererMaskUtil.hasMask(renderNode.rendererMask, RendererMask.Sky)) {
-            let colorPass = material.renderPasses.get(RendererType.COLOR)[0];
+            let colorPass = material.getPass(RendererType.COLOR)[0];
             let pass = new SkyGBufferPass();
             pass.setTexture(`baseMap`, colorPass.getTexture('baseMap'));
 

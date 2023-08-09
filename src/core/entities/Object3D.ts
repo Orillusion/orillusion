@@ -92,6 +92,7 @@ export class Object3D extends Entity {
         let className = c.name;
         if (this.components.has(className)) {
             let component = this.components.get(className);
+            ComponentCollect.removeWaitStart(this, component);
             this.components.delete(className);
             component[`__stop`]();
             component.beforeDestroy?.();

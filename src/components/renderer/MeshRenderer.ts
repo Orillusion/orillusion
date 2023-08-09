@@ -5,7 +5,6 @@ import { GeometryBase } from '../../core/geometry/GeometryBase';
 import { RendererMask } from '../../gfx/renderJob/passRenderer/state/RendererMask';
 import { RendererPassState } from '../../gfx/renderJob/passRenderer/state/RendererPassState';
 import { RendererType } from '../../gfx/renderJob/passRenderer/state/RendererType';
-import { MaterialBase } from '../../materials/MaterialBase';
 import { MorphTargetData } from '../anim/morphAnim/MorphTargetData';
 import { RenderNode } from './RenderNode';
 import { EditorInspector } from '../../util/SerializeDecoration';
@@ -129,7 +128,7 @@ export class MeshRenderer extends RenderNode {
         if (this.morphData && this.morphData.enable) {
             for (let i = 0; i < this.materials.length; i++) {
                 const material = this.materials[i];
-                let passes = material.renderPasses.get(passType);
+                let passes = material.getPass(passType);
                 if (passes) {
                     for (let j = 0; j < passes.length; j++) {
                         this.morphData.applyRenderShader(passes[j]);

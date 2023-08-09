@@ -27,8 +27,6 @@ export let BRDF_frag: string = /*wgsl*/ `
         NoV: f32,
         FaceDirection:f32,
 
-        DiffuseColor: vec3<f32>,
-        SpecularColor: vec3<f32>,
         ClearcoatRoughness:f32,
         EnvColor: vec3<f32>,
         Irradiance: vec3<f32>,

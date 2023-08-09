@@ -16,14 +16,14 @@ export class Material {
      */
     public instanceID: string;
 
-    public renderPasses: Map<RendererType, RenderShader[]>;
-
     public enable: boolean = true;
 
     private _defaultPass: RenderShader;
 
+    private _renderPasses: Map<RendererType, RenderShader[]>;
+
     constructor() {
-        this.renderPasses = new Map<RendererType, RenderShader[]>();
+        this._renderPasses = new Map<RendererType, RenderShader[]>();
     }
 
     public get defaultPass(): RenderShader {
@@ -78,17 +78,30 @@ export class Material {
      * @returns 
      */
     public hasPass(passType: RendererType) {
-        return this.renderPasses.has(passType);
+        return this._renderPasses.has(passType);
     }
 
+    /**
+     * get render pass by renderType
+     * @param passType 
+     * @returns 
+     */
     public getPass(passType: RendererType) {
-        return this.renderPasses.get(passType);
+        return this._renderPasses.get(passType);
+    }
+
+    /**
+     * get all color render pass
+     * @returns 
+     */
+    public getAllPass(): RenderShader[] {
+        return this._renderPasses.get(RendererType.COLOR);
     }
 
     public addPass(passType: RendererType, pass: RenderShader, index: number = -1): RenderShader[] {
-        if (!this.renderPasses.has(passType)) this.renderPasses.set(passType, []);
+        if (!this._renderPasses.has(passType)) this._renderPasses.set(passType, []);
 
-        let passList = this.renderPasses.get(passType);
+        let passList = this._renderPasses.get(passType);
         if (passType == RendererType.COLOR && passList.length == 0) {
             this._defaultPass = pass;
         }
@@ -105,8 +118,8 @@ export class Material {
     }
 
     public removePass(passType: RendererType, index: number) {
-        if (this.renderPasses.has(passType)) {
-            let list = this.renderPasses.get(passType);
+        if (this._renderPasses.has(passType)) {
+            let list = this._renderPasses.get(passType);
             if (index < list.length) {
                 list.splice(index, 1);
             }
@@ -122,6 +135,16 @@ export class Material {
     }
 
     destroy(force: boolean) {
-        throw new Error("Method not implemented.");
+        for (const iterator of this._renderPasses) {
+            let passList = iterator[1];
+            for (const pass of passList) {
+                for (const textureName in pass.textures) {
+                    if (textureName.indexOf("defaultOri") == -1) {
+                        let texture = pass.textures[textureName];
+                        texture.destroy(force);
+                    }
+                }
+            }
+        }
     }
 }

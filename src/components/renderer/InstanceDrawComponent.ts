@@ -96,7 +96,7 @@ export class InstanceDrawComponent extends RenderNode {
 
         for (let i = 0; i < renderNode.materials.length; i++) {
             const material = renderNode.materials[i];
-            let passes = material.renderPasses.get(passType);
+            let passes = material.getPass(passType);
 
             if (!passes || passes.length == 0)
                 continue;

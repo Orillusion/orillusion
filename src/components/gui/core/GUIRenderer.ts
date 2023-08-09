@@ -51,7 +51,7 @@ export class GUIRenderer extends MeshRenderer {
     public nodeUpdate(view: View3D, rendererType: RendererType, renderPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer) {
         for (let i = 0; i < this.materials.length; i++) {
             const material = this.materials[i];
-            let passes = material.renderPasses.get(rendererType);
+            let passes = material.getPass(rendererType);
             let vPosition = this._guiGeometry.vPositionBuffer;
             let vSprite = this._guiGeometry.vSpriteBuffer;
             let vColor = this._guiGeometry.vColorBuffer;
