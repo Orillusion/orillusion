@@ -133,7 +133,7 @@ export class Transform extends ComponentBase {
         } else {
             this._scene3d = hasRoot;
             for (let c of this.object3D.components.values()) {
-                ComponentCollect.appendWaitStart(this.object3D, c);
+                ComponentCollect.appendWaitStart(c);
             }
         }
 
