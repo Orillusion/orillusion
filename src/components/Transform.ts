@@ -217,12 +217,9 @@ export class Transform extends ComponentBase {
 
     public set up(value: Vector3) {
         this._up.copyFrom(value);
-        this.notifyLocalChange();
-        this.onRotationChange?.();
 
-        if (this.eventRotationChange) {
-            this.eventDispatcher.dispatchEvent(this.eventRotationChange);
-        }
+        MathUtil.fromToRotation(Vector3.UP, this._up, Quaternion.HELP_0);
+        this.transform.localRotQuat = Quaternion.HELP_0;
     }
 
     public get down(): Vector3 {
@@ -232,13 +229,8 @@ export class Transform extends ComponentBase {
 
     public set down(value: Vector3) {
         this._down.copyFrom(value);
-        this.notifyLocalChange();
-
-        this.onRotationChange?.();
-
-        if (this.eventRotationChange) {
-            this.eventDispatcher.dispatchEvent(this.eventRotationChange);
-        }
+        MathUtil.fromToRotation(Vector3.DOWN, this._down, Quaternion.HELP_0);
+        this.transform.localRotQuat = Quaternion.HELP_0;
     }
 
     public get forward(): Vector3 {
@@ -250,12 +242,6 @@ export class Transform extends ComponentBase {
         this._forward.copyFrom(value);
         MathUtil.fromToRotation(Vector3.FORWARD, this._forward, Quaternion.HELP_0);
         this.transform.localRotQuat = Quaternion.HELP_0;
-        this.notifyLocalChange();
-        this.onRotationChange?.();
-
-        if (this.eventRotationChange) {
-            this.eventDispatcher.dispatchEvent(this.eventRotationChange);
-        }
     }
 
     public get back(): Vector3 {
@@ -267,12 +253,6 @@ export class Transform extends ComponentBase {
         this._back.copyFrom(value);
         MathUtil.fromToRotation(Vector3.BACK, this._back, Quaternion.HELP_0);
         this.transform.localRotQuat = Quaternion.HELP_0;
-        this.notifyLocalChange();
-        this.onRotationChange?.();
-
-        if (this.eventRotationChange) {
-            this.eventDispatcher.dispatchEvent(this.eventRotationChange);
-        }
     }
 
     public get left(): Vector3 {
@@ -282,11 +262,8 @@ export class Transform extends ComponentBase {
 
     public set left(value: Vector3) {
         this._left.copyFrom(value);
-        this.notifyLocalChange();
-        this.onRotationChange?.();
-        if (this.eventRotationChange) {
-            this.eventDispatcher.dispatchEvent(this.eventRotationChange);
-        }
+        MathUtil.fromToRotation(Vector3.LEFT, this._left, Quaternion.HELP_0);
+        this.transform.localRotQuat = Quaternion.HELP_0;
     }
 
     public get right(): Vector3 {
@@ -296,12 +273,8 @@ export class Transform extends ComponentBase {
 
     public set right(value: Vector3) {
         this._right.copyFrom(value);
-        this.notifyLocalChange();
-        this.onRotationChange?.();
-
-        if (this.eventRotationChange) {
-            this.eventDispatcher.dispatchEvent(this.eventRotationChange);
-        }
+        MathUtil.fromToRotation(Vector3.RIGHT, this._right, Quaternion.HELP_0);
+        this.transform.localRotQuat = Quaternion.HELP_0;
     }
 
     /**
@@ -315,13 +288,7 @@ export class Transform extends ComponentBase {
     public set localRotQuat(value: Quaternion) {
         this._localRotQuat = value;
         this._localRotQuat.getEulerAngles(this._localRot);
-
-        this.notifyLocalChange();
-        this.onRotationChange?.();
-
-        if (this.eventRotationChange) {
-            this.eventDispatcher.dispatchEvent(this.eventRotationChange);
-        }
+        this.localRotation = this._localRot;
     }
 
     /**

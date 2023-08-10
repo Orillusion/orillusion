@@ -467,9 +467,9 @@ export class RenderNode extends ComponentBase {
                         renderShader.setTexture(`envMap`, envMap);
                     }
 
-                    if (!node._ignorePrefilterMap && renderShader.prefilterMap != envMap) {
-                        renderShader.setTexture(`prefilterMap`, envMap);
-                    }
+                    // if (!node._ignorePrefilterMap && renderShader.prefilterMap != envMap) {
+                    renderShader.setTexture(`prefilterMap`, envMap);
+                    // }
 
                     if (renderShader.pipeline) {
                         renderShader.apply(node._geometry, pass, renderPassState, () => node.noticeShaderChange());
