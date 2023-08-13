@@ -51,7 +51,7 @@ export let PBRLItShader: string = /*wgsl*/ `
         var uv = transformUV1.zw * ORI_VertexVarying.fragUV0 + transformUV1.xy; 
 
         ORI_ShadingInput.BaseColor = textureSample(baseMap, baseMapSampler, uv ) ;
-        ORI_ShadingInput.BaseColor = vec4<f32>(gammaToLiner(ORI_ShadingInput.BaseColor.rgb/ORI_ShadingInput.BaseColor.w ) * materialUniform.baseColor.rgb,ORI_ShadingInput.BaseColor.w*materialUniform.baseColor.a)  ;
+        ORI_ShadingInput.BaseColor = vec4<f32>(gammaToLiner(ORI_ShadingInput.BaseColor.rgb*ORI_ShadingInput.BaseColor.w ) * materialUniform.baseColor.rgb,ORI_ShadingInput.BaseColor.w*materialUniform.baseColor.a)  ;
         #if USE_ALPHACUT
             if( (ORI_ShadingInput.BaseColor.a - materialUniform.alphaCutoff) <= 0.0 ){
                 ORI_FragmentOutput.color = vec4<f32>(0.0,0.0,0.0,1.0);

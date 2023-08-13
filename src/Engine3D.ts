@@ -18,6 +18,8 @@ import { ShaderUtil } from './gfx/graphics/webGpu/shader/util/ShaderUtil';
 import { ComponentCollect } from './gfx/renderJob/collect/ComponentCollect';
 import { ShadowLightsCollect } from './gfx/renderJob/collect/ShadowLightsCollect';
 import { GUIConfig } from './components/gui/GUIConfig';
+import { WasmMatrix } from '@orillusion/wasm-matrix/WasmMatrix';
+import { Matrix4 } from '.';
 
 /** 
  * Orillusion 3D Engine
@@ -53,6 +55,7 @@ export class Engine3D {
     private static _lateRender: Function;
     private static _requestAnimationFrameID: number = 0;
     static Engine3D: any;
+    static divB: HTMLDivElement;
 
     /**
      * set engine render frameRate 24/30/60/114/120/144/240/360 fps or other
@@ -296,7 +299,18 @@ export class Engine3D {
     public static async init(descriptor: { canvasConfig?: CanvasConfig; beforeRender?: Function; renderLoop?: Function; lateRender?: Function, engineSetting?: EngineSetting } = {}) {
         console.log('Engine Version', version);
 
+        this.divB = document.createElement("div");
+        this.divB.style.position = 'absolute'
+        this.divB.style.zIndex = '999'
+        this.divB.style.color = '#FFFFFF'
+        this.divB.style.top = '150px'
+        document.body.appendChild(this.divB);
+
         this.setting = { ...this.setting, ...descriptor.engineSetting }
+
+        await WasmMatrix.isReady();
+
+        await WasmMatrix.init(Matrix4.maxCount);
 
         await webGPUContext.init(descriptor.canvasConfig);
 
@@ -450,17 +464,9 @@ export class Engine3D {
         }
         webGPUContext.device.queue.submit([command.finish()]);
 
-        /* update all transform */
-        let views = this.views;
-        let i = 0;
-        for (i = 0; i < views.length; i++) {
-            const view = views[i];
-            view.scene.transform.updateChildTransform()
-        }
 
-        /****** auto update global matrix share buffer write to gpu *****/
-        let globalMatrixBindGroup = GlobalBindGroup.modelMatrixBindGroup;
-        globalMatrixBindGroup.writeBuffer();
+
+
 
         /****** auto update with component list *****/
         for (const iterator of ComponentCollect.componentsUpdateList) {
@@ -478,6 +484,23 @@ export class Engine3D {
         if (this._renderLoop) {
             this._renderLoop();
         }
+
+        /* update all transform */
+        let views = this.views;
+        let i = 0;
+        for (i = 0; i < views.length; i++) {
+            const view = views[i];
+            // view.scene.transform.updateChildTransform()
+            // view.scene.transform.localChange = true;
+        }
+        // console.log("useCount", Matrix4.useCount);
+        // let t = performance.now();
+        WasmMatrix.updateAllContinueTransform(0, Matrix4.useCount, 16);
+        // this.divB.innerText = "wasm:" + (performance.now() - t).toFixed(2);
+
+        /****** auto update global matrix share buffer write to gpu *****/
+        let globalMatrixBindGroup = GlobalBindGroup.modelMatrixBindGroup;
+        globalMatrixBindGroup.writeBuffer(Matrix4.useCount * 16);
 
         this.renderJobs.forEach((v, k) => {
             v.renderFrame();

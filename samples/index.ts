@@ -20,6 +20,8 @@
     menu.innerHTML = list
     document.body.appendChild(menu)
 
+
+
     // change sessionStorage.target on click, and reload iframe
     menu.addEventListener('click', (e: Event) => {
         const button = e.target as HTMLElement
@@ -68,3 +70,17 @@
         document.body.appendChild(iframe)
     }
 }
+
+
+// import { Sample_Grass } from "./ext/Sample_Grass";
+// console.log("a");
+// new Sample_Grass().run();
+
+// new Sample_drawCallShareGeometry().run();
+
+// import { Sample_InitEngine } from "./base/Sample_InitEngine";
+// import { Sample_PointLight } from "./lights/Sample_PointLight";
+// new Sample_InitEngine().run();
+// // new Sample_PointLight().run();
+
+

@@ -1,18 +1,36 @@
-import { Engine3D, LitMaterial, MeshRenderer, Object3D, PlaneGeometry, Scene3D } from "@orillusion/core";
+import { AtmosphericComponent, Engine3D, GTAOPost, HDRBloomPost, LitMaterial, MeshRenderer, Object3D, PlaneGeometry, PostProcessingComponent, Scene3D, SkyRenderer, TAAPost } from "@orillusion/core";
+import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { createExampleScene } from "@samples/utils/ExampleScene";
+import { GUIUtil } from "@samples/utils/GUIUtil";
 
 // Sample to load glb file
 export class Sample_LoadGLB {
     scene: Scene3D;
 
     async run() {
+        GUIHelp.init();
         await Engine3D.init();
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.shadowBias = 0.0001;
-        let exampleScene = createExampleScene();
-        this.scene = exampleScene.scene;
-        Engine3D.startRenderView(exampleScene.view);
+
+        let ex = createExampleScene();
+        this.scene = ex.scene;
+        this.scene.removeComponent(AtmosphericComponent);
+        let sky = this.scene.getOrAddComponent(SkyRenderer);
+        let skyMap = await Engine3D.res.loadLDRTextureCube('sky/LDR_sky.jpg')
+        sky.map = skyMap;
+        this.scene.envMap = skyMap;
+
+        Engine3D.startRenderView(this.scene.view);
         await this.initScene();
+
+        let post = this.scene.addComponent(PostProcessingComponent);
+        let gtao = post.addPost(GTAOPost);
+        // let taa = post.addPost(TAAPost);
+        let hdr = post.addPost(HDRBloomPost);
+
+        GUIUtil.renderBloom(hdr);
+        GUIUtil.renderDirLight(ex.light);
     }
 
     async initScene() {
@@ -30,9 +48,87 @@ export class Sample_LoadGLB {
         }
 
         /******** load glb file *******/
-        let model = (await Engine3D.res.loadGltf('gltfs/UR3E/UR3E.glb', { onProgress: (e) => this.onLoadProgress(e), onComplete: (e) => this.onComplete(e) })) as Object3D;
-        this.scene.addChild(model);
-        model.scaleX = model.scaleY = model.scaleZ = 50;
+
+        //cull mode
+        let list = {};
+        list[`HIE-Hand-Armor`] = JSON.stringify(
+            {
+                url: `gltfs/glb/HIE-Hand-Armor.glb`,
+                scale: 1,
+                offset: [0, 0, 0],
+                rotation: [0, 0, 0]
+            }
+        )
+        list[`PebsiCan`] = JSON.stringify(
+            {
+                url: `gltfs/glb/PebsiCan.glb`,
+                scale: 1,
+                offset: [0, 3, 0],
+                rotation: [0, 0, 0]
+            }
+        )
+        list[`Liv-SpecOpsWolf`] = JSON.stringify(
+            {
+                url: `gltfs/glb/Liv-SpecOpsWolf.glb`,
+                scale: 20,
+                offset: [0, 0, 0],
+                rotation: [0, 0, 0]
+            }
+        )
+        list[`FlamingoPool`] = JSON.stringify(
+            {
+                url: `gltfs/glb/FlamingoPool.glb`,
+                scale: 0.5,
+                offset: [0, 0, 0],
+                rotation: [180, 0, 0]
+            }
+        )
+        list[`Mark-XLIV`] = JSON.stringify(
+            {
+                url: `gltfs/glb/Mark-XLIV.glb`,
+                scale: 0.1,
+                offset: [0, 0, 0],
+                rotation: [0, 0, 0]
+            }
+        )
+        list[`PotionBottle`] = JSON.stringify(
+            {
+                url: `gltfs/glb/PotionBottle.glb`,
+                scale: 0.1,
+                offset: [0, 0, 0],
+                rotation: [0, 0, 0]
+            }
+        )
+        list[`wukong`] = JSON.stringify(
+            {
+                url: `gltfs/wukong/wukong.gltf`,
+                scale: 10,
+                offset: [0, 0, 0],
+                rotation: [0, 0, 0]
+            }
+        )
+
+        let model: Object3D;
+        GUIHelp.add({ name: `HIE-Hand-Armor` }, 'name', list).onChange(async (v) => {
+            let { url, scale, offset, rotation } = JSON.parse(v);
+            if (model) {
+                this.scene.removeChild(model);
+            }
+            model = (await Engine3D.res.loadGltf(url, { onProgress: (e) => this.onLoadProgress(e), onComplete: (e) => this.onComplete(e) })) as Object3D;
+            this.scene.addChild(model);
+            model.x = offset[0];
+            model.y = offset[1];
+            model.z = offset[2];
+
+            model.scaleX = scale;
+            model.scaleY = scale;
+            model.scaleZ = scale;
+
+            model.rotationX = rotation[0];
+            model.rotationY = rotation[1];
+            model.rotationZ = rotation[2];
+
+        });
     }
 
     onLoadProgress(e) {

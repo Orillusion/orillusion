@@ -1,5 +1,5 @@
 
-import { Color, Engine3D, MaterialBase, ShaderLib, Texture, Vector4, registerMaterial } from '@orillusion/core';
+import { Color, Engine3D, Material, RenderShader, ShaderLib, Texture, Vector4, registerMaterial } from '@orillusion/core';
 import VideoShader from "./VideoShader.wgsl?raw";
 
 /**
@@ -7,22 +7,25 @@ import VideoShader from "./VideoShader.wgsl?raw";
  * Do not compute light, only read pixel color from a Video source
  * @group Material
  */
-export class VideoMaterial extends MaterialBase {
+export class VideoMaterial extends Material {
 
     /**
      * Create new VideoMaterial
      */
     constructor() {
         super();
-        ShaderLib.register('VideoShader', VideoShader);
-        let shader = this.setShader(`VideoShader`, `VideoShader`);
-        shader.setShaderEntry(`VertMain`, `FragMain`)
-        shader.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));
-        shader.setUniformVector4(`transformUV2`, new Vector4(0, 0, 1, 1));
-        shader.setUniformColor(`baseColor`, new Color());
-        shader.setUniformVector4(`rectClip`, new Vector4(0, 0, 0, 0));
-        shader.setUniformFloat(`alphaCutoff`, 0.5);
-        let shaderState = shader.shaderState;
+
+        this.defaultPass = new RenderShader(`VideoShader`, `VideoShader`);
+        this.defaultPass.setShaderEntry(`VertMain`, `FragMain`)
+
+
+        this.defaultPass.setShaderEntry(`VertMain`, `FragMain`)
+        this.defaultPass.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));
+        this.defaultPass.setUniformVector4(`transformUV2`, new Vector4(0, 0, 1, 1));
+        this.defaultPass.setUniformColor(`baseColor`, new Color());
+        this.defaultPass.setUniformVector4(`rectClip`, new Vector4(0, 0, 0, 0));
+        this.defaultPass.setUniformFloat(`alphaCutoff`, 0.5);
+        let shaderState = this.defaultPass.shaderState;
         shaderState.acceptShadow = false;
         shaderState.receiveEnv = false;
         shaderState.acceptGI = false;
@@ -31,21 +34,21 @@ export class VideoMaterial extends MaterialBase {
         shaderState.useZ = false;
 
         // default value
-        this.baseMap = Engine3D.res.whiteTexture;
+        this.defaultPass.setTexture(`baseMap`, Engine3D.res.whiteTexture);
     }
 
     /**
      * Set the clip rect area
      */
     public set rectClip(value: Vector4) {
-        this.renderShader.uniforms[`rectClip`].vector4 = value;
+        this.defaultPass.uniforms[`rectClip`].vector4 = value;
     }
 
     /**
      * Get the clip rect area
      */
     public get rectClip(): Vector4 {
-        return this.renderShader.uniforms[`rectClip`].vector4;
+        return this.defaultPass.uniforms[`rectClip`].vector4;
     }
 
     /**
@@ -69,4 +72,3 @@ export class VideoMaterial extends MaterialBase {
 
     }
 }
-registerMaterial('VideoMaterial', VideoMaterial);

@@ -217,14 +217,14 @@ export class PointLightShadowRenderer extends RendererBase {
                 // renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState);
 
                 for (let material of renderNode.materials) {
-                    let passes = material.renderPasses.get(this._rendererType);
+                    let passes = material.getPass(this._rendererType);
                     if (!passes || passes.length == 0)
                         continue;
 
                     GPUContext.bindGeometryBuffer(encoder, renderNode.geometry);
                     let worldMatrix = renderNode.object3D.transform._worldMatrix;
                     for (let pass of passes) {
-                        const renderShader = pass.renderShader;
+                        const renderShader = pass;
                         if (renderShader.pipeline) {
                             renderShader.setUniformFloat("cameraFar", shadowCamera.far);
                             renderShader.setUniformVector3("lightWorldPos", shadowCamera.transform.worldPosition);

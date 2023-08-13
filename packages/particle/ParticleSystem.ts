@@ -1,4 +1,4 @@
-import { MaterialBase, ShaderLib, RenderNode, RendererMask, GeometryBase, Ctor, PlaneGeometry, Vector3, View3D, Time } from "@orillusion/core";
+import { ShaderLib, RenderNode, RendererMask, GeometryBase, Ctor, PlaneGeometry, Vector3, View3D, Time, Material, RendererType } from "@orillusion/core";
 import { ParticleMaterial } from "./material/ParticleMaterial";
 import { ParticleSimulator } from "./simulator/ParticleSimulator";
 import { ParticleDataStructShader } from "./shader/ParticleDataStruct";
@@ -31,6 +31,7 @@ export class ParticleSystem extends RenderNode {
     constructor() {
         super();
         this.alwaysRender = true;
+        this.renderOrder = 3001;
         this._rendererMask = RendererMask.Particle;
         ShaderLib.register('ParticleDataStruct', ParticleDataStructShader);
     }
@@ -38,11 +39,11 @@ export class ParticleSystem extends RenderNode {
     /**
      * material
      */
-    public get material(): MaterialBase {
+    public get material(): Material {
         return this._materials[0];
     }
 
-    public set material(value: MaterialBase) {
+    public set material(value: Material) {
         this.materials = [value];
     }
 
@@ -135,7 +136,7 @@ export class ParticleSystem extends RenderNode {
             this.playing = true;
         }
 
-        let renderShader = this.material.getShader();
+        let renderShader = this.material.getPass(RendererType.COLOR)[0];
         renderShader.setStorageBuffer(`particleGlobalData`, this.particleSimulator.particleGlobalMemory);
         renderShader.setStorageBuffer(`particleLocalDatas`, this.particleSimulator.particleLocalMemory);
         this.instanceCount = this.particleSimulator.maxParticle;

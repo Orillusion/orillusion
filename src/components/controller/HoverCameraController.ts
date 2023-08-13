@@ -169,6 +169,8 @@ export class HoverCameraController extends ComponentBase {
         this._wheelStep = (this.wheelStep * Vector3Ex.distance(this._currentPos.transform.worldPosition, this.camera.transform.worldPosition)) / 10;
         this.distance -= Engine3D.inputSystem.wheelDelta * this._wheelStep;
         this.distance = clamp(this.distance, this.minDistance, this.maxDistance);
+
+        console.log("distance", this.transform.view3D.camera.far, this.distance);
     }
 
     private onMouseDown(e: PointerEvent3D) {

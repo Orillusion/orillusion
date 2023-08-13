@@ -2,9 +2,9 @@ import { ShaderLib } from '../assets/shader/ShaderLib';
 import { Engine3D } from '../Engine3D';
 import { Vector4 } from '../math/Vector4';
 
-import { PhysicMaterial } from './PhysicMaterial';
 import { registerMaterial } from './MaterialRegister';
 import { GlassShader } from '../assets/shader/materials/GlassShader';
+import { Material, PhysicMaterial, RenderShader } from '..';
 /**
  * GlassMaterial
  * an rendering material implemented by simulating glass surfaces
@@ -17,15 +17,14 @@ export class GlassMaterial extends PhysicMaterial {
      */
     constructor() {
         super();
-
         ShaderLib.register("GlassShader", GlassShader);
-        this.setShader('GlassShader', 'GlassShader');
+        let colorPass = new RenderShader('GlassShader', 'GlassShader');
+        this.defaultPass = colorPass;
 
-        let shader = this.getShader();
-        shader.setDefine("USE_BRDF", true);
-        shader.setShaderEntry(`VertMain`, `FragMain`)
+        colorPass.setDefine("USE_BRDF", true);
+        colorPass.setShaderEntry(`VertMain`, `FragMain`)
 
-        let shaderState = shader.shaderState;
+        let shaderState = colorPass.shaderState;
         shaderState.acceptShadow = true;
         shaderState.castShadow = true;
         shaderState.receiveEnv = true;

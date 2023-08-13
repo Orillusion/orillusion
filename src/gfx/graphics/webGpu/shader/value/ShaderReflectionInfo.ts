@@ -105,7 +105,7 @@ export class ShaderReflection {
             if (shaderReflection.groups[iterator.group][iterator.binding]) {
                 let aInfo = shaderReflection.groups[iterator.group][iterator.binding];
                 let bInfo = iterator;
-                if(import.meta.env.DEV){
+                if (import.meta.env.DEV) {
                     if (aInfo.varName != bInfo.varName)
                         console.warn(`shader reflection var not match! var name vs : ${aInfo.varName} , fs : ${bInfo.varName}`);
                     if (aInfo.varType != bInfo.varType)

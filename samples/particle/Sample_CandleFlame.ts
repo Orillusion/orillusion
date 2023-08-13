@@ -119,7 +119,6 @@ export class Sample_CandleFlame {
             let mr = ball.addComponent(MeshRenderer);
             mr.geometry = new SphereGeometry(6, 20, 20);
             mr.material = mat;
-            mat.shaderState.acceptGI = true;
             scene.addChild(ball);
             ball.transform.x = -17;
             ball.transform.y = 34;

@@ -1,5 +1,5 @@
-﻿import { Ctor } from "../util/Global";
-import { MaterialBase } from "../materials/MaterialBase";
+﻿import { Material } from "..";
+import { Ctor } from "../util/Global";
 /**
  *
  * @internal
@@ -34,7 +34,7 @@ export type MaterialClassName =
 // export let materialClassToName: Map<Ctor<MaterialBase>, MaterialClassName> = new Map<Ctor<MaterialBase>, MaterialClassName>();
 // export let materialNameToClass: Map<MaterialClassName, Ctor<MaterialBase>> = new Map<MaterialClassName, Ctor<MaterialBase>>();
 
-export function registerMaterial(name: MaterialClassName, cls: Ctor<MaterialBase>): void {
+export function registerMaterial(name: MaterialClassName, cls: Ctor<Material>): void {
     // materialClassToName.set(cls, name);
     // materialNameToClass.set(name, cls);
 }

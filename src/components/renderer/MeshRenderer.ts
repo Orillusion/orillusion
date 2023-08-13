@@ -5,10 +5,10 @@ import { GeometryBase } from '../../core/geometry/GeometryBase';
 import { RendererMask } from '../../gfx/renderJob/passRenderer/state/RendererMask';
 import { RendererPassState } from '../../gfx/renderJob/passRenderer/state/RendererPassState';
 import { RendererType } from '../../gfx/renderJob/passRenderer/state/RendererType';
-import { MaterialBase } from '../../materials/MaterialBase';
 import { MorphTargetData } from '../anim/morphAnim/MorphTargetData';
 import { RenderNode } from './RenderNode';
 import { EditorInspector } from '../../util/SerializeDecoration';
+import { Material } from '../..';
 
 /**
  * The mesh renderer component is a component used to render the mesh
@@ -80,12 +80,12 @@ export class MeshRenderer extends RenderNode {
      * material
      */
     @EditorInspector
-    public get material(): MaterialBase {
+    public get material(): Material {
         return this._materials[0];
     }
 
     @EditorInspector
-    public set material(value: MaterialBase) {
+    public set material(value: Material) {
         this.materials = [value];
     }
 
@@ -128,11 +128,10 @@ export class MeshRenderer extends RenderNode {
         if (this.morphData && this.morphData.enable) {
             for (let i = 0; i < this.materials.length; i++) {
                 const material = this.materials[i];
-                let passes = material.renderPasses.get(passType);
+                let passes = material.getPass(passType);
                 if (passes) {
                     for (let j = 0; j < passes.length; j++) {
-                        const renderShader = passes[j].renderShader;
-                        this.morphData.applyRenderShader(renderShader);
+                        this.morphData.applyRenderShader(passes[j]);
                     }
                 }
             }

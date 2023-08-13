@@ -98,15 +98,16 @@ fn TestSphereAABB( lightIndex:i32 ,  clusterIndex : u32 ) -> bool
 {
     let light = lightBuffer[lightIndex];
     let lightPos = light.position.xyz;
-    var radius = light.range * 2.0 ;
-    let spherePos =  globalUniform.viewMat * vec4<f32>(lightPos.xyz, 1.0) ;
+    var radius = light.range ;
+    var spherePos =  globalUniform.viewMat * vec4<f32>(lightPos.xyz, 1.0) ;
+    // spherePos = vec4<f32>(spherePos.xyz / spherePos.w , 1.0) ;
     let sqDistance = GetSqdisPointAABB(spherePos.xyz , clusterIndex);
     return sqDistance <= (radius*radius);
 }
 
 
 
-@compute @workgroup_size(16,9,1)
+@compute @workgroup_size(8,4,1)
 fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(local_invocation_id) local_invocation_id : vec3<u32> ){
     clusterTileX = clustersUniform.clusterTileX;
     clusterTileY = clustersUniform.clusterTileY;

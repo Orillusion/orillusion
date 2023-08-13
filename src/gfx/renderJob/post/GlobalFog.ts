@@ -82,7 +82,7 @@ export class GlobalFog extends PostBase {
         this.viewQuad.uniforms['fogType'].value = v;
     }
     public get fogType() {
-        return this.viewQuad.uniforms['fogType'].value;
+        return this._globalFog.fogType;
     }
     public set fogHeightScale(v: number) {
         this._globalFog.fogHeightScale = v;
@@ -124,14 +124,14 @@ export class GlobalFog extends PostBase {
         this.viewQuad.uniforms['skyRoughness'].value = v;
     }
     public get skyRoughness() {
-        return this.viewQuad.uniforms['skyRoughness'].value;
+        return this._globalFog.skyRoughness;
     }
     public set skyFactor(v: number) {
         this._globalFog.skyFactor = v;
         this.viewQuad.uniforms['skyFactor'].value = v;
     }
     public get skyFactor() {
-        return this.viewQuad.uniforms['skyFactor'].value;
+        return this._globalFog.skyFactor;
     }
 
     public set overrideSkyFactor(v: number) {
@@ -139,15 +139,16 @@ export class GlobalFog extends PostBase {
         this.viewQuad.uniforms['overrideSkyFactor'].value = v;
     }
     public get overrideSkyFactor() {
-        return this.viewQuad.uniforms['overrideSkyFactor'].value;
+        return this._globalFog.overrideSkyFactor;
     }
 
     /**
      * @internal
      */
     public get fogColor(): Color {
-        return this.viewQuad.uniforms['fogColor'].color;
+        return this._globalFog.fogColor;
     }
+
     /**
      * @internal
      */
@@ -172,7 +173,7 @@ export class GlobalFog extends PostBase {
     }
 
     public get rayLength() {
-        return this.viewQuad.uniforms['rayLength'].value;
+        return this._globalFog.rayLength;
     }
 
     public set scatteringExponent(v: number) {
@@ -181,7 +182,7 @@ export class GlobalFog extends PostBase {
     }
 
     public get scatteringExponent() {
-        return this.viewQuad.uniforms['scatteringExponent'].value;
+        return this._globalFog.scatteringExponent;
     }
 
     public set dirHeightLine(v: number) {
@@ -190,18 +191,18 @@ export class GlobalFog extends PostBase {
     }
 
     public get dirHeightLine() {
-        return this.viewQuad.uniforms['dirHeightLine'].value;
+        return this._globalFog.dirHeightLine;
     }
 
     /**
      * @internal
      */
     public setInputTexture(positionMap: VirtualTexture, normalMap: VirtualTexture) {
-        const renderShader = this.viewQuad.material.renderShader;
-        renderShader.setTexture('positionMap', positionMap);
-        renderShader.setTexture('normalMap', normalMap);
+        const pass = this.viewQuad.pass;
+        pass.setTexture('positionMap', positionMap);
+        pass.setTexture('normalMap', normalMap);
         this._lastSkyTexture = this.getSkyTexture();
-        renderShader.setTexture(`prefilterMap`, this._lastSkyTexture);
+        pass.setTexture(`prefilterMap`, this._lastSkyTexture);
     }
 
     private _lastSkyTexture: Texture;
@@ -216,14 +217,14 @@ export class GlobalFog extends PostBase {
      * @internal
      */
     render(view: View3D, command: GPUCommandEncoder) {
-        const renderShader = this.viewQuad.material.renderShader;
+        const pass = this.viewQuad.pass;
         let skyTexture = this.getSkyTexture();
         if (skyTexture != this._lastSkyTexture) {
             this._lastSkyTexture = skyTexture;
-            renderShader.setTexture(`prefilterMap`, this._lastSkyTexture);
+            pass.setTexture(`prefilterMap`, this._lastSkyTexture);
         }
-        renderShader.setTexture('colorMap', this.getOutTexture());
-        renderShader.setUniformFloat('isSkyHDR', skyTexture.isHDRTexture ? 1 : 0);
+        pass.setTexture('colorMap', this.getOutTexture());
+        pass.setUniformFloat('isSkyHDR', skyTexture.isHDRTexture ? 1 : 0);
         this.viewQuad.renderTarget(view, this.viewQuad, command);
     }
 

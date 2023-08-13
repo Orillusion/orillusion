@@ -162,6 +162,17 @@ export class ComponentCollect {
         }
     }
 
+    public static removeWaitStart(obj: Object3D, component: IComponent) {
+        this.init();
+        let arr = ComponentCollect.waitStartComponent.get(obj);
+        if (arr) {
+            let index = arr.indexOf(component);
+            if (index != -1) {
+                arr.splice(index);
+            }
+        }
+    }
+
     public static bindEnablePick(view: View3D, component: ColliderComponent, call: Function) {
         this.init();
         let list = this.componentsEnablePickerList.get(view);
@@ -230,22 +241,22 @@ export class ComponentCollect {
         this.waitStartComponent = body;
     }
 
-    public static removeWaitStart(component: IComponent): boolean {
-        this.init();
-        if (component.object3D['_dispose']) {
-            this.waitStartComponent.delete(component.object3D);
-            return true;
-        } else {
-            let arr = this.waitStartComponent.get(component.object3D);
-            if (arr) {
-                let index = arr.indexOf(component);
-                if (index >= 0) {
-                    arr.splice(index, 1);
-                    return true;
-                }
-            }
-        }
+    // public static removeWaitStart(component: IComponent): boolean {
+    //     this.init();
+    //     if (component.object3D['_dispose']) {
+    //         this.waitStartComponent.delete(component.object3D);
+    //         return true;
+    //     } else {
+    //         let arr = this.waitStartComponent.get(component.object3D);
+    //         if (arr) {
+    //             let index = arr.indexOf(component);
+    //             if (index >= 0) {
+    //                 arr.splice(index, 1);
+    //                 return true;
+    //             }
+    //         }
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 }

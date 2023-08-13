@@ -166,7 +166,6 @@ export class AnimationMonitor {
         this._propertyTagDic.forEach((v, k) => {
             this.applyProperty(v, k);
         })
-
     }
 
     private applyProperty(tag: PropertyAnimTag, obj3d: Object3D) {
@@ -174,7 +173,9 @@ export class AnimationMonitor {
             Matrix4.getEuler(obj3d.transform.localRotation, obj3d.transform.localRotQuat, true, 'ZYX');
         }
         if (tag.transform) {
-            obj3d.transform.notifyChange();
+            obj3d.transform.localPosition = obj3d.transform.localPosition;
+            obj3d.transform.localRotation = obj3d.transform.localRotation;
+            obj3d.transform.localScale = obj3d.transform.localScale;
         }
 
         let animObj: IObject3DForPropertyAnim = obj3d as any as IObject3DForPropertyAnim;

@@ -6,7 +6,6 @@ import { LoaderFunctions } from '../loader/LoaderFunctions';
 import { GLBParser } from '../loader/parser/gltf/GLBParser';
 import { GLTFParser } from '../loader/parser/gltf/GLTFParser';
 import { OBJParser } from '../loader/parser/OBJParser';
-import { MaterialBase } from '../materials/MaterialBase';
 import { BitmapTexture2D } from '../textures/BitmapTexture2D';
 import { BitmapTextureCube } from '../textures/BitmapTextureCube';
 import { HDRTextureCube } from '../textures/HDRTextureCube';
@@ -24,6 +23,7 @@ import { FontParser, FontInfo } from '../loader/parser/FontParser';
 import { fonts } from './Fonts';
 import { AtlasParser } from '../loader/parser/AtlasParser';
 import { Reference } from '../util/Reference';
+import { Material } from '..';
 
 /**
  * Resource management classes for textures, materials, models, and preset bodies.
@@ -31,7 +31,7 @@ import { Reference } from '../util/Reference';
  */
 export class Res {
     private _texturePool: Map<string, Texture>;
-    private _materialPool: Map<string, MaterialBase>;
+    private _materialPool: Map<string, Material>;
     private _prefabPool: Map<string, Object3D>;
     // private _prefabLoaderPool: Map<string, PrefabLoader>;
     private _gltfPool: Map<string, GLTF_Info>;
@@ -43,7 +43,7 @@ export class Res {
      */
     constructor() {
         this._texturePool = new Map<string, Texture>();
-        this._materialPool = new Map<string, MaterialBase>();
+        this._materialPool = new Map<string, Material>();
         this._prefabPool = new Map<string, Object3D>();
         // this._prefabLoaderPool = new Map<string, PrefabLoader>;
         this._gltfPool = new Map<string, GLTF_Info>;
@@ -79,7 +79,7 @@ export class Res {
      * @param name material name
      * @param mat  target material
      */
-    public addMat(name: string, mat: MaterialBase) {
+    public addMat(name: string, mat: Material) {
         return this._materialPool.set(name, mat);
     }
 

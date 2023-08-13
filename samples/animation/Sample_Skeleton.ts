@@ -44,6 +44,8 @@ class Sample_Skeleton {
             man.scaleY = 30;
             man.scaleZ = 30;
             scene.addChild(man);
+
+            GUIUtil.renderTransform(man.transform);
         }
 
         /******** floor *******/

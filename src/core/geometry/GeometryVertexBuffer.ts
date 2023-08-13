@@ -201,7 +201,8 @@ export class GeometryVertexBuffer {
         this._attributeSlotLayouts = null;
         this._attributeLocation = null;
 
-        this.vertexGPUBuffer.destroy(force);
+        if (this.vertexGPUBuffer)
+            this.vertexGPUBuffer.destroy(force);
         this.vertexGPUBuffer = null;
     }
 }

@@ -9,6 +9,7 @@ import { RTResourceConfig } from '../config/RTResourceConfig';
 import { RTResourceMap } from '../frame/RTResourceMap';
 import { PostBase } from './PostBase';
 import { View3D } from '../../../core/View3D';
+import { Color, RendererType } from '../../..';
 /**
  * HDR Bloom effect
  * ```
@@ -29,11 +30,9 @@ export class HDRBloomPost extends PostBase {
     constructor() {
         super();
         const bloomSetting = Engine3D.setting.render.postProcessing.bloom;
-        
+
         bloomSetting.enable = true;
 
-        this.blurX = bloomSetting.blurX;
-        this.blurY = bloomSetting.blurY;
 
         let presentationSize = webGPUContext.presentationSize;
         let outTextures = this.createRTTexture('HDRBloomPost-outTextures', presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float, false);
@@ -80,10 +79,17 @@ export class HDRBloomPost extends PostBase {
 
         {
             this.compositeView = this.createViewQuad(`compositeView`, `Bloom_composite_frag_wgsl`, outTextures, {
+                tintColor: new UniformNode(new Color(1, 1, 1)),
                 bloomStrength: new UniformNode(bloomSetting.strength),
                 bloomRadius: new UniformNode(1),
             });
         }
+
+        this.blurX = bloomSetting.blurX;
+        this.blurY = bloomSetting.blurY;
+        this.luminosityThreshold = bloomSetting.luminosityThreshold;
+        this.strength = bloomSetting.strength;
+        this.radius = bloomSetting.radius;
     }
 
     onAttach(view: View3D): void {
@@ -94,6 +100,14 @@ export class HDRBloomPost extends PostBase {
     }
 
     public debug() {
+    }
+
+    public get tintColor(): Color {
+        return this.compositeView.uniforms['tintColor'].color;
+    }
+
+    public set tintColor(color: Color) {
+        this.compositeView.uniforms['tintColor'].color = color;
     }
 
     public get strength() {
@@ -112,7 +126,7 @@ export class HDRBloomPost extends PostBase {
         this.compositeView.uniforms['bloomRadius'].value = value;
     }
 
-    public get luminosityThreshold() {
+    public get luminosityThreshold(): number {
         return this.brightnessView.uniforms['luminosityThreshold'].value;
     }
 
@@ -136,14 +150,14 @@ export class HDRBloomPost extends PostBase {
                     let ql = this.blurList[i].ql;
                     let qr = this.blurList[i].qr;
 
-                    ql.material.renderShader.setUniformFloat(`horizontal`, 0.5);
-                    ql.material.renderShader.setUniformFloat(`vScale`, i * this.blurX);
+                    ql.pass.setUniformFloat(`horizontal`, 0.5);
+                    ql.pass.setUniformFloat(`vScale`, i * this.blurX);
 
                     ql.renderToViewQuad(view, ql, command, tex);
                     tex = ql.rendererPassState.renderTargets[0];
 
-                    qr.material.renderShader.setUniformFloat(`horizontal`, 2.0);
-                    qr.material.renderShader.setUniformFloat(`hScale`, i * this.blurY);
+                    qr.pass.setUniformFloat(`horizontal`, 2.0);
+                    qr.pass.setUniformFloat(`hScale`, i * this.blurY);
 
                     qr.renderToViewQuad(view, qr, command, tex);
                     tex = qr.rendererPassState.renderTargets[0];
@@ -151,12 +165,12 @@ export class HDRBloomPost extends PostBase {
             }
 
             {
-                let shader = this.compositeView.material.renderShader;
-                shader.setTexture(`blurTex1`, this.blurList[0].qr.rendererPassState.renderTargets[0]);
-                shader.setTexture(`blurTex2`, this.blurList[1].qr.rendererPassState.renderTargets[0]);
-                shader.setTexture(`blurTex3`, this.blurList[2].qr.rendererPassState.renderTargets[0]);
-                shader.setTexture(`blurTex4`, this.blurList[3].qr.rendererPassState.renderTargets[0]);
-                shader.setTexture(`blurTex5`, this.blurList[4].qr.rendererPassState.renderTargets[0]);
+                let pass = this.compositeView.pass;
+                pass.setTexture(`blurTex1`, this.blurList[0].qr.rendererPassState.renderTargets[0]);
+                pass.setTexture(`blurTex2`, this.blurList[1].qr.rendererPassState.renderTargets[0]);
+                pass.setTexture(`blurTex3`, this.blurList[2].qr.rendererPassState.renderTargets[0]);
+                pass.setTexture(`blurTex4`, this.blurList[3].qr.rendererPassState.renderTargets[0]);
+                pass.setTexture(`blurTex5`, this.blurList[4].qr.rendererPassState.renderTargets[0]);
 
                 this.compositeView.renderToViewQuad(view, this.compositeView, command, colorTexture);
             }
