@@ -6,6 +6,7 @@ export class Sample_LoadGLB {
     scene: Scene3D;
 
     async run() {
+        Engine3D.setting.shadow.shadowBound = 100;
         await Engine3D.init();
         Engine3D.setting.shadow.autoUpdate = true;
         let exampleScene = createExampleScene();
