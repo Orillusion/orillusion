@@ -23,9 +23,9 @@ export class Sample_InitEngine {
 
         // init camera3D 
         let mainCamera = CameraUtil.createCamera3D(null, scene);
-        mainCamera.perspective(60, Engine3D.aspect, 0.1, 5000);
+        mainCamera.perspective(60, Engine3D.aspect, 0.1, 6500000 * 2);
         let hoverCameraController = mainCamera.object3D.addComponent(HoverCameraController);
-        hoverCameraController.setCamera(15, -30, 300);
+        hoverCameraController.setCamera(15, -30, 6500000 * 2);
 
         // create a view with target scene and camera
         this.view = new View3D();
@@ -65,14 +65,14 @@ export class Sample_InitEngine {
 
             GUIUtil.renderDirLight(directLight, true);
         }
-        // {
-        //     let sphere = new SphereGeometry(6300000, 120, 120);
-        //     let floor = new Object3D();
-        //     let mr = floor.addComponent(MeshRenderer);
-        //     mr.geometry = sphere;
-        //     mr.material = new LitMaterial();
-        //     this.view.scene.addChild(floor);
-        // }
+        {
+            let sphere = new SphereGeometry(6300000, 120, 120);
+            let floor = new Object3D();
+            let mr = floor.addComponent(MeshRenderer);
+            mr.geometry = sphere;
+            mr.material = new LitMaterial();
+            this.view.scene.addChild(floor);
+        }
         {
             let floorGeo = new PlaneGeometry(100, 100, 10, 10);
             let floor = new Object3D();
@@ -106,17 +106,6 @@ export class Sample_InitEngine {
         //     box.localPosition = Vector3Ex.sphereXYZ(10, 300, 1, 1, 1);
         //     this.view.scene.addChild(box);
         // }
-
-        let box = await Engine3D.res.loadGltf('gltfs/cornellBox/cornellBox.gltf') as Object3D;
-        box.localScale = new Vector3(10, 10, 10);
-        let q = new Quaternion();
-        q.fromEulerAngles(45, 45, 0);
-        box.localQuaternion = q;
-
-        // box.rotationX = 45;
-        // box.rotationY = 45;
-        // box.rotationZ = 0;
-        this.view.scene.addChild(box);
     }
 
     public updateList: Object3D[] = [];

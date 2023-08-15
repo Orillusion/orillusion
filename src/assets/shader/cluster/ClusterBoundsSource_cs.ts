@@ -38,7 +38,10 @@ export let ClusterBoundsSource_cs: string = /* wgsl */`
 
         fn ScreenToView(screen : vec4<f32>) -> vec4<f32> {
             let texCoord = screen.xy / vec2<f32>(clustersUniform.screenWidth, clustersUniform.screenHeight);
-            let clip = vec4<f32>(vec2<f32>(texCoord.x, 1.0 - texCoord.y) * 2.0 - vec2<f32>(1.0, 1.0), screen.z, screen.w);
+            let clip = vec4<f32>(vec2<f32>(texCoord.x * 2.0 - 1.0 , 1.0 - 2.0 * texCoord.y), screen.z, screen.w);
+          
+            // (tex.x * 2.0 - 1.0, 1.0 - 2.0 * tex.y, screenPos.z, screenPos.w)
+
             return convertNDCToView(clip);
           }
 
