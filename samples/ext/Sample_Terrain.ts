@@ -10,9 +10,8 @@ class Sample_Terrain {
     async run() {
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.updateFrameRate = 1;
-        Engine3D.setting.shadow.shadowBias = 0.0003;
         Engine3D.setting.shadow.shadowBound = 500;
-        Engine3D.setting.shadow.shadowSize = 1024;
+        Engine3D.setting.shadow.shadowSize = 2048;
         // Engine3D.setting.render.zPrePass = true;
 
         GUIHelp.init();
@@ -81,7 +80,6 @@ class Sample_Terrain {
 
         GUIHelp.addFolder("shadow");
         GUIHelp.add(Engine3D.setting.shadow, "shadowBound", 0.0, 3000, 0.0001);
-        GUIHelp.add(Engine3D.setting.shadow, "shadowBias", 0.0, 1, 0.0001);
         GUIHelp.endFolder();
 
         let globalFog = this.post.getPost(GlobalFog);

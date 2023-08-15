@@ -28,6 +28,7 @@ import { GPUBufferType } from "../core/buffer/GPUBufferType";
 import { MaterialDataUniformGPUBuffer } from "../core/buffer/MaterialDataUniformGPUBuffer";
 import { ShaderUtil } from "./util/ShaderUtil";
 import { Reference } from "../../../../util/Reference";
+import { CSM } from "../../../../core/csm/CSM";
 
 export class RenderShader extends ShaderBase {
     public useRz: boolean = false;
@@ -932,6 +933,7 @@ export class RenderShader extends ShaderBase {
         this.defineValue[`USE_PCF_SHADOW`] = Engine3D.setting.shadow.type == `PCF`;
         this.defineValue[`USE_HARD_SHADOW`] = Engine3D.setting.shadow.type == `HARD`;
         this.defineValue[`USE_SOFT_SHADOW`] = Engine3D.setting.shadow.type == `SOFT`;
+        this.defineValue[`USE_CSM`] = CSM.Cascades > 1;
         this.defineValue[`USE_IES_PROFILE`] = IESProfiles.use;
     }
 

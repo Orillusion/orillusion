@@ -10,7 +10,7 @@ export class Sample_OctTreeRay {
     entities: OctreeEntity[] = [];
     tree: Octree;
     red = new Color(1, 0, 0, 1);
-    gree = new Color(0, 1, 0, 1);
+    green = new Color(0, 1, 0, 1);
     yellow = new Color(1, 1, 0, 1)
     blue = new Color(0, 0, 1, 1)
     white = new Color(1, 1, 1, 1)
@@ -94,7 +94,7 @@ export class Sample_OctTreeRay {
         //show box
         for (let key in boundList) {
             let tree = boundList[key];
-            this.view.graphic3D.drawBoundingBox(key, tree.box, this.gree);
+            this.view.graphic3D.drawBoundingBox(key, tree.box, this.green);
         }
     }
 

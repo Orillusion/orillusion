@@ -12,7 +12,6 @@ class Sample_ChangeMaterial {
 
         Engine3D.setting.material.materialChannelDebug = true;
         Engine3D.setting.shadow.shadowBound = 5;
-        Engine3D.setting.shadow.shadowBias = 0.002;
         Engine3D.setting.render.postProcessing.bloom = {
             enable: true,
             blurX: 4,

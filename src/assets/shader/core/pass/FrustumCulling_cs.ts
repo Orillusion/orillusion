@@ -1,37 +1,5 @@
 export let FrustumCulling_cs: string = /*wgsl*/ `
-struct ConstUniform {
-    projMat: mat4x4<f32>,
-    viewMat: mat4x4<f32>,
-    cameraWorldMatrix: mat4x4<f32>,
-    pvMatrixInv : mat4x4<f32>,
-    shadowMatrix: array<mat4x4<f32>,8>,
-    CameraPos: vec3<f32>,
-    
-    frame: f32,
-    time: f32,
-    delta: f32,
-    shadowBias: f32,
-    skyExposure: f32,
-    renderPassState:f32,
-    quadScale: f32,
-    hdrExposure: f32,
-    
-    renderState_left: i32,
-    renderState_right: i32,
-    renderState_split: f32,
-
-    mouseX: f32,
-    mouseY: f32,
-    windowWidth: f32,
-    windowHeight: f32,
-
-    near: f32,
-    far: f32,
-
-    pointShadowBias: f32,
-    shadowMapSize: f32,
-    shadowSoft: f32,
-}
+#include "GlobalUniform"
 
 struct RenderBound{
     index:f32,
@@ -41,8 +9,8 @@ struct Uniforms {
     matrix : array<mat4x4<f32>>
 };
 
-@group(0) @binding(0) var<storage, read> models : Uniforms;
-@group(0) @binding(1) var<uniform> standUniform: ConstUniform;
+//@group(0) @binding(0) var<uniform> globalUniform: GlobalUniform;
+@group(0) @binding(1) var<storage, read> models : Uniforms;
 @group(0) @binding(2) var<storage, read> planes: array<vec4<f32>,7>;
 @group(0) @binding(3) var<storage, read> cullingList: array<RenderBound>;
 @group(0) @binding(4) var<storage,read_write> outBuffer: array<f32>;
@@ -105,7 +73,7 @@ fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_inv
     var plane = planes[0];
 
     let worldMatrix = models.matrix[boundID];
-    let projMat = standUniform.projMat ;
+    let projMat = globalUniform.projMat ;
 
     let const_boundMin : vec3<f32> = vec3<f32>(-0.5,-0.5,-0.5) ;   
     let const_boundMax : vec3<f32> = vec3<f32>(0.5,0.5,0.5) ;   

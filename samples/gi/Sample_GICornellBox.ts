@@ -30,10 +30,8 @@ class Sample_GICornellBox {
         Engine3D.setting.gi.depthSharpness = 1;
         Engine3D.setting.gi.autoRenderProbe = true;
 
-        Engine3D.setting.shadow.shadowBound = 80;
-        Engine3D.setting.shadow.shadowBias = 0.000035;
         Engine3D.setting.shadow.debug = true;
-
+        Engine3D.setting.shadow.shadowSize = 1024;
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.updateFrameRate = 1;
 
@@ -57,10 +55,11 @@ class Sample_GICornellBox {
             }
         });
         let param = createSceneParam();
-        param.camera.distance = 40;
+        param.camera.distance = 100;
 
         let exampleScene = createExampleScene(param);
         exampleScene.hoverCtrl.setCamera(0, 0, 20);
+        exampleScene.camera.enableCSM = true;
         this.scene = exampleScene.scene;
         this.addGIProbes();
         Engine3D.startRenderViews([exampleScene.view]);
@@ -69,6 +68,8 @@ class Sample_GICornellBox {
         postProcessing.addPost(GTAOPost);
         postProcessing.addPost(HDRBloomPost);
 
+        Engine3D.setting.shadow.csmScatteringExp = 0.8;
+        GUIHelp.add(Engine3D.setting.shadow, 'csmScatteringExp', 0.5, 1, 0.001);
         await this.initScene();
     }
 

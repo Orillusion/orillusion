@@ -10,7 +10,6 @@ class Sample_Grass {
     async run() {
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.updateFrameRate = 1;
-        Engine3D.setting.shadow.shadowBias = 0.0003;
         Engine3D.setting.shadow.shadowBound = 500;
         Engine3D.setting.shadow.shadowSize = 1024;
         // Engine3D.setting.render.zPrePass = true;
@@ -23,6 +22,7 @@ class Sample_Grass {
         this.view.scene.addComponent(AtmosphericComponent);
 
         this.view.camera = CameraUtil.createCamera3DObject(this.view.scene);
+        this.view.camera.enableCSM = true;
         this.view.camera.perspective(60, webGPUContext.aspect, 1, 5000.0);
         this.view.camera.object3D.z = -15;
         this.view.camera.object3D.addComponent(HoverCameraController).setCamera(35, -20, 500);

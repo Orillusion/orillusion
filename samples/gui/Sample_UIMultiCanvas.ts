@@ -4,7 +4,6 @@ import { Engine3D, Object3DUtil, Object3D, UIImage, ImageType, Color, UIPanel, V
 class Sample_UIMultiCanvas {
     async run() {
         Engine3D.setting.shadow.autoUpdate = true;
-        Engine3D.setting.shadow.shadowBias = 0.002;
 
         await Engine3D.init();
         await Engine3D.res.loadFont('fnt/0.fnt');

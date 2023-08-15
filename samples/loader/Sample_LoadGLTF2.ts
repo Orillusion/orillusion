@@ -9,7 +9,6 @@ class Sample_LoadGLTF2 {
         //config settings
         Engine3D.setting.material.materialChannelDebug = true;
         Engine3D.setting.shadow.shadowBound = 80;
-        Engine3D.setting.shadow.shadowBias = 0.0001;
 
         //init engine
         await Engine3D.init();

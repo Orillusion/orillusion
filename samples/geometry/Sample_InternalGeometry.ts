@@ -7,7 +7,6 @@ class Sample_InternalGeometry {
     lightObj: Object3D;
     async run() {
         Engine3D.setting.shadow.autoUpdate = true;
-        Engine3D.setting.shadow.shadowBias = 0.002;
         Engine3D.setting.shadow.shadowBound = 200;
         GUIHelp.init();
 

@@ -8,7 +8,6 @@ export class Sample_LoadGLB3 {
     async run() {
         await Engine3D.init();
         Engine3D.setting.shadow.autoUpdate = true;
-        Engine3D.setting.shadow.shadowBias = 0.0001;
         let exampleScene = createExampleScene();
         this.scene = exampleScene.scene;
 

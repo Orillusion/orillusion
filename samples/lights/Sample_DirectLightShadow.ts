@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Scene3D, HoverCameraController, Engine3D, AtmosphericComponent, Object3D, Camera3D, Vector3, View3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer, BoxGeometry, CameraUtil } from "@orillusion/core";
+import { Scene3D, HoverCameraController, Engine3D, AtmosphericComponent, Object3D, Camera3D, Vector3, View3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer, BoxGeometry, CameraUtil, SphereGeometry, Color, Object3DUtil } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
 //sample of direction light
@@ -7,7 +7,6 @@ class Sample_DirectLightShadow {
     scene: Scene3D;
     async run() {
         Engine3D.setting.shadow.autoUpdate = true;
-        Engine3D.setting.shadow.shadowBias = 0.0001;
         Engine3D.setting.shadow.shadowBound = 100;
 
         await Engine3D.init({});
@@ -22,9 +21,7 @@ class Sample_DirectLightShadow {
         mainCamera.perspective(60, Engine3D.aspect, 1, 5000.0);
         //set camera data
         mainCamera.object3D.z = -15;
-        mainCamera.object3D
-            .addComponent(HoverCameraController)
-            .setCamera(-15, -35, 150);
+        mainCamera.object3D.addComponent(HoverCameraController).setCamera(-15, -35, 200);
 
         sky.relativeTransform = this.initLight();
         this.initScene();
@@ -68,9 +65,20 @@ class Sample_DirectLightShadow {
             // mat.metallic = 0.6;
             let floor = new Object3D();
             let mr = floor.addComponent(MeshRenderer);
-            mr.geometry = new BoxGeometry(200, 1, 200);
+            mr.geometry = new BoxGeometry(10000, 1, 10000);
             mr.material = mat;
             this.scene.addChild(floor);
+        }
+
+        {
+            for (let i = 0; i < 100; i++) {
+                let item = Object3DUtil.GetSingleSphere(4, 0.6, 0.4, 0.2);
+                let angle = Math.PI * 4 * i / 50;
+                item.x = Math.sin(angle) * (50 + i);
+                item.z = Math.cos(angle) * (50 + i);
+                // item.y = 4;
+                this.scene.addChild(item);
+            }
         }
     }
 }

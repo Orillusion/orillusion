@@ -11,7 +11,6 @@ export class Sample_LoadGLB2 {
     async run() {
         await Engine3D.init();
         Engine3D.setting.shadow.autoUpdate = true;
-        Engine3D.setting.shadow.shadowBias = 0.0001;
         let exampleScene = createExampleScene();
         exampleScene.atmosphericSky.displaySun = false;
         exampleScene.atmosphericSky.sunRadiance = 1;
