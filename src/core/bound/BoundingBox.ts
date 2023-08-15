@@ -35,43 +35,56 @@ export class BoundingBox implements IBound {
      * The total size of the box. This is always twice as much as extensions.
      */
     public size: Vector3;
+
+    private static maxVector3: Vector3 = new Vector3(1, 1, 1).multiplyScalar(Number.MAX_VALUE * 0.1);
+    private static minVector3: Vector3 = new Vector3(1, 1, 1).multiplyScalar(-Number.MAX_VALUE * 0.1);
     /**
      *
      * Create a new Bounds.
      * @param center the center of the box.
      * @param size The size of the box.
      */
-    constructor(center: Vector3, size: Vector3) {
-        this.center = center;
-        this.extents = new Vector3(size.x / 2, size.y / 2, size.z / 2);
-        this.size = size;
-        this.max = this.center.add(this.extents);
-        this.min = this.center.subtract(this.extents);
+    constructor(center?: Vector3, size?: Vector3) {
+        center ||= Vector3.ZERO.clone();
+        size ||= Vector3.ZERO.clone();
+        this.setFromCenterAndSize(center, size);
     }
 
-    public setFromMinMax(min: Vector3, max: Vector3) {
+    public makeEmpty(): this {
+        this.setFromMinMax(BoundingBox.maxVector3, BoundingBox.minVector3);
+        return this;
+    }
+
+    public setFromMinMax(min: Vector3, max: Vector3): this {
+        this.init();
+        max.subtract(min, this.size);
+        min.add(max, this.center).multiplyScalar(0.5);
+        this.extents.copyFrom(this.size).multiplyScalar(0.5);
+        this.min.copyFrom(min);
+        this.max.copyFrom(max);
+        return this;
+    }
+
+    private init(): this {
         this.min ||= new Vector3();
         this.max ||= new Vector3();
         this.size ||= new Vector3();
         this.center ||= new Vector3();
         this.extents ||= new Vector3();
-        this.size.set(max.x - min.x, max.y - min.y, max.z - min.z);
-        this.extents.copyFrom(this.size).multiplyScalar(0.5);
-        this.center.copyFrom(this.min).add(this.extents, this.center);
-        this.min.copyFrom(min);
-        this.max.copyFrom(max);
+        return this;
     }
-
-    public setFromCenterAndSize(center: Vector3, size: Vector3) {
+    public setFromCenterAndSize(center: Vector3, size: Vector3): this {
         this.size = size;
         this.center = center;
-        this.extents = new Vector3(this.size.x / 2, this.size.y / 2, this.size.z / 2);
-        this.min = new Vector3(this.center.x + -this.extents.x, this.center.y + -this.extents.y, this.center.z + -this.extents.z);
-        this.max = new Vector3(this.center.x + this.extents.x, this.center.y + this.extents.y, this.center.z + this.extents.z);
+        this.init();
+        this.extents.copy(size).multiplyScalar(0.5);
+        this.center.subtract(this.extents, this.min);
+        this.center.add(this.extents, this.max);
+        return this;
     }
 
-    public containsFrustum(obj: Object3D, frustum: Frustum) {
-        return frustum.containsBox(obj);
+    public inFrustum(obj: Object3D, frustum: Frustum) {
+        return frustum.containsBox(obj.bound);
     }
 
     public merge(bound: BoundingBox) {
@@ -162,6 +175,14 @@ export class BoundingBox implements IBound {
 
     public containsPoint(point: Vector3): boolean {
         return this.min.x <= point.x && this.max.x >= point.x && this.min.y <= point.y && this.max.y >= point.y && this.min.z <= point.z && this.max.z >= point.z;
+    }
+
+    public containsBox(box: BoundingBox): boolean {
+        let min = this.min;
+        let max = this.max;
+        let isContain = (min.x <= box.min.x && min.y <= box.min.y && min.z <= box.min.z)
+            && (max.x >= box.max.x && max.y >= box.max.y && max.z >= box.max.z);
+        return isContain;
     }
 
     public updateBound() {

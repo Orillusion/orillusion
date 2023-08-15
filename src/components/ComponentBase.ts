@@ -35,7 +35,11 @@ export class ComponentBase implements IComponent {
     protected _enable: boolean = true;
 
     private __isStart: boolean = false;
+    public isDestroyed?: boolean;
 
+    public get isStart(): boolean {
+        return this.__isStart;
+    }
 
     /**
      * Return the Transform component attached to the Object3D.
@@ -70,12 +74,12 @@ export class ComponentBase implements IComponent {
     }
 
     private __start() {
+        if (this.transform && this.transform.scene3D && this._enable) {
+            this.onEnable?.(this.transform.view3D);
+        }
         if (this.transform && this.transform.scene3D && this.__isStart == false) {
             this.start?.();
             this.__isStart = true;
-        }
-        if (this.transform && this.transform.scene3D && this._enable) {
-            this.onEnable?.(this.transform.view3D);
         }
         if (this.onUpdate) {
             this._onUpdate(this.onUpdate.bind(this));
@@ -116,7 +120,6 @@ export class ComponentBase implements IComponent {
     public onCompute?(view?: View3D, command?: GPUCommandEncoder);
     public onGraphic?(view?: View3D);
     public onParentChange?(lastParent?: Object3D, currentParent?: Object3D);
-    public beforeDestroy?(force?: boolean);
 
     /**
      *
@@ -190,9 +193,19 @@ export class ComponentBase implements IComponent {
     }
 
     /**
+     * before release this component, object refrences are not be set null now.
+     */
+    public beforeDestroy(force?: boolean) {
+        ComponentCollect.removeWaitStart(this);
+    }
+
+    /**
      * release this component
      */
     public destroy(force?: boolean) {
+        if (this.isDestroyed) return;
+
+        this.isDestroyed = true;
         this.enable = false;
         this.stop();
         this._onBeforeUpdate(null);
@@ -207,4 +220,5 @@ export class ComponentBase implements IComponent {
         this.onCompute = null;
         this.onGraphic = null;
     }
+
 }

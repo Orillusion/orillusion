@@ -65,7 +65,7 @@ class Sample_UVMove {
             // add plane into scene
             let plane = new Object3D();
             let renderer = plane.addComponent(MeshRenderer);
-            let material = new UnLitMaterial();
+            let material = new LitMaterial();
             material.baseMap = await Engine3D.res.loadTexture("particle/T_Fx_Object_229.png");;
             renderer.material = material;
             renderer.geometry = new PlaneGeometry(100, 100, 1, 1);

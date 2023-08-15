@@ -1,3 +1,19 @@
+## [0.6.8](https://github.com/Orillusion/orillusion/compare/v0.6.7...v0.6.8) (2023-08-10)
+
+### Bug Fixes
+
+* **entity:** change number children([#279](https://github.com/Orillusion/orillusion/issues/279)) ([f066490](https://github.com/Orillusion/orillusion/commit/f0664900f50cd610cc18d1d0bc17dd7884b376cf))
+* **material:** fix uniformNode not update ([#268](https://github.com/Orillusion/orillusion/issues/268)) ([23db052](https://github.com/Orillusion/orillusion/commit/23db0524ba4ffb33a5d37586eeda03a23cf25b37))
+* **hoverContoller:** opt maxDistance ([8cd1498](https://github.com/Orillusion/orillusion/commit/8cd14982b094e0ee90ca9c16696503e8327c6acf))
+* **UniformNode:** Fix error of Uniform data(number) ([#276](https://github.com/Orillusion/orillusion/issues/276)) ([09266a6](https://github.com/Orillusion/orillusion/commit/09266a6c5e962ece97f1f67090b2ce07f43e753d))
+
+
+### Features
+
+* **godRay:** Add feature of GodRay post. ([#277](https://github.com/Orillusion/orillusion/issues/277)) ([1aa2a85](https://github.com/Orillusion/orillusion/commit/1aa2a855b2cc1b2d2abbbbc572014e584ef6c50a))
+* **octree:** Use octree to Filter the scene tree ([#275](https://github.com/Orillusion/orillusion/issues/275)) ([f30a2ae](https://github.com/Orillusion/orillusion/commit/f30a2ae3b9e0aefa71cfe5c33a5aa86c948a895f))
+
+
 ## [0.6.7](https://github.com/Orillusion/orillusion/compare/v0.6.6...v0.6.7) (2023-07-28)
 
 ### Bug Fixes

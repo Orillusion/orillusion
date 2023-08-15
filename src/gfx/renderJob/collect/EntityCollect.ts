@@ -1,9 +1,12 @@
 
-import { View3D } from '../../..';
 import { Engine3D } from '../../../Engine3D';
 import { ILight } from '../../../components/lights/ILight';
 import { RenderNode } from '../../../components/renderer/RenderNode';
 import { Scene3D } from '../../../core/Scene3D';
+import { View3D } from '../../../core/View3D';
+import { BoundingBox } from '../../../core/bound/BoundingBox';
+import { Octree } from '../../../core/tree/octree/Octree';
+import { Vector3 } from '../../../math/Vector3';
 import { zSorterUtil } from '../../../util/ZSorterUtil';
 import { RenderLayerUtil, RenderLayer } from '../config/RenderLayer';
 import { Probe } from '../passRenderer/ddgi/Probe';
@@ -22,8 +25,9 @@ export class EntityCollect {
     private _sceneLights: Map<Scene3D, ILight[]>;
     private _sceneGIProbes: Map<Scene3D, Probe[]>;
 
-    private _source_opaqueRenderNodes: Map<Scene3D, RenderNode[]>;
-    private _source_transparentRenderNodes: Map<Scene3D, RenderNode[]>;
+    private _op_RenderNodes: Map<Scene3D, RenderNode[]>;
+    private _tr_RenderNodes: Map<Scene3D, RenderNode[]>;
+    private _octreeRenderNodes: Map<Scene3D, Octree>;
 
     private _graphics: Graphic3DBatchRenderer[];
 
@@ -58,8 +62,8 @@ export class EntityCollect {
         this._sceneLights = new Map<Scene3D, ILight[]>();
         this._sceneGIProbes = new Map<Scene3D, Probe[]>();
 
-        this._source_opaqueRenderNodes = new Map<Scene3D, RenderNode[]>();
-        this._source_transparentRenderNodes = new Map<Scene3D, RenderNode[]>();
+        this._op_RenderNodes = new Map<Scene3D, RenderNode[]>();
+        this._tr_RenderNodes = new Map<Scene3D, RenderNode[]>();
 
         this._graphics = [];
 
@@ -68,20 +72,21 @@ export class EntityCollect {
 
         this._collectInfo = new CollectInfo();
         this._renderShaderCollect = new RenderShaderCollect();
+        this._octreeRenderNodes = new Map<Scene3D, Octree>();
     }
 
     private getPashList(root: Scene3D, renderNode: RenderNode) {
-        if (renderNode[`renderOrder`] < 3000) {
-            return this._source_opaqueRenderNodes.get(root);
-        } else if (renderNode[`renderOrder`] >= 3000) {
-            return this._source_transparentRenderNodes.get(root);
+        if (renderNode.renderOrder < 3000) {
+            return this._op_RenderNodes.get(root);
+        } else if (renderNode.renderOrder >= 3000) {
+            return this._tr_RenderNodes.get(root);
         }
     }
 
     private sortRenderNode(list: RenderNode[], renderNode: RenderNode) {
         for (let i = list.length - 1; i > 0; i--) {
             const element = list[i];
-            if (element[`renderOrder`] < renderNode[`renderOrder`]) {
+            if (element.renderOrder < renderNode.renderOrder) {
                 list.push(renderNode);
                 return;
             }
@@ -91,7 +96,7 @@ export class EntityCollect {
 
     public addRenderNode(root: Scene3D, renderNode: RenderNode) {
         if (!root) return;
-
+        let isTransparent: boolean = renderNode.renderOrder >= 3000;
         if (renderNode.hasMask(RendererMask.Sky)) {
             this.sky = renderNode;
         } else if (renderNode instanceof Graphic3DBatchRenderer) {
@@ -100,29 +105,21 @@ export class EntityCollect {
             }
         } else if (!RenderLayerUtil.hasMask(renderNode.object3D.renderLayer, RenderLayer.None)) {
             this.removeRenderNode(root, renderNode);
-            if (renderNode[`renderOrder`] < 3000) {
-                if (!this._op_renderGroup.has(root)) {
-                    this._op_renderGroup.set(root, new EntityBatchCollect());
-                }
-                this._op_renderGroup.get(root).collect_add(renderNode);
-            } else if (renderNode[`renderOrder`] >= 3000) {
-                if (!this._tr_renderGroup.has(root)) {
-                    this._tr_renderGroup.set(root, new EntityBatchCollect());
-                }
-                this._tr_renderGroup.get(root).collect_add(renderNode);
+            let group = isTransparent ? this._tr_renderGroup : this._op_renderGroup;
+            if (!group.has(root)) {
+                group.set(root, new EntityBatchCollect());
             }
+            group.get(root).collect_add(renderNode);
         } else {
             this.removeRenderNode(root, renderNode);
-            if (renderNode[`renderOrder`] < 3000) {
-                if (!this._source_opaqueRenderNodes.has(root)) {
-                    this._source_opaqueRenderNodes.set(root, []);
-                }
-                this._source_opaqueRenderNodes.get(root).push(renderNode);
-            } else if (renderNode[`renderOrder`] >= 3000) {
-                if (!this._source_transparentRenderNodes.has(root)) {
-                    this._source_transparentRenderNodes.set(root, []);
-                }
-                this._source_transparentRenderNodes.get(root).push(renderNode);
+            let map = isTransparent ? this._tr_RenderNodes : this._op_RenderNodes;
+            if (!map.has(root)) {
+                map.set(root, []);
+            }
+            map.get(root).push(renderNode);
+
+            if (Engine3D.setting.occlusionQuery.octree) {
+                renderNode.attachSceneOctree(this.getOctree(root));
             }
 
             let list = this.getPashList(root, renderNode);
@@ -136,7 +133,24 @@ export class EntityCollect {
         this._renderShaderCollect.collect_add(renderNode);
     }
 
+    private getOctree(root: Scene3D) {
+        let octree: Octree;
+        let setting = Engine3D.setting.occlusionQuery.octree;
+        if (setting) {
+            octree = this._octreeRenderNodes.get(root);
+            if (!octree) {
+                let center = new Vector3(setting.x, setting.y, setting.z);
+                let size = new Vector3(setting.width, setting.height, setting.depth);
+                let bound = new BoundingBox(center, size);
+                octree = new Octree(bound);
+                this._octreeRenderNodes.set(root, octree);
+            }
+        }
+        return octree;
+    }
+
     public removeRenderNode(root: Scene3D, renderNode: RenderNode) {
+        renderNode.detachSceneOctree();
         if (renderNode.hasMask(RendererMask.Sky)) {
             this.sky = null;
         } else if (!RenderLayerUtil.hasMask(renderNode.object3D.renderLayer, RenderLayer.None)) {
@@ -209,7 +223,7 @@ export class EntityCollect {
 
     // sort renderers by renderOrder and camera depth
     public autoSortRenderNodes(scene: Scene3D): this {
-        let renderList: RenderNode[] = this._source_transparentRenderNodes.get(scene);
+        let renderList: RenderNode[] = this._tr_RenderNodes.get(scene);
         if (!renderList)
             return;
         let needSort = false;
@@ -243,19 +257,21 @@ export class EntityCollect {
         this._collectInfo.clean();
         this._collectInfo.sky = this.sky;
 
-        let list2 = this._source_opaqueRenderNodes.get(scene);
+        if (Engine3D.setting.occlusionQuery.octree) {
+            this._collectInfo.rendererOctree = this.getOctree(scene);
+        }
+
+        let list2 = this._op_RenderNodes.get(scene);
         if (list2) {
             this._collectInfo.opaqueList = list2.concat();
-            this._collectInfo.offset = list2.length;
         }
-        let list5 = this._source_transparentRenderNodes.get(scene);
+        let list5 = this._tr_RenderNodes.get(scene);
         if (list5) {
             this._collectInfo.transparentList = list5.concat();
         }
 
         return this._collectInfo;
     }
-
 
     public getOpRenderGroup(scene: Scene3D): EntityBatchCollect {
         return this._op_renderGroup.get(scene);

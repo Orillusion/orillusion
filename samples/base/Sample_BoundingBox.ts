@@ -13,7 +13,6 @@ class Sample_BoundingBox {
         await Engine3D.init({ renderLoop: () => { this.loop() } });
         GUIHelp.init();
         let param = createSceneParam();
-        param.camera.distance = 1;
         param.camera.near = 0.01;
         param.camera.far = 100;
         param.camera.distance = 2;
