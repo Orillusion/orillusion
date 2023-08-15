@@ -133,7 +133,7 @@ export class Camera3D extends ComponentBase {
     public getShadowWorldExtents(): number {
         let shadowBound = Engine3D.setting.shadow.shadowBound;
         if (!shadowBound) {
-            shadowBound = Math.round(0.05 * this.frustum.boudingBox.extents.length)
+            shadowBound = Math.round(0.05 * this.frustum.boundingBox.extents.length);
         } else {
             shadowBound *= 0.5;
         }

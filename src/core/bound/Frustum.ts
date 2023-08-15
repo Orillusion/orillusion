@@ -11,7 +11,7 @@ import { BoundingBox } from './BoundingBox';
 export class Frustum {
     public planes: Vector3[];
     public corners: Vector3[];
-    public boudingBox: BoundingBox = new BoundingBox();
+    public boundingBox: BoundingBox = new BoundingBox();
 
     constructor() {
         this.planes = [];
@@ -21,9 +21,9 @@ export class Frustum {
     }
 
     public updateBoundBox(pvInv: Matrix4): this {
-        this.boudingBox.makeEmpty();
-        let min = this.boudingBox.min;
-        let max = this.boudingBox.max;
+        this.boundingBox.makeEmpty();
+        let min = this.boundingBox.min;
+        let max = this.boundingBox.max;
         let i = 0;
         for (let x = 0; x < 2; ++x) {
             for (let y = 0; y < 2; ++y) {
@@ -43,7 +43,7 @@ export class Frustum {
                 }
             }
         }
-        this.boudingBox.setFromMinMax(min, max);
+        this.boundingBox.setFromMinMax(min, max);
         return this;
     }
 
