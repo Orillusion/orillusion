@@ -67,7 +67,7 @@ export class DDGIIrradianceComputePass {
         return this.depthRaysBuffer.readBuffer();
     }
 
-    public computer(view: View3D, renderPassState: RendererPassState) {
+    public compute(view: View3D, renderPassState: RendererPassState) {
         let setting = this.volume.setting;
         let command = GPUContext.beginCommandEncoder();
         let probes = EntityCollect.instance.getProbes(view.scene);

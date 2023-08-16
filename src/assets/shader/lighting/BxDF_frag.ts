@@ -142,6 +142,16 @@ export let BxDF_frag: string = /*wgsl*/ `
         color = vec3<f32>(clearCoatLayer.rgb/fragData.Albedo.a) ; 
       #endif
    
+      // if(csmLevel == 0){
+      //     color += vec3<f32>(0.1, 0.0, 0.0);
+      // }else if(csmLevel == 1){
+      //     color += vec3<f32>(0.0, 0.1, 0.0);
+      // }else if(csmLevel == 2){
+      //     color += vec3<f32>(0.0, 0.0, 0.1);
+      // }else if(csmLevel == 3){
+      //     color += vec3<f32>(0.0, 0.1, 0.1);
+      // }
+
       ORI_FragmentOutput.color = vec4<f32>(LinearToGammaSpace(color.rgb),fragData.Albedo.a) ;
       // ORI_FragmentOutput.color = vec4<f32>(irradiance.rgb,fragData.Albedo.a) ;
   }

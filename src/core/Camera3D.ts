@@ -12,6 +12,8 @@ import { Frustum } from './bound/Frustum';
 import { CameraType } from './CameraType';
 import { CubeCamera } from './CubeCamera';
 import { webGPUContext } from '../gfx/graphics/webGpu/Context3D';
+import { FrustumCSM } from './csm/FrustumCSM';
+import { CSM } from './csm/CSM';
 
 /**
  * Camera components
@@ -70,6 +72,7 @@ export class Camera3D extends ComponentBase {
     private _halfw: number;
     private _halfh: number;
     private _ray: Ray;
+    private _enableCSM: boolean = false;
 
     /**
      * @internal
@@ -89,12 +92,22 @@ export class Camera3D extends ComponentBase {
      */
     public type: CameraType = CameraType.perspective;
 
+    public csm: FrustumCSM;
+
     /**
      * @internal
      */
     public cubeShadowCameras: CubeCamera[] = [];
 
-
+    public get enableCSM(): boolean {
+        return this._enableCSM;
+    }
+    public set enableCSM(value: boolean) {
+        if (value && !this.csm) {
+            this.csm = new FrustumCSM(CSM.Cascades);
+        }
+        this._enableCSM = value;
+    }
     constructor() {
         super();
     }
@@ -109,6 +122,32 @@ export class Camera3D extends ComponentBase {
         this.viewPort.w = webGPUContext.presentationSize[0];
         this.viewPort.h = webGPUContext.presentationSize[1];
         this.lookTarget = new Vector3(0, 0, 0);
+    }
+
+    public getShadowBias(depthTexSize: number): number {
+        let sizeOnePixel = 2.0 * this.getShadowWorldExtents() / depthTexSize;
+        let depth = this.far - this.near;
+        return sizeOnePixel / depth;
+    }
+
+    public getShadowWorldExtents(): number {
+        let shadowBound = Engine3D.setting.shadow.shadowBound;
+        if (!shadowBound) {
+            shadowBound = Math.round(0.05 * this.frustum.boundingBox.extents.length);
+        } else {
+            shadowBound *= 0.5;
+        }
+        return shadowBound;
+    }
+
+    public getCSMShadowBias(index: number, depthTexSize: number): number {
+        let sizeOnePixel = 2.0 * this.getCSMShadowWorldExtents(index) / depthTexSize;
+        let depth = this.far - this.near;
+        return sizeOnePixel / depth;
+    }
+
+    public getCSMShadowWorldExtents(index: number): number {
+        return Math.round(this.csm.children[index].bound.extents.length);
     }
 
     /**
@@ -220,13 +259,10 @@ export class Camera3D extends ComponentBase {
 
         let fScreenPtX = n.x;
         let fScreenPtY = n.y;
-        let m_fRadius = 1;
         target.x = fScreenPtX / this.viewPort.width - 0.25;
         target.y = fScreenPtY / this.viewPort.height - 0.25;
 
         this.unProject(target.x, target.y, n.z, target);
-        // this.transform.localMatrix.transformVector4(target, target);
-
         return target;
     }
 
@@ -247,9 +283,9 @@ export class Camera3D extends ComponentBase {
      * get (project * view) invert matrix
      */
     public get pvMatrixInv(): Matrix4 {
-        let pvMatrixInv = this._pvMatrixInv.copyFrom(this.pvMatrix);
-        pvMatrixInv.invert();
-        return pvMatrixInv;
+        let matrix = this._pvMatrixInv.copyFrom(this.pvMatrix);
+        matrix.invert();
+        return matrix;
     }
 
     /**
@@ -376,6 +412,9 @@ export class Camera3D extends ComponentBase {
             this.getJitteredProjectionMatrix();
         }
         this.frustum.update(this.pvMatrix);
+        this.frustum.updateBoundBox(this.pvMatrixInv);
+        let shadow = Engine3D.setting.shadow;
+        this.enableCSM && this.csm?.update(this._projectionMatrix, this._pvMatrixInv, this.near, this.far, shadow);
     }
 
     private _haltonSeq: HaltonSeq;
@@ -439,69 +478,69 @@ export class Camera3D extends ComponentBase {
         this._jitterFrameIndex++;
     }
 
-    /**
-     *
-     * @param shadowCamera
-     * @param lightDir
-     */
-    public getCastShadowLightSpaceMatrix(shadowCamera: Camera3D, lightDir: Vector3) {
-        let frustum: Frustum = this.frustum;
+    // /**
+    //  *
+    //  * @param shadowCamera
+    //  * @param lightDir
+    //  */
+    // public getCastShadowLightSpaceMatrix(shadowCamera: Camera3D, lightDir: Vector3) {
+    //     let frustum: Frustum = this.frustum;
 
-        let proMat = this.projectionMatrixInv;
-        let wMat = this.transform.worldMatrix;
-        Matrix4.helpMatrix.copyFrom(proMat);
-        Matrix4.helpMatrix.multiply(wMat);
+    //     let proMat = this.projectionMatrixInv;
+    //     let wMat = this.transform.worldMatrix;
+    //     Matrix4.helpMatrix.copyFrom(proMat);
+    //     Matrix4.helpMatrix.multiply(wMat);
 
-        frustum.setFrustumCorners(Matrix4.helpMatrix);
+    //     frustum.setFrustumCorners(Matrix4.helpMatrix);
 
-        let corners = frustum.corners;
-        let center = Vector3.HELP_6;
-        center.set(0, 0, 0);
+    //     let corners = frustum.corners;
+    //     let center = Vector3.HELP_6;
+    //     center.set(0, 0, 0);
 
-        for (const iterator of corners) {
-            center.add(iterator, center);
-        }
+    //     for (const iterator of corners) {
+    //         center.add(iterator, center);
+    //     }
 
-        center.div(corners.length, center);
+    //     center.div(corners.length, center);
 
-        let lookTarget = Vector3.HELP_5;
-        lookTarget.copyFrom(center);
-        Vector3.HELP_0.copyFrom(lightDir);
-        lookTarget.add(Vector3.HELP_0, lookTarget);
-        shadowCamera.lookAt(lookTarget, center, Vector3.UP);
+    //     let lookTarget = Vector3.HELP_5;
+    //     lookTarget.copyFrom(center);
+    //     Vector3.HELP_0.copyFrom(lightDir);
+    //     lookTarget.add(Vector3.HELP_0, lookTarget);
+    //     shadowCamera.lookAt(lookTarget, center, Vector3.UP);
 
-        let minX = Number.MAX_VALUE;
-        let maxX = -Number.MAX_VALUE;
-        let minY = Number.MAX_VALUE;
-        let maxY = -Number.MAX_VALUE;
-        let minZ = Number.MAX_VALUE;
-        let maxZ = -Number.MAX_VALUE;
+    //     let minX = Number.MAX_VALUE;
+    //     let maxX = -Number.MAX_VALUE;
+    //     let minY = Number.MAX_VALUE;
+    //     let maxY = -Number.MAX_VALUE;
+    //     let minZ = Number.MAX_VALUE;
+    //     let maxZ = -Number.MAX_VALUE;
 
-        for (const iterator of corners) {
-            minX = Math.min(minX, iterator.x);
-            maxX = Math.max(maxX, iterator.x);
-            minY = Math.min(minY, iterator.y);
-            maxY = Math.max(maxY, iterator.y);
-            minZ = Math.min(minZ, iterator.z);
-            maxZ = Math.max(maxZ, iterator.z);
-        }
+    //     for (const iterator of corners) {
+    //         minX = Math.min(minX, iterator.x);
+    //         maxX = Math.max(maxX, iterator.x);
+    //         minY = Math.min(minY, iterator.y);
+    //         maxY = Math.max(maxY, iterator.y);
+    //         minZ = Math.min(minZ, iterator.z);
+    //         maxZ = Math.max(maxZ, iterator.z);
+    //     }
 
-        // Tune this parameter according to the scene
-        let zMult = Engine3D.setting.shadow.shadowQuality;
+    //     // Tune this parameter according to the scene
+    //     let zMult = Engine3D.setting.shadow.shadowQuality;
 
-        if (minZ < 0) {
-            minZ *= zMult;
-        } else {
-            minZ /= zMult;
-        }
-        if (maxZ < 0) {
-            maxZ /= zMult;
-        } else {
-            maxZ *= zMult;
-        }
+    //     if (minZ < 0) {
+    //         minZ *= zMult;
+    //     } else {
+    //         minZ /= zMult;
+    //     }
+    //     if (maxZ < 0) {
+    //         maxZ /= zMult;
+    //     } else {
+    //         maxZ *= zMult;
+    //     }
 
-        shadowCamera.orthoOffCenter(minX, maxX, minY, maxY, minZ, maxZ);
-    }
+    //     shadowCamera.orthoOffCenter(minX, maxX, minY, maxY, minZ, maxZ);
+    // }
 
     public getWorldDirection(target?: Vector3) {
         target ||= new Vector3();

@@ -120,18 +120,11 @@ export class ShadowLightsCollect {
                 list = [];
                 this.directionLightList.set(scene, list);
             }
-            if (!light['shadowCamera']) {
-                light['shadowCamera'] = CameraUtil.createCamera3DObject(null, 'shadowCamera');
-                light['shadowCamera'].name = UUID();
-                light['shadowCamera'].isShadowCamera = true;
-                light['shadowCamera'].orthoOffCenter(
-                    Engine3D.setting.shadow.shadowBound,
-                    -Engine3D.setting.shadow.shadowBound,
-                    Engine3D.setting.shadow.shadowBound,
-                    -Engine3D.setting.shadow.shadowBound,
-                    1,
-                    50000,
-                );
+            if (!light.shadowCamera) {
+                light.shadowCamera = CameraUtil.createCamera3DObject(null, 'shadowCamera');
+                light.shadowCamera.isShadowCamera = true;
+                let shadowBound = -1000;
+                light.shadowCamera.orthoOffCenter(shadowBound, -shadowBound, shadowBound, -shadowBound, 1, 10000);
             }
             if (list.indexOf(light) == -1) {
                 list.push(light);
@@ -156,6 +149,7 @@ export class ShadowLightsCollect {
     }
 
     public static removeShadowLight(light: ILight) {
+        light.lightData.castShadowIndex = -1;
         if (!light.transform.view3D) return null;
         if (light.lightData.lightType == LightType.DirectionLight) {
             let list = this.directionLightList.get(light.transform.view3D.scene);

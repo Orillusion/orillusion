@@ -11,7 +11,6 @@ class Sample_PBRMaterial {
 
         //config settings
         Engine3D.setting.shadow.shadowBound = 50;
-        Engine3D.setting.shadow.shadowBias = 0.0001;
         Engine3D.setting.render.postProcessing.bloom = {
             enable: true,
             blurX: 4,

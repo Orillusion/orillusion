@@ -5,7 +5,6 @@ import { Engine3D, Object3DUtil, Object3D, ViewPanel, UIImage, ImageType, UIPane
 export class Sample_UIChangeParent {
     async run() {
         Engine3D.setting.shadow.autoUpdate = true;
-        Engine3D.setting.shadow.shadowBias = 0.002;
 
         GUIHelp.init();
 

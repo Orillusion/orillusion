@@ -10,8 +10,7 @@ class Sample_Skeleton2 {
 
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.updateFrameRate = 1;
-        Engine3D.setting.shadow.shadowBound = 500;
-        Engine3D.setting.shadow.shadowBias = 0.0002;
+        Engine3D.setting.shadow.shadowSize = 2048;
 
         await Engine3D.init();
 
@@ -20,6 +19,7 @@ class Sample_Skeleton2 {
         this.scene.exposure = 1;
 
         let mainCamera = CameraUtil.createCamera3DObject(this.scene);
+        mainCamera.enableCSM = true;
         mainCamera.perspective(60, webGPUContext.aspect, 1, 3000.0);
 
         let hoverCameraController = mainCamera.object3D.addComponent(HoverCameraController);

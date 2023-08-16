@@ -18,11 +18,12 @@ class Sample_ConduitGeometry2 {
     async run() {
         GUIHelp.init();
         Engine3D.setting.shadow.shadowBound = 50;
-        Engine3D.setting.shadow.shadowBias = 0.0001;
+        Engine3D.setting.shadow.shadowSize = 1024;
         let param = createSceneParam();
-        param.camera.distance = 50;
+        param.camera.distance = 60;
         await Engine3D.init();
         let exampleScene = createExampleScene(param);
+        exampleScene.camera.enableCSM = true;
         this.scene = exampleScene.scene;
         Engine3D.startRenderView(exampleScene.view);
         await this.createMaterial();

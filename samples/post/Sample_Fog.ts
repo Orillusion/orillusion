@@ -10,7 +10,6 @@ class Sample_Fog {
     async run() {
         Engine3D.setting.shadow.shadowSize = 2048
         Engine3D.setting.shadow.shadowBound = 1000;
-        Engine3D.setting.shadow.shadowBias = 0.0005;
 
         await Engine3D.init();
 

@@ -1,5 +1,6 @@
 import { Engine3D } from "../../../../../Engine3D";
 import { Camera3D } from "../../../../../core/Camera3D";
+import { CSM } from "../../../../../core/csm/CSM";
 import { Matrix4 } from "../../../../../math/Matrix4";
 import { UUID } from "../../../../../util/Global";
 import { Time } from "../../../../../util/Time";
@@ -8,7 +9,6 @@ import { webGPUContext } from "../../Context3D";
 import { UniformGPUBuffer } from "../buffer/UniformGPUBuffer";
 import { GlobalBindGroupLayout } from "./GlobalBindGroupLayout";
 import { MatrixBindGroup } from "./MatrixBindGroup";
-
 
 /**
  * @internal
@@ -31,7 +31,8 @@ export class GlobalUniformGroup {
     constructor(matrixBindGroup: MatrixBindGroup) {
         this.uuid = UUID();
         this.usage = GPUBufferUsage.UNIFORM | GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST;
-        this.uniformGPUBuffer = new UniformGPUBuffer(32 * 4 * 4 + (3 * 4 * 4) + 8 * 16);
+        // ... + 8(shadow matrix) + 8(csm matrix) + 4(csm bias) + 4(csm scattering exp...)
+        this.uniformGPUBuffer = new UniformGPUBuffer(32 * 4 * 4 + (3 * 4 * 4) + 8 * 16 + CSM.Cascades * 16 + 4 + 4);
         this.uniformGPUBuffer.visibility = GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT | GPUShaderStage.COMPUTE
         this.matrixBindGroup = matrixBindGroup;
 
@@ -73,33 +74,51 @@ export class GlobalUniformGroup {
     //     }
     // }
 
+    private shadowMatrixRaw = new Float32Array(8 * 16);
+    private csmMatrixRaw = new Float32Array(CSM.Cascades * 16);
+    private csmShadowBias = new Float32Array(4);
+
     public setCamera(camera: Camera3D) {
-        // camera.transform.updateWorldMatrix(true);
         this.uniformGPUBuffer.setMatrix(`_projectionMatrix`, camera.projectionMatrix);
         this.uniformGPUBuffer.setMatrix(`_viewMatrix`, camera.viewMatrix);
         this.uniformGPUBuffer.setMatrix(`_cameraWorldMatrix`, camera.transform.worldMatrix);
         this.uniformGPUBuffer.setMatrix(`_projectionMatrixInv`, camera.projectionMatrixInv);
-        let raw = new Float32Array(8 * 16);
+
+        let shadowLightList = ShadowLightsCollect.getDirectShadowLightWhichScene(camera.transform.scene3D);
+
+        this.csmShadowBias.fill(0.0001);
+        this.shadowMatrixRaw.fill(0);
+        this.csmMatrixRaw.fill(0);
         for (let i = 0; i < 8; i++) {
-            let shadowLightList = ShadowLightsCollect.getDirectShadowLightWhichScene(camera.transform.scene3D);
             if (i < shadowLightList.length) {
-                let mat = shadowLightList[i].shadowCamera.pvMatrix.rawData;
-                raw.set(mat, i * 16);
+                let shadowCamera = shadowLightList[i].shadowCamera;
+                this.shadowMatrixRaw.set(shadowCamera.pvMatrix.rawData, i * 16);
             } else {
-                raw.set(camera.transform.worldMatrix.rawData, i * 16);
+                this.shadowMatrixRaw.set(camera.transform.worldMatrix.rawData, i * 16);
             }
         }
-        this.uniformGPUBuffer.setFloat32Array(`_shadowCamera`, raw);
-        this.uniformGPUBuffer.setVector3(`CameraPos`, camera.transform.worldPosition);
+        this.uniformGPUBuffer.setFloat32Array(`shadowMatrix`, this.shadowMatrixRaw);
 
+        let shadowMapSize = Engine3D.setting.shadow.shadowSize;
+        if (CSM.Cascades > 1 && camera.enableCSM && shadowLightList[0]) {
+            for (let i = 0; i < CSM.Cascades; i++) {
+                let shadowCamera: Camera3D = camera.csm.children[i].shadowCamera;
+                this.csmMatrixRaw.set(shadowCamera.pvMatrix.rawData, i * 16);
+                this.csmShadowBias[i] = camera.getCSMShadowBias(i, shadowMapSize);
+            }
+        }
+        this.uniformGPUBuffer.setFloat32Array(`csmShadowBias`, this.csmShadowBias);
+        this.uniformGPUBuffer.setFloat32Array(`csmMatrix`, this.csmMatrixRaw);
+
+        this.uniformGPUBuffer.setVector3(`CameraPos`, camera.transform.worldPosition);
         this.uniformGPUBuffer.setFloat(`frame`, Time.frame);
         this.uniformGPUBuffer.setFloat(`time`, Time.frame);
         this.uniformGPUBuffer.setFloat(`delta`, Time.delta);
-        this.uniformGPUBuffer.setFloat(`EngineSetting.Shadow.shadowBias`, Engine3D.setting.shadow.shadowBias);
+        this.uniformGPUBuffer.setFloat(`shadowBias`, camera.getShadowBias(shadowMapSize));
         this.uniformGPUBuffer.setFloat(`skyExposure`, Engine3D.setting.sky.skyExposure);
-        this.uniformGPUBuffer.setFloat(`EngineSetting.Render.renderPassState`, Engine3D.setting.render.renderPassState);
-        this.uniformGPUBuffer.setFloat(`EngineSetting.Render.quadScale`, Engine3D.setting.render.quadScale);
-        this.uniformGPUBuffer.setFloat(`EngineSetting.Render.hdrExposure`, Engine3D.setting.render.hdrExposure);
+        this.uniformGPUBuffer.setFloat(`renderPassState`, Engine3D.setting.render.renderPassState);
+        this.uniformGPUBuffer.setFloat(`quadScale`, Engine3D.setting.render.quadScale);
+        this.uniformGPUBuffer.setFloat(`hdrExposure`, Engine3D.setting.render.hdrExposure);
 
         this.uniformGPUBuffer.setInt32(`renderState_left`, Engine3D.setting.render.renderState_left);
         this.uniformGPUBuffer.setInt32(`renderState_right`, Engine3D.setting.render.renderState_right);
@@ -114,9 +133,13 @@ export class GlobalUniformGroup {
         this.uniformGPUBuffer.setFloat(`near`, camera.near);
         this.uniformGPUBuffer.setFloat(`far`, camera.far);
 
-        this.uniformGPUBuffer.setFloat(`EngineSetting.Shadow.pointShadowBias`, Engine3D.setting.shadow.pointShadowBias);
-        this.uniformGPUBuffer.setFloat(`shadowMapSize`, Engine3D.setting.shadow.shadowSize);
+        this.uniformGPUBuffer.setFloat(`pointShadowBias`, Engine3D.setting.shadow.pointShadowBias);
+        this.uniformGPUBuffer.setFloat(`shadowMapSize`, shadowMapSize);
         this.uniformGPUBuffer.setFloat(`shadowSoft`, Engine3D.setting.shadow.shadowSoft);
+        this.uniformGPUBuffer.setFloat(`enableCSM`, camera.enableCSM ? 1 : 0);
+
+        this.uniformGPUBuffer.setFloat(`csmMargin`, Engine3D.setting.shadow.csmMargin);
+
         this.uniformGPUBuffer.apply();
     }
 
@@ -126,27 +149,22 @@ export class GlobalUniformGroup {
         this.uniformGPUBuffer.setMatrix(`_viewMatrix`, camera.viewMatrix);
         this.uniformGPUBuffer.setMatrix(`_pvMatrix`, camera.pvMatrix);
         this.uniformGPUBuffer.setMatrix(`_projectionMatrixInv`, camera.projectionMatrixInv);
-        let raw = new Float32Array(8 * 16);
-        for (let i = 0; i < 8; i++) {
-            let shadowLightList = ShadowLightsCollect.getDirectShadowLightWhichScene(camera.transform.scene3D);
-            if (i < shadowLightList.length) {
-                let mat = shadowLightList[i].shadowCamera.pvMatrix.rawData;
-                raw.set(mat, i * 16);
-            } else {
-                raw.set(camera.transform.worldMatrix.rawData, i * 16);
-            }
-        }
-        this.uniformGPUBuffer.setFloat32Array(`_shadowCamera`, raw);
+        this.csmShadowBias.fill(0.0001);
+        this.shadowMatrixRaw.fill(0);
+        this.csmMatrixRaw.fill(0);
+        this.uniformGPUBuffer.setFloat32Array(`shadowCamera`, this.shadowMatrixRaw);
+        this.uniformGPUBuffer.setFloat32Array(`csmShadowBias`, this.csmShadowBias);
+        this.uniformGPUBuffer.setFloat32Array(`csmMatrix`, this.csmMatrixRaw);
         this.uniformGPUBuffer.setVector3(`CameraPos`, camera.transform.worldPosition);
 
         this.uniformGPUBuffer.setFloat(`frame`, Time.frame);
         this.uniformGPUBuffer.setFloat(`time`, Time.frame);
         this.uniformGPUBuffer.setFloat(`delta`, Time.delta);
-        this.uniformGPUBuffer.setFloat(`EngineSetting.Shadow.shadowBias`, Engine3D.setting.shadow.shadowBias);
+        this.uniformGPUBuffer.setFloat(`shadowBias`, 0.0001);
         this.uniformGPUBuffer.setFloat(`skyExposure`, Engine3D.setting.sky.skyExposure);
-        this.uniformGPUBuffer.setFloat(`EngineSetting.Render.renderPassState`, Engine3D.setting.render.renderPassState);
-        this.uniformGPUBuffer.setFloat(`EngineSetting.Render.quadScale`, Engine3D.setting.render.quadScale);
-        this.uniformGPUBuffer.setFloat(`EngineSetting.Render.hdrExposure`, Engine3D.setting.render.hdrExposure);
+        this.uniformGPUBuffer.setFloat(`renderPassState`, Engine3D.setting.render.renderPassState);
+        this.uniformGPUBuffer.setFloat(`quadScale`, Engine3D.setting.render.quadScale);
+        this.uniformGPUBuffer.setFloat(`hdrExposure`, Engine3D.setting.render.hdrExposure);
 
         this.uniformGPUBuffer.setInt32(`renderState_left`, Engine3D.setting.render.renderState_left);
         this.uniformGPUBuffer.setInt32(`renderState_right`, Engine3D.setting.render.renderState_right);
@@ -161,9 +179,14 @@ export class GlobalUniformGroup {
         this.uniformGPUBuffer.setFloat(`near`, camera.near);
         this.uniformGPUBuffer.setFloat(`far`, camera.far);
 
-        this.uniformGPUBuffer.setFloat(`EngineSetting.Shadow.pointShadowBias`, Engine3D.setting.shadow.pointShadowBias);
+        this.uniformGPUBuffer.setFloat(`pointShadowBias`, Engine3D.setting.shadow.pointShadowBias);
         this.uniformGPUBuffer.setFloat(`shadowMapSize`, Engine3D.setting.shadow.shadowSize);
         this.uniformGPUBuffer.setFloat(`shadowSoft`, Engine3D.setting.shadow.shadowSoft);
+        this.uniformGPUBuffer.setFloat(`enableCSM`, 0);
+
+        this.uniformGPUBuffer.setFloat(`csmMargin`, Engine3D.setting.shadow.csmMargin);
+
+
         this.uniformGPUBuffer.apply();
     }
 

@@ -10,7 +10,7 @@ export class Sample_OctTreeBox {
     entities: OctreeEntity[] = [];
     tree: Octree;
     red = new Color(1, 0, 0, 1);
-    gree = new Color(0, 1, 0, 1);
+    green = new Color(0, 1, 0, 1);
     yellow = new Color(1, 1, 0, 1)
     blue = new Color(0, 0, 1, 1)
     white = new Color(1, 1, 1, 1)
@@ -54,7 +54,6 @@ export class Sample_OctTreeBox {
         GUIHelp.add(this.movingBox.size, 'x', 1, 200, 1).onChange(() => { updateBox(); });
         GUIHelp.add(this.movingBox.size, 'y', 1, 200, 1).onChange(() => { updateBox(); });
         GUIHelp.add(this.movingBox.size, 'z', 1, 200, 1).onChange(() => { updateBox(); });
-        GUIHelp.open();
         GUIHelp.endFolder();
     }
 
@@ -105,7 +104,7 @@ export class Sample_OctTreeBox {
         for (let item of this.entities) {
             item.renderer.enable = retBoolean[item.uuid];
         }
-        this.view.graphic3D.drawBoundingBox('pick', this.movingBox, this.gree);
+        this.view.graphic3D.drawBoundingBox('pick', this.movingBox, this.green);
     }
 
     loop() {

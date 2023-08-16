@@ -20,7 +20,6 @@ class Sample_FlightHelmet {
 
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.shadowBound = 10;
-        Engine3D.setting.shadow.shadowBias = 0.0001;
         Engine3D.setting.render.postProcessing.ssao.radius = 0.018;
         Engine3D.setting.render.postProcessing.ssao.aoPower = 1;
         Engine3D.setting.render.postProcessing.bloom = {

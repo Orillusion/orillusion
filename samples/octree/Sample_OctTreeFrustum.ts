@@ -12,13 +12,12 @@ export class Sample_OctTreeFrustum {
     entities: OctreeEntity[] = [];
     tree: Octree;
     red = new Color(1, 0, 0, 1);
-    gree = new Color(0, 1, 0, 1);
+    green = new Color(0, 1, 0, 1);
     yellow = new Color(1, 1, 0, 1)
     blue = new Color(0, 0, 1, 1)
     white = new Color(1, 1, 1, 1)
 
     camera: Camera3D;
-    frustumBound: BoundingBox;
     async run() {
 
         Engine3D.setting.occlusionQuery.octree = { width: 1000, height: 1000, depth: 1000, x: 0, y: 0, z: 0 }
@@ -46,8 +45,6 @@ export class Sample_OctTreeFrustum {
         this.camera.perspective(60, Engine3D.aspect, 1, 1000);
         this.view.scene.addChild(this.camera.object3D);
 
-        this.frustumBound = new BoundingBox();
-
         GUIUtil.renderTransform(this.camera.transform);
     }
 
@@ -61,7 +58,7 @@ export class Sample_OctTreeFrustum {
         let geometry = new BoxGeometry();
         for (let i = 0; i < 100; i++) {
             for (let j = 0; j < 100; j++) {
-                for (let k = 0; k < 5; k++) {
+                for (let k = 0; k < 2; k++) {
                     object3D = new Object3D();
                     let renderer = object3D.addComponent(MeshRenderer);
                     renderer.geometry = geometry;
@@ -85,11 +82,13 @@ export class Sample_OctTreeFrustum {
 
     private queryResult: OctreeEntity[] = [];
     private octreeTest() {
-        let range = this.camera.frustum.genBox(this.camera.pvMatrixInv);
-        this.frustumBound.setFromMinMax(new Vector3(range.minX, range.minY, range.minZ), new Vector3(range.maxX, range.maxY, range.maxZ));
-        this.view.graphic3D.drawCameraFrustum(this.camera, this.gree);
-        this.view.graphic3D.drawBoundingBox('box', this.frustumBound, this.red);
-
+        this.view.graphic3D.ClearAll();
+        this.view.graphic3D.drawCameraFrustum(this.camera, this.green);
+        // this.view.graphic3D.drawBoundingBox('box', this.camera.frustum.boudingBox, this.red);
+        // this.camera.frustum.csm.name = 'sdfdf';
+        // for (let block of this.camera.frustum.csm.children) {
+        //     this.view.graphic3D.drawBoundingBox(block.name, block.bound, block.color);
+        // }
         let frustum = this.camera.frustum;
 
         //__________exec octree query
@@ -98,7 +97,7 @@ export class Sample_OctTreeFrustum {
         // this.tree.boxCasts(this.frustumBound, this.queryResult);
         this.tree.frustumCasts(frustum, this.queryResult);
 
-        console.log('exec octree: ', performance.now() - now, 'count', this.queryResult.length);
+        // console.log('exec octree: ', performance.now() - now, 'count', this.queryResult.length);
         //end——————————————
 
         let retBoolean = {};

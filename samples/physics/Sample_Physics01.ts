@@ -14,7 +14,6 @@ class SamplePhysics01 {
         Engine3D.setting.shadow.updateFrameRate = 1;
         Engine3D.setting.shadow.shadowSize = 2048;
         Engine3D.setting.shadow.shadowBound = 150;
-        Engine3D.setting.shadow.shadowBias = 0.0001;
 
         await Physics.init();
         await Engine3D.init({ renderLoop: () => this.loop() });
