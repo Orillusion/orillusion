@@ -309,7 +309,7 @@ export class Engine3D {
 
         await WasmMatrix.isReady();
 
-        await WasmMatrix.init(Matrix4.maxCount);
+        await WasmMatrix.init(Matrix4.allocCount);
 
         await webGPUContext.init(descriptor.canvasConfig);
 

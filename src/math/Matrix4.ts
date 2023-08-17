@@ -24,17 +24,17 @@ export class Matrix4 {
     /**
      * matrix do total count 
      */
-    public static allocCount: number = 20000;
+    public static allocCount: number = 1000;
 
     /**
-     * matrix do total count 
+     * quantity allocated for each capacity expansion
      */
-    public static allocOnceCount: number = 0;
+    public static allocOnceCount: number = 1000;
 
     /**
      * matrix has max limit count
      */
-    public static maxCount: number = 20000;
+    public static maxCount: number = 100000;
 
     /**
      * current matrix use count 
@@ -133,11 +133,8 @@ export class Matrix4 {
 
         this.dynamicGlobalMatrixRef ||= [];
         this.dynamicGlobalMatrixRef.forEach((m) => {
-            let rawData = m.rawData;
+            m.offset = Matrix4.wasmMatrixPtr + m.index * Matrix4.blockBytes;
             m.rawData = new Float32Array(Matrix4.dynamicMatrixBytes.buffer, m.offset, 16);
-            for (let i = 0; i < rawData.length; i++) {
-                m.rawData[i] = rawData[i];
-            }
         });
 
         Matrix4.help_matrix_0 ||= new Matrix4();
@@ -325,11 +322,13 @@ export class Matrix4 {
     constructor(doMatrix: boolean = false) {
         // if (doMatrix) {
         if (Matrix4.useCount >= Matrix4.allocCount) {
-            Matrix4.allocMatrix(Matrix4.allocCount + Matrix4.allocOnceCount);
+            let allocCount = Matrix4.allocCount + Matrix4.allocOnceCount;
+            console.warn(`allocMatrix(${allocCount})`);
+            WasmMatrix.allocMatrix(allocCount);
         }
 
         this.index = Matrix4.useCount;
-        this.offset = Matrix4.useCount * Matrix4.blockBytes + Matrix4.wasmMatrixPtr;
+        this.offset = Matrix4.wasmMatrixPtr + this.index * Matrix4.blockBytes;
 
         Matrix4.dynamicGlobalMatrixRef[this.index] = this;
         Matrix4.useCount++;

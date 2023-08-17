@@ -41,7 +41,15 @@ export class WasmMatrix {
 
     public static init(count: number) {
         // this.wasm = window['wasmMatrix'];
-        this.wasm._initialize(count, 0);
+        this.allocMatrix(count);
+    }
+
+    public static allocMatrix(count: number) {
+        if (count >= Matrix4.maxCount) {
+            console.error('The maximum allocation size is exceeded!');
+        }
+
+        this.wasm._allocation(count);
 
         this.matrixBufferPtr = this.wasm._getMatrixBufferPtr();
         this.matrixSRTBufferPtr = this.wasm._getSRTPtr();
@@ -57,7 +65,7 @@ export class WasmMatrix {
     }
 
     public static updateAllContinueTransform(start: number, end: number, dt: number) {
-        let count = this.wasm._updateAllMatrixContinueTransform(start, end, dt);
+        this.wasm._updateAllMatrixContinueTransform(start, end, dt);
     }
 
     public static setParent(matIndex: number, x: number, depthOrder: number) {
@@ -83,7 +91,6 @@ export class WasmMatrix {
         this.matrixSRTBuffer[matIndex * 9 + 1] = y;
         this.matrixSRTBuffer[matIndex * 9 + 2] = z;
     }
-
 
     public static setContinueTranslate(matIndex: number, x: number, y: number, z: number) {
         if (x != 0 || y != 0 || z != 0) {
@@ -111,5 +118,4 @@ export class WasmMatrix {
             this.matrixStateBuffer[matIndex * WasmMatrix.stateStruct + 1] = 1;
         }
     }
-
 }
