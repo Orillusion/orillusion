@@ -45,8 +45,8 @@ export class WasmMatrix {
     }
 
     public static allocMatrix(count: number) {
-        if (count >= Matrix4.maxCount) {
-            console.error('The maximum allocation size is exceeded!');
+        if (count > Matrix4.maxCount) {
+            console.error(`The maximum allocation size is exceeded! current:${count}, limit:${Matrix4.maxCount}`);
         }
 
         this.wasm._allocation(count);

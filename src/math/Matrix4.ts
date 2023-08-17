@@ -34,7 +34,7 @@ export class Matrix4 {
     /**
      * matrix has max limit count
      */
-    public static maxCount: number = 100000;
+    public static maxCount: number = 50 * 10000;
 
     /**
      * current matrix use count 
