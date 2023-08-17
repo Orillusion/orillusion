@@ -149,9 +149,7 @@ export class Entity extends CEventDispatcher {
 
         let index = this.entityChildren.indexOf(child);
         if (index == -1) {
-            if (child.transform.parent) {
-                child.transform.parent.object3D.removeChild(child);
-            }
+            child.removeFromParent();
             child.transform.parent = this.transform;
             this.entityChildren.push(child);
             this._numChildren = this.entityChildren.length;
