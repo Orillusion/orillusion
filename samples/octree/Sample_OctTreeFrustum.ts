@@ -102,7 +102,8 @@ export class Sample_OctTreeFrustum {
 
         let retBoolean = {};
         for (let item of this.queryResult) {
-            retBoolean[item.uuid] = true;
+            let enable = this.camera.frustum.containsBox(item.renderer.object3D.bound);
+            retBoolean[item.uuid] = enable;
         }
         for (let item of this.entities) {
             item.renderer.enable = retBoolean[item.uuid];
