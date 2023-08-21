@@ -100,6 +100,7 @@ export let VertexAttributes: string = /*wgsl*/ `
     ORI_VertexOut.varying_WPos = worldPos ;
     ORI_VertexOut.varying_WPos.w = f32(vertex.index);
     ORI_VertexOut.varying_WNormal = normalize(ORI_NORMALMATRIX * vertexNormal.xyz) ;
+
     ORI_VertexOut.member = clipPosition ;
     }
 `

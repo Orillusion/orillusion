@@ -81,9 +81,9 @@ export class WasmMatrix {
     }
 
     public static setRotation(matIndex: number, x: number, y: number, z: number) {
-        this.matrixSRTBuffer[matIndex * 9 + 3] = (x % 360) * DEGREES_TO_RADIANS;
-        this.matrixSRTBuffer[matIndex * 9 + 4] = (y % 360) * DEGREES_TO_RADIANS;
-        this.matrixSRTBuffer[matIndex * 9 + 5] = (z % 360) * DEGREES_TO_RADIANS;
+        this.matrixSRTBuffer[matIndex * 9 + 3] = (x % 360);
+        this.matrixSRTBuffer[matIndex * 9 + 4] = (y % 360);
+        this.matrixSRTBuffer[matIndex * 9 + 5] = (z % 360);
     }
 
     public static setScale(matIndex: number, x: number, y: number, z: number) {
