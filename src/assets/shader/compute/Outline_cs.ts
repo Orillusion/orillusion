@@ -45,7 +45,6 @@ export let Outline_cs: string = /*wgsl*/ `
         coordIndex = fragCoord.x + fragCoord.y * i32(texSize.x);
         fragOutline = weightBuffer[coordIndex];
         
-        var blendColor = vec3<f32>(0.0);
         var newOC = vec4<f32>(0.0);
         
         calcOutline();
@@ -55,17 +54,16 @@ export let Outline_cs: string = /*wgsl*/ `
             newOC = vec4<f32>(outLineColor, fragOutline.weight);
         }
         
-        let coordIndex0 = fragCoord.x + 1 + (fragCoord.y - 1) * i32(texSize.x);
-        let coordIndex1 = fragCoord.x - 1 + (fragCoord.y - 1) * i32(texSize.x);
-        let coordIndex2 = fragCoord.x + (fragCoord.y + 1) * i32(texSize.x);
+        let coordIndex0 = fragCoord.x + 1 + (fragCoord.y + 1) * i32(texSize.x);
+        let coordIndex1 = fragCoord.x - 1 + (fragCoord.y + 1) * i32(texSize.x);
+        let coordIndex2 = fragCoord.x + (fragCoord.y - 1) * i32(texSize.x);
 
         let oldOC = oldOutlineColor[coordIndex];
         let oldOC0 = oldOutlineColor[coordIndex0];
         let oldOC1 = oldOutlineColor[coordIndex1];
         let oldOC2 = oldOutlineColor[coordIndex2];
         
-        newOC = mix((oldOC + oldOC0 + oldOC1 + oldOC2) * 0.25, newOC, 0.4);
-        
+        newOC = mix((oldOC + oldOC0 + oldOC1 + oldOC2) * 0.25, newOC, 0.5);
         oldOutlineColor[coordIndex] = newOC;
         textureStore(lowTex, fragCoord, newOC);
     }
@@ -73,8 +71,7 @@ export let Outline_cs: string = /*wgsl*/ `
     fn calcOutline()
     {
         let outlinePixel = outlineSetting.outlinePixel;
-        let fadeOutlinePixel = outlineSetting.fadeOutlinePixel;
-        let pixelRadius = outlinePixel + fadeOutlinePixel;
+        let pixelRadius = outlinePixel + outlineSetting.fadeOutlinePixel;
         let minX = max(0.0, f32(fragCoord.x) - pixelRadius);
         let maxX = min(f32(texSize.x), f32(fragCoord.x) + pixelRadius);
         let minY = max(0.0, f32(fragCoord.y) - pixelRadius);
@@ -111,12 +108,12 @@ export let Outline_cs: string = /*wgsl*/ `
         }
     }
     
-    fn calcWeight(radius:f32, distance0:f32, outlinePixel:f32) -> f32{
-        let distance = distance0 - outlinePixel;
-        if(distance < 0.0){
+    fn calcWeight(totalRadius:f32, distance:f32, innerRadius:f32) -> f32{
+        if(distance < innerRadius){
             return 1.0;
         }
-        var ret = 1.0 - distance / (radius - outlinePixel);
+        var ret = 1.0 - (distance - innerRadius)  / (totalRadius - innerRadius);
+
         return ret;
     }
 `

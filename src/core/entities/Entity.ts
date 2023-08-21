@@ -2,11 +2,9 @@ import { IComponent } from '../../components/IComponent';
 import { RenderNode } from '../../components/renderer/RenderNode';
 import { Transform } from '../../components/Transform';
 import { CEventDispatcher } from '../../event/CEventDispatcher';
-import { ComponentCollect } from '../../gfx/renderJob/collect/ComponentCollect';
 import { RenderLayer } from '../../gfx/renderJob/config/RenderLayer';
-import { Vector3 } from '../../math/Vector3';
 import { BoundUtil } from '../../util/BoundUtil';
-import { GetCountInstanceID, UUID } from '../../util/Global';
+import { GetCountInstanceID } from '../../util/Global';
 import { BoundingBox } from '../bound/BoundingBox';
 import { IBound } from '../bound/IBound';
 import { Object3D } from './Object3D';
@@ -25,6 +23,7 @@ export class Entity extends CEventDispatcher {
     public name: string = '';
 
     protected readonly _instanceID: string = '';
+    private _numChildren: number;
 
     /**
      * The unique identifier of the object.
@@ -55,8 +54,6 @@ export class Entity extends CEventDispatcher {
      * List of components attached to an object
      */
     public components: Map<any, IComponent>;
-
-    public numChildren: number = 0;
 
 
     protected waitDisposeComponents: IComponent[];
@@ -107,8 +104,16 @@ export class Entity extends CEventDispatcher {
         super();
         this.entityChildren = [];
         this.components = new Map<any, IComponent>();
-        this.waitDisposeComponents = [];
         this._instanceID = GetCountInstanceID().toString();
+        this.waitDisposeComponents = [];
+    }
+
+    /**
+     *
+     * Returns the number of child objects of an object
+     */
+    public get numChildren(): number {
+        return this._numChildren;
     }
 
     /**
@@ -133,7 +138,7 @@ export class Entity extends CEventDispatcher {
             }
             child.transform.parent = this.transform;
             this.entityChildren.push(child);
-            this.numChildren = this.entityChildren.length;
+            this._numChildren = this.entityChildren.length;
             return child;
         }
         return null;
@@ -151,7 +156,7 @@ export class Entity extends CEventDispatcher {
         if (index != -1) {
             this.entityChildren.splice(index, 1);
             child.transform.parent = null;
-            this.numChildren = this.entityChildren.length;
+            this._numChildren = this.entityChildren.length;
         }
     }
 
@@ -264,36 +269,12 @@ export class Entity extends CEventDispatcher {
         return null;
     }
 
-    /**
-     *
-     * @private
-     * @returns
-     */
-    public waitUpdate(): void {
-        if (this._dispose) {
-            this.removeFromParent();
-            this.components.forEach((v, k) => {
-                v.enable = false;
-                v.beforeDestroy?.();
-                v.destroy();
-            });
-            this.components.clear();
-        } else {
-            ComponentCollect.waitStartComponent.forEach((v, k) => {
-                v.forEach((v) => {
-                    v[`__start`]();
-                })
-                ComponentCollect.waitStartComponent.delete(k);
-            });
-        }
-    }
-
     protected onTransformLocalChange(e) {
         this._isBoundChange = true;
     }
 
     public get bound(): IBound {
-        this.updateBound();
+        (this._isBoundChange || !this._bound) && this.updateBound();
         return this._boundWorld;
     }
 
@@ -305,7 +286,7 @@ export class Entity extends CEventDispatcher {
 
     private updateBound(): IBound {
         if (!this._bound) {
-            this._bound = new BoundingBox(Vector3.ZERO.clone(), Vector3.ONE.clone());
+            this._bound = new BoundingBox();
             this._boundWorld = this._bound.clone();
             this._isBoundChange = true;
         }
@@ -322,7 +303,7 @@ export class Entity extends CEventDispatcher {
     public destroy(force?: boolean) {
         if (!this._dispose) {
             this.components.forEach((c) => {
-                c.beforeDestroy?.(force);
+                c.beforeDestroy(force);
             });
             this.components.forEach((c) => {
                 c.destroy(force);

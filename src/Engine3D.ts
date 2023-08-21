@@ -166,6 +166,7 @@ export class Engine3D {
                     groupCount: 4,
                     outlinePixel: 2,
                     fadeOutlinePixel: 4,
+                    textureScale: 0.7,
                     useAddMode: false,
                     debug: true,
                 },
@@ -433,6 +434,9 @@ export class Engine3D {
         Interpolator.tick(Time.delta);
         if (this._beforeRender) this._beforeRender();
 
+        /****** auto start with component list *****/
+        ComponentCollect.startComponents();
+
         /****** auto before update with component list *****/
         for (const iterator of ComponentCollect.componentsBeforeUpdateList) {
             let k = iterator[0];
@@ -446,7 +450,7 @@ export class Engine3D {
             }
         }
 
-        let command = webGPUContext.device.createCommandEncoder();
+        let command = webGPUContext.device.createCommandEncoder();;
         for (const iterator of ComponentCollect.componentsComputeList) {
             let k = iterator[0];
             let v = iterator[1];

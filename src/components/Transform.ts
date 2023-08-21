@@ -157,7 +157,7 @@ export class Transform extends ComponentBase {
             } else {
                 this._scene3d = hasRoot;
                 this.object3D.components.forEach((c) => {
-                    ComponentCollect.appendWaitStart(this.object3D, c);
+                    ComponentCollect.appendWaitStart(c);
                 });
             }
 
@@ -249,13 +249,6 @@ export class Transform extends ComponentBase {
 
         MathUtil.fromToRotation(Vector3.UP, this._up, Quaternion.HELP_0);
         this.transform.localRotQuat = Quaternion.HELP_0;
-
-        this.notifyLocalChange();
-        this.onRotationChange?.();
-
-        if (this.eventRotationChange) {
-            this.eventDispatcher.dispatchEvent(this.eventRotationChange);
-        }
     }
 
     public get down(): Vector3 {
@@ -306,13 +299,6 @@ export class Transform extends ComponentBase {
 
         MathUtil.fromToRotation(Vector3.BACK, this._back, Quaternion.HELP_0);
         this.transform.localRotQuat = Quaternion.HELP_0;
-
-        this.notifyLocalChange();
-        this.onRotationChange?.();
-
-        if (this.eventRotationChange) {
-            this.eventDispatcher.dispatchEvent(this.eventRotationChange);
-        }
     }
 
     public get left(): Vector3 {
@@ -325,13 +311,6 @@ export class Transform extends ComponentBase {
 
         MathUtil.fromToRotation(Vector3.LEFT, this._left, Quaternion.HELP_0);
         this.transform.localRotQuat = Quaternion.HELP_0;
-
-        this.notifyLocalChange();
-        this.onRotationChange?.();
-
-        if (this.eventRotationChange) {
-            this.eventDispatcher.dispatchEvent(this.eventRotationChange);
-        }
     }
 
     public get right(): Vector3 {
@@ -766,7 +745,7 @@ export class Transform extends ComponentBase {
         if (this.parent && this.parent.object3D) {
             this.parent.object3D.removeChild(this.object3D);
         }
-        super.beforeDestroy?.(force);
+        super.beforeDestroy(force);
     }
 
     destroy(): void {

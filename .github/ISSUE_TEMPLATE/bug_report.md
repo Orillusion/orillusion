@@ -30,6 +30,10 @@ State the version you use for developement, e.g. 0.6.1
 - Browser: [e.g. chrome]
 - Version: [e.g. 113]
 
+## Device Info.
+- CPU: e.g. Intel I7 13700, Apple M2
+- Graphics Card: e.g, Intel UHD 670, Apple M2, GTX 3070
+
 ## Code demo link
 If applicabla, please provide a sandbox/codepen/code snippet... to demonstrate the bug.  
 You can update https://codepen.io/pen?template=QWQrRmr to create a demo

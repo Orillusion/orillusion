@@ -18,9 +18,11 @@ import { GetCountInstanceID, UUID } from "../../util/Global";
 import { Reference } from "../../util/Reference";
 import { ComponentBase } from "../ComponentBase";
 import { IESProfiles } from "../lights/IESProfiles";
-import { RenderLayer } from "../../gfx/renderJob/config/RenderLayer";
+import { Octree } from "../../core/tree/octree/Octree";
+import { OctreeEntity } from "../../core/tree/octree/OctreeEntity";
+import { Transform } from "../Transform";
 import { Material } from "../../materials/Material";
-import { ComponentCollect } from "../..";
+import { RenderLayer } from "../../gfx/renderJob/config/RenderLayer";
 
 
 /**
@@ -49,6 +51,7 @@ export class RenderNode extends ComponentBase {
     protected _renderOrder: number = 0;
     public isRenderOrderChange?: boolean;
     public needSortOnCameraZ?: boolean;
+    private _octreeBinder: { octree: Octree, entity: OctreeEntity };
 
     public preInit: boolean = false;
     /**
@@ -64,6 +67,23 @@ export class RenderNode extends ComponentBase {
         this.renderOrder = 0;
         this.rendererMask = RendererMask.Default;
         this.instanceID = GetCountInstanceID().toString();
+    }
+
+    public attachSceneOctree(octree: Octree) {
+        this._octreeBinder = { octree, entity: new OctreeEntity(this) };
+        this.transform.eventDispatcher.addEventListener(Transform.LOCAL_ONCHANGE, this.updateOctreeEntity, this);
+    }
+
+    public detachSceneOctree() {
+        if (this._octreeBinder) {
+            this._octreeBinder.entity?.leaveNode();
+            this.transform.eventDispatcher.removeEventListener(Transform.LOCAL_ONCHANGE, this.updateOctreeEntity, this);
+            this._octreeBinder = null;
+        }
+    }
+
+    protected updateOctreeEntity(e?) {
+        this._octreeBinder?.entity?.update(this._octreeBinder.octree);
     }
 
     public copyComponent(from: this): this {
@@ -190,6 +210,7 @@ export class RenderNode extends ComponentBase {
             this.initPipeline();
         }
         EntityCollect.instance.addRenderNode(this.transform.scene3D, this);
+        this.updateOctreeEntity();
     }
 
     public onDisable(): void {
@@ -474,9 +495,9 @@ export class RenderNode extends ComponentBase {
                         renderShader.setTexture(`envMap`, envMap);
                     }
 
-                    if (!node._ignorePrefilterMap && renderShader.prefilterMap != envMap) {
-                        renderShader.setTexture(`prefilterMap`, envMap);
-                    }
+                    // if (!node._ignorePrefilterMap && renderShader.prefilterMap != envMap) {
+                    renderShader.setTexture(`prefilterMap`, envMap);
+                    // }
 
                     if (renderShader.pipeline) {
                         renderShader.apply(node._geometry, renderPassState, () => node.noticeShaderChange());
@@ -544,7 +565,7 @@ export class RenderNode extends ComponentBase {
                 mat.destroy(force);
             }
         }
-        super.beforeDestroy?.(force);
+        super.beforeDestroy(force);
     }
 
     public destroy(force?: boolean) {

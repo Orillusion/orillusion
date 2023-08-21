@@ -190,8 +190,6 @@ export class RendererJob {
     public renderFrame() {
         let view = this._view;
 
-        this.view.scene.waitUpdate();
-
         GlobalBindGroup.getLightEntries(view.scene).update(view);
 
         this.occlusionSystem.update(view.camera, view.scene);

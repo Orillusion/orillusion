@@ -129,9 +129,15 @@ export class AtmosphericComponent extends SkyRenderer {
         super.init();
         this._historyData = new HistoryData();
         this._atmosphericScatteringSky = new AtmosphericScatteringSky(new AtmosphericScatteringSkySetting());
+
+        let view3D = this.transform.view3D;
+        let scene = this.transform.scene3D;
+        this.map = this._atmosphericScatteringSky;
+        scene.envMap = this._atmosphericScatteringSky;
+        this.onUpdate(view3D);
     }
 
-    public start(): void {
+    public start(view?: any): void {
         let scene = this.transform.scene3D;
         this.map = this._atmosphericScatteringSky;
         scene.envMap = this._atmosphericScatteringSky;

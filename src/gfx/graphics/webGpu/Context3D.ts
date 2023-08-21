@@ -39,7 +39,7 @@ class Context3D {
             if (_width != this.canvas.clientWidth)
                 this.canvas.style.width = _width + 'px'
             if (_height != this.canvas.clientHeight)
-                this.canvas.style.width = _height + 'px'
+                this.canvas.style.height = _height + 'px'
         } else {
             this.canvas = document.createElement('canvas');
             // this.canvas.style.position = 'fixed';

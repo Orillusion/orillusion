@@ -10,13 +10,25 @@ class Sample_AddRemove {
         // create new Scene
         let scene = new Scene3D();
         // add atmospheric sky
-        scene.addComponent(AtmosphericComponent).sunY = 0.6;
+        let sky = scene.addComponent(AtmosphericComponent)
+        sky.sunY = 0.6;
 
         // init camera3D
         let mainCamera = CameraUtil.createCamera3D(null, scene);
         mainCamera.perspective(60, Engine3D.aspect, 1, 2000.0);
         let hoverCameraController = mainCamera.object3D.addComponent(HoverCameraController);
         hoverCameraController.setCamera(15, -30, 300);
+
+        // add a basic direct light
+        let lightObj = new Object3D();
+        lightObj.rotationX = 45;
+        lightObj.rotationY = 60;
+        lightObj.rotationZ = 150;
+        let dirLight = lightObj.addComponent(DirectLight);
+        dirLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
+        dirLight.intensity = 10;
+        scene.addChild(lightObj);
+        sky.relativeTransform = dirLight.transform;
 
         // create a view with target scene and camera
         this.view = new View3D();

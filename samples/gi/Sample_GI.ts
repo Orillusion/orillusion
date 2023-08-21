@@ -44,7 +44,14 @@ class Sample_GI {
             strength: 1.2
         };
 
-        await Engine3D.init({});
+        await Engine3D.init({
+            renderLoop: () => {
+                if (this.giComponent?.isStart) {
+                    GUIUtil.renderGIComponent(this.giComponent);
+                    this.giComponent = null;
+                }
+            }
+        });
         GUIHelp.init();
         let param = createSceneParam();
         param.camera.distance = 200;
@@ -65,13 +72,12 @@ class Sample_GI {
 
     }
 
+    private giComponent: GlobalIlluminationComponent;
+
     private addGIProbes() {
         let probeObj = new Object3D();
-        let component = probeObj.addComponent(GlobalIlluminationComponent);
+        this.giComponent = probeObj.addComponent(GlobalIlluminationComponent);
         this.scene.addChild(probeObj);
-        setTimeout(() => {
-            GUIUtil.renderGIComponent(component);
-        }, 2000);
     }
 
     async initScene() {

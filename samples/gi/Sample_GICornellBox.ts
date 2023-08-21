@@ -48,7 +48,14 @@ class Sample_GICornellBox {
             strength: 1.2
         };
 
-        await Engine3D.init({});
+        await Engine3D.init({
+            renderLoop: () => {
+                if (this.giComponent?.isStart) {
+                    GUIUtil.renderGIComponent(this.giComponent);
+                    this.giComponent = null;
+                }
+            }
+        });
         let param = createSceneParam();
         param.camera.distance = 40;
 
@@ -65,14 +72,12 @@ class Sample_GICornellBox {
         await this.initScene();
     }
 
+    private giComponent: GlobalIlluminationComponent;
     private addGIProbes() {
         let probeObj = new Object3D();
         GUIHelp.init();
-        let component = probeObj.addComponent(GlobalIlluminationComponent);
+        this.giComponent = probeObj.addComponent(GlobalIlluminationComponent);
         this.scene.addChild(probeObj);
-        setTimeout(() => {
-            GUIUtil.renderGIComponent(component);
-        }, 2000);
     }
 
     async initScene() {

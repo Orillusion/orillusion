@@ -136,7 +136,9 @@ export class HoverCameraController extends ComponentBase {
         this.roll = roll;
         this.pitch = pitch;
         this.distance = distance;
-        this.maxDistance = distance * 1.2;
+        if(this.maxDistance < distance * 1.5){
+            this.maxDistance = distance * 1.5;
+        }
         if (target) {
             this._targetPos.transform.localPosition.copy(target);
         }
