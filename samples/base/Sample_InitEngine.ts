@@ -23,7 +23,7 @@ export class Sample_InitEngine {
 
         // init camera3D 
         let mainCamera = CameraUtil.createCamera3D(null, scene);
-        mainCamera.perspective(60, Engine3D.aspect, 0.1, 6500000 * 2);
+        mainCamera.perspective(60, Engine3D.aspect, 0.1, 6500000 * 4);
         let hoverCameraController = mainCamera.object3D.addComponent(HoverCameraController);
         hoverCameraController.setCamera(15, -30, 6500000 * 2);
 

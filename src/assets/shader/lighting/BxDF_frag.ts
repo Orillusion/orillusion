@@ -43,7 +43,7 @@ export let BxDF_frag: string = /*wgsl*/ `
 
       fragData.ClearcoatRoughness = materialUniform.clearcoatRoughnessFactor ;
       #if USE_CLEARCOAT_ROUGHNESS
-        fragData.ClearcoatRoughness = getClearcoatRoughnees() * materialUniform.clearcoatRoughnessFactor;
+        fragData.ClearcoatRoughness = getClearcoatRoughness() * materialUniform.clearcoatRoughnessFactor;
       #endif
   }
 
@@ -55,13 +55,13 @@ export let BxDF_frag: string = /*wgsl*/ `
           irradiance += getIrradiance().rgb ;
       #else
           let MAX_REFLECTION_LOD  = f32(textureNumLevels(prefilterMap)) ;
-          // irradiance += LinearToGammaSpace(globalUniform.skyExposure * textureSampleLevel(prefilterMap, prefilterMapSampler, fragData.N.xyz, 0.8 * (MAX_REFLECTION_LOD) ).rgb);
           irradiance += (globalUniform.skyExposure * textureSampleLevel(prefilterMap, prefilterMapSampler, fragData.N.xyz, 0.8 * (MAX_REFLECTION_LOD) ).rgb);
       #endif
 
       //***********lighting-PBR part********* 
       var specColor = vec3<f32>(0.0) ;
       let lightIndex = getCluster(ORI_VertexVarying.fragCoord);
+      // let lightIndex = getCluster(ORI_VertexVarying.fragCoord);
       let start = max(lightIndex.start, 0.0);
       let count = max(lightIndex.count, 0.0);
       let end = max(start + count , 0.0);
@@ -140,30 +140,9 @@ export let BxDF_frag: string = /*wgsl*/ `
       #endif
       
       ORI_FragmentOutput.color = vec4<f32>(LinearToGammaSpace(color.rgb),fragData.Albedo.a) ;
-      let n = globalUniform.near ;
-      let f = globalUniform.far ;
-      let z = ORI_VertexVarying.fragCoord.z ;
-      // ORI_FragmentOutput.color = vec4<f32>(fragData.Albedo.rgb,fragData.Albedo.a) ;
-      // clipPosition.w = LinearizeDepth(clipPosition.w,0.01, 5000.0) ;
-      //clustersUniform.near * pow(clustersUniform.far / clustersUniform.near, f32(k) 
-      //(z - near) / (far - near);
-      ORI_FragmentOutput.out_depth = z * (z/f) ;
+
+   
   }
 
-  fn Linear02Depth(z:f32,near:f32,far:f32)-> f32{
-    let ZBufferZ = (-1.0+(far/near)) / far;
-    let ZBufferW = near /far ;
-    return 1.0 / (ZBufferZ * z + ZBufferW) ;
-}
-
-fn LinearizeDepth2( depth:f32 , nearPlane:f32 , farPlane:f32 )-> f32 {
-  var z = depth * 2.0 - 1.0;
-  return (2.0 * nearPlane * farPlane) / (farPlane + nearPlane - z * (farPlane - nearPlane));
-}
-
-  // fn linear01Depth(depth : f32) -> f32 {
-  //     return globalUniform.far * globalUniform.near / fma(depth, globalUniform.near-globalUniform.far, globalUniform.far);
-  // }
- 
   `
 

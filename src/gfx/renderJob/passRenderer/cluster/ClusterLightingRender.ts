@@ -11,7 +11,7 @@ import { ILight } from '../../../../components/lights/ILight';
 import { ClusterLightingBuffer } from './ClusterLightingBuffer';
 import { ClusterBoundsSource_cs } from '../../../../assets/shader/cluster/ClusterBoundsSource_cs';
 import { ClusterLighting_cs } from '../../../../assets/shader/cluster/ClusterLighting_cs';
-import { Camera3D, Vector3, Vector4 } from '../../../..';
+import { Camera3D, Color, Vector3, Vector4 } from '../../../..';
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 /**
  * @internal
@@ -70,11 +70,15 @@ export class ClusterLightingRender extends RendererBase {
         //     let od = this.clusterLightingBuffer.clusterBuffer.readBuffer();
         //     console.log(od);
         //     let byteLength = 2 * 4;
-        //     for (let i = 0; i < numClusters; i++) {
+        //     for (let i = 0; i < 2; i++) {
         //         const element = new Float32Array(od.buffer, i * byteLength * 4, byteLength);
         //         let min = new Vector3(element[0], element[1], element[2], element[3]);
         //         let max = new Vector3(element[4], element[5], element[6], element[7]);
-        //         view.graphic3D.drawBox(i + "-box", min, max);
+        //         // mat.transformVector4(min, min)
+        //         // mat.transformVector4(max, max)
+        //         console.log(min.w, max.w);
+
+        //         view.graphic3D.drawBox(i + "-box", min, max, Color.random());
         //     }
         // });
     }

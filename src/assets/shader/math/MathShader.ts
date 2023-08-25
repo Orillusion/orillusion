@@ -189,6 +189,10 @@ fn dir_to_faceId(pt:vec3<f32>) -> i32 {
       return (2.0 * nearPlane * farPlane) / (farPlane + nearPlane - z * (farPlane - nearPlane));
     }
 
+    fn logDepth(depth : f32, far:f32) -> f32 {
+      return log2(depth + 1.0) * 2.0 / (log(far + 1.0) / 0.6931471805599453) * 0.5;
+    }
+
     fn QuaternionToMatrix(q: vec4<f32>) -> mat4x4<f32> {
       // If q is guaranteed to be a unit quaternion, s will always
       // be 1.  In that case, this calculation can be optimized out.

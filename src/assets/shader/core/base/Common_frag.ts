@@ -25,7 +25,12 @@ export let Common_frag: string = /*wgsl*/ `
       debugFragmentOut();
     #endif
 
+    var d1 = logDepth( ORI_VertexVarying.fragCoord.w , globalUniform.far);
+    ORI_FragmentOutput.out_depth = d1 ;
+
     return ORI_FragmentOutput ;
   }
+
+
 `
 

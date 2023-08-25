@@ -77,7 +77,7 @@ export let ClusterLight: string = /*wgsl*/ `
 
     fn getTile(fragCoord : vec4<f32>) -> vec3<u32> {
         var coord = fragCoord ; 
-        coord.z = linear01Depth(coord.z) ; 
+        coord.z = ORI_VertexVarying.fragPosition.z ;
 
         let sliceScale = f32(clustersUniform.clusterTileZ) / log2(globalUniform.far / globalUniform.near);
         let sliceBias = -(f32(clustersUniform.clusterTileZ) * log2(globalUniform.near) / log2(globalUniform.far / globalUniform.near));

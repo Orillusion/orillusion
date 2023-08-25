@@ -9,8 +9,9 @@ export let Graphic3DShader_fs: string = /*wgsl*/ `
         // #endif
         // #if USEGBUFFER
             @location(2) worldNormal: vec4<f32>,
-            @location(3) material: vec4<f32>
+            @location(3) material: vec4<f32>,
         // #endif
+        @builtin(frag_depth) out_depth: f32
     };
 
     @fragment
@@ -30,6 +31,13 @@ export let Graphic3DShader_fs: string = /*wgsl*/ `
         // #endif
 
         result.color = varying_Color;
+
+        // let n = globalUniform.near ;
+        // let f = globalUniform.far ;
+        // let z = ORI_VertexVarying.fragCoord.z ;
+        // let pt = pow((f / n),z);
+        // let ratio = n * pt / (f / n);
+        // result.out_depth =  ratio ;
         return result;
     }
 `
