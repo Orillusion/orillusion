@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, Object3D, DirectLight, KelvinUtil, MeshRenderer, UnLitMaterial, PlaneGeometry, LitMaterial, Color } from "@orillusion/core";
+import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, Object3D, DirectLight, KelvinUtil, MeshRenderer, PlaneGeometry, LitMaterial, BlendMode } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
@@ -61,22 +61,6 @@ class Sample_UVMove {
         }
 
         {
-            // add plane into scene
-            let plane = new Object3D();
-            let renderer = plane.addComponent(MeshRenderer);
-            let material = new LitMaterial();
-            material.baseMap = await Engine3D.res.loadTexture("particle/T_Fx_Object_229.png");;
-            renderer.material = material;
-            renderer.geometry = new PlaneGeometry(100, 100, 1, 1);
-            this.scene.addChild(plane);
-
-            // add UVMoveComponents
-            GUIHelp.init();
-            let component = plane.addComponent(UVMoveComponent);
-            GUIUtil.renderUVMove(component);
-        }
-
-        {
             // add floor
             let floor = new Object3D();
             let material = new LitMaterial();
@@ -90,6 +74,25 @@ class Sample_UVMove {
             floor.y = -10;
             this.scene.addChild(floor);
         }
+
+        {
+            // add plane into scene
+            let plane = new Object3D();
+            let renderer = plane.addComponent(MeshRenderer);
+            let material = new LitMaterial();
+            material.baseMap = await Engine3D.res.loadTexture("particle/T_Fx_Object_229.png");;
+            renderer.material = material;
+            material.blendMode = BlendMode.ADD;
+            renderer.geometry = new PlaneGeometry(100, 100, 1, 1);
+            this.scene.addChild(plane);
+
+            // add UVMoveComponents
+            GUIHelp.init();
+            let component = plane.addComponent(UVMoveComponent);
+            GUIUtil.renderUVMove(component);
+        }
+
+
     }
 
 }

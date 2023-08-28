@@ -101,8 +101,8 @@ class Sample_CSM {
         let box = new Object3D();
         let geom = new BoxGeometry(1, 1, 1);
         let material = new LitMaterial();
-        material.transparent = true;
-        material.shaderState.depthWriteEnabled = false
+        // material.transparent = true;
+        // material.shaderState.depthWriteEnabled = false
         material.blendMode = BlendMode.NORMAL;
         material.cullMode = "front";
         material.baseColor = new Color(0.2, 0.2, 0, 0.1);

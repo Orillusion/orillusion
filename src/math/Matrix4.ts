@@ -1,8 +1,8 @@
+import { WasmMatrix } from '@orillusion/wasm-matrix/WasmMatrix';
 import { DEGREES_TO_RADIANS, clamp, RADIANS_TO_DEGREES } from './MathUtil';
 import { Orientation3D } from './Orientation3D';
 import { Quaternion } from './Quaternion';
 import { Vector3 } from './Vector3';
-
 const EPSILON: number = 0.000001;
 
 /**
@@ -24,12 +24,17 @@ export class Matrix4 {
     /**
      * matrix do total count 
      */
-    public static allocCount: number = 0;
+    public static allocCount: number = 1000;
+
+    /**
+     * quantity allocated for each capacity expansion
+     */
+    public static allocOnceCount: number = 1000;
 
     /**
      * matrix has max limit count
      */
-    public static maxCount: number = 200000;
+    public static maxCount: number = 50 * 10000;
 
     /**
      * current matrix use count 
@@ -122,17 +127,14 @@ export class Matrix4 {
     public static allocMatrix(allocCount: number) {
         this.allocCount = allocCount;
 
-        Matrix4.dynamicMatrixBytes = new Float32Array(allocCount * 16);
+        Matrix4.dynamicMatrixBytes = WasmMatrix.matrixBuffer;
         Matrix4.buffer = Matrix4.dynamicMatrixBytes.buffer;
-        Matrix4.wasmMatrixPtr = 0;
+        Matrix4.wasmMatrixPtr = WasmMatrix.matrixBufferPtr;
 
         this.dynamicGlobalMatrixRef ||= [];
         this.dynamicGlobalMatrixRef.forEach((m) => {
-            let rawData = m.rawData;
+            m.offset = Matrix4.wasmMatrixPtr + m.index * Matrix4.blockBytes;
             m.rawData = new Float32Array(Matrix4.dynamicMatrixBytes.buffer, m.offset, 16);
-            for (let i = 0; i < rawData.length; i++) {
-                m.rawData[i] = rawData[i];
-            }
         });
 
         Matrix4.help_matrix_0 ||= new Matrix4();
@@ -320,11 +322,13 @@ export class Matrix4 {
     constructor(doMatrix: boolean = false) {
         // if (doMatrix) {
         if (Matrix4.useCount >= Matrix4.allocCount) {
-            Matrix4.allocMatrix(Matrix4.allocCount + 5000);
+            let allocCount = Matrix4.allocCount + Matrix4.allocOnceCount;
+            console.warn(`allocMatrix(${allocCount})`);
+            WasmMatrix.allocMatrix(allocCount);
         }
 
         this.index = Matrix4.useCount;
-        this.offset = Matrix4.useCount * Matrix4.blockBytes + Matrix4.wasmMatrixPtr;
+        this.offset = Matrix4.wasmMatrixPtr + this.index * Matrix4.blockBytes;
 
         Matrix4.dynamicGlobalMatrixRef[this.index] = this;
         Matrix4.useCount++;
@@ -518,15 +522,6 @@ export class Matrix4 {
     }
 
     /**
-     * @private
-     */
-    public perspectiveB(fov: number, aspect: number, near: number, far: number): Matrix4 {
-        let y = Math.tan((fov * Math.PI) / 360) * near;
-        let x = y * aspect;
-        return this.frustum(-x, x, -y, y, near, far);
-    }
-
-    /**
      * convert a vector3 to this matrix space
      * if output not set , return a new one
      * @param v convert target
@@ -590,10 +585,6 @@ export class Matrix4 {
      */
     public perspective(fov: number, aspect: number, zn: number, zf: number) {
         let data = this.rawData;
-        // let angle: number = (Math.Math.PI - fov * DEGREES_TO_RADIANS) / 2.0;
-        // let yScale: number = Math.tan(angle);
-        // let xScale: number = yScale / aspect;
-
         let angle: number = (fov * DEGREES_TO_RADIANS) / 2.0;
         let f = Math.cos(angle) / Math.sin(angle);
         // 0.5 / tan
@@ -618,6 +609,36 @@ export class Matrix4 {
         data[14] = (-zn * zf) / (zf - zn);
         data[15] = 0;
     }
+
+    public perspective3(fov: number, aspect: number, near: number, far: number) {
+        var y = Math.tan(fov * Math.PI / 360) * near;
+        var x = y * aspect;
+        this.frustum(-x, x, -y, y, near, far);
+    }
+
+    public frustum(l: number, r: number, b: number, t: number, n: number, f: number) {
+        var m = this.rawData;
+
+        m[0] = -2 * n / (r - l);
+        m[1] = 0;
+        m[2] = 0;
+        m[3] = 0;
+
+        m[4] = 0;
+        m[5] = 2 * n / (t - b);
+        m[6] = 0;
+        m[7] = 0;
+
+        m[8] = (r + l) / (r - l);
+        m[9] = (t + b) / (t - b);
+        m[10] = (f) / (f - n);
+        m[11] = 1;
+
+        m[12] = 0;
+        m[13] = 0;
+        m[14] = -f * n / (f - n);
+        m[15] = 0;
+    };
 
     /**
      * @version Orillusion3D  0.5.1
@@ -2275,31 +2296,7 @@ export class Matrix4 {
         return target;
     }
 
-    private frustum(l: number, r: number, b: number, t: number, n: number, f: number): Matrix4 {
-        let m = this.rawData;
 
-        m[0] = (2 * n) / (r - l);
-        m[1] = 0;
-        m[2] = (r + l) / (r - l);
-        m[3] = 0;
-
-        m[4] = 0;
-        m[5] = (2 * n) / (t - b);
-        m[6] = (t + b) / (t - b);
-        m[7] = 0;
-
-        m[8] = 0;
-        m[9] = 0;
-        m[10] = -(f + n) / (f - n);
-        m[11] = (-2 * f * n) / (f - n);
-
-        m[12] = 0;
-        m[13] = 0;
-        m[14] = -1;
-        m[15] = 0;
-
-        return this;
-    }
 
     private setElements(
         n11: number, n12: number, n13: number, n14: number,
@@ -2315,7 +2312,6 @@ export class Matrix4 {
         te[3] = n41; te[7] = n42; te[11] = n43; te[15] = n44;
 
         return this;
-
     }
 
     /**

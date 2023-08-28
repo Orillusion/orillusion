@@ -162,7 +162,11 @@ export class ShadowMapPassRenderer extends RendererBase {
         let encoder = GPUContext.beginRenderPass(command, state);
 
         shadowCamera.transform.updateWorldMatrix();
-        occlusionSystem.update(shadowCamera, view.scene);
+        // shadowCamera.transform.updateWorldMatrix();
+        if (OcclusionSystem.enable) {
+            occlusionSystem.update(shadowCamera, view.scene);
+            occlusionSystem.collect(collectInfo, shadowCamera);
+        }
         GPUContext.bindCamera(encoder, shadowCamera);
         let op_bundleList = this.renderShadowBundleOp(view, shadowCamera, state);
         let tr_bundleList = this.renderShadowBundleTr(view, shadowCamera, state);

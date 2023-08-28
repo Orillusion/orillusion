@@ -1,31 +1,18 @@
-import { Engine3D } from '../Engine3D';
-import { Vector4 } from '../math/Vector4';
+import { Material } from "..";
+import { Engine3D } from "../Engine3D";
+import { RenderShader } from "../gfx/graphics/webGpu/shader/RenderShader";
+import { RendererType } from "../gfx/renderJob/passRenderer/state/RendererType";
+import { PhysicMaterial } from "./PhysicMaterial";
 
-import { registerMaterial } from './MaterialRegister';
-import { PhysicMaterial } from './PhysicMaterial';
-/**
- * a type of material, based on physical lighting model
- * @group Material
- */
 export class LitMaterial extends PhysicMaterial {
-    static count = 0;
-
-    /**
-     *@constructor 
-     */
     constructor() {
         super();
 
-        this.name = this.instanceID;
+        let colorPass = new RenderShader('PBRLItShader', 'PBRLItShader');
+        this.defaultPass = colorPass;
 
-        this.setShader('PBRLItShader', 'PBRLItShader');
-
-        let shader = this.getShader();
-        shader.setShaderEntry(`VertMain`, `FragMain`)
-        shader.setDefine("USE_BRDF", true);
-        shader.setDefine("USE_NORMALFILPY", Engine3D.setting.material.normalYFlip);
-
-        let shaderState = shader.shaderState;
+        colorPass.setShaderEntry(`VertMain`, `FragMain`)
+        let shaderState = colorPass.shaderState;
         shaderState.acceptShadow = true;
         shaderState.castShadow = true;
         shaderState.receiveEnv = true;
@@ -34,70 +21,47 @@ export class LitMaterial extends PhysicMaterial {
 
         let bdrflutTex = Engine3D.res.getTexture(`BRDFLUT`);
         this.brdfLUT = bdrflutTex;
+        colorPass.setDefine('USE_BRDF', true);
 
-        this.envIntensity = 0.75;
-        this.materialF0 = new Vector4(0.04, 0.04, 0.04, 1.0 - 0.04);
+        this.setDefault();
+
         this.baseMap = Engine3D.res.whiteTexture;
         this.normalMap = Engine3D.res.normalTexture;
-        // this.aoMap = defaultTexture.whiteTexture;
-        // this.maskMap = defaultTexture.maskTexture;
-        // this.maskMap = defaultTexture.grayTexture;
-        // shader.setDefine(`USE_ARMC`, false);
         this.emissiveMap = Engine3D.res.blackTexture;
-        // this.alphaCutoff = 0.5;
     }
 
-    public clone(): this {
-        let ret = new LitMaterial();
-        ret.baseMap = this.baseMap;
-        ret.normalMap = this.normalMap;
-        ret.aoMap = this.aoMap;
-        ret.brdfLUT = this.brdfLUT;
-        if (this.maskMap) ret.maskMap = this.maskMap;
-        ret.emissiveMap = this.emissiveMap;
-        this.uvTransform_1 && (ret.uvTransform_1 = new Vector4().copyFrom(this.uvTransform_1));
-        this.uvTransform_2 && (ret.uvTransform_2 = new Vector4().copyFrom(this.uvTransform_2));
-        ret.baseColor = this.baseColor.clone();
-        ret.emissiveColor = this.emissiveColor.clone();
-        this.materialF0 && (ret.materialF0 = new Vector4().copyFrom(this.materialF0));
-        ret.envIntensity = this.envIntensity;
-        ret.normalScale = this.normalScale;
-        ret.roughness = this.roughness;
-        ret.metallic = this.metallic;
-        ret.ao = this.ao;
-        ret.roughness_min = this.roughness_min;
-        ret.roughness_max = this.roughness_max;
-        ret.metallic_min = this.metallic_min;
-        ret.metallic_max = this.metallic_max;
-        ret.emissiveIntensity = this.emissiveIntensity;
-        ret.alphaCutoff = this.alphaCutoff;
-        ret.ior = this.ior;
-        ret.clearcoatFactor = this.clearcoatFactor;
-        ret.clearcoatRoughnessFactor = this.clearcoatRoughnessFactor;
+    public clone(): Material {
+        let litMaterial = new LitMaterial();
 
-        this.clearcoatColor && (ret.clearcoatColor = this.clearcoatColor.clone());
-        ret.clearcoatWeight = this.clearcoatWeight;
+        let colorPass = litMaterial.defaultPass;
+        colorPass.setUniform(`shadowBias`, this.defaultPass.getUniform(`shadowBias`));
+        colorPass.setUniform(`transformUV1`, this.defaultPass.getUniform(`transformUV1`));
+        colorPass.setUniform(`transformUV2`, this.defaultPass.getUniform(`transformUV2`));
+        colorPass.setUniform(`baseColor`, this.defaultPass.getUniform(`baseColor`));
+        colorPass.setUniform(`emissiveColor`, this.defaultPass.getUniform(`emissiveColor`));
+        colorPass.setUniform(`materialF0`, this.defaultPass.getUniform(`materialF0`));
+        colorPass.setUniform(`envIntensity`, this.defaultPass.getUniform(`envIntensity`));
+        colorPass.setUniform(`normalScale`, this.defaultPass.getUniform(`normalScale`));
+        colorPass.setUniform(`roughness`, this.defaultPass.getUniform(`roughness`));
+        colorPass.setUniform(`metallic`, this.defaultPass.getUniform(`metallic`));
+        colorPass.setUniform(`ao`, this.defaultPass.getUniform(`ao`));
+        colorPass.setUniform(`roughness_min`, this.defaultPass.getUniform(`roughness_min`));
+        colorPass.setUniform(`roughness_max`, this.defaultPass.getUniform(`roughness_max`));
+        colorPass.setUniform(`metallic_min`, this.defaultPass.getUniform(`metallic_min`));
+        colorPass.setUniform(`metallic_max`, this.defaultPass.getUniform(`metallic_max`));
+        colorPass.setUniform(`emissiveIntensity`, this.defaultPass.getUniform(`emissiveIntensity`));
+        colorPass.setUniform(`alphaCutoff`, this.defaultPass.getUniform(`alphaCutoff`));
+        colorPass.setUniform(`ior`, this.defaultPass.getUniform(`ior`));
+        colorPass.setUniform(`clearcoatFactor`, this.defaultPass.getUniform(`clearcoatFactor`));
+        colorPass.setUniform(`clearcoatRoughnessFactor`, this.defaultPass.getUniform(`clearcoatRoughnessFactor`));
+        colorPass.setUniform(`clearcoatColor`, this.defaultPass.getUniform(`clearcoatColor`));
+        colorPass.setUniform(`clearcoatWeight`, this.defaultPass.getUniform(`clearcoatWeight`));
 
-        ret.transparent = this.transparent;
-        ret.cullMode = this.cullMode;
-        ret.blendMode = this.blendMode;
-
-        this.cloneObject(this.shaderState, ret.shaderState);
-        this.cloneObject(this.renderShader.defineValue, ret.renderShader.shaderState);
-        this.cloneObject(this.renderShader.constValues, ret.renderShader.constValues);
-
-        return ret as this;
-    }
-
-    /**
-     * internal
-     */
-    debug() {
-    }
-
-    public destroy(force?: boolean): void {
-        super.destroy(force);
+        colorPass.setTexture(`baseMap`, this.defaultPass.getTexture(`baseMap`));
+        colorPass.setTexture(`normalMap`, this.defaultPass.getTexture(`normalMap`));
+        colorPass.setTexture(`emissiveMap`, this.defaultPass.getTexture(`emissiveMap`));
+        colorPass.setTexture(`aoMap`, this.defaultPass.getTexture(`aoMap`));
+        colorPass.setTexture(`maskMap`, this.defaultPass.getTexture(`maskMap`));
+        return litMaterial;
     }
 }
-
-registerMaterial("LitMaterial", LitMaterial);

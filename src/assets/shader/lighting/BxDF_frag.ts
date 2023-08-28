@@ -41,12 +41,9 @@ export let BxDF_frag: string = /*wgsl*/ `
       fragData.Indirect = 0.0 ;
       fragData.Reflectance = 1.0 ;
 
-      fragData.DiffuseColor = fragData.Albedo.rgb * (1.0 - fragData.Metallic);
-      fragData.SpecularColor = mix(vec3<f32>(1.0), fragData.Albedo.rgb, fragData.Metallic);
-
       fragData.ClearcoatRoughness = materialUniform.clearcoatRoughnessFactor ;
       #if USE_CLEARCOAT_ROUGHNESS
-        fragData.ClearcoatRoughness = getClearcoatRoughnees() * materialUniform.clearcoatRoughnessFactor;
+        fragData.ClearcoatRoughness = getClearcoatRoughness() * materialUniform.clearcoatRoughnessFactor;
       #endif
   }
 
@@ -58,13 +55,13 @@ export let BxDF_frag: string = /*wgsl*/ `
           irradiance += getIrradiance().rgb ;
       #else
           let MAX_REFLECTION_LOD  = f32(textureNumLevels(prefilterMap)) ;
-          // irradiance += LinearToGammaSpace(globalUniform.skyExposure * textureSampleLevel(prefilterMap, prefilterMapSampler, fragData.N.xyz, 0.8 * (MAX_REFLECTION_LOD) ).rgb);
           irradiance += (globalUniform.skyExposure * textureSampleLevel(prefilterMap, prefilterMapSampler, fragData.N.xyz, 0.8 * (MAX_REFLECTION_LOD) ).rgb);
       #endif
 
       //***********lighting-PBR part********* 
       var specColor = vec3<f32>(0.0) ;
       let lightIndex = getCluster(ORI_VertexVarying.fragCoord);
+      // let lightIndex = getCluster(ORI_VertexVarying.fragCoord);
       let start = max(lightIndex.start, 0.0);
       let count = max(lightIndex.count, 0.0);
       let end = max(start + count , 0.0);
@@ -141,21 +138,11 @@ export let BxDF_frag: string = /*wgsl*/ `
         let clearCoatLayer = ClearCoat_BRDF( color , materialUniform.clearcoatColor.rgb , materialUniform.ior , clearNormal , -sunLight.direction ,-fragData.V , materialUniform.clearcoatWeight , clearcoatRoughness , att );
         color = vec3<f32>(clearCoatLayer.rgb/fragData.Albedo.a) ; 
       #endif
-   
-      // if(csmLevel == 0){
-      //     color += vec3<f32>(0.1, 0.0, 0.0);
-      // }else if(csmLevel == 1){
-      //     color += vec3<f32>(0.0, 0.1, 0.0);
-      // }else if(csmLevel == 2){
-      //     color += vec3<f32>(0.0, 0.0, 0.1);
-      // }else if(csmLevel == 3){
-      //     color += vec3<f32>(0.0, 0.1, 0.1);
-      // }
-
+      
       ORI_FragmentOutput.color = vec4<f32>(LinearToGammaSpace(color.rgb),fragData.Albedo.a) ;
-      // ORI_FragmentOutput.color = vec4<f32>(irradiance.rgb,fragData.Albedo.a) ;
+
+   
   }
 
- 
   `
 

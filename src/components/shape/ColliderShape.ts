@@ -23,11 +23,15 @@ export class ColliderShape {
     protected _shapeType: ColliderShapeType = ColliderShapeType.None;
 
 
-    protected static v3_help_0: Vector3 = new Vector3();
-    protected static helpMatrix: Matrix4 = new Matrix4();
-    protected static helpRay: Ray = new Ray();
+    protected static v3_help_0: Vector3;
+    protected static helpMatrix: Matrix4;
+    protected static helpRay: Ray;
 
     constructor() {
+        ColliderShape.v3_help_0 ||= new Vector3();
+        ColliderShape.helpMatrix ||= new Matrix4();
+        ColliderShape.helpRay ||= new Ray();
+
         this._center = new Vector3();
         this._size = new Vector3();
         this._halfSize = new Vector3();

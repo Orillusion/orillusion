@@ -68,10 +68,10 @@ export class InstanceDrawComponent extends RenderNode {
             let renderNode = v[0];
             for (let i = 0; i < renderNode.materials.length; i++) {
                 let material = renderNode.materials[i];
-                let passes = material.renderPasses.get(passType);
+                let passes = material.getPass(passType);
                 if (passes) {
                     for (let i = 0; i < passes.length; i++) {
-                        const renderShader = passes[i].renderShader;
+                        const renderShader = passes[i];
                         renderShader.setDefine("USE_INSTANCEDRAW", true);
                         renderShader.setStorageBuffer(`instanceDrawID`, instanceMatrixBuffer);
                     }
@@ -96,7 +96,7 @@ export class InstanceDrawComponent extends RenderNode {
 
         for (let i = 0; i < renderNode.materials.length; i++) {
             const material = renderNode.materials[i];
-            let passes = material.renderPasses.get(passType);
+            let passes = material.getPass(passType);
 
             if (!passes || passes.length == 0)
                 continue;
@@ -105,11 +105,11 @@ export class InstanceDrawComponent extends RenderNode {
                 if (!passes || passes.length == 0)
                     continue;
                 let matPass = passes[j];
-                if (!matPass.enable)
-                    continue;
+                // if (!matPass.enable)
+                //     continue;
 
                 GPUContext.bindGeometryBuffer(renderContext.encoder, renderNode.geometry);
-                const renderShader = matPass.renderShader;
+                const renderShader = matPass;
                 if (renderShader.shaderState.splitTexture) {
                     renderContext.endRenderPass();
                     RTResourceMap.WriteSplitColorTexture(renderNode.instanceID);

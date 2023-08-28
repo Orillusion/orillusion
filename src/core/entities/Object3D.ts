@@ -92,6 +92,7 @@ export class Object3D extends Entity {
         let className = c.name;
         if (this.components.has(className)) {
             let component = this.components.get(className);
+            ComponentCollect.removeWaitStart(this, component);
             this.components.delete(className);
             component[`__stop`]();
             component.beforeDestroy();
@@ -548,17 +549,17 @@ function DecorateObject3D(ctor: any, _?: any) {
 
         public get materialColor(): Color {
             let component = this.getComponent(MeshRenderer);
-            return component?.material?.getBaseColor();
+            return component?.material?.defaultPass.baseColor;
         }
 
         public set materialColor(color: Color) {
             let material = this.getComponent(MeshRenderer)?.material;
-            material && (material.baseColor = color);
+            material && (material.defaultPass.baseColor = color);
         }
 
         public notifyMaterialColorChange(materialIndex: number, key: string) {
             let materials = this.getComponent(MeshRenderer).materials;
-            materials?.[materialIndex]?.renderShader.uniforms[key].onChange();
+            materials?.[materialIndex]?.defaultPass.uniforms[key].onChange();
         }
     };
 }

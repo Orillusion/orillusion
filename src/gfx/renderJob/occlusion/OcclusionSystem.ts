@@ -4,6 +4,7 @@ import { Camera3D } from '../../../core/Camera3D';
 import { Scene3D } from '../../../core/Scene3D';
 import { OctreeEntity } from '../../../core/tree/octree/OctreeEntity';
 import { Engine3D } from '../../../Engine3D';
+import { CollectInfo } from '../collect/CollectInfo';
 import { EntityCollect } from '../collect/EntityCollect';
 /**
  * @internal
@@ -49,12 +50,16 @@ export class OcclusionSystem {
 
     public update(camera: Camera3D, scene: Scene3D) {
         if (!OcclusionSystem.enable) return;
+
         let cameraViewRenderList = this._renderList.get(camera);
+
         if (!cameraViewRenderList) {
             cameraViewRenderList = new Map<RenderNode, number>();
             this._renderList.set(camera, cameraViewRenderList);
         }
+
         cameraViewRenderList.clear();
+
         EntityCollect.instance.autoSortRenderNodes(scene);
 
         let collectInfo = EntityCollect.instance.getRenderNodes(scene);
@@ -103,6 +108,42 @@ export class OcclusionSystem {
             }
             // console.log('cast', performance.now() - now);
 
+        }
+    }
+
+    collect(nodes: CollectInfo, camera: Camera3D) {
+        let cameraViewRenderList = this._renderList.get(camera);
+        if (!cameraViewRenderList) {
+            cameraViewRenderList = new Map<RenderNode, number>();
+            this._renderList.set(camera, cameraViewRenderList);
+        }
+        cameraViewRenderList.clear();
+        if (nodes.opaqueList) {
+            for (let node of nodes.opaqueList) {
+                let inRender = 0;
+
+                if (node.enable && node.transform.enable && node.object3D.bound) {
+                    inRender = node.object3D.bound.inFrustum(node.object3D, camera.frustum);
+                }
+
+                if (inRender) {
+                    cameraViewRenderList.set(node, inRender);
+                }
+            }
+        }
+
+        if (nodes.transparentList) {
+            for (let node of nodes.transparentList) {
+
+                let inRender = 0;
+                if (node.enable && node.transform.enable && node.object3D.bound) {
+                    inRender = node.object3D.bound.inFrustum(node.object3D, camera.frustum);
+                }
+
+                if (inRender) {
+                    cameraViewRenderList.set(node, inRender);
+                }
+            }
         }
     }
 

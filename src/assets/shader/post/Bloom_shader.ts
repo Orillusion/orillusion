@@ -220,12 +220,13 @@ export class Bloom_shader {
           let e27: vec4<f32> = o_Target;
           return FragmentOutput(e27);
       }
-      `;
+    `;
 
     public static Bloom_composite_frag_wgsl: string = /* wgsl */ `
-      struct uniformData {
+      struct UniformData {
+          tintColor:vec3<f32>,
           bloomStrength: f32,
-          bloomRadius: f32
+          bloomRadius: f32,
       };
 
       struct FragmentOutput {
@@ -259,7 +260,7 @@ export class Bloom_shader {
       @group(1) @binding(11)
       var blurTex5: texture_2d<f32>;
       @group(2) @binding(0)
-      var<uniform> global: uniformData;
+      var<uniform> global: UniformData;
 
       fn lerpBloomFactor(factor: f32) -> f32 {
           var factor1: f32;
@@ -303,7 +304,7 @@ export class Bloom_shader {
           let e104: vec2<f32> = uv;
           let e105: vec4<f32> = textureSample(blurTex5, blurTex5Sampler, e104);
           o_Target = (e32 + (e33 * ((((((e38 * vec4<f32>(array<vec3<f32>,5>(vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0))[0], 1.0)) * e46) + ((e52 * vec4<f32>(array<vec3<f32>,5>(vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0))[1], 1.0)) * e60)) + ((e67 * vec4<f32>(array<vec3<f32>,5>(vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0))[2], 1.0)) * e75)) + ((e82 * vec4<f32>(array<vec3<f32>,5>(vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0))[3], 1.0)) * e90)) + ((e97 * vec4<f32>(array<vec3<f32>,5>(vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0))[4], 1.0)) * e105))));
-          o_Target.a = e30.a ;
+          o_Target = vec4<f32>(o_Target.rgb * global.tintColor.rgb, e30.a) ;
           return;
       } 
 

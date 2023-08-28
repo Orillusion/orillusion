@@ -196,7 +196,7 @@ export class ComponentBase implements IComponent {
      * before release this component, object refrences are not be set null now.
      */
     public beforeDestroy(force?: boolean) {
-        ComponentCollect.removeWaitStart(this);
+        ComponentCollect.removeWaitStart(this.object3D, this);
     }
 
     /**

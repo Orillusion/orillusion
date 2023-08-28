@@ -9,18 +9,27 @@ import { Quaternion } from '../../../math/Quaternion';
 import { Vector3 } from '../../../math/Vector3';
 
 export class I3DMLoader extends I3DMLoaderBase {
-    public static tempFwd = new Vector3();
-    public static tempUp = new Vector3();
-    public static tempRight = new Vector3();
-    public static tempPos = new Vector3();
-    public static tempQuat = new Quaternion();
-    public static tempSca = new Vector3();
-    public static tempMat = new Matrix4();
+    public static tempFwd: Vector3;
+    public static tempUp: Vector3;
+    public static tempRight: Vector3;
+    public static tempPos: Vector3;
+    public static tempQuat: Quaternion;
+    public static tempSca: Vector3;
+    public static tempMat: Matrix4;
     public adjustmentTransform: Matrix4;
     private _gltfBuffer: ArrayBufferLike;
 
     constructor() {
         super();
+
+        I3DMLoader.tempFwd ||= new Vector3();
+        I3DMLoader.tempUp ||= new Vector3();
+        I3DMLoader.tempRight ||= new Vector3();
+        I3DMLoader.tempPos ||= new Vector3();
+        I3DMLoader.tempQuat ||= new Quaternion();
+        I3DMLoader.tempSca ||= new Vector3();
+        I3DMLoader.tempMat ||= new Matrix4();
+
         this.adjustmentTransform = new Matrix4().identity();
     }
 

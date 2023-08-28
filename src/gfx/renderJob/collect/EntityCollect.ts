@@ -103,7 +103,7 @@ export class EntityCollect {
             if (this._graphics.indexOf(renderNode) == -1) {
                 this._graphics.push(renderNode);
             }
-        } else if (!RenderLayerUtil.hasMask(renderNode.object3D.renderLayer, RenderLayer.None)) {
+        } else if (!RenderLayerUtil.hasMask(renderNode.renderLayer, RenderLayer.None)) {
             this.removeRenderNode(root, renderNode);
             let group = isTransparent ? this._tr_renderGroup : this._op_renderGroup;
             if (!group.has(root)) {
@@ -153,7 +153,7 @@ export class EntityCollect {
         renderNode.detachSceneOctree();
         if (renderNode.hasMask(RendererMask.Sky)) {
             this.sky = null;
-        } else if (!RenderLayerUtil.hasMask(renderNode.object3D.renderLayer, RenderLayer.None)) {
+        } else if (!RenderLayerUtil.hasMask(renderNode.renderLayer, RenderLayer.None)) {
 
         } else {
             let list = this.getPashList(root, renderNode);
@@ -226,6 +226,7 @@ export class EntityCollect {
         let renderList: RenderNode[] = this._tr_RenderNodes.get(scene);
         if (!renderList)
             return;
+
         let needSort = false;
         for (const renderNode of renderList) {
             if (renderNode.isRenderOrderChange || renderNode.needSortOnCameraZ) {
@@ -233,6 +234,7 @@ export class EntityCollect {
                 break;
             }
         }
+
         if (needSort) {
             for (const renderNode of renderList) {
                 let __renderOrder = renderNode.renderOrder;

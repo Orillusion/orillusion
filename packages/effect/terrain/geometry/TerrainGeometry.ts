@@ -1,4 +1,4 @@
-import { BitmapTexture2D, Plane, PlaneGeometry, Texture, Vector3, VertexAttributeName } from "@orillusion/core"
+import { BitmapTexture2D, Plane, PlaneGeometry, Texture, Vector3, VertexAttributeName, lerp } from "@orillusion/core"
 
 export class TerrainGeometry extends PlaneGeometry {
 
@@ -22,25 +22,47 @@ export class TerrainGeometry extends PlaneGeometry {
 
         let tw = this.segmentW + 1;
         let th = this.segmentH + 1;
-        for (let ppy = 0; ppy < this.segmentH; ppy++) {
-            for (let ppx = 0; ppx < this.segmentW; ppx++) {
-                let px = Math.floor(ppx / tw * texture.width);
-                let py = Math.floor(ppy / th * texture.height);
+        for (let ppy = 0; ppy < this.segmentH - 1; ppy++) {
+            for (let ppx = 0; ppx < this.segmentW - 1; ppx++) {
 
-                let index = py * texture.width + px;
-                let r = pixelData.data[index * 4];
+                let px0 = Math.floor(ppx / tw * texture.width);
+                let py0 = Math.floor(ppy / th * texture.height);
 
-                // if (r < 200 && g > 50 && b < 200) {
-                //     this._greenList.push(new Vector3(ppx, 0, ppy));
-                // }
+                let px1 = Math.floor((ppx + 1) / tw * texture.width);
+                let py1 = Math.floor((ppy) / th * texture.height);
+
+                let px2 = Math.floor((ppx) / tw * texture.width);
+                let py2 = Math.floor((ppy + 1) / th * texture.height);
+
+                let px3 = Math.floor((ppx + 1) / tw * texture.width);
+                let py3 = Math.floor((ppy + 1) / th * texture.height);
+
+                var tt = ppx / tw - Math.floor(ppx / tw);
+                let t0 = tt;
+                let t1 = tt;
+                let t2 = tt * 1.2121;
+
+                let index0 = py0 * texture.width + px0;
+                let index1 = py1 * texture.width + px1;
+                let index2 = py2 * texture.width + px2;
+                let index3 = py3 * texture.width + px3;
+
+                let h0 = pixelData.data[index0 * 4];
+                let h1 = pixelData.data[index1 * 4];
+                let h2 = pixelData.data[index2 * 4];
+                let h3 = pixelData.data[index3 * 4];
+
+                let h = lerp(h0, h1, t0);
+                h = lerp(h, h2, t1);
+                h = lerp(h, h3, t2);
 
                 let sc = 0.05;
-                if (r > 45 && r < 150) {
+                if (h > 45 && h < 150) {
                     this._greenList.push(new Vector3(ppx, 0, ppy));
                 }
 
                 let posIndex = tw * ppy + ppx;
-                let hd = r / 256 * height;
+                let hd = h / 256 * height;
                 posAttrData.data[posIndex * 3 + 1] = hd;
 
                 this._heightData ||= [];

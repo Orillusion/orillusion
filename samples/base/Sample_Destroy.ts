@@ -65,7 +65,7 @@ class Sample_Destroy {
             GUIHelp.addButton("del", () => {
                 for (let i = 0; i < list.length; i++) {
                     const obj = list[i];
-                    obj.destroy(true);
+                    obj.destroy();
                 }
             });
             GUIHelp.open()
