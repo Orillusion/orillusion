@@ -323,7 +323,7 @@ export class Matrix4 {
         // if (doMatrix) {
         if (Matrix4.useCount >= Matrix4.allocCount) {
             let allocCount = Matrix4.allocCount + Matrix4.allocOnceCount;
-            console.warn(`allocMatrix(${allocCount})`);
+            import.meta.env.DEV && console.warn(`allocMatrix(${allocCount})`);
             WasmMatrix.allocMatrix(allocCount);
         }
 

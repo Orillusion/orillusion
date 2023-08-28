@@ -1,4 +1,5 @@
-import { DEGREES_TO_RADIANS, Matrix4 } from '../../src';
+import { Matrix4 } from '../../src';
+import matrixjs from './matrix?raw'
 
 export class WasmMatrix {
 
@@ -13,33 +14,24 @@ export class WasmMatrix {
     static wasm: any;
     static stateStruct: number = 4;
 
-    public static async isReady(): Promise<boolean> {
-        return new Promise(
-            (suc, fail) => {
-                const script = document.createElement('script');
-                script.async = true;
-                script.type = "text/javascript";
-                script.src = "packages/wasm-matrix/matrix.js";
-                document.body.appendChild(script)
-                script.onload = () => {
-                    let id = setInterval(() => {
-                        this.wasm = window['wasmMatrix'];
-                        if (this.wasm) {
-                            let ready = this.wasm['calledRun']
-                            if (ready) {
-                                clearInterval(id);
-                                suc(true);
-                            } else {
-                                // fail(false);
-                            }
-                        }
-                    }, 16);
+    public static async init(count: number) {
+        await new Promise((resolve)=>{
+            const script = document.createElement('script');
+            script.async = true;
+            script.type = "text/javascript";
+            script.src = URL.createObjectURL(new Blob([matrixjs]));
+            document.head.appendChild(script)
+            script.onload = () => {
+                let check = ()=>{
+                    this.wasm = window['wasmMatrix'];
+                    if (this.wasm && this.wasm['calledRun'])
+                        resolve(true)
+                    else
+                        setTimeout(check, 20)
                 }
+                check()
             }
-        )
-    }
-
-    public static init(count: number) {
+        })
         // this.wasm = window['wasmMatrix'];
         this.allocMatrix(count);
     }
