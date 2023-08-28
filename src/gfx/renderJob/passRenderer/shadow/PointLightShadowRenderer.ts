@@ -214,7 +214,9 @@ export class PointLightShadowRenderer extends RendererBase {
                     continue;
                 if (!renderNode.enable)
                     continue;
-                // renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState);
+                if (!renderNode.preInit) {
+                    renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState);
+                }
 
                 for (let material of renderNode.materials) {
                     let passes = material.getPass(this._rendererType);
