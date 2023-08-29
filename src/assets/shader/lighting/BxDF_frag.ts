@@ -61,7 +61,6 @@ export let BxDF_frag: string = /*wgsl*/ `
       //***********lighting-PBR part********* 
       var specColor = vec3<f32>(0.0) ;
       let lightIndex = getCluster(ORI_VertexVarying.fragCoord);
-      // let lightIndex = getCluster(ORI_VertexVarying.fragCoord);
       let start = max(lightIndex.start, 0.0);
       let count = max(lightIndex.count, 0.0);
       let end = max(start + count , 0.0);

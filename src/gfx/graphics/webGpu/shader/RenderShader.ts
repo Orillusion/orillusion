@@ -23,7 +23,7 @@ import { MaterialDataUniformGPUBuffer } from "../core/buffer/MaterialDataUniform
 import { ShaderUtil } from "./util/ShaderUtil";
 import { Reference } from "../../../../util/Reference";
 import { CSM } from "../../../../core/csm/CSM";
-import { GPUCullMode } from "../WebGPUConst";
+import { GPUCompareFunction, GPUCullMode } from "../WebGPUConst";
 import { UniformValue } from "./value/UniformValue";
 
 export class RenderShader extends ShaderBase {
@@ -732,8 +732,10 @@ export class RenderShader extends ShaderBase {
             let blendEnable = shaderState.blendMode != BlendMode.NONE;
             if (Engine3D.setting.render.zPrePass && renderPassState.zPreTexture && shaderState.useZ) {
                 renderPipelineDescriptor[`depthStencil`] = {
-                    depthWriteEnabled: shaderState.depthWriteEnabled,
-                    depthCompare: shaderState.depthCompare,
+                    depthWriteEnabled: false,
+                    // depthWriteEnabled: shaderState.depthWriteEnabled,
+                    depthCompare: GPUCompareFunction.equal,
+                    // depthCompare: shaderState.depthCompare,
                     format: renderPassState.zPreTexture.format,
                 };
             } else {

@@ -21,8 +21,7 @@ export class ClusterLightingRender extends RendererBase {
     public clusterTileX = 8;
     public clusterTileY = 4;
     public clusterTileZ = 16;
-    public maxNumLights = 128;
-    public maxNumLightsPerCluster = 1024;
+    public maxNumLightsPerCluster = 64;
     public clusterPix = 1;
     public clusterLightingBuffer: ClusterLightingBuffer;
 
@@ -49,7 +48,7 @@ export class ClusterLightingRender extends RendererBase {
         let far = camera.far;
 
         this.clusterLightingBuffer = new ClusterLightingBuffer(numClusters, this.maxNumLightsPerCluster);
-        this.clusterLightingBuffer.update(size[0], size[1], this.clusterPix, this.clusterTileX, this.clusterTileY, this.clusterTileZ, this.maxNumLights, this.maxNumLightsPerCluster, near, far);
+        this.clusterLightingBuffer.update(size[0], size[1], this.clusterPix, this.clusterTileX, this.clusterTileY, this.clusterTileZ, 0, this.maxNumLightsPerCluster, near, far);
 
         // let standBindGroup = GlobalBindGroup.getCameraGroup(camera);
         // this._clusterGenerateCompute.setUniformBuffer(`globalUniform`, standBindGroup.uniformGPUBuffer);
@@ -81,6 +80,28 @@ export class ClusterLightingRender extends RendererBase {
         //         view.graphic3D.drawBox(i + "-box", min, max, Color.random());
         //     }
         // });
+
+        GUIHelp.addButton("assignTable", () => {
+            let od = this.clusterLightingBuffer.assignTableBuffer.readBuffer();
+            for (let i = 0; i < od.length / 4; i++) {
+                const count = od[i * 4 + 0];
+                const start = od[i * 4 + 1];
+                const e1 = od[i * 4 + 2];
+                const e2 = od[i * 4 + 3];
+                if (count > 1) {
+                    console.log(count);
+                }
+
+                if ((start + count) > start + 1) {
+                    console.log(count, start, e1, e2);
+                }
+            }
+        });
+
+        GUIHelp.addButton("clustersUniformBuffer", () => {
+            let od = this.clusterLightingBuffer.clustersUniformBuffer.readBuffer();
+            console.log(od);
+        });
     }
 
     render(view: View3D, occlusionSystem: OcclusionSystem) {
@@ -107,7 +128,7 @@ export class ClusterLightingRender extends RendererBase {
         let size = webGPUContext.presentationSize;
         this.clusterLightingBuffer.update(
             size[0], size[1],
-            this.clusterPix, this.clusterTileX, this.clusterTileY, this.clusterTileZ, this.maxNumLights, this.maxNumLightsPerCluster,
+            this.clusterPix, this.clusterTileX, this.clusterTileY, this.clusterTileZ, lights.length, this.maxNumLightsPerCluster,
             view.camera.near,
             view.camera.far);
 

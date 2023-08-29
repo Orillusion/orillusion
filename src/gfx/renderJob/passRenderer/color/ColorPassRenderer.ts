@@ -4,13 +4,11 @@ import { View3D } from "../../../../core/View3D";
 import { ProfilerUtil } from "../../../../util/ProfilerUtil";
 import { GPUContext } from "../../GPUContext";
 import { EntityCollect } from "../../collect/EntityCollect";
-import { RenderShaderCollect } from "../../collect/RenderShaderCollect";
 import { OcclusionSystem } from "../../occlusion/OcclusionSystem";
 import { RenderContext } from "../RenderContext";
 import { RendererBase } from "../RendererBase";
 import { ClusterLightingBuffer } from "../cluster/ClusterLightingBuffer";
 import { RendererType } from "../state/RendererType";
-
 
 /**
  *  @internal

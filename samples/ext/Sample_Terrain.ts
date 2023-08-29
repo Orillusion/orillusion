@@ -62,23 +62,20 @@ class Sample_Terrain {
         }
 
         //bitmap
-        let bitmapTexture = Engine3D.res.grayTexture;//await Engine3D.res.loadTexture('terrain/test01/bitmap.png');
-        // let heightTexture = await Engine3D.res.loadTexture('terrain/test01/height.png');
-        // let heightTexture = await Engine3D.res.loadTexture('terrain/test01/m1.png');
-        // let heightTexture = await Engine3D.res.loadTexture('terrain/test01/m2.png');
-        // let heightTexture = await Engine3D.res.loadTexture('terrain/test01/m3.png');
-        let heightTexture = await Engine3D.res.loadTexture('terrain/test01/china.png');
+        let bitmapTexture = await Engine3D.res.loadTexture('terrain/test01/bitmap.png');
+        let heightTexture = await Engine3D.res.loadTexture('terrain/test01/height.png');
+        // let heightTexture = await Engine3D.res.loadTexture('terrain/test01/china.png');
 
         // let heightTexture = await Engine3D.res.loadTexture('terrain/grass/GustNoise.png');
         let grassTexture = await Engine3D.res.loadTexture('terrain/grass/GrassThick.png');
         let gustNoiseTexture = await Engine3D.res.loadTexture('terrain/grass/displ_noise_curl_1.png');
         let terrainSizeW = 20488;
-        let terrainSizeH = 11304;
+        let terrainSizeH = 20488;
         let terrainGeometry: TerrainGeometry;
         {
             let mat = new LitMaterial();
             terrainGeometry = new TerrainGeometry(terrainSizeW, terrainSizeH, 2000, 2000);
-            terrainGeometry.setHeight(heightTexture as BitmapTexture2D, 550);
+            terrainGeometry.setHeight(heightTexture as BitmapTexture2D, 5000);
             let floor = new Object3D();
             let mr = floor.addComponent(MeshRenderer);
             mr.geometry = terrainGeometry;

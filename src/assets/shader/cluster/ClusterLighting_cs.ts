@@ -137,6 +137,8 @@ fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(local_invo
     var idx: LightIndex;
     idx.count = f32(endIndex-startIndex);
     idx.start = f32(startIndex);
+    // idx.empty0 = f32(clusterId_1D);
+    // idx.empty1 = f32(clustersUniform.maxNumLightsPerCluster);
     assignTable[clusterId_1D] = idx;
 }
 `

@@ -3,6 +3,7 @@ import { SkeletonAnimation_shader } from "../../anim/SkeletonAnimation_shader";
 
 export let ZPassShader_vs: string = /*wgsl*/ `
     #include "GlobalUniform"
+    #include "MathShader"
 
     struct VertexOutput {
         @location(0) vID: f32 ,
@@ -86,7 +87,7 @@ export let ZPassShader_vs: string = /*wgsl*/ `
         rzMatrix[3] = vec4<f32>(0.0,0.0,0.0,1.0) ; 
         // rzMatrix[2].z = (-globalUniform.near * globalUniform.far) / (globalUniform.far - globalUniform.near) ;
         // rzMatrix[3].z = globalUniform.far / (globalUniform.far - globalUniform.near) ;
-        var clipPos:vec4<f32> = fixProjMat * globalUniform.viewMat * rzMatrix * wPos ;
+        var clipPos:vec4<f32> = fixProjMat * globalUniform.viewMat * wPos ;
         // clipPos.z = clipPos.z + (clipPos.z / clipPos.w + globalUniform.near / clipPos.w + 0.002 / clipPos.w) * (globalUniform.near / globalUniform.far) ; 
         // clipPos.z = depthToLinear01(clipPos.z / clipPos.w) ; 
         return VertexOutput(f32(index) , wPos.xyz, clipPos);

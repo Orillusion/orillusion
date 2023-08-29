@@ -382,8 +382,10 @@ export class Texture implements GPUSamplerDescriptor {
     public getGPUView(index: number = 0): GPUTextureView | GPUExternalTexture {
         if (!this.view) {
             this.gpuTexture = this.getGPUTexture();
-            if (this.gpuTexture instanceof GPUTexture)
+            if (this.gpuTexture instanceof GPUTexture) {
                 this.view = this.gpuTexture.createView(this.viewDescriptor);
+                this.view.label = this.name;
+            }
         }
         return this.view;
     }

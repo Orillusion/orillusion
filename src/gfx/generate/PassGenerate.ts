@@ -7,7 +7,7 @@ import { RenderNode } from '../../components/renderer/RenderNode';
 import { RendererMaskUtil, RendererMask } from '../renderJob/passRenderer/state/RendererMask';
 import { RendererType } from '../renderJob/passRenderer/state/RendererType';
 import { GLTFType } from '../../loader/parser/gltf/GLTFType';
-import { CastPointShadowMaterialPass, CastShadowMaterialPass, GBufferPass, Material, RendererPassState, SkyGBufferPass } from '../..';
+import { CastPointShadowMaterialPass, CastShadowMaterialPass, DepthMaterialPass, GBufferPass, Material, RendererPassState, SkyGBufferPass } from '../..';
 
 /**
  * @internal
@@ -31,32 +31,32 @@ export class PassGenerate {
     }
 
     public static castGBufferPass(renderNode: RenderNode, material: Material) {
-        for (let i = 0; i < renderNode.materials.length; i++) {
-            const mat = renderNode.materials[i];
-            let colorPassList = material.getPass(RendererType.COLOR);
-            for (let jj = 0; jj < colorPassList.length; jj++) {
-                const colorPass = colorPassList[jj];
+        // for (let i = 0; i < renderNode.materials.length; i++) {
+        //     const mat = renderNode.materials[i];
+        let colorPassList = material.getPass(RendererType.COLOR);
+        for (let jj = 0; jj < colorPassList.length; jj++) {
+            const colorPass = colorPassList[jj];
 
-                let giPassList = mat.getPass(RendererType.GI);
-                if (!giPassList || giPassList.length < jj) {
-                    let pass = new GBufferPass();
-                    pass.setTexture('baseMap', colorPass.getTexture("baseMap"));
-                    pass.setTexture('normalMap', colorPass.getTexture("normalMap"));
-                    pass.setTexture('emissiveMap', colorPass.getTexture("emissiveMap"));
+            let giPassList = material.getPass(RendererType.GI);
+            if (!giPassList || giPassList.length < jj) {
+                let pass = new GBufferPass();
+                pass.setTexture('baseMap', colorPass.getTexture("baseMap"));
+                pass.setTexture('normalMap', colorPass.getTexture("normalMap"));
+                pass.setTexture('emissiveMap', colorPass.getTexture("emissiveMap"));
 
-                    pass.setUniform('baseColor', colorPass.getUniform("baseColor"));
-                    pass.setUniform('envIntensity', colorPass.getUniform("envIntensity"));
-                    pass.setUniform('emissiveColor', colorPass.getUniform("emissiveColor"));
-                    pass.setUniform('emissiveIntensity', colorPass.getUniform("emissiveIntensity"));
-                    pass.setUniform('alphaCutoff', colorPass.getUniform("alphaCutoff"));
+                pass.setUniform('baseColor', colorPass.getUniform("baseColor"));
+                pass.setUniform('envIntensity', colorPass.getUniform("envIntensity"));
+                pass.setUniform('emissiveColor', colorPass.getUniform("emissiveColor"));
+                pass.setUniform('emissiveIntensity', colorPass.getUniform("emissiveIntensity"));
+                pass.setUniform('alphaCutoff', colorPass.getUniform("alphaCutoff"));
 
-                    pass.cullMode = colorPass.cullMode;
-                    pass.frontFace = colorPass.frontFace;
-                    pass.preCompile(renderNode.geometry);
-                    mat.addPass(RendererType.GI, pass);
-                }
+                pass.cullMode = colorPass.cullMode;
+                pass.frontFace = colorPass.frontFace;
+                pass.preCompile(renderNode.geometry);
+                material.addPass(RendererType.GI, pass);
             }
         }
+        // }
     }
 
     public static createShadowPass(renderNode: RenderNode, material: Material) {
@@ -167,41 +167,37 @@ export class PassGenerate {
     }
 
     public static createDepthPass(renderNode: RenderNode, material: Material) {
-        let colorPass = material.getPass(RendererType.COLOR)[0];
-        let depthMaterialPass = material.getPass(RendererType.DEPTH)[0];
-        if (!depthMaterialPass) {
-            // let depthMaterialPass = new DepthMaterialPass();
-            // let baseMat = renderNode.materials[0];
-            // depthMaterialPass.setTexture(`baseMap`, colorPass.getTexture(`baseMap`));
-            // let useTangent = renderNode.geometry.hasAttribute('TANGENT');
-            // let useMorphTargets = renderNode.geometry.hasAttribute(GLTFType.MORPH_POSITION_PREFIX + '0');
-            // let useMorphNormals = renderNode.geometry.hasAttribute(GLTFType.MORPH_NORMAL_PREFIX + '0');
+        let colorListPass = material.getPass(RendererType.COLOR);
+        let useTangent = renderNode.geometry.hasAttribute('TANGENT');
+        let useMorphTargets = renderNode.geometry.hasAttribute(GLTFType.MORPH_POSITION_PREFIX + '0');
+        let useMorphNormals = renderNode.geometry.hasAttribute(GLTFType.MORPH_NORMAL_PREFIX + '0');
+        let use_skeleton = RendererMaskUtil.hasMask(renderNode.rendererMask, RendererMask.SkinnedMesh);
 
-            // let use_skeleton = RendererMaskUtil.hasMask(renderNode.rendererMask, RendererMask.SkinnedMesh);
-
-            // depthMaterialPass.cullMode = colorPass.cullMode;
-            // depthMaterialPass.frontFace = colorPass.frontFace;
-
-            // for (let j = 0; j < 1; j++) {
-
-            //     if (!useTangent) {
-            //         depthMaterialPass.setDefine(`USE_TANGENT`, useTangent);
-            //     }
-            //     if (use_skeleton) {
-            //         depthMaterialPass.setDefine(`USE_SKELETON`, use_skeleton);
-            //     }
-            //     if (useMorphTargets) {
-            //         depthMaterialPass.setDefine(`USE_MORPHTARGETS`, useMorphTargets);
-            //     }
-            //     if (useMorphNormals) {
-            //         depthMaterialPass.setDefine(`USE_MORPHNORMALS`, useMorphNormals);
-            //     }
-
-            //     depthMaterialPass.preCompile(renderNode.geometry);
-            // }
-
-            // material.renderShader.setPassShader(RendererType.DEPTH, depthMaterialPass);
+        for (let i = 0; i < colorListPass.length; i++) {
+            const colorPass = colorListPass[i];
+            let depthPassList = material.getPass(RendererType.DEPTH);
+            if (!depthPassList && colorPass.shaderState.useZ) {
+                if (!depthPassList || depthPassList.length < i) {
+                    let depthPass = new DepthMaterialPass();
+                    depthPass.setTexture(`baseMap`, colorPass.getTexture(`baseMap`));
+                    if (!useTangent) {
+                        depthPass.setDefine(`USE_TANGENT`, useTangent);
+                    }
+                    if (use_skeleton) {
+                        depthPass.setDefine(`USE_SKELETON`, use_skeleton);
+                    }
+                    if (useMorphTargets) {
+                        depthPass.setDefine(`USE_MORPHTARGETS`, useMorphTargets);
+                    }
+                    if (useMorphNormals) {
+                        depthPass.setDefine(`USE_MORPHNORMALS`, useMorphNormals);
+                    }
+                    depthPass.cullMode = colorPass.cullMode;
+                    depthPass.frontFace = colorPass.frontFace;
+                    depthPass.preCompile(renderNode.geometry);
+                    material.addPass(RendererType.DEPTH, depthPass);
+                }
+            }
         }
-        material.addPass(RendererType.DEPTH, depthMaterialPass, 0);
     }
 }

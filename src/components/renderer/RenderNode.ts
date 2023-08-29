@@ -296,20 +296,19 @@ export class RenderNode extends ComponentBase {
             }
         }
 
-
         // add if alpha == 1
         let ignoreDepthPass = RendererMaskUtil.hasMask(this.rendererMask, RendererMask.IgnoreDepthPass);
-        // if (!ignoreDepthPass && Engine3D.setting.render.zPrePass && shader.shaderState.useZ) {
-        //     for (let i = 0; i < this.materials.length; i++) {
-        //         const mat = this.materials[i];
-        //         PassGenerate.createDepthPass(this, mat);
-        //     }
-        // } else {
-        for (let i = 0; i < this.materials.length; i++) {
-            const mat = this.materials[i];
-            mat.removePass(RendererType.DEPTH, 0);
+        if (!ignoreDepthPass && Engine3D.setting.render.zPrePass) {
+            for (let i = 0; i < this.materials.length; i++) {
+                const mat = this.materials[i];
+                PassGenerate.createDepthPass(this, mat);
+            }
+        } else {
+            for (let i = 0; i < this.materials.length; i++) {
+                const mat = this.materials[i];
+                mat.removePass(RendererType.DEPTH, 0);
+            }
         }
-        // }
     }
 
     @EditorInspector

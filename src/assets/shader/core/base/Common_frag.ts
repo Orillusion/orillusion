@@ -28,7 +28,7 @@ export let Common_frag: string = /*wgsl*/ `
     // var d1 = logDepth( ORI_VertexVarying.fragCoord.w , globalUniform.far);
     // ORI_FragmentOutput.out_depth = d1 ;
 
-    ORI_FragmentOutput.out_depth =  log2Depth(ORI_VertexVarying.fragCoord.z,globalUniform.near,globalUniform.far) ;
+    ORI_FragmentOutput.out_depth = log2Depth(ORI_VertexVarying.fragCoord.z,globalUniform.near,globalUniform.far) ;
 
     // var d1 = log2(ORI_VertexVarying.fragCoord.w + 1.0) * 2.0 / (log(f + 1.0) / 0.6931471805599453) * 0.5 ;
     // 2.0 / (Math.log(camera.far + 1.0) / Math.LN2)
