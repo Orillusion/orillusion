@@ -307,9 +307,7 @@ export class Engine3D {
         document.body.appendChild(this.divB);
 
         this.setting = { ...this.setting, ...descriptor.engineSetting }
-
-        await WasmMatrix.isReady();
-
+        
         await WasmMatrix.init(Matrix4.allocCount);
 
         await webGPUContext.init(descriptor.canvasConfig);
