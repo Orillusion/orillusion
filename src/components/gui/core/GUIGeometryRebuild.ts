@@ -1,4 +1,4 @@
-import { GUIQuadAttrEnum, Object3D, TexturesBindGroup, UIPanel } from "../../..";
+import { GUIQuadAttrEnum, Object3D, UIPanel } from "../../..";
 import { Texture } from "../../../gfx/graphics/webGpu/core/texture/Texture";
 import { UITransform } from "../uiComponents/UITransform";
 import { UIRenderAble } from "../uiComponents/UIRenderAble";
