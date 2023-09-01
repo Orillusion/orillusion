@@ -13,7 +13,9 @@ await test('Post GTAOPost test', async () => {
     let postProcessing = view.scene.addComponent(PostProcessingComponent);
     let gtao = postProcessing.addPost(GTAOPost);
     await delay(500)
-    expect(gtao.gtaoTexture?.width).tobe(window.innerWidth)
+    let dest = Math.floor(window.innerWidth * window.devicePixelRatio);
+    let src = gtao.gtaoTexture?.width;
+    expect(src).tobe(dest)
     Engine3D.pause()
 })
 
