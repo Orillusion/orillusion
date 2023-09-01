@@ -34,7 +34,7 @@ import { BxdfDebug_frag } from './materials/program/BxdfDebug_frag';
 import { Quad_depth2d_frag_wgsl, Quad_depthCube_frag_wgsl, Quad_frag_wgsl, Quad_vert_wgsl } from './quad/Quad_shader';
 import { ColorUtil } from './utils/ColorUtil';
 import { GenerayRandomDir } from './utils/GenerayRandomDir';
-import { ClusterLight, GBuffer_pass, LambertShader, MatrixShader, QuadGlsl_fs, QuadGlsl_vs, SkyGBuffer_pass, UnLit, WaterShader, ZPassShader_fs, ZPassShader_vs, castPointShadowMap_vert, shadowCastMap_frag, shadowCastMap_vert } from '../..';
+import { ClusterLight, GBuffer_pass, LambertShader, MatrixShader, QuadGlsl_fs, QuadGlsl_vs, SkyGBuffer_pass, UnLit, ZPassShader_fs, ZPassShader_vs, castPointShadowMap_vert, shadowCastMap_frag, shadowCastMap_vert } from '../..';
 
 /**
  * @internal
@@ -84,7 +84,6 @@ export class ShaderLib {
         ShaderLib.register('Clearcoat_frag', Clearcoat_frag);
         ShaderLib.register('LitShader', LitShader);
         ShaderLib.register('PBRLItShader', PBRLItShader);
-        ShaderLib.register('WaterShader', WaterShader);
 
         ShaderLib.register('ClusterDebug_frag', ClusterDebug_frag);
         ShaderLib.register('BxdfDebug_frag', BxdfDebug_frag);
