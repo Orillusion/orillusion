@@ -59,7 +59,7 @@ class Sample_LightEnable {
         }
 
         //create floor
-        let floor = Object3DUtil.GetSingleCube(2000, 1, 2000, 0.5, 0.5, 0.5);
+        let floor = Object3DUtil.GetSingleCube(5000, 1, 5000, 0.5, 0.5, 0.5);
         this.scene.addChild(floor);
 
         for (let i = 0; i < 5; i++) {
