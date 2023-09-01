@@ -545,7 +545,6 @@ export class RenderNode extends ComponentBase {
                     }
 
                     renderShader.apply(node._geometry, renderPassState);
-
                 }
             }
         }

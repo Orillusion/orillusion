@@ -2,6 +2,7 @@ import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { AtmosphericComponent, BoxGeometry, CameraUtil, Engine3D, HoverCameraController, LitMaterial, MeshRenderer, Object3D, PointLight, Scene3D, SphereGeometry, View3D, } from "@orillusion/core";
 import { PointLightsScript } from "./PointLightsScript";
 import { Object3DUtil } from "../../src/util/Object3DUtil";
+import { GUIUtil } from "@samples/utils/GUIUtil";
 
 export class Sample_PointLight {
     scene: Scene3D;
@@ -10,7 +11,7 @@ export class Sample_PointLight {
     constructor() { }
 
     async run() {
-
+        Engine3D.setting.render.debug = true;
         await Engine3D.init({});
 
         GUIHelp.init();
@@ -31,6 +32,8 @@ export class Sample_PointLight {
         view.camera = mainCamera;
 
         Engine3D.startRenderViews([view]);
+
+        GUIUtil.renderDebug();
     }
 
     initScene(scene: Scene3D) {

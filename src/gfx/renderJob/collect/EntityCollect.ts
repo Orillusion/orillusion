@@ -1,4 +1,5 @@
 
+import { Camera3D } from '../../..';
 import { Engine3D } from '../../../Engine3D';
 import { ILight } from '../../../components/lights/ILight';
 import { RenderNode } from '../../../components/renderer/RenderNode';
@@ -21,6 +22,8 @@ import { RenderShaderCollect } from './RenderShaderCollect';
  * @group Post
  */
 export class EntityCollect {
+    private static _instance: EntityCollect;
+
     // private static  _sceneRenderList: Map<Scene3D, RenderNode[]>;
     private _sceneLights: Map<Scene3D, ILight[]>;
     private _sceneGIProbes: Map<Scene3D, Probe[]>;
@@ -49,7 +52,7 @@ export class EntityCollect {
 
     private _collectInfo: CollectInfo;
 
-    private static _instance: EntityCollect;
+    private rendererOctree: Octree;
     public static get instance() {
         if (!this._instance) {
             this._instance = new EntityCollect();
@@ -255,23 +258,23 @@ export class EntityCollect {
     }
 
 
-    public getRenderNodes(scene: Scene3D): CollectInfo {
+    public getRenderNodes(scene: Scene3D, camera: Camera3D): CollectInfo {
         this._collectInfo.clean();
         this._collectInfo.sky = this.sky;
 
         if (Engine3D.setting.occlusionQuery.octree) {
-            this._collectInfo.rendererOctree = this.getOctree(scene);
+            this.rendererOctree = this.getOctree(scene);
+            this.rendererOctree.getRenderNode(camera.frustum, this._collectInfo);
+        } else {
+            let list2 = this._op_RenderNodes.get(scene);
+            if (list2) {
+                this._collectInfo.opaqueList = list2.concat();
+            }
+            let list5 = this._tr_RenderNodes.get(scene);
+            if (list5) {
+                this._collectInfo.transparentList = list5.concat();
+            }
         }
-
-        let list2 = this._op_RenderNodes.get(scene);
-        if (list2) {
-            this._collectInfo.opaqueList = list2.concat();
-        }
-        let list5 = this._tr_RenderNodes.get(scene);
-        if (list5) {
-            this._collectInfo.transparentList = list5.concat();
-        }
-
         return this._collectInfo;
     }
 

@@ -59,7 +59,7 @@ export class SkeletonAnimationComponent extends ComponentBase {
     this._mixTempSkeletonPose = new SkeletonPose(this._skeleton);
     const jointMatrixIndexTable = new Float32Array(this._mixSkeletonPose.jointMatrixIndexTable);
     this._jointMatrixIndexTableBuffer = new StorageGPUBuffer(this._skeleton.numJoint * 4, 0, jointMatrixIndexTable);
-    this._jointMatrixIndexTableBuffer.visibility = GPUShaderStage.VERTEX | GPUShaderStage.COMPUTE;
+    // this._jointMatrixIndexTableBuffer.visibility = GPUShaderStage.VERTEX | GPUShaderStage.COMPUTE;
   }
 
   /**

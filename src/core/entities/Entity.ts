@@ -312,6 +312,9 @@ export class Entity extends CEventDispatcher {
             this.entityChildren.forEach((c) => {
                 c.destroy(force);
             })
+
+            this.removeAllChild();
+
             this.transform.parent = null;
             this._dispose = true;
             super.destroy();

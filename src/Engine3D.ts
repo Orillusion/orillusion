@@ -307,7 +307,7 @@ export class Engine3D {
         document.body.appendChild(this.divB);
 
         this.setting = { ...this.setting, ...descriptor.engineSetting }
-        
+
         await WasmMatrix.init(Matrix4.allocCount);
 
         await webGPUContext.init(descriptor.canvasConfig);
@@ -488,6 +488,7 @@ export class Engine3D {
         let i = 0;
         for (i = 0; i < views.length; i++) {
             const view = views[i];
+            view.camera.resetPerspective(webGPUContext.aspect);
             // view.scene.transform.updateChildTransform()
             // view.scene.transform.localChange = true;
         }

@@ -8,7 +8,6 @@ export class CollectInfo {
     public opaqueList: RenderNode[] = [];
     public transparentList: RenderNode[] = [];
     public sky: RenderNode;
-    public rendererOctree: Octree;
     public clean() {
         this.opaqueList.length = 0;
         this.transparentList.length = 0;

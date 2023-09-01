@@ -176,7 +176,7 @@ export class MemoryInfo {
         // let tmp = new Float32Array(buffer, index * Float32Array.BYTES_PER_ELEMENT);
         // tmp.set(data);
 
-        let tmp = new Float32Array(this.dataBytes.buffer, this.dataBytes.byteOffset + index * Float32Array.BYTES_PER_ELEMENT);
+        let tmp = new Float32Array(this.dataBytes.buffer, this.dataBytes.byteOffset + index * Float32Array.BYTES_PER_ELEMENT, data.length);
         tmp.set(data);
     }
 

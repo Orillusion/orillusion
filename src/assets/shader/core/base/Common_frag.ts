@@ -21,6 +21,7 @@ export let Common_frag: string = /*wgsl*/ `
       ORI_FragmentOutput.material = vec4<f32>(0.0,1.0,0.0,0.0);
     #endif
     frag();
+    
     #if USE_DEBUG
       debugFragmentOut();
     #endif

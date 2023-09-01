@@ -25,6 +25,7 @@ import { Reference } from "../../../../util/Reference";
 import { CSM } from "../../../../core/csm/CSM";
 import { GPUCompareFunction, GPUCullMode } from "../WebGPUConst";
 import { UniformValue } from "./value/UniformValue";
+import { PipelinePool } from "../PipelinePool";
 
 export class RenderShader extends ShaderBase {
 
@@ -320,8 +321,8 @@ export class RenderShader extends ShaderBase {
                 this.preCompile(geometry);
                 this._shaderChange = false;
             }
+            this.shaderVariant = ShaderReflection.genRenderShaderVariant(this);
             this.reBuild(geometry, rendererPassState);
-
             this._valueChange = false;
             // this.genRenderPipeline(geometry, rendererPassState);
             if (noticeFun) {
@@ -350,9 +351,7 @@ export class RenderShader extends ShaderBase {
     public applyPostDefine(shader: string, renderPassState: RendererPassState) {
         //*********************************/
         //******************/
-        if (Engine3D.setting.pick.mode == `pixel`) {
-            this.defineValue[`USE_WORLDPOS`] = true;
-        }
+
         if (renderPassState.outAttachments.length > 1) {
             this.defineValue[`USE_WORLDPOS`] = true;
             this.defineValue[`USEGBUFFER`] = true;
@@ -360,19 +359,8 @@ export class RenderShader extends ShaderBase {
             this.defineValue[`USE_WORLDPOS`] = false;
             this.defineValue[`USEGBUFFER`] = false;
         }
-        if (Engine3D.setting.gi.enable) {
-            this.defineValue[`USEGI`] = true;
-        } else {
-            this.defineValue[`USEGI`] = false;
-        }
-        if (Engine3D.setting.material.materialChannelDebug) {
-            this.defineValue[`USE_DEBUG`] = true;
-        }
-        if (this.shaderState.useLight) {
-            this.defineValue[`USE_LIGHT`] = true;
-        } else {
-            this.defineValue[`USE_LIGHT`] = false;
-        }
+
+
         //*********************************/
         //*********************************/
         return Preprocessor.parse(shader, this.defineValue);
@@ -752,7 +740,14 @@ export class RenderShader extends ShaderBase {
             }
         }
 
-        this.pipeline = GPUContext.createPipeline(renderPipelineDescriptor as GPURenderPipelineDescriptor);
+        let pipeline = PipelinePool.getSharePipeline(this.shaderVariant);
+        if (pipeline) {
+            this.pipeline = pipeline;
+        } else {
+            this.pipeline = GPUContext.createPipeline(renderPipelineDescriptor as GPURenderPipelineDescriptor);
+            PipelinePool.setSharePipeline(this.shaderVariant, this.pipeline);
+        }
+
     }
 
     private createGroupLayouts() {
@@ -821,15 +816,34 @@ export class RenderShader extends ShaderBase {
         this.defineValue[`USE_LIGHT`] = useLight;
         this.defineValue[`USE_VERTXCOLOR`] = useVertexColor;
 
+        if (Engine3D.setting.pick.mode == `pixel`) {
+            this.defineValue[`USE_WORLDPOS`] = true;
+        }
+        if (Engine3D.setting.gi.enable) {
+            this.defineValue[`USEGI`] = true;
+        } else {
+            this.defineValue[`USEGI`] = false;
+        }
+        if (Engine3D.setting.render.debug) {
+            this.defineValue[`USE_DEBUG`] = true;
+            this.defineValue[`DEBUG_CLUSTER`] = true;
+        }
+        if (this.shaderState.useLight) {
+            this.defineValue[`USE_LIGHT`] = true;
+        } else {
+            this.defineValue[`USE_LIGHT`] = false;
+        }
+
         this.defineValue[`USE_PCF_SHADOW`] = Engine3D.setting.shadow.type == `PCF`;
         this.defineValue[`USE_HARD_SHADOW`] = Engine3D.setting.shadow.type == `HARD`;
         this.defineValue[`USE_SOFT_SHADOW`] = Engine3D.setting.shadow.type == `SOFT`;
         this.defineValue[`USE_CSM`] = CSM.Cascades > 1;
         this.defineValue[`USE_IES_PROFILE`] = IESProfiles.use;
+
     }
 
     private genReflection() {
-        this.shaderVariant += ShaderReflection.genRenderShaderVariant(this);
+        this.shaderVariant = ShaderReflection.genRenderShaderVariant(this);
         let reflection = ShaderReflection.poolGetReflection(this.shaderVariant);
         if (!reflection) {
             //TODO: key check shader compile info

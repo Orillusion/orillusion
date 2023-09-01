@@ -160,13 +160,19 @@ export let BxdfDebug_frag: string = /*wgsl*/ `
                     debugPosition();
                   }
                   case 14: {
-                    // debugCluster( vec4<f32>(ORI_VertexVarying.fragCoord.xyz,0.0));
+                    #if DEBUG_CLUSTER
+                      debugCluster( ORI_VertexVarying.fragCoord );
+                    #endif
                   }
                   case 15: {
-                    // debugClusterBox( vec4<f32>(ORI_VertexVarying.fragCoord.xyz,0.0));
+                    #if DEBUG_CLUSTER
+                      debugClusterBox( ORI_VertexVarying.fragCoord );
+                    #endif
                   }
                   case 16: {
-                    // debugClusterLightCount( vec4<f32>(ORI_VertexVarying.fragCoord.xyz,0.0));
+                    #if DEBUG_CLUSTER
+                      debugClusterLightCount( vec4<f32>(ORI_VertexVarying.fragCoord.xyz,0.0));
+                      #endif
                   }
                   default: {
                   }

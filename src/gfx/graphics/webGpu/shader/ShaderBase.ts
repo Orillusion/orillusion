@@ -91,7 +91,7 @@ export class ShaderBase {
     * @param buffer storage useAge gpu buffer
     */
     public setStorageBuffer(name: string, buffer: StorageGPUBuffer) {
-        if (this._bufferDic.has(name)) {
+        if (!this._bufferDic.has(name)) {
             this._bufferDic.set(name, buffer);
             this.noticeBufferChange(name);
         } else {
@@ -137,7 +137,6 @@ export class ShaderBase {
             this.defineValue[defineName] = value;
             this.noticeValueChange();
             this.noticeShaderChange();
-            // console.log("USE_CLEARCOAT");
         }
         this.defineValue[defineName] = value;
     }

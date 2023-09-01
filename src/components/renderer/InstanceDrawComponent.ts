@@ -29,6 +29,7 @@ export class InstanceDrawComponent extends RenderNode {
         // let idArray = new Int32Array(meshRenders.length);
         for (let i = 0; i < meshRenders.length; i++) {
             const mr = meshRenders[i];
+            mr.transform.updateWorldMatrix(true);
             mr.enable = false;
 
 
