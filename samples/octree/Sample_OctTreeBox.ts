@@ -99,7 +99,8 @@ export class Sample_OctTreeBox {
 
         let retBoolean = {};
         for (let item of this.queryResult) {
-            retBoolean[item.uuid] = true;
+            let enable = this.movingBox.containsBox(item.renderer.object3D.bound as BoundingBox);
+            retBoolean[item.uuid] = enable;
         }
         for (let item of this.entities) {
             item.renderer.enable = retBoolean[item.uuid];
