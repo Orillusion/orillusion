@@ -13,7 +13,9 @@ await test('Post GlobalFog test', async () => {
     let postProcessing = view.scene.addComponent(PostProcessingComponent);
     let fog = postProcessing.addPost(GlobalFog);
     await delay(500)
-    expect(fog.rtTexture?.width).tobe(window.innerWidth)
+    let dest = Math.floor(window.innerWidth * window.devicePixelRatio);
+    let src = fog.rtTexture?.width;
+    expect(src).tobe(dest)
     Engine3D.pause()
 })
 
