@@ -27,7 +27,7 @@ export class UVMoveComponent extends ComponentBase {
             value.y += Time.delta * this._speed.y * 0.001;
             value.z = this._speed.z;
             value.w = this._speed.w;
-            this._material.defaultPass.setUniform(`transformUV2`, value);
+            this._material.defaultPass.setUniform(`transformUV1`, value);
         }
     }
 }

@@ -20,8 +20,6 @@
     menu.innerHTML = list
     document.body.appendChild(menu)
 
-
-
     // change sessionStorage.target on click, and reload iframe
     menu.addEventListener('click', (e: Event) => {
         const button = e.target as HTMLElement
@@ -71,6 +69,8 @@
     }
 }
 
+// new Sample_PointLight().run();
+// new Sample_LoadGLB4().run();
 
 // import { Sample_Grass } from "./ext/Sample_Grass";
 // console.log("a");

@@ -187,7 +187,7 @@ export class DDGIProbeRenderer extends RendererBase {
     private renderSceneOnce(view: View3D, probeCamera: Camera3D, encoder: GPURenderPassEncoder, lights: ILight[]) {
         this.volume.uploadBuffer();
 
-        let collectInfo = EntityCollect.instance.getRenderNodes(view.scene);
+        let collectInfo = EntityCollect.instance.getRenderNodes(view.scene, probeCamera);
         GPUContext.bindCamera(encoder, probeCamera);
 
         let drawMin = Math.max(0, Engine3D.setting.render.drawOpMin);

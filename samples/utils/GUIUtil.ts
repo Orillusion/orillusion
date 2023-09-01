@@ -4,6 +4,7 @@ import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
 
+
     public static renderShadowSetting(open: boolean = true) {
         GUIHelp.addFolder('ShadowSetting');
         let setting = Engine3D.setting.shadow;
@@ -358,4 +359,46 @@ export class GUIUtil {
         GUIHelp.endFolder();
     }
 
+
+    static renderDebug() {
+        // if (Engine3D.setting.render.debug) {
+        let debugTextures = Engine3D.getRenderJob(Engine3D.views[0]).postRenderer.debugTextures;
+
+        let debugTextureObj = { normalRender: -1 };
+        for (let i = 0; i < debugTextures.length; i++) {
+            const tex = debugTextures[i];
+            debugTextureObj[tex.name] = i;
+        }
+        GUIHelp.removeFolder(`RenderPerformance`);
+        //debug
+        let f = GUIHelp.addFolder('RenderPerformance');
+        f.open();
+        GUIHelp.add(Engine3D.setting.render, 'debugQuad', debugTextureObj);
+        let debugChanel = {
+            PositionView: 0,
+            ColorView: 1,
+            NormalView: 2,
+            IrradianceView: 3,
+            LightView: 4,
+            FinalView: 5,
+            EmissiveView: 6,
+            specularRadiance: 7,
+            AO: 8,
+            Roughness: 9,
+            Metallic: 10,
+            diffuse: 11,
+            ambient: 12,
+            meshID: 13,
+            debugCluster: 14,
+            debugClusterBox: 15,
+            debugClusterLightCount: 16,
+        }
+        GUIHelp.add(Engine3D.setting.render, 'renderState_left', debugChanel);
+        GUIHelp.add(Engine3D.setting.render, 'renderState_right', debugChanel);
+        GUIHelp.add(Engine3D.setting.render, 'renderState_split', 0.0, 2048, 0.001);
+        GUIHelp.add(Engine3D.setting.render, 'drawOpMin', 0.0, 10000, 1);
+        GUIHelp.add(Engine3D.setting.render, 'drawOpMax', 0.0, 10000, 1);
+        GUIHelp.endFolder();
+    }
+    // }
 }

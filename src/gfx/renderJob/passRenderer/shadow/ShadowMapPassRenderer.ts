@@ -68,10 +68,10 @@ export class ShadowMapPassRenderer extends RendererBase {
         if (!(Time.frame % shadowSetting.updateFrameRate == 0))
             return;
 
-        camera.transform.updateWorldMatrix();
         //*********************/
         //***shadow light******/
         //*********************/
+
         let shadowLightList = ShadowLightsCollect.getDirectShadowLightWhichScene(scene);
         let shadowSize = shadowSetting.shadowSize;
         const cascades = CSM.Cascades;
@@ -157,7 +157,7 @@ export class ShadowMapPassRenderer extends RendererBase {
     }
 
     private renderShadow(view: View3D, shadowCamera: Camera3D, occlusionSystem: OcclusionSystem, state: RendererPassState) {
-        let collectInfo = EntityCollect.instance.getRenderNodes(view.scene);
+        let collectInfo = EntityCollect.instance.getRenderNodes(view.scene, shadowCamera);
         let command = GPUContext.beginCommandEncoder();
         let encoder = GPUContext.beginRenderPass(command, state);
 

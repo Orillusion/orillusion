@@ -6,6 +6,7 @@ import { GUIUtil } from "@samples/utils/GUIUtil";
 class Sample_DirectLightShadow {
     scene: Scene3D;
     async run() {
+        Engine3D.setting.shadow.enable = false;
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.shadowBound = 400;
 

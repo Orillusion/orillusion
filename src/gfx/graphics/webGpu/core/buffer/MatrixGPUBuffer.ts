@@ -20,7 +20,7 @@ export class MatrixGPUBuffer extends GPUBufferBase {
         this.createBuffer(GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST | usage, size, data);
     }
 
-    public writeToGpu(mapAsyncArray: Float32Array, len: number) {
+    public writeBufferByHeap(mapAsyncArray: Float32Array, len: number) {
         // Upload data using mapAsync and a queue of staging buffers.
         let bytesLen = len;
         let device = webGPUContext.device;

@@ -2,7 +2,7 @@ import { CSM } from "../../../../core/csm/CSM";
 
 export let ShadowMapping_frag: string = /*wgsl*/ `
     #if USE_SHADOWMAPING
-    @group(1) @binding(auto) var shadowMapSampler: sampler_comparison;
+    @group(1) @binding(auto) var shadowMapSampler: sampler;
     @group(1) @binding(auto) var shadowMap: texture_depth_2d_array;
     #endif
 
@@ -24,7 +24,11 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
       shadowLights:array<u32,16>
     }
 
-    @group(2) @binding(5) var<storage,read> shadowBuffer: ShadowBuffer;
+    #if DEBUG_CLUSTER
+        @group(2) @binding(6) var<storage,read> shadowBuffer: ShadowBuffer;
+    #else
+        @group(2) @binding(5) var<storage,read> shadowBuffer: ShadowBuffer;
+    #endif
 
     fn useShadow(){
         shadowStrut.directShadowVisibility = array<f32, 8>( 1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0) ;
@@ -127,7 +131,11 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
             for (var x = -1; x <= 1; x++) {
               var offset = vec2<f32>(f32(x), f32(y)) * uvOnePixel;
               
-              visibility += textureSampleCompare(shadowMap, shadowMapSampler, varying_shadowUV + offset, depthTexIndex, shadowPos.z - bias);
+              // visibility += textureSampleCompare(shadowMap, shadowMapSampler, varying_shadowUV + offset, depthTexIndex, shadowPos.z - bias);
+              var depth = textureSampleLevel(shadowMap, shadowMapSampler, varying_shadowUV + offset, depthTexIndex, 0);
+              if ((shadowPos.z - bias ) < depth) {
+                visibility += 1.0 ;//* dot(offsetDir, dir.xyz);
+              }
               totalWeight += 1.0;
             }
           }

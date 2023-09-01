@@ -22,8 +22,7 @@ export let Irradiance_frag: string = /*wgsl*/ `
     var irradianceDepthMapSampler: sampler;
     @group(1) @binding(auto)
     var irradianceDepthMap: texture_2d<f32>;
-
-    @group(2) @binding(6)
+    @group(2) @binding(7)
     var<storage,read> irradianceData : IrradianceVolumeData ;
 
     var<private> irradianceFieldSurface: IrradianceField;

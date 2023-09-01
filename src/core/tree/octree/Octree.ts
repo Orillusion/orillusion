@@ -1,3 +1,4 @@
+import { CollectInfo, RenderNode } from "../../..";
 import { Ray } from "../../../math/Ray";
 import { Vector3 } from "../../../math/Vector3";
 import { BoundingBox } from "../../bound/BoundingBox";
@@ -105,6 +106,28 @@ export class Octree {
       }
       for (let child of this.subTrees) {
         child.frustumCasts(frustum, ret);
+      }
+      return true;
+    }
+    return false;
+  }
+
+  getRenderNode(frustum: Frustum, ret: CollectInfo) {
+    if (this.level == 0 || frustum.containsBox2(this.box) > 0) {
+      if (this.entities.size > 0) {
+        for (const item of this.entities.values()) {
+          if (this.level > Octree.autoSplitLevel || frustum.containsBox2(item.renderer.object3D.bound) > 0) {
+            // ret.push(item.renderer);
+            if (item.renderer.renderOrder < 3000) {
+              ret.opaqueList.push(item.renderer);
+            } else if (item.renderer.renderOrder >= 3000) {
+              ret.transparentList.push(item.renderer);
+            }
+          }
+        }
+      }
+      for (let child of this.subTrees) {
+        child.getRenderNode(frustum, ret);
       }
       return true;
     }

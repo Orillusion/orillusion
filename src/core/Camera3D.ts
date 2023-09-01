@@ -166,6 +166,12 @@ export class Camera3D extends ComponentBase {
         this.type = CameraType.perspective;
     }
 
+    public resetPerspective(aspect: number) {
+        if (this.type == CameraType.perspective) {
+            this._projectionMatrix.perspective(this.fov, aspect, this.near, this.far);
+        }
+    }
+
     /**
      * Create an orthographic camera
      * @param width screen width
@@ -276,7 +282,9 @@ export class Camera3D extends ComponentBase {
 
     public get pvMatrix2(): Matrix4 {
         matrixMultiply(this._projectionMatrix, this.transform.worldMatrix, this._pvMatrix);
-        return this._pvMatrix;
+        let matrix = this._pvMatrixInv.copyFrom(this.pvMatrix);
+        matrix.invert();
+        return matrix;
     }
 
     /**

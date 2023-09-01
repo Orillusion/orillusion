@@ -41,6 +41,7 @@ class Sample_CSM {
         GUIHelp.add(mainCamera, 'enableCSM');
         GUIHelp.add(Engine3D.setting.shadow, 'csmScatteringExp', 0.5, 1.0, 0.01);
         GUIHelp.add(Engine3D.setting.shadow, 'csmMargin', 0.01, 0.5, 0.01);
+        // Engine3D.setting.shadow.s
         GUIHelp.open();
         GUIHelp.endFolder();
         Engine3D.startRenderView(view);

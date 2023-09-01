@@ -67,13 +67,6 @@ export class GlobalUniformGroup {
         });
     }
 
-    // public check() {
-    //     if (this.uniformByteLength != this.uniformGPUBuffer.memory.shareDataBuffer.byteLength
-    //         || this.matrixesByteLength != Matrix4.blockBytes * Matrix4.totalCount) {
-    //         this.createBindGroup();
-    //     }
-    // }
-
     private shadowMatrixRaw = new Float32Array(8 * 16);
     private csmMatrixRaw = new Float32Array(CSM.Cascades * 16);
     private csmShadowBias = new Float32Array(4);
@@ -82,7 +75,7 @@ export class GlobalUniformGroup {
         this.uniformGPUBuffer.setMatrix(`_projectionMatrix`, camera.projectionMatrix);
         this.uniformGPUBuffer.setMatrix(`_viewMatrix`, camera.viewMatrix);
         this.uniformGPUBuffer.setMatrix(`_cameraWorldMatrix`, camera.transform.worldMatrix);
-        this.uniformGPUBuffer.setMatrix(`_projectionMatrixInv`, camera.projectionMatrixInv);
+        this.uniformGPUBuffer.setMatrix(`pvMatrixInv`, camera.projectionMatrixInv);
 
         let shadowLightList = ShadowLightsCollect.getDirectShadowLightWhichScene(camera.transform.scene3D);
 
@@ -148,7 +141,7 @@ export class GlobalUniformGroup {
         this.uniformGPUBuffer.setMatrix(`_projectionMatrix`, camera.projectionMatrix);
         this.uniformGPUBuffer.setMatrix(`_viewMatrix`, camera.viewMatrix);
         this.uniformGPUBuffer.setMatrix(`_pvMatrix`, camera.pvMatrix);
-        this.uniformGPUBuffer.setMatrix(`_projectionMatrixInv`, camera.projectionMatrixInv);
+        this.uniformGPUBuffer.setMatrix(`pvMatrixInv`, camera.projectionMatrixInv);
         this.csmShadowBias.fill(0.0001);
         this.shadowMatrixRaw.fill(0);
         this.csmMatrixRaw.fill(0);
