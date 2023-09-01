@@ -22,8 +22,19 @@ export class Material {
 
     private _renderPasses: Map<RendererType, RenderShader[]>;
 
+    private _depthCompare: GPUCompareFunction;
+
     constructor() {
         this._renderPasses = new Map<RendererType, RenderShader[]>();
+    }
+
+    public get depthCompare(): GPUCompareFunction {
+        return this._depthCompare;
+    }
+
+    public set depthCompare(value: GPUCompareFunction) {
+        this._depthCompare = value;
+        this._defaultPass.depthCompare = value;
     }
 
     public get defaultPass(): RenderShader {
@@ -61,6 +72,17 @@ export class Material {
     public set blendMode(value: BlendMode) {
         let colorPass = this.defaultPass;
         colorPass.blendMode = value;
+    }
+
+
+    public get transparent(): boolean {
+        let colorPass = this.defaultPass;
+        return colorPass.shaderState.transparent;
+    }
+
+    public set transparent(value: boolean) {
+        let colorPass = this.defaultPass;
+        colorPass.shaderState.transparent = value;
     }
 
     public get cullMode(): GPUCullMode {

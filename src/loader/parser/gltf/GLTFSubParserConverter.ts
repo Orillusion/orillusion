@@ -16,7 +16,6 @@ import { RADIANS_TO_DEGREES } from "../../../math/MathUtil";
 import { Quaternion } from "../../../math/Quaternion";
 import { UUID } from "../../../util/Global";
 import { GLTF_Info, GLTF_Node } from "./GLTFInfo";
-import { GLTFParser } from "./GLTFParser";
 import { GLTFSubParser } from "./GLTFSubParser";
 import { GLTFType } from "./GLTFType";
 import { KHR_materials_clearcoat } from "./extends/KHR_materials_clearcoat";
