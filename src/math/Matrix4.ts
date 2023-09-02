@@ -330,13 +330,13 @@ export class Matrix4 {
         this.index = Matrix4.useCount;
         this.offset = Matrix4.wasmMatrixPtr + this.index * Matrix4.blockBytes;
 
-        Matrix4.dynamicGlobalMatrixRef[this.index] = this;
-        Matrix4.useCount++;
-        // console.log(this.index);
-        this.rawData = new Float32Array(Matrix4.dynamicMatrixBytes.buffer, this.offset, 16);
-        // } else {
-        //     this.rawData = new Float32Array(16);
-        // }
+        if (Matrix4.dynamicGlobalMatrixRef) {
+            Matrix4.dynamicGlobalMatrixRef[this.index] = this;
+            Matrix4.useCount++;
+            this.rawData = new Float32Array(Matrix4.dynamicMatrixBytes.buffer, this.offset, 16);
+        } else {
+            this.rawData = new Float32Array(16);
+        }
 
         this._position = new Vector3();
 
