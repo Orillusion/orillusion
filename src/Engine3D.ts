@@ -433,7 +433,7 @@ export class Engine3D {
         if (this._beforeRender) this._beforeRender();
 
         /****** auto start with component list *****/
-        ComponentCollect.startComponents();
+        // ComponentCollect.startComponents();
 
         /****** auto before update with component list *****/
         for (const iterator of ComponentCollect.componentsBeforeUpdateList) {

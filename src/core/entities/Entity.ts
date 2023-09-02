@@ -1,3 +1,4 @@
+import { ComponentCollect } from '../..';
 import { IComponent } from '../../components/IComponent';
 import { RenderNode } from '../../components/renderer/RenderNode';
 import { Transform } from '../../components/Transform';
@@ -133,9 +134,7 @@ export class Entity extends CEventDispatcher {
 
         let index = this.entityChildren.indexOf(child);
         if (index == -1) {
-            if (child.transform.parent) {
-                child.transform.parent.object3D.removeChild(child);
-            }
+            child.removeFromParent();
             child.transform.parent = this.transform;
             this.entityChildren.push(child);
             this._numChildren = this.entityChildren.length;
@@ -296,6 +295,32 @@ export class Entity extends CEventDispatcher {
         }
         return this._boundWorld;
     }
+
+    /**
+     *
+     * @private
+     * @returns
+     */
+    public waitUpdate(): void {
+        if (this._dispose) {
+            if (this.transform.parent) {
+                this.transform.parent.object3D.removeChild(this);
+            }
+            this.components.forEach((v, k) => {
+                v.enable = false;
+                v.destroy();
+            });
+            this.components.clear();
+        } else {
+            ComponentCollect.waitStartComponent.forEach((v, k) => {
+                v.forEach((v) => {
+                    v[`__start`]();
+                })
+                ComponentCollect.waitStartComponent.delete(k);
+            });
+        }
+    }
+
 
     /**
      * release current object

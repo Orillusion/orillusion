@@ -38,9 +38,9 @@ export class ComponentCollect {
     /**
      * @internal
      */
-    private static waitStartComponentBak: Map<Object3D, IComponent[]>;
-    private static waitStartComponentBody: Map<Object3D, IComponent[]>;
-    private static waitStartComponent: Map<Object3D, IComponent[]>;
+    // private static waitStartComponentBak: Map<Object3D, IComponent[]>;
+    // private static waitStartComponentBody: Map<Object3D, IComponent[]>;
+    public static waitStartComponent: Map<Object3D, IComponent[]>;
 
     private static _init: boolean = false;
 
@@ -53,9 +53,9 @@ export class ComponentCollect {
             this.componentsComputeList = new Map<View3D, Map<IComponent, Function>>();
             this.componentsEnablePickerList = new Map<View3D, Map<ColliderComponent, Function>>();
             this.graphicComponent = new Map<View3D, Map<IComponent, Function>>();
-            this.waitStartComponentBak = new Map<Object3D, IComponent[]>();
-            this.waitStartComponentBody = new Map<Object3D, IComponent[]>();
-            this.waitStartComponent = this.waitStartComponentBody;
+            // this.waitStartComponentBak = new Map<Object3D, IComponent[]>();
+            // this.waitStartComponentBody = new Map<Object3D, IComponent[]>();
+            this.waitStartComponent = new Map<Object3D, IComponent[]>();
         }
     }
 
@@ -190,73 +190,4 @@ export class ComponentCollect {
             list.delete(component);
         }
     }
-
-    public static startComponents() {
-        let bak = this.waitStartComponentBak;
-        let body = this.waitStartComponentBody;
-
-        //If the components are created on other's start, they'll be saved in waitStartComponentBak.
-        this.waitStartComponent = bak;
-
-        do {
-            //merge the components from waitStartComponentBak to waitStartComponentBody
-            bak.size > 0 && bak.forEach((list, object3D) => {
-                let listInBody = body.get(object3D);
-                if (!listInBody) {
-                    listInBody = [];
-                    body.set(object3D, listInBody);
-                }
-                for (let c of list) {
-                    if (!c.isDestroyed) {
-                        listInBody.push(c);
-                    }
-                }
-            });
-
-            bak.size > 0 && bak.clear();
-
-            //excute the start method
-            body.size > 0 && body.forEach((list, object3D) => {
-                if (object3D['_dispose']) {
-                    body.delete(object3D);
-                } else {
-                    let remainCount: number = 0;
-                    for (let c of list) {
-                        if (!c.isDestroyed && !c['__isStart']) {
-                            if (c.enable) {
-                                c[`__start`]();
-                            } else {
-                                remainCount++;
-                            }
-                        }
-                    }
-                    if (remainCount == 0) {
-                        body.delete(object3D);
-                    }
-                }
-            });
-        } while (bak.size > 0);
-
-        //revert the waitStartComponent to waitStartComponentBody
-        this.waitStartComponent = body;
-    }
-
-    // public static removeWaitStart(component: IComponent): boolean {
-    //     this.init();
-    //     if (component.object3D['_dispose']) {
-    //         this.waitStartComponent.delete(component.object3D);
-    //         return true;
-    //     } else {
-    //         let arr = this.waitStartComponent.get(component.object3D);
-    //         if (arr) {
-    //             let index = arr.indexOf(component);
-    //             if (index >= 0) {
-    //                 arr.splice(index, 1);
-    //                 return true;
-    //             }
-    //         }
-    //     }
-
-    //     return false;
-    // }
 }

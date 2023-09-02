@@ -1,5 +1,5 @@
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
-import { BoundingBox, BoxGeometry, Camera3D, Color, Engine3D, Frustum, LitMaterial, MeshRenderer, Object3D, Object3DUtil, PointerEvent3D, Time, Vector3, View3D, } from '@orillusion/core';
+import { BoundingBox, BoxGeometry, Camera3D, Color, Engine3D, LitMaterial, MeshRenderer, Object3D, Object3DUtil, PointerEvent3D, Time, Vector3, View3D, } from '@orillusion/core';
 import { createExampleScene, createSceneParam } from '@samples/utils/ExampleScene';
 import { OctreeEntity } from '../../src/core/tree/octree/OctreeEntity';
 import { Octree } from '../../src/core/tree/octree/Octree';
@@ -102,7 +102,8 @@ export class Sample_OctTreeFrustum {
 
         let retBoolean = {};
         for (let item of this.queryResult) {
-            retBoolean[item.uuid] = true;
+            let enable = this.camera.frustum.containsBox(item.renderer.object3D.bound);
+            retBoolean[item.uuid] = enable;
         }
         for (let item of this.entities) {
             item.renderer.enable = retBoolean[item.uuid];

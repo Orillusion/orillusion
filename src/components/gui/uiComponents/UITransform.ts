@@ -36,7 +36,12 @@ export class UITransform extends ComponentBase {
 
     public init(param?: any): void {
         super.init(param);
+        this.transform.eventDispatcher.addEventListener(this.transform.eventLocalChange.type, this.onTransformChange, this);
         this.onParentChange(null, this.object3D.parent?.object3D);
+    }
+
+    private onTransformChange(e) {
+        this.onChange = true;
     }
 
     public addUIInteractive(item: IUIInteractive): this {
@@ -208,7 +213,7 @@ export class UITransform extends ComponentBase {
                 //notice: The component list contains corresponding components that belong to the current Object 3D
                 let components = this.object3D.getComponents(UITransform, this._tempTransforms, true);
                 for (let component of components) {
-                    component['_onChange'] = true;
+                    component._onChange = true;
                     component.needUpdateQuads = true;
                 }
             }
@@ -257,12 +262,12 @@ export class UITransform extends ComponentBase {
         let rot = this.object3D.rotationZ;
         if (this.parent) {
             mtx.updateScaleAndRotation(this.object3D.scaleX, this.object3D.scaleY, rot, rot);
+            mtx.tx = this.object3D.x;
+            mtx.ty = this.object3D.y;
         } else {
             //it's ui panel root
-            mtx.updateScaleAndRotation(1, 1, rot, rot);
+            mtx.updateScaleAndRotation(1, 1, 0, 0);
         }
-        mtx.tx = this.object3D.x;
-        mtx.ty = this.object3D.y;
 
         //if (this.pivotX != 0 || this.pivotY!= 0 )
         //    m.$preMultiplyInto(help_mat3_0.setTo(1, 0, 0, 1, -this.pivotX / 1.5, -this.pivotY / 1.5), m);
@@ -290,5 +295,10 @@ export class UITransform extends ComponentBase {
         }
         self._onChange = false;
         return worldMtx;
+    }
+
+    public beforeDestroy(force?: boolean): void {
+        this.transform.eventDispatcher.addEventListener(this.transform.eventLocalChange.type, this.onTransformChange, this);
+        super.beforeDestroy?.(force);
     }
 }
