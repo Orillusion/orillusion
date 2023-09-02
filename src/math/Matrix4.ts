@@ -117,7 +117,6 @@ export class Matrix4 {
 
     private _position: Vector3;
 
-
     /**
     * alloc web runtime cpu memory totalCount * 4(float) * 4
     * init matrix memory by totalCount * 4(float) * 4
@@ -330,13 +329,13 @@ export class Matrix4 {
         this.index = Matrix4.useCount;
         this.offset = Matrix4.wasmMatrixPtr + this.index * Matrix4.blockBytes;
 
-        if (Matrix4.dynamicGlobalMatrixRef) {
-            Matrix4.dynamicGlobalMatrixRef[this.index] = this;
-            Matrix4.useCount++;
-            this.rawData = new Float32Array(Matrix4.dynamicMatrixBytes.buffer, this.offset, 16);
-        } else {
-            this.rawData = new Float32Array(16);
-        }
+        // if (Matrix4.dynamicGlobalMatrixRef) {
+        Matrix4.dynamicGlobalMatrixRef[this.index] = this;
+        Matrix4.useCount++;
+        this.rawData = new Float32Array(Matrix4.dynamicMatrixBytes.buffer, this.offset, 16);
+        // } else {
+        //     this.rawData = new Float32Array(16);
+        // }
 
         this._position = new Vector3();
 

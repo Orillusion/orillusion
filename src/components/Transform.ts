@@ -347,6 +347,8 @@ export class Transform extends ComponentBase {
             || value.w != this._localRotQuat.w) {
             this._localRotQuat.copyFrom(value);
             this._localRotQuat.getEulerAngles(this._localRot);
+
+            WasmMatrix.setRotation(this.index, this._localRot.x, this._localRot.y, this._localRot.z);
             this.notifyLocalChange();
             this.onRotationChange?.();
 
@@ -657,16 +659,16 @@ export class Transform extends ComponentBase {
     }
 
     public set localPosition(v: Vector3) {
-        if (this._localPos.x != v.x || this._localPos.y != v.y || this._localPos.z != v.z) {
-            this._localPos.copyFrom(v);
-            WasmMatrix.setTranslate(this.index, v.x, v.y, v.z);
-            this.notifyLocalChange();
-            this.onPositionChange?.();
+        // if (this._localPos.x != v.x || this._localPos.y != v.y || this._localPos.z != v.z) {
+        this._localPos.copyFrom(v);
+        WasmMatrix.setTranslate(this.index, v.x, v.y, v.z);
+        this.notifyLocalChange();
+        this.onPositionChange?.();
 
-            if (this.eventPositionChange) {
-                this.eventDispatcher.dispatchEvent(this.eventPositionChange);
-            }
+        if (this.eventPositionChange) {
+            this.eventDispatcher.dispatchEvent(this.eventPositionChange);
         }
+        // }
     }
     /**
      *
@@ -677,16 +679,16 @@ export class Transform extends ComponentBase {
     }
 
     public set localRotation(v: Vector3) {
-        if (this._localRot.x != v.x || this._localRot.y != v.y || this._localRot.z != v.z) {
-            WasmMatrix.setRotation(this.index, v.x, v.y, v.z);
-            this._localRot.copyFrom(v);
-            this.notifyLocalChange();
-            this.onRotationChange?.();
+        // if (this._localRot.x != v.x || this._localRot.y != v.y || this._localRot.z != v.z) {
+        WasmMatrix.setRotation(this.index, v.x, v.y, v.z);
+        this._localRot.copyFrom(v);
+        this.notifyLocalChange();
+        this.onRotationChange?.();
 
-            if (this.eventRotationChange) {
-                this.eventDispatcher.dispatchEvent(this.eventRotationChange);
-            }
+        if (this.eventRotationChange) {
+            this.eventDispatcher.dispatchEvent(this.eventRotationChange);
         }
+        // }
     }
 
     /**
@@ -698,18 +700,18 @@ export class Transform extends ComponentBase {
     }
 
     public set localScale(v: Vector3) {
-        if (this._localScale.x != v.x || this._localScale.y != v.y || this._localScale.z != v.z) {
-            WasmMatrix.setScale(this.index, v.x, v.y, v.z);
-            this._localScale.copyFrom(v);
-            this.notifyLocalChange();
-            this.onScaleChange?.();
+        // if (this._localScale.x != v.x || this._localScale.y != v.y || this._localScale.z != v.z) {
+        WasmMatrix.setScale(this.index, v.x, v.y, v.z);
+        this._localScale.copyFrom(v);
+        this.notifyLocalChange();
+        this.onScaleChange?.();
 
-            if (this.eventScaleChange) {
-                this.eventDispatcher.dispatchEvent(this.eventScaleChange);
-            }
+        if (this.eventScaleChange) {
+            this.eventDispatcher.dispatchEvent(this.eventScaleChange);
         }
-
+        // }
     }
+
     /**
      *
      * The scale of an object relative to its parent
