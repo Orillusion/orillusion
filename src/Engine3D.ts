@@ -427,9 +427,19 @@ export class Engine3D {
         Time.delta = time - Time.time;
         Time.time = time;
         Time.frame += 1;
+        Interpolator.tick(Time.delta);
+
+        /* update all transform */
+        let views = this.views;
+        let i = 0;
+        for (i = 0; i < views.length; i++) {
+            const view = views[i];
+            view.scene.waitUpdate();
+            view.camera.resetPerspective(webGPUContext.aspect);
+        }
+
         this.updateGUIPixelRatio(webGPUContext.canvas.clientWidth, webGPUContext.canvas.clientHeight);
 
-        Interpolator.tick(Time.delta);
         if (this._beforeRender) this._beforeRender();
 
         /****** auto start with component list *****/
@@ -460,11 +470,8 @@ export class Engine3D {
                 };
             }
         }
+
         webGPUContext.device.queue.submit([command.finish()]);
-
-
-
-
 
         /****** auto update with component list *****/
         for (const iterator of ComponentCollect.componentsUpdateList) {
@@ -483,15 +490,6 @@ export class Engine3D {
             this._renderLoop();
         }
 
-        /* update all transform */
-        let views = this.views;
-        let i = 0;
-        for (i = 0; i < views.length; i++) {
-            const view = views[i];
-            view.camera.resetPerspective(webGPUContext.aspect);
-            // view.scene.transform.updateChildTransform()
-            // view.scene.transform.localChange = true;
-        }
         // console.log("useCount", Matrix4.useCount);
         // let t = performance.now();
         WasmMatrix.updateAllContinueTransform(0, Matrix4.useCount, 16);

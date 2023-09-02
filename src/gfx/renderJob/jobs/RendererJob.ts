@@ -190,7 +190,6 @@ export class RendererJob {
     public renderFrame() {
         let view = this._view;
 
-        this.view.scene.waitUpdate();
 
         GlobalBindGroup.getLightEntries(view.scene).update(view);
 
