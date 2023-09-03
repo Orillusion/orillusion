@@ -722,7 +722,7 @@ export class RenderShader extends ShaderBase {
                 renderPipelineDescriptor[`depthStencil`] = {
                     depthWriteEnabled: false,
                     // depthWriteEnabled: shaderState.depthWriteEnabled,
-                    depthCompare: GPUCompareFunction.equal,
+                    depthCompare: GPUCompareFunction.less,
                     // depthCompare: shaderState.depthCompare,
                     format: renderPassState.zPreTexture.format,
                 };
@@ -731,7 +731,8 @@ export class RenderShader extends ShaderBase {
                     depthWriteEnabled: shaderState.depthWriteEnabled,
                     depthCompare: shaderState.depthCompare,
                     format: renderPassState.depthTexture.format,
-                    // depthBias:-0.5
+                    // depthBias: Math.random() * 1,
+                    // depthBiasSlopeScale: Math.random() * 1,
                 };
 
                 if (this.useRz) {
@@ -819,19 +820,35 @@ export class RenderShader extends ShaderBase {
         if (Engine3D.setting.pick.mode == `pixel`) {
             this.defineValue[`USE_WORLDPOS`] = true;
         }
+
         if (Engine3D.setting.gi.enable) {
             this.defineValue[`USEGI`] = true;
         } else {
             this.defineValue[`USEGI`] = false;
         }
+
         if (Engine3D.setting.render.debug) {
             this.defineValue[`USE_DEBUG`] = true;
             this.defineValue[`DEBUG_CLUSTER`] = true;
         }
+
         if (this.shaderState.useLight) {
             this.defineValue[`USE_LIGHT`] = true;
         } else {
             this.defineValue[`USE_LIGHT`] = false;
+        }
+
+        if (Engine3D.setting.render.useLogDepth) {
+            this.defineValue[`USE_LOGDEPTH`] = true;
+            this.shaderState.useFragDepth = true;
+        } else {
+            this.defineValue[`USE_LOGDEPTH`] = false;
+        }
+
+        if (this.shaderState.useFragDepth) {
+            this.defineValue[`USE_OUTDEPTH`] = true;
+        } else {
+            this.defineValue[`USE_OUTDEPTH`] = false;
         }
 
         this.defineValue[`USE_PCF_SHADOW`] = Engine3D.setting.shadow.type == `PCF`;

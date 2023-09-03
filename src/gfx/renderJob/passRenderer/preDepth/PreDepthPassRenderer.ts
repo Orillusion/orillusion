@@ -38,11 +38,11 @@ export class PreDepthPassRenderer extends RendererBase {
         rtDec.loadOp = `clear`;
         let rtFrame = new RTFrame([
         ], [
-            new RTDescriptor()
+            // new RTDescriptor()
         ],
             RTResourceMap.createRTTexture(RTResourceConfig.zPreDepthTexture_NAME, Math.floor(size[0]), Math.floor(size[1]), GPUTextureFormat.depth32float, false),
             null,
-            true
+            false
         );
         this.setRenderStates(rtFrame);
     }

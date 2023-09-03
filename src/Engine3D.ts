@@ -133,6 +133,7 @@ export class Engine3D {
             drawTrMin: 0,
             drawTrMax: Number.MAX_SAFE_INTEGER,
             zPrePass: false,
+            useLogDepth: false,
             gi: false,
             postProcessing: {
                 globalFog: {

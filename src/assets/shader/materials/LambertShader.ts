@@ -55,10 +55,10 @@ export let LambertShader: string = /*wgsl*/ `
         ORI_ShadingInput.BaseColor.w = 1.0 ;
         UnLit();
 
-        let n = globalUniform.near ;
-        let f = globalUniform.far ;
-        let z = ORI_VertexVarying.fragCoord.z ;
-        ORI_FragmentOutput.out_depth = z * (n/(f-n)) ;
+        // let n = globalUniform.near ;
+        // let f = globalUniform.far ;
+        // let z = ORI_VertexVarying.fragCoord.z ;
+        // ORI_FragmentOutput.out_depth = z * (n/(f-n)) ;
     }
 `
 

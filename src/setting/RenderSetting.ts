@@ -23,6 +23,7 @@ export type RenderSetting = {
     drawTrMin: number;
     drawTrMax: number;
     zPrePass: boolean;
+    useLogDepth: boolean;
     gi: boolean;
     /**
      * post effect

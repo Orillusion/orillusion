@@ -30,7 +30,8 @@ export class ShaderState {
     public label: string;
     public useZ: boolean = true;
     public splitTexture: boolean = false;
-    alphaCutoff: number;
+    public alphaCutoff: number;
+    public useFragDepth: boolean = false;
 
     public setFromMapValues(values: Map<string, any>) {
         if (values.has('blendMode')) {

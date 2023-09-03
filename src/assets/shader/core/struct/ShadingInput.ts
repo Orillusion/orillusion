@@ -16,5 +16,6 @@ export let ShadingInput: string = /*wgsl*/ `
         OpacityMask:f32,
 
         Refraction:f32,
+        FragDepth:f32
     }
 `
