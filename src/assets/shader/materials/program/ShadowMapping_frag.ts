@@ -68,24 +68,24 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
                   let csmShadowResult = directShadowMapingIndex(light, shadowMatrix, csm, csmShadowBias);
                   if(csmShadowResult.y < 0.5){
                     validCount ++;
+
+                    var uv = 2.0 * csmShadowResult.zw - vec2<f32>(1.0);
+                    uv = saturate(vec2<f32>(1.0) - abs(uv));
+                    uv /= clamp(globalUniform.csmMargin, 0.01, 0.5);
+                    var weight:f32 = min(uv.x, 1.0);
+                    weight = min(weight, uv.y);
+
                     if(validCount == 1 && csm == csmCount - 1){
-                      visibility = csmShadowResult.x;
+                      visibility = 1.0 - weight + csmShadowResult.x * weight;
                       totalWeight = 1.0;
                     }else{
-                      var uv = 2.0 * csmShadowResult.zw - vec2<f32>(1.0);
-                      uv = saturate(vec2<f32>(1.0) - abs(uv));
-                      uv /= clamp(globalUniform.csmMargin, 0.01, 0.5);
-
-                      var weight:f32 = min(uv.x, 1.0);
-                      weight = min(weight, uv.y);
-                      // if(weight < 1.0){
-                      //   visibility += 0.1;
-                      // }
                       weight *= 1.0 - totalWeight;
                       visibility += csmShadowResult.x * weight;
                       totalWeight += weight;
                     }
-                   
+                    // if(weight < 1.0){
+                    //   visibility += 0.1;
+                    // }
                     if(validCount >= 2 || totalWeight >= 0.99){
                       csmLevel = csm;
                       break;
