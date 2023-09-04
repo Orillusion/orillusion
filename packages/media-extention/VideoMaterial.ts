@@ -1,5 +1,5 @@
 
-import { Color, Engine3D, Material, RenderShader, ShaderLib, Texture, Vector4, registerMaterial } from '@orillusion/core';
+import { Color, Engine3D, Material, RenderShader, ShaderLib, Texture, Vector4 } from '@orillusion/core';
 import VideoShader from "./VideoShader.wgsl?raw";
 
 /**
@@ -18,7 +18,6 @@ export class VideoMaterial extends Material {
 
         this.defaultPass = new RenderShader(`VideoShader`, `VideoShader`);
         this.defaultPass.setShaderEntry(`VertMain`, `FragMain`)
-
 
         this.defaultPass.setShaderEntry(`VertMain`, `FragMain`)
         this.defaultPass.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));

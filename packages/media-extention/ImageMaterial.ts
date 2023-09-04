@@ -15,10 +15,7 @@ export class ImageMaterial extends Material {
     constructor() {
         super();
         ShaderLib.register("ImageMaterialShader", ImageMaterialShader);
-
         this.defaultPass = new RenderShader(`ImageMaterialShader`, `ImageMaterialShader`);
-
-
         this.defaultPass.setShaderEntry(`VertMain`, `FragMain`)
         this.defaultPass.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));
         this.defaultPass.setUniformVector4(`transformUV2`, new Vector4(0, 0, 1, 1));
@@ -38,8 +35,8 @@ export class ImageMaterial extends Material {
         this.defaultPass.setTexture(`baseMap`, Engine3D.res.whiteTexture);
     }
 
-    public set baseMap(texture: Texture) {
-        this.defaultPass.setTexture(`baseMap`, texture);
+    public set baseMap(value: Texture) {
+        this.defaultPass.setTexture(`baseMap`, value);
     }
 
     public get baseMap() {
@@ -72,20 +69,6 @@ export class ImageMaterial extends Material {
      */
     public get rectClip(): Vector4 {
         return this.defaultPass.uniforms[`rectClip`].vector4;
-    }
-
-    /**
-     * Set no env Map
-     */
-    public set envMap(texture: Texture) {
-        //no need env texture
-    }
-
-    /**
-     * Set no shadow Map
-     */
-    public set shadowMap(texture: Texture) {
-        //not need shadowMap texture
     }
 
     /**
