@@ -38,6 +38,28 @@ export class ImageMaterial extends Material {
         this.defaultPass.setTexture(`baseMap`, Engine3D.res.whiteTexture);
     }
 
+    public set baseMap(texture: Texture) {
+        this.defaultPass.setTexture(`baseMap`, texture);
+    }
+
+    public get baseMap() {
+        return this.defaultPass.getTexture(`baseMap`);
+    }
+
+    /**
+     * set base color (tint color)
+     */
+    public set baseColor(color: Color) {
+        this.defaultPass.setUniformColor(`baseColor`, color);
+    }
+
+    /**
+     * get base color (tint color)
+     */
+    public get baseColor() {
+        return this.defaultPass.uniforms[`baseColor`].color;
+    }
+
     /**
      * Set the clip rect area
      */
