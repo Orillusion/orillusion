@@ -1,4 +1,4 @@
-import { Engine3D, ShaderLib, Vector4, Color, BlendMode, registerMaterial, Material, RenderShader } from "@orillusion/core";
+import { Engine3D, ShaderLib, Vector4, Color, BlendMode, Material, RenderShader, Texture } from "@orillusion/core";
 import ChromaKeyShader from "./ChromaKeyShader.wgsl?raw";
 
 /**
@@ -43,6 +43,14 @@ export class ChromaKeyMaterial extends Material {
 
                 // default value
                 this.defaultPass.setTexture(`baseMap`, Engine3D.res.whiteTexture);
+        }
+
+        public set baseMap(value: Texture) {
+                this.defaultPass.setTexture(`baseMap`, value);
+        }
+        
+        public get baseMap() {
+                return this.defaultPass.getTexture(`baseMap`);
         }
 
         /**
