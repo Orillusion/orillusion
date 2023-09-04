@@ -14,6 +14,7 @@ export class VideoMaterial extends Material {
      */
     constructor() {
         super();
+        ShaderLib.register('VideoShader', VideoShader);
 
         this.defaultPass = new RenderShader(`VideoShader`, `VideoShader`);
         this.defaultPass.setShaderEntry(`VertMain`, `FragMain`)
@@ -35,6 +36,15 @@ export class VideoMaterial extends Material {
 
         // default value
         this.defaultPass.setTexture(`baseMap`, Engine3D.res.whiteTexture);
+    }
+
+
+    public set baseMap(value: Texture) {
+        this.defaultPass.setTexture(`baseMap`, value);
+    }
+
+    public get baseMap() {
+        return this.defaultPass.getTexture(`baseMap`);
     }
 
     /**
