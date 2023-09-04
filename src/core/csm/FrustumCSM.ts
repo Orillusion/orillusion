@@ -102,6 +102,8 @@ export class FrustumCSM {
                 worldZ = (far - near) * scale + near;
             }
 
+            worldZ *= shadowSetting.csmAreaScale;
+
             let depth = (p.rawData[10] * worldZ + p.rawData[14]) / worldZ;
             for (let x = 0; x < 2; ++x) {
                 for (let y = 0; y < 2; ++y) {
