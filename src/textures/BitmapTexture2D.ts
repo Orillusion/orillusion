@@ -18,6 +18,7 @@ export class BitmapTexture2D extends Texture {
     constructor(useMipmap: boolean = true) {
         super();
         this.useMipmap = useMipmap;
+        this.visibility = GPUShaderStage.COMPUTE | GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT;
     }
 
     /**

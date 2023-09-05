@@ -1,4 +1,4 @@
-import { RenderShader } from '../..';
+import { RenderShader, Texture } from '../..';
 import { Vector3 } from '../../math/Vector3';
 
 /**
@@ -8,7 +8,7 @@ import { Vector3 } from '../../math/Vector3';
  */
 export class CastShadowMaterialPass extends RenderShader {
     constructor() {
-        super(`shadowCastMap_vert`, `shadowCastMap_frag`);
+        super(`shadowCastMap_vert`, `directionShadowCastMap_frag`);
         this.setShaderEntry("main");
         this.setUniformFloat("cameraFar", 5000);
         this.setUniformVector3("lightWorldPos", Vector3.ZERO);
@@ -19,5 +19,10 @@ export class CastShadowMaterialPass extends RenderShader {
 
         this.setDefine(`USE_ALPHACUT`, true);
         // this.alphaCutoff = 0.5 ;
+    }
+
+    public setTexture(name: string, texture: Texture) {
+        texture.visibility = GPUShaderStage.COMPUTE | GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT;
+        super.setTexture(name, texture);
     }
 }

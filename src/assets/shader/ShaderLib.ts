@@ -34,7 +34,7 @@ import { BxdfDebug_frag } from './materials/program/BxdfDebug_frag';
 import { Quad_depth2d_frag_wgsl, Quad_depthCube_frag_wgsl, Quad_frag_wgsl, Quad_vert_wgsl } from './quad/Quad_shader';
 import { ColorUtil } from './utils/ColorUtil';
 import { GenerayRandomDir } from './utils/GenerayRandomDir';
-import { ClusterLight, GBuffer_pass, LambertShader, MatrixShader, QuadGlsl_fs, QuadGlsl_vs, SkyGBuffer_pass, UnLit, ZPassShader_fs, ZPassShader_vs, castPointShadowMap_vert, shadowCastMap_frag, shadowCastMap_vert } from '../..';
+import { ClusterLight, GBuffer_pass, LambertShader, MatrixShader, QuadGlsl_fs, QuadGlsl_vs, SkyGBuffer_pass, UnLit, ZPassShader_fs, ZPassShader_vs, castPointShadowMap_vert, directionShadowCastMap_frag, shadowCastMap_frag, shadowCastMap_vert } from '../..';
 
 /**
  * @internal
@@ -112,7 +112,7 @@ export class ShaderLib {
         ShaderLib.register("shadowCastMap_frag", shadowCastMap_frag);
 
         ShaderLib.register("shadowCastMap_vert", shadowCastMap_vert);
-        ShaderLib.register("shadowCastMap_frag", shadowCastMap_frag);
+        ShaderLib.register("directionShadowCastMap_frag", directionShadowCastMap_frag);
 
         ShaderLib.register("ZPass_shader_vs", ZPassShader_vs);
         ShaderLib.register("ZPass_shader_fs", ZPassShader_fs);

@@ -50,6 +50,8 @@ struct VertexAttributes{
   #endif
 }
 
+
+
 @vertex
 fn main(vertex:VertexAttributes) -> VertexOutput {
     worldMatrix = models.matrix[vertex.index];
@@ -71,6 +73,7 @@ fn main(vertex:VertexAttributes) -> VertexOutput {
 
     var worldPos = worldMatrix * vec4<f32>(vertexPosition, 1.0) ;
     var vPos = shadowMatrix * worldPos;
+
     return VertexOutput(vertex.uv, vPos );  
 }
 `
@@ -217,14 +220,14 @@ export let directionShadowCastMap_frag: string = /*wgsl*/ `
         // distance = distance / materialUniform.cameraFar ;
         var fragOut:FragmentOutput; 
 
-      #if USE_ALPHACUT
-        let Albedo = textureSample(baseMap,baseMapSampler,fragUV);
-        if(Albedo.w > 0.5){
-          fragOut = FragmentOutput(vec4<f32>(0.0),distance);
-        }
-      #else
-        fragOut = FragmentOutput(vec4<f32>(0.0),distance);
-      #endif
+      // #if USE_ALPHACUT
+      //   let Albedo = textureSample(baseMap,baseMapSampler,fragUV);
+      //   if(Albedo.w > 0.5){
+      //     fragOut = FragmentOutput(vec4<f32>(0.0),distance);
+      //   }
+      // #else
+      //   fragOut = FragmentOutput(vec4<f32>(0.0),distance);
+      // #endif
       
         return fragOut ;
     }

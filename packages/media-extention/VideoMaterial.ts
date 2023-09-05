@@ -1,6 +1,6 @@
 
-import { Color, Engine3D, Material, RenderShader, ShaderLib, Texture, Vector4 } from '@orillusion/core';
-import VideoShader from "./VideoShader.wgsl?raw";
+import { Color, Engine3D, Material, RenderShader, ShaderLib, Texture, Vector4, registerMaterial } from '@orillusion/core';
+import { VideoShader } from './VideoShader';
 
 /**
  * Video Material
@@ -15,6 +15,8 @@ export class VideoMaterial extends Material {
     constructor() {
         super();
         ShaderLib.register('VideoShader', VideoShader);
+
+        ShaderLib.register("VideoShader", VideoShader);
 
         this.defaultPass = new RenderShader(`VideoShader`, `VideoShader`);
         this.defaultPass.setShaderEntry(`VertMain`, `FragMain`)
@@ -37,15 +39,6 @@ export class VideoMaterial extends Material {
         this.defaultPass.setTexture(`baseMap`, Engine3D.res.whiteTexture);
     }
 
-
-    public set baseMap(value: Texture) {
-        this.defaultPass.setTexture(`baseMap`, value);
-    }
-
-    public get baseMap() {
-        return this.defaultPass.getTexture(`baseMap`);
-    }
-
     /**
      * Set the clip rect area
      */
@@ -58,6 +51,14 @@ export class VideoMaterial extends Material {
      */
     public get rectClip(): Vector4 {
         return this.defaultPass.uniforms[`rectClip`].vector4;
+    }
+
+    public get baseMap(): Texture {
+        return this.defaultPass.getTexture(`baseMap`);
+    }
+
+    public set baseMap(value: Texture) {
+        this.defaultPass.setTexture(`baseMap`, value);
     }
 
     /**
