@@ -24,13 +24,13 @@ class Sample_Terrain {
         this.view.camera = CameraUtil.createCamera3DObject(this.view.scene);
         this.view.camera.perspective(60, webGPUContext.aspect, 1, 50000.0);
         this.view.camera.object3D.z = -15;
-        this.view.camera.object3D.addComponent(HoverCameraController).setCamera(35, -20, 20000);
+        this.view.camera.object3D.addComponent(HoverCameraController).setCamera(35, -20, 10000);
 
         Engine3D.startRenderView(this.view);
 
         this.post = this.view.scene.addComponent(PostProcessingComponent);
         let fog = this.post.addPost(GlobalFog);
-        fog.start = 116;
+        fog.start = 2000;
         fog.end = 0;
         fog.fogHeightScale = 0.116;
         fog.density = 0.094;
