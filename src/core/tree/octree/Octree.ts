@@ -115,21 +115,21 @@ export class Octree {
   getRenderNode(frustum: Frustum, ret: CollectInfo) {
     if (this.level == 0 || frustum.containsBox2(this.box) > 0) {
       if (this.entities.size > 0) {
-        let cacheMinSize: Vector3 = new Vector3();
-        let cacheMaxSize: Vector3 = new Vector3();
+        // let cacheMinSize: Vector3 = new Vector3();
+        // let cacheMaxSize: Vector3 = new Vector3();
         for (const item of this.entities.values()) {
           if (this.level > Octree.autoSplitLevel || frustum.containsBox2(item.renderer.object3D.bound) > 0) {
             // ret.push(item.renderer);
             if (item.renderer.renderOrder < 3000) {
-
-              if (item.renderer.object3D.bound.min.equals(cacheMinSize) && item.renderer.object3D.bound.max.equals(cacheMaxSize)) {
-                // console.log("bound same");
-                continue;
-              } else {
-                cacheMinSize.copy(item.renderer.object3D.bound.min);
-                cacheMaxSize.copy(item.renderer.object3D.bound.max);
-                ret.opaqueList.push(item.renderer);
-              }
+              // if (item.renderer.object3D.bound.min.equals(cacheMinSize) && item.renderer.object3D.bound.max.equals(cacheMaxSize)) {
+              //   // console.log("bound same");
+              //   continue;
+              // } else {
+              //   cacheMinSize.copy(item.renderer.object3D.bound.min);
+              //   cacheMaxSize.copy(item.renderer.object3D.bound.max);
+              //   ret.opaqueList.push(item.renderer);
+              // }
+              ret.opaqueList.push(item.renderer);
             } else if (item.renderer.renderOrder >= 3000) {
               ret.transparentList.push(item.renderer);
             }
