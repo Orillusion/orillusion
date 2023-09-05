@@ -112,6 +112,21 @@ export class RenderShader extends ShaderBase {
         this._bufferDic.set(`materialUniform`, this.materialDataUniformBuffer);
     }
 
+
+    /**
+     * Blend mode
+     */
+    public get renderOrder(): number {
+        return this.shaderState.renderOrder;
+    }
+
+    public set renderOrder(value: number) {
+        if (this.shaderState.renderOrder != value) {
+            this._valueChange = true;
+        }
+        this.shaderState.renderOrder = value;
+    }
+
     /**
         * Cull mode
         */
@@ -201,6 +216,9 @@ export class RenderShader extends ShaderBase {
     public set blendMode(value: BlendMode) {
         if (this.shaderState.blendMode != value) {
             this._valueChange = true;
+            if (value != BlendMode.NORMAL && value != BlendMode.NONE) {
+                this.renderOrder = 3000;
+            }
         }
         this.shaderState.blendMode = value;
     }
@@ -721,9 +739,7 @@ export class RenderShader extends ShaderBase {
             if (Engine3D.setting.render.zPrePass && renderPassState.zPreTexture && shaderState.useZ) {
                 renderPipelineDescriptor[`depthStencil`] = {
                     depthWriteEnabled: false,
-                    // depthWriteEnabled: shaderState.depthWriteEnabled,
                     depthCompare: GPUCompareFunction.less,
-                    // depthCompare: shaderState.depthCompare,
                     format: renderPassState.zPreTexture.format,
                 };
             } else {
@@ -731,13 +747,8 @@ export class RenderShader extends ShaderBase {
                     depthWriteEnabled: shaderState.depthWriteEnabled,
                     depthCompare: shaderState.depthCompare,
                     format: renderPassState.depthTexture.format,
-                    // depthBias: Math.random() * 1,
-                    // depthBiasSlopeScale: Math.random() * 1,
                 };
 
-                if (this.useRz) {
-                    // tmpDes[`depthStencil`].depthCompare = GPUCompareFunction.less ;
-                }
             }
         }
 
@@ -904,7 +915,6 @@ export class RenderShader extends ShaderBase {
                 }
             }
         }
-
 
         this.bindGroups.length = 0;
         this.shaderState = null;

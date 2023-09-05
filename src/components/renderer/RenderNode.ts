@@ -185,10 +185,11 @@ export class RenderNode extends ComponentBase {
             const pass = passArray[0];
             if (pass.shaderState.transparent) {
                 transparent = true;
-                sort = sort > pass.shaderState.renderOrder ? sort : pass.shaderState.renderOrder;
+                sort = sort > pass.renderOrder ? sort : pass.renderOrder;
             }
         }
-        this.renderOrder = transparent ? this.renderOrder : sort;
+        // this.renderOrder = transparent ? this.renderOrder : sort;
+        this.renderOrder = sort;
 
         if (!this._readyPipeline) {
             this.initPipeline();
@@ -254,8 +255,8 @@ export class RenderNode extends ComponentBase {
                 const element = this.materials[i];
                 const passArray = element.getPass(RendererType.COLOR);
                 const pass = passArray[0];
-                if (pass.shaderState.transparent) {
-                    sort = sort > pass.shaderState.renderOrder ? sort : pass.shaderState.renderOrder;
+                if (pass.renderOrder >= 3000) {
+                    sort = sort > pass.renderOrder ? sort : pass.renderOrder;
                 } else {
                     sort = Math.max(sort - 3000, 0);
                 }

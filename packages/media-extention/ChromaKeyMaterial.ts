@@ -1,5 +1,5 @@
 import { Engine3D, ShaderLib, Vector4, Color, BlendMode, registerMaterial, Material, RenderShader } from "@orillusion/core";
-import ChromaKeyShader from "./ChromaKeyShader.wgsl?raw";
+import { ChromaKeyShader } from "./ChromaKeyShader";
 
 /**
  * ChromaKey Material

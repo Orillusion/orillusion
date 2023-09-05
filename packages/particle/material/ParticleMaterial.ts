@@ -30,7 +30,7 @@ export class ParticleMaterial extends Material {
         // default value
         this.baseMap = Engine3D.res.whiteTexture;
         this.blendMode = BlendMode.ADD;
-        this.defaultPass.shaderState.renderOrder = 3001;
+        this.defaultPass.renderOrder = 3001;
         this.defaultPass.shaderState.transparent = true;
         this.defaultPass.shaderState.depthWriteEnabled = false;
         this.defaultPass.shaderState.depthCompare = GPUCompareFunction.less;
