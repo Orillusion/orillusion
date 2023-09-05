@@ -145,6 +145,15 @@ export class Octree {
   }
 
   boxCasts(box: BoundingBox, ret: OctreeEntity[]) {
+    if (box.intersectsBox(this.box)) {
+      if (this.entities.size > 0) {
+        ret.push(...this.entities.values());
+      }
+      for (let child of this.subTrees) {
+        child.boxCasts(box, ret);
+      }
+      return true;
+    }
     return false;
   }
 
