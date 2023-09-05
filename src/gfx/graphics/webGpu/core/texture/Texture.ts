@@ -208,7 +208,7 @@ export class Texture implements GPUSamplerDescriptor {
         this.mipmapFilter = `linear`;
         this.addressModeU = GPUAddressMode.repeat;
         this.addressModeV = GPUAddressMode.repeat;
-        this.visibility = GPUShaderStage.FRAGMENT;
+        // this.visibility = GPUShaderStage.FRAGMENT;
     }
 
     public init(): this {
@@ -283,7 +283,7 @@ export class Texture implements GPUSamplerDescriptor {
         this.width = width;
         this.height = height;
 
-        this.visibility = GPUShaderStage.FRAGMENT;
+        // this.visibility = GPUShaderStage.FRAGMENT;
 
         this.createTexture(imageBitmap);
     }

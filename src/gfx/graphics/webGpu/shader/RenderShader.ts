@@ -578,6 +578,7 @@ export class RenderShader extends ShaderBase {
         return entries;
     }
 
+    private _cacheEntries
     protected genGroups(groupIndex: number, infos: ShaderReflectionVarInfo[][], force: boolean = false) {
         if (!this.bindGroups[groupIndex] || force) {
             const shaderRefs: ShaderReflectionVarInfo[] = infos[groupIndex];
@@ -759,7 +760,6 @@ export class RenderShader extends ShaderBase {
             this.pipeline = GPUContext.createPipeline(renderPipelineDescriptor as GPURenderPipelineDescriptor);
             PipelinePool.setSharePipeline(this.shaderVariant, this.pipeline);
         }
-
     }
 
     private createGroupLayouts() {
@@ -775,7 +775,7 @@ export class RenderShader extends ShaderBase {
                 this._groupsShaderReflectionVarInfos[i] = shaderRefs;
                 let layout = webGPUContext.device.createBindGroupLayout({
                     entries,
-                    label: `vs${this.vsName} fs${this.fsName}`
+                    label: `vs${this.vsName} fs${this.fsName} ${shaderRefs.length}`
                 });
                 this.bindGroupLayouts[i] = layout;
             } else {

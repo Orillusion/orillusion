@@ -60,7 +60,7 @@ class Sample_ShadowAlpha {
         let tex = await Engine3D.res.loadTexture("textures/grid.jpg");
 
         {
-            let geometry = new BoxGeometry(20, 100, 20);
+            let geometry = new SphereGeometry(20, 100, 20);
             let material = new LitMaterial();
             let obj = new Object3D();
             let mr = obj.addComponent(MeshRenderer);
