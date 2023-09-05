@@ -70,7 +70,7 @@ export class GrassMaterial extends Material {
     }
 
     public set baseMap(texture: Texture) {
-        texture.visibility = GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT;
+        // texture.visibility = GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT;
         let shadowPass = this.getPass(RendererType.SHADOW)[0];
 
         this.defaultPass.setTexture(`baseMap`, texture);
@@ -82,7 +82,7 @@ export class GrassMaterial extends Material {
     }
 
     public set windMap(texture: Texture) {
-        texture.visibility = GPUShaderStage.VERTEX;
+        // texture.visibility = GPUShaderStage.VERTEX;
         texture.addressModeU = GPUAddressMode.repeat;
         texture.addressModeV = GPUAddressMode.repeat;
         this.defaultPass.setTexture("windMap", texture);

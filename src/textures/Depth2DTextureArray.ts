@@ -18,7 +18,7 @@ export class Depth2DTextureArray extends Texture implements ITexture {
     constructor(width: number, height: number, format: GPUTextureFormat = GPUTextureFormat.depth32float, numberLayer: number = 4) {
         super(width, height, numberLayer);
 
-        this.visibility = GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT | GPUShaderStage.COMPUTE;
+        // this.visibility = GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT | GPUShaderStage.COMPUTE;
 
         // texture_depth_2d_array
         this.format = format;

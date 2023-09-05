@@ -22,7 +22,7 @@ export class CastShadowMaterialPass extends RenderShader {
     }
 
     public setTexture(name: string, texture: Texture) {
-        texture.visibility = GPUShaderStage.COMPUTE | GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT;
+        // texture.visibility = GPUShaderStage.COMPUTE | GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT;
         super.setTexture(name, texture);
     }
 }

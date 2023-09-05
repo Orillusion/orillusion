@@ -9,9 +9,8 @@ export class Sample_InitEngine {
     async run() {
 
         OcclusionSystem.enable = false;
-
         Engine3D.setting.shadow.shadowBound = 256
-        Engine3D.setting.shadow.shadowBias = 0.002
+        Engine3D.setting.render.useLogDepth = true
         // init engine
         await Engine3D.init({ renderLoop: () => this.update() });
 
