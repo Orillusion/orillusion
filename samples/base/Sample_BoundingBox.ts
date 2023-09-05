@@ -14,13 +14,13 @@ class Sample_BoundingBox {
         GUIHelp.init();
         let param = createSceneParam();
         param.camera.near = 0.01;
-        param.camera.far = 100;
-        param.camera.distance = 2;
+        param.camera.far = 1000;
+        param.camera.distance = 20;
         let exampleScene = createExampleScene(param);
         Engine3D.startRenderViews([exampleScene.view]);
         Engine3D.getRenderJob(exampleScene.view);
 
-        let box = Object3DUtil.GetSingleCube(0.5, 0.3, 0.8, 1, 1, 1);
+        let box = Object3DUtil.GetSingleCube(5, 3, 8, 1, 1, 1);
         box.transform.eventDispatcher.addEventListener(Transform.LOCAL_ONCHANGE, this.logChange, this);
 
         this.box = box;
@@ -44,9 +44,9 @@ class Sample_BoundingBox {
     }
 
     red = new Color(1, 0, 0, 1);
-    gree = new Color(0, 1, 0, 1);
+    green = new Color(0, 1, 0, 1);
     loop() {
-        this.view.graphic3D.drawBoundingBox(this.box.instanceID, this.box.bound as any, this.gree);
+        this.view.graphic3D.drawBoundingBox(this.box.instanceID, this.box.bound as any, this.green);
         this.view.graphic3D.drawBoundingBox(this.container.instanceID, this.container.bound as any, this.red);
     }
 }

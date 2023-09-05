@@ -11,15 +11,14 @@ class TestComponent1 extends ComponentBase {
         console.log("TestComponent1 onUpdate");
     }
     onLateUpdate() {
-        console.log("TestComponent1 onLateUpdate");
-        console.log("TestComponent1", this.i);
+        console.log("TestComponent1 onLateUpdate", this.i);
     }
 }
 
 class TestComponent2 extends ComponentBase {
     i = 0;
     start() {
-        console.log("TestComponent2 onUpdate");
+        console.log("TestComponent2 start");
         this.transform.rotationY = 0.0;
         this.object3D.addComponent(TestComponent1);
     }
@@ -29,8 +28,7 @@ class TestComponent2 extends ComponentBase {
         console.log("TestComponent2 onUpdate");
     }
     onLateUpdate() {
-        console.log("TestComponent2 onLateUpdate");
-        console.log("TestComponent2 ", this.i);
+        console.log("TestComponent2 onLateUpdate", this.i);
     }
 }
 

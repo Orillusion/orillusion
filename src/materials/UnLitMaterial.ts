@@ -50,6 +50,10 @@ export class UnLitMaterial extends Material {
         this.defaultPass.setTexture(`baseMap`, texture);
     }
 
+    public get baseMap() {
+        return this.defaultPass.getTexture(`baseMap`);
+    }
+
     /**
      * set base color (tint color)
      */

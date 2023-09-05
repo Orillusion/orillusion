@@ -14,12 +14,12 @@ export class VideoMaterial extends Material {
      */
     constructor() {
         super();
+        ShaderLib.register('VideoShader', VideoShader);
 
         ShaderLib.register("VideoShader", VideoShader);
 
         this.defaultPass = new RenderShader(`VideoShader`, `VideoShader`);
         this.defaultPass.setShaderEntry(`VertMain`, `FragMain`)
-
 
         this.defaultPass.setShaderEntry(`VertMain`, `FragMain`)
         this.defaultPass.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));

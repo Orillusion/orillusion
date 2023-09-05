@@ -239,6 +239,7 @@ export class Engine3D {
             updateFrameRate: 2,
             csmMargin: 0.1,
             csmScatteringExp: 0.7,
+            csmAreaScale: 0.4,
             debug: false,
         },
         gi: {

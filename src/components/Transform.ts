@@ -237,6 +237,7 @@ export class Transform extends ComponentBase {
                 transform.notifyLocalChange();
             }
         }
+        this.eventDispatcher.dispatchEvent(this.eventLocalChange);
     }
 
     public get up(): Vector3 {

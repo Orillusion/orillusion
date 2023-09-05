@@ -59,10 +59,13 @@ export type ShadowSetting = {
      */
     csmMargin: number;
     /**
-     * scattering csm Area Exponent
+     * scattering csm Area Exponent for each level
      */
     csmScatteringExp: number;
-
+    /**
+     * scale csm Area of all level
+     */
+    csmAreaScale: number;
     // /**
     //  * Shadow near section
     //  */
