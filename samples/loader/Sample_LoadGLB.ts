@@ -21,6 +21,7 @@ export class Sample_LoadGLB {
         this.scene.envMap = skyMap;
 
         Engine3D.startRenderView(this.scene.view);
+        GUIHelp.endFolder();
         await this.initScene();
 
         let post = this.scene.addComponent(PostProcessingComponent);
@@ -108,7 +109,7 @@ export class Sample_LoadGLB {
         )
 
         let model: Object3D;
-        GUIHelp.add({ name: `HIE-Hand-Armor` }, 'name', list).onChange(async (v) => {
+        GUIHelp.add({ Model: `HIE-Hand-Armor` }, 'Model', list).onChange(async (v) => {
             let { url, scale, offset, rotation } = JSON.parse(v);
             if (model) {
                 this.scene.removeChild(model);
