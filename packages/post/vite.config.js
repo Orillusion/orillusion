@@ -3,7 +3,8 @@ const path = require('path')
 export default defineConfig({
     resolve: {
         alias: {
-            '@orillusion/core': path.resolve(__dirname, '../../src')
+            '@orillusion/core': path.resolve(__dirname, '../../src'),
+            '@orillusion': path.resolve(__dirname, '../')
         }
     },
     build: {

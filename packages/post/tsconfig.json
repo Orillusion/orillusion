@@ -24,6 +24,7 @@
         "strict": false,
         "paths": {
             "@orillusion/core": ["../../src"],
+            "@orillusion/*": ["../*"]
         }
     }
 }
