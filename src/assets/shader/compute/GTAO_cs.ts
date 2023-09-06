@@ -120,7 +120,7 @@ export let GTAO_cs: string = /*wgsl*/ `
                 let distance = length(distanceVec2);
                 if(distance < gtaoData.maxDistance && distance > 1.0){
                   let sampleDir = normalize(distanceVec2);
-                  var factor = saturate(dot(sampleDir, originNormal) - 0.01);
+                  var factor = saturate(dot(sampleDir, originNormal) - 0.1);
                   factor *= 1.0 - distance / gtaoData.maxDistance;
                   weight += factor;
                 }
