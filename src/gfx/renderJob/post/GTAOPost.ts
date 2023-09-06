@@ -166,7 +166,7 @@ export class GTAOPost extends PostBase {
 
         this.gtaoCompute = new ComputeShader(GTAO_cs);
 
-        let gtaoSetting: UniformGPUBuffer = new UniformGPUBuffer(4 * 3); //vector4 * 2
+        let gtaoSetting: UniformGPUBuffer = new UniformGPUBuffer(4 * 2); //vector4 * 2
         this.gtaoCompute.setUniformBuffer('gtaoData', gtaoSetting);
 
         this.directionsArray = new Float32Array(8 * 2);
@@ -257,9 +257,6 @@ export class GTAOPost extends PostBase {
         let camera = view.camera;
         this.gtaoSetting.setFloat('cameraNear', camera.near);
         this.gtaoSetting.setFloat('cameraFar', camera.far);
-        this.gtaoSetting.setFloat('viewPortWidth', camera.viewPort.width);
-        this.gtaoSetting.setFloat('viewPortHeight', camera.viewPort.height);
-
         this.gtaoSetting.setFloat('multiBounce', cfg.multiBounce ? 1 : 0);
         this.gtaoSetting.setFloat('blendColor', cfg.blendColor ? 1 : 0);
 

@@ -8,12 +8,8 @@ export let GTAO_cs: string = /*wgsl*/ `
       rayMarchSegment: f32,
       cameraNear: f32,
       cameraFar: f32,
-      viewPortWidth: f32,
-      viewPortHeight: f32,
       multiBounce: f32,
       blendColor: f32,
-      slot1: f32,
-      slot2: f32,
     }
 
     @group(0) @binding(1) var<uniform> gtaoData: GTAO;
@@ -57,7 +53,7 @@ export let GTAO_cs: string = /*wgsl*/ `
       var factor:f32 = mix(lastFactor, newFactor, 0.6);
       aoBuffer[index] = factor;
       factor = blurFactor(factor);
-      factor = 1.0 - factor * gtaoData.darkFactor;
+      factor = saturate(1.0 - factor * gtaoData.darkFactor);
       var gtao = vec3<f32>(factor);
       if(gtaoData.multiBounce > 0.5){
           gtao = MultiBounce(factor, oc.xyz);
@@ -81,7 +77,7 @@ export let GTAO_cs: string = /*wgsl*/ `
     fn calcPixelByNDC(ndcZ:f32) -> f32{
       let nearAspect = gtaoData.cameraNear / (gtaoData.cameraFar - gtaoData.cameraNear);
       let aspect = (1.0 + nearAspect) / (ndcZ + nearAspect);
-      var viewPortMax = max(gtaoData.viewPortWidth, gtaoData.viewPortHeight);
+      var viewPortMax = min(f32(texSize.x), f32(texSize.y));
       var maxPixel = min(viewPortMax, gtaoData.maxPixel * aspect);
       maxPixel = max(0.1, maxPixel);
       return maxPixel;
@@ -108,26 +104,30 @@ export let GTAO_cs: string = /*wgsl*/ `
     fn rayMarch() -> f32{
       let originNormal = normalize(vec3<f32>(wNormal.xyz) * 2.0 - 1.0);
       let stepPixel = maxPixelScaled / gtaoData.rayMarchSegment;
-      var totalWeight:f32 = 0.001;
-      var darkWeight:f32 = 0.0;
+      var weight:f32 = 0.0;
+      var totalWeight:f32 = 0.1;
       for(var i:i32 = 0; i < 8; i += 1){
           let dirVec2 = directions[i];
           for(var j:f32 = 1.1; j < maxPixelScaled; j += stepPixel){
               var sampleCoord = vec2<i32>(dirVec2 * j) + fragCoord;
-              sampleCoord = clamp(sampleCoord, vec2<i32>(0), vec2<i32>(texSize - 1));
-              let samplePosition = textureLoad(posTex, sampleCoord, 0).xyz;
-              let distanceVec2 = samplePosition - wPosition;
-              let distance = length(distanceVec2);
-              if(distance < gtaoData.maxDistance){
+              if(sampleCoord.x >= 0 && sampleCoord.y >= 0 
+                && sampleCoord.x < i32(texSize.x) 
+                && sampleCoord.y < i32(texSize.y) )
+              {
+                totalWeight += 1.0;
+                let samplePosition = textureLoad(posTex, sampleCoord, 0).xyz;
+                let distanceVec2 = samplePosition - wPosition;
+                let distance = length(distanceVec2);
+                if(distance < gtaoData.maxDistance && distance > 1.0){
                   let sampleDir = normalize(distanceVec2);
-                  var factor = max(0.0, dot(sampleDir, originNormal) - 0.1);
+                  var factor = saturate(dot(sampleDir, originNormal) - 0.01);
                   factor *= 1.0 - distance / gtaoData.maxDistance;
-                  darkWeight += factor;
-                  totalWeight += 1.0;
+                  weight += factor;
+                }
               }
           }
       }
-      
-      return darkWeight/totalWeight ;
+      weight /= totalWeight;
+      return weight;
     }
   `
