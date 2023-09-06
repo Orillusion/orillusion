@@ -2,9 +2,10 @@ import {
 	View3D, DirectLight, Engine3D,
 	PostProcessingComponent, LitMaterial, HoverCameraController,
 	KelvinUtil, MeshRenderer, Object3D, PlaneGeometry, Scene3D, SphereGeometry,
-	CameraUtil, webGPUContext, BoxGeometry, TAAPost, AtmosphericComponent, GTAOPost
+	CameraUtil, webGPUContext, BoxGeometry, TAAPost, AtmosphericComponent, GTAOPost, Color, HDRBloomPost
 } from '@orillusion/core';
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
+import { GUIUtil } from '@samples/utils/GUIUtil';
 
 class Sample_GTAO {
 	lightObj: Object3D;
@@ -13,8 +14,10 @@ class Sample_GTAO {
 	async run() {
 		Engine3D.setting.shadow.shadowSize = 2048
 		Engine3D.setting.shadow.shadowBound = 500;
+		Engine3D.setting.render.debug = true;
 
 		await Engine3D.init();
+		GUIHelp.init();
 
 		this.scene = new Scene3D();
 		let sky = this.scene.addComponent(AtmosphericComponent);
@@ -26,35 +29,37 @@ class Sample_GTAO {
 		ctrl.setCamera(0, -15, 500);
 		await this.initScene();
 
-		sky.relativeTransform = this.lightObj.transform;
 
 		let view = new View3D();
 		view.scene = this.scene;
 		view.camera = mainCamera;
 		Engine3D.startRenderView(view);
 
+		this.lightObj = new Object3D();
+		this.lightObj.rotationX = 15;
+		this.lightObj.rotationY = 134;
+		this.lightObj.rotationZ = 0;
+		let lc = this.lightObj.addComponent(DirectLight);
+		lc.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
+		lc.castShadow = true;
+		lc.intensity = 45;
+		lc.indirect = 0.3;
+		this.scene.addChild(this.lightObj);
+		GUIUtil.renderDirLight(lc);
+		sky.relativeTransform = this.lightObj.transform;
+
 		let postProcessing = this.scene.addComponent(PostProcessingComponent);
 		let post = postProcessing.addPost(GTAOPost);
 		post.maxDistance = 60;
 		this.gui();
+
+		GUIUtil.renderDebug();
 	}
 
 	async initScene() {
 		{
-			this.lightObj = new Object3D();
-			this.lightObj.rotationX = 20;
-			this.lightObj.rotationY = 110;
-			this.lightObj.rotationZ = 0;
-			let lc = this.lightObj.addComponent(DirectLight);
-			lc.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
-			lc.castShadow = true;
-			lc.intensity = 30;
-			this.scene.addChild(this.lightObj);
-		}
-
-		{
 			let mat = new LitMaterial();
-			mat.baseMap = Engine3D.res.grayTexture;
+			mat.baseMap = Engine3D.res.whiteTexture;
 			mat.normalMap = Engine3D.res.normalTexture;
 			mat.aoMap = Engine3D.res.whiteTexture;
 			mat.maskMap = Engine3D.res.createTexture(32, 32, 255.0, 255.0, 0.0, 1);
@@ -97,6 +102,16 @@ class Sample_GTAO {
 
 			{
 				{
+					let mat = new LitMaterial();
+					mat.baseMap = Engine3D.res.whiteTexture;
+					mat.baseColor = new Color(1.0, 0.464, 0.0);
+					mat.normalMap = Engine3D.res.normalTexture;
+					mat.aoMap = Engine3D.res.whiteTexture;
+					mat.maskMap = Engine3D.res.createTexture(32, 32, 255.0, 255.0, 0.0, 1);
+					mat.emissiveMap = Engine3D.res.blackTexture;
+					mat.roughness = 1.0;
+					mat.metallic = 0.0;
+
 					let sp = new Object3D();
 					let mr = sp.addComponent(MeshRenderer);
 					mr.geometry = new SphereGeometry(50, 30, 30);

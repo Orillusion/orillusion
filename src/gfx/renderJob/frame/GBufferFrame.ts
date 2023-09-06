@@ -32,8 +32,8 @@ export class GBufferFrame extends RTFrame {
         // colorRTDes.clearValue = [1,0,0,1];
 
         //depth24plus-stencil8
-        // let depthTexture = new VirtualTexture(rtWidth, rtHeight, GPUTextureFormat.depth32float, false);
-        let depthTexture = new VirtualTexture(rtWidth, rtHeight, `depth24plus`, false);
+        let depthTexture = new VirtualTexture(rtWidth, rtHeight, GPUTextureFormat.depth32float, false);
+        // let depthTexture = new VirtualTexture(rtWidth, rtHeight, `depth24plus`, false);
         depthTexture.name = `depthTexture`;
         let depthDec = new RTDescriptor();
         depthDec.loadOp = `load`;

@@ -1,7 +1,10 @@
+import { WasmMatrix } from '@orillusion/wasm-matrix/WasmMatrix';
 import { test, expect, end, delay } from '../util'
 import { BoundingBox, Matrix4, Ray, Triangle, Vector3 } from '@orillusion/core';
 
 await test('Ray base', async () => {
+    await WasmMatrix.init(Matrix4.allocCount);
+
     let ray = new Ray(Vector3.ZERO, Vector3.X_AXIS);
 
     expect(ray.origin.x).toEqual(Vector3.ZERO.x);
@@ -23,6 +26,7 @@ await test('Ray base', async () => {
 })
 
 await test('Ray intersectsBox', async () => {
+    await WasmMatrix.init(Matrix4.allocCount);
     let ray = new Ray(Vector3.ZERO, Vector3.X_AXIS);
     let boundBox = new BoundingBox(Vector3.ZERO, new Vector3(10, 10, 10));
 
@@ -31,6 +35,7 @@ await test('Ray intersectsBox', async () => {
 })
 
 await test('Ray intersectBox get value', async () => {
+    await WasmMatrix.init(Matrix4.allocCount);
     let ray = new Ray(Vector3.ZERO, Vector3.X_AXIS);
     let vec3 = new Vector3();
     let boundBox = new BoundingBox(Vector3.ZERO, new Vector3(10, 10, 10));
@@ -42,6 +47,7 @@ await test('Ray intersectBox get value', async () => {
 })
 
 await test('Ray pointAt', async () => {
+    await WasmMatrix.init(Matrix4.allocCount);
     let ray = new Ray(Vector3.ZERO, Vector3.X_AXIS);
     let vec3 = new Vector3();
 
@@ -52,6 +58,7 @@ await test('Ray pointAt', async () => {
 })
 
 await test('Ray getPoint', async () => {
+    await WasmMatrix.init(Matrix4.allocCount);
     let ray = new Ray(Vector3.ZERO, Vector3.X_AXIS);
 
     let result = ray.getPoint(10);
@@ -61,6 +68,7 @@ await test('Ray getPoint', async () => {
 })
 
 await test('Ray applyMatrix', async () => {
+    await WasmMatrix.init(Matrix4.allocCount);
     let boundBox = new BoundingBox(Vector3.ZERO, new Vector3(10, 10, 10));
 
     let rotMatrix = new Matrix4();
@@ -78,6 +86,7 @@ await test('Ray applyMatrix', async () => {
 })
 
 await test('Ray pointInTriangle', async () => {
+    await WasmMatrix.init(Matrix4.allocCount);
     let ray = new Ray(Vector3.ZERO, Vector3.X_AXIS);
 
     const p = new Vector3(0, 0, 0);
@@ -89,6 +98,7 @@ await test('Ray pointInTriangle', async () => {
 })
 
 await test('Ray intersectTriangle', async () => {
+    await WasmMatrix.init(Matrix4.allocCount);
     let ray = new Ray(Vector3.ZERO, Vector3.X_AXIS);
 
     let face = new Triangle(
@@ -104,6 +114,7 @@ await test('Ray intersectTriangle', async () => {
 })
 
 await test('Ray intersectSphere', async () => {
+    await WasmMatrix.init(Matrix4.allocCount);
     let ray = new Ray(new Vector3(-100, 0, 0), Vector3.X_AXIS);
 
     let result = ray.intersectSphere(ray.origin, ray.direction, Vector3.ZERO, 10);
@@ -114,6 +125,7 @@ await test('Ray intersectSphere', async () => {
 })
 
 await test('Ray intersectionSegment', async () => {
+    await WasmMatrix.init(Matrix4.allocCount);
     let ray = new Ray(new Vector3(-100, 0, 0), Vector3.X_AXIS);
 
     let result = ray.intersectionSegment(

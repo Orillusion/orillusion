@@ -207,8 +207,6 @@ export class GPUContext {
         encoder.end();
     }
 
-
-
     /**
      * Perform the final calculation and submit the Shader to the GPU
      * @param command 

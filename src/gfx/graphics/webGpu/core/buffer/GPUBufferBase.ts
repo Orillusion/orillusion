@@ -26,13 +26,15 @@ export class GPUBufferBase {
     public byteSize: number;
     public usage: GPUBufferUsageFlags;
     public visibility: number = GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT | GPUShaderStage.COMPUTE;
+    protected mapAsyncBuffersOutstanding = 0;
+    protected mapAsyncReady: GPUBuffer[];
     private _readBuffer: GPUBuffer;
     private _dataView: Float32Array;
 
     constructor() {
+        this.mapAsyncReady = [];
         this.memory = new MemoryDO();
         this.memoryNodes = new Map<string | number, MemoryInfo>();
-
         this._dataView = new Float32Array(this.memory.shareDataBuffer);
     }
 
@@ -304,13 +306,51 @@ export class GPUBufferBase {
 
     public apply() {
         webGPUContext.device.queue.writeBuffer(this.buffer, 0, this.memory.shareDataBuffer);//, this.memory.shareFloat32Array.byteOffset, this.memory.shareFloat32Array.byteLength);
+        // this.applyMapAsync();
     }
 
-    public async mapAsync() {
-        await this.buffer.mapAsync(GPUMapMode.WRITE);
-        let data = new Float32Array(this.memory.shareDataBuffer);
-        new Float32Array(this.buffer.getMappedRange()).set(data);
-        this.buffer.unmap();
+    public applyMapAsync() {
+        this.mapAsyncWrite(new Float32Array(this.memory.shareDataBuffer), this.memory.shareDataBuffer.byteLength / 4);
+    }
+
+    public mapAsyncWrite(mapAsyncArray: Float32Array, len: number) {
+        // Upload data using mapAsync and a queue of staging buffers.
+        let bytesLen = len;
+        let device = webGPUContext.device;
+        if (mapAsyncArray.length > 0) {
+            let tBuffer: GPUBuffer = null;
+            while (this.mapAsyncReady.length) {
+                tBuffer = this.mapAsyncReady.shift();
+                if (tBuffer['usedSize'] == mapAsyncArray.byteLength)
+                    break;
+                tBuffer.destroy();
+                this.mapAsyncBuffersOutstanding--;
+                tBuffer = null;
+            }
+            if (!tBuffer) {
+                tBuffer = device.createBuffer({
+                    size: mapAsyncArray.byteLength,
+                    usage: GPUBufferUsage.COPY_SRC | GPUBufferUsage.MAP_WRITE,
+                    mappedAtCreation: true,
+                });
+                tBuffer['usedSize'] = mapAsyncArray.byteLength;
+                this.mapAsyncBuffersOutstanding++;
+                if (this.mapAsyncBuffersOutstanding > 10) {
+                    // ${(this.mapAsync.value * this.mapAsyncBuffersOutstanding).toFixed(2)}
+                    console.warn(` Warning: mapAsync requests from ${this.mapAsyncBuffersOutstanding} frames ago have not resolved yet.  MB of staging buffers allocated.`);
+                }
+            }
+            let a = new Float32Array(mapAsyncArray.buffer, mapAsyncArray.byteOffset, len);
+            let b = new Float32Array(tBuffer.getMappedRange(0, len * 4))
+            b.set(a);
+            tBuffer.unmap();
+            const commandEncoder = device.createCommandEncoder();
+            commandEncoder.copyBufferToBuffer(tBuffer, 0, this.buffer, 0, len * 4);
+            // TODO: combine this submit with the main one, but we'll have to delay calling mapAsync until after the submit.
+            device.queue.submit([commandEncoder.finish()]);
+            // TODO: use this data during rendering.
+            tBuffer.mapAsync(GPUMapMode.WRITE).then(() => this.mapAsyncReady.push(tBuffer));
+        }
     }
 
     public destroy(force?: boolean) {
@@ -361,7 +401,21 @@ export class GPUBufferBase {
             m.setArrayBuffer(0, data);
             this.apply();
         }
+    }
 
+    protected createNewBuffer(usage: GPUBufferUsageFlags, size: number): GPUBuffer {
+        let device = webGPUContext.device;
+        let tByteSize = size * 4;
+        let tUsage = usage;
+        if (this.buffer) {
+            this.destroy();
+        }
+        let buffer = device.createBuffer({
+            size: tByteSize,
+            usage: tUsage,
+            mappedAtCreation: false,
+        });
+        return buffer;
     }
 
     protected createBufferByStruct<T extends Struct>(usage: GPUBufferUsageFlags, struct: { new(): T }, count: number) {

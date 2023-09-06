@@ -29,9 +29,9 @@ export class MatrixBindGroup {
         this.matrixBufferDst.buffer.label = this.groupBufferSize.toString();
     }
 
-    writeBuffer() {
+    writeBuffer(len: number) {
         const matBytes = Matrix4.dynamicMatrixBytes;
-        this.matrixBufferDst.writeToGpu(matBytes);
+        this.matrixBufferDst.mapAsyncWrite(matBytes, len);
     }
 
     // writeBuffer() {

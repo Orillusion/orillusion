@@ -10,6 +10,9 @@ export let ColorPassFragmentOutput: string = /*wgsl*/ `
             @location(2) worldNormal: vec4<f32>,
             @location(3) material: vec4<f32>,
         #endif
-        // @builtin(frag_depth) out_depth: f32
+
+        #if USE_OUTDEPTH
+            @builtin(frag_depth) out_depth: f32
+        #endif
     };
 `

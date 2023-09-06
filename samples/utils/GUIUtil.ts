@@ -1,9 +1,17 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AtmosphericComponent, BillboardType, Color, DirectLight, Engine3D, GPUCullMode, GlobalFog, GlobalIlluminationComponent, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
+import { AtmosphericComponent, BillboardType, BlendMode, Color, DirectLight, Engine3D, GPUCullMode, GlobalFog, GlobalIlluminationComponent, HDRBloomPost, LitMaterial, Material, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
 
+
+    public static renderShadowSetting(open: boolean = true) {
+        GUIHelp.addFolder('ShadowSetting');
+        let setting = Engine3D.setting.shadow;
+        GUIHelp.add(setting, 'shadowBound', 0, 2048, 1);
+        open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
 
     //render AtmosphericComponent
     public static renderAtomosphericSky(component: AtmosphericComponent, open: boolean = true, name?: string) {
@@ -66,6 +74,23 @@ export class GUIUtil {
         GUIHelp.endFolder();
     }
 
+
+    //render bloom gui panel
+    public static renderBloom(bloom: HDRBloomPost, open: boolean = true, name?: string) {
+        name ||= 'HDRBloom';
+        GUIHelp.addFolder(name);
+        GUIHelp.add(bloom, 'enable');
+        GUIHelp.addColor(bloom, 'tintColor');
+        GUIHelp.add(bloom, 'luminosityThreshold');
+        GUIHelp.add(bloom, 'strength', 0, 3, 0.001);
+        GUIHelp.add(bloom, 'exposure');
+        GUIHelp.add(bloom, 'radius', 0, 1.0, 0.001);
+        GUIHelp.add(bloom, 'blurX');
+        GUIHelp.add(bloom, 'blurY');
+        open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
+
     //render direct light gui panel
     public static renderDirLight(light: DirectLight, open: boolean = true, name?: string) {
         name ||= 'DirectLight';
@@ -75,8 +100,8 @@ export class GUIUtil {
         GUIHelp.add(light.transform, 'rotationY', 0.0, 360.0, 0.01);
         GUIHelp.add(light.transform, 'rotationZ', 0.0, 360.0, 0.01);
         GUIHelp.addColor(light, 'lightColor');
-        GUIHelp.add(light, 'intensity', 0.0, 160.0, 0.01);
-        GUIHelp.add(light, 'indirect', 0.0, 10.0, 0.01);
+        GUIHelp.add(light, 'intensity', 0.0, 300.0, 0.01);
+        GUIHelp.add(light, 'indirect', 0.0, 1.0, 0.01);
         GUIHelp.add(light, 'castShadow');
 
         open && GUIHelp.open();
@@ -334,4 +359,91 @@ export class GUIUtil {
         GUIHelp.endFolder();
     }
 
+
+    static renderDebug() {
+        // if (Engine3D.setting.render.debug) {
+        let debugTextures = Engine3D.getRenderJob(Engine3D.views[0]).postRenderer.debugTextures;
+
+        let debugTextureObj = { normalRender: -1 };
+        for (let i = 0; i < debugTextures.length; i++) {
+            const tex = debugTextures[i];
+            debugTextureObj[tex.name] = i;
+        }
+        GUIHelp.removeFolder(`RenderPerformance`);
+        //debug
+        let f = GUIHelp.addFolder('RenderPerformance');
+        f.open();
+        GUIHelp.add(Engine3D.setting.render, 'debugQuad', debugTextureObj);
+        let debugChanel = {
+            PositionView: 0,
+            ColorView: 1,
+            normalView: 2,
+            IrradianceView: 3,
+            tangentView: 4,
+            FinalView: 5,
+            EmissiveView: 6,
+            specularRadiance: 7,
+            AO: 8,
+            Roughness: 9,
+            Metallic: 10,
+            diffuse: 11,
+            ambient: 12,
+            meshID: 13,
+            debugCluster: 14,
+            debugClusterBox: 15,
+            debugClusterLightCount: 16,
+        }
+        GUIHelp.add(Engine3D.setting.render, 'renderState_left', debugChanel);
+        GUIHelp.add(Engine3D.setting.render, 'renderState_right', debugChanel);
+        GUIHelp.add(Engine3D.setting.render, 'renderState_split', 0.0, 2048, 0.001);
+        GUIHelp.add(Engine3D.setting.render, 'drawOpMin', 0.0, 10000, 1);
+        GUIHelp.add(Engine3D.setting.render, 'drawOpMax', 0.0, 10000, 1);
+        GUIHelp.endFolder();
+    }
+    // }
+
+    public static renderMaterial(mat: Material, open: boolean = true, name?: string) {
+        name ||= 'Material';
+        GUIHelp.addFolder(name);
+
+        if (mat instanceof LitMaterial) {
+            GUIHelp.addColor(mat, 'baseColor').onChange((v) => {
+                mat.defaultPass.baseColor = v;
+            });
+
+            let blendMode = {
+                NONE: BlendMode.NONE,
+                NORMAL: BlendMode.NORMAL,
+                ADD: BlendMode.ADD,
+                ALPHA: BlendMode.ALPHA,
+            }
+            // change blend mode by click dropdown box
+            GUIHelp.add({ blendMode: mat.blendMode }, 'blendMode', blendMode).onChange((v) => {
+                mat.blendMode = BlendMode[BlendMode[parseInt(v)]];
+            });
+
+            GUIHelp.add(mat, 'alphaCutoff', 0.0, 1.0, 0.0001).onChange((v) => {
+                mat.alphaCutoff = v;
+            });
+
+            GUIHelp.add(mat, 'doubleSide').onChange((v) => {
+                mat.doubleSide = v;
+            });
+
+            GUIHelp.add(mat, 'roughness').onChange((v) => {
+                mat.roughness = v;
+            });
+
+            GUIHelp.add(mat, 'metallic').onChange((v) => {
+                mat.metallic = v;
+            });
+
+            GUIHelp.add(mat, 'envIntensity').onChange((v) => {
+                mat.envIntensity = v;
+            });
+        }
+
+        open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
 }

@@ -1,88 +1,85 @@
 import { Engine3D } from '../Engine3D';
-import { ShaderLib } from '../assets/shader/ShaderLib';
-import { UnLit } from '../assets/shader/materials/UnLit';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
+import { RenderShader } from '../gfx/graphics/webGpu/shader/RenderShader';
 import { Color } from '../math/Color';
 import { Vector4 } from '../math/Vector4';
-
-import { MaterialBase } from './MaterialBase';
-import { registerMaterial } from "./MaterialRegister";
+import { Material } from './Material';
+import { RendererType } from '../gfx/renderJob/passRenderer/state/RendererType';
 
 /**
- * material without light
- * A basic material that can be rendered solely based on color and texture information without calculating lighting
+ * Unlit Mateiral
+ * A non glossy surface material without specular highlights.
  * @group Material
  */
-export class UnLitMaterial extends MaterialBase {
+export class UnLitMaterial extends Material {
     /**
-     *@constructor
+     * @constructor
      */
     constructor() {
         super();
-        ShaderLib.register("UnLitShader", UnLit);
+        let colorPass = new RenderShader(`UnLit`, `UnLit`);
+        this.defaultPass = colorPass;
+        colorPass.setShaderEntry(`VertMain`, `FragMain`)
 
-        let shader = this.setShader(`UnLitShader`, `UnLitShader`);
-        shader.setShaderEntry(`VertMain`, `FragMain`)
-
-        shader.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));
-        shader.setUniformVector4(`transformUV2`, new Vector4(0, 0, 1, 1));
-        shader.setUniformColor(`baseColor`, new Color());
-        shader.setUniformFloat(`alphaCutoff`, 0.5);
-        let shaderState = shader.shaderState;
+        colorPass.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));
+        colorPass.setUniformVector4(`transformUV2`, new Vector4(0, 0, 1, 1));
+        colorPass.setUniformColor(`baseColor`, new Color(1, 1, 1, 1));
+        colorPass.setUniformFloat(`alphaCutoff`, 0.5);
+        let shaderState = colorPass.shaderState;
         shaderState.acceptShadow = false;
+        shaderState.castShadow = false;
         shaderState.receiveEnv = false;
         shaderState.acceptGI = false;
         shaderState.useLight = false;
 
-        shader.setUniformColor("ccc", new Color(1.0, 0.0, 0.0, 1.0));
+        // let shaderState = shader.shaderState;
+        // shaderState.acceptShadow = true;
+        // shaderState.castShadow = true;
+        // shaderState.receiveEnv = false;
+        // shaderState.acceptGI = false;
+        // shaderState.useLight = true;
 
         // default value
+        // this.emissiveMap = Engine3D.res.blackTexture;
+        this.defaultPass = colorPass;
+        // this.baseMap = Engine3D.res.grayTexture;
         this.baseMap = Engine3D.res.whiteTexture;
     }
 
+    public set baseMap(texture: Texture) {
+        this.defaultPass.setTexture(`baseMap`, texture);
+    }
+
+    public get baseMap() {
+        return this.defaultPass.getTexture(`baseMap`);
+    }
+
     /**
-     * Set material environment map
+     * set base color (tint color)
+     */
+    public set baseColor(color: Color) {
+        this.defaultPass.setUniformColor(`baseColor`, color);
+    }
+
+    /**
+     * get base color (tint color)
+     */
+    public get baseColor() {
+        return this.defaultPass.uniforms[`baseColor`].color;
+    }
+
+    /**
+     * set environment texture, usually referring to cubemap
      */
     public set envMap(texture: Texture) {
         //not need env texture
     }
 
     /**
-     * Set material shadow map
+     * @internal
+     * set shadow map
      */
     public set shadowMap(texture: Texture) {
         //not need shadowMap texture
     }
-
-    public clone(): this {
-        // console.log(`clone LitMaterial ${this.name}`);
-
-        let ret = new UnLitMaterial();
-        ret.baseMap = this.baseMap;
-        ret.normalMap = this.normalMap;
-        ret.emissiveMap = this.emissiveMap;
-        this.uvTransform_1 && (ret.uvTransform_1 = new Vector4().copyFrom(this.uvTransform_1));
-        this.uvTransform_2 && (ret.uvTransform_2 = new Vector4().copyFrom(this.uvTransform_2));
-        ret.baseColor = this.baseColor.clone();
-        ret.emissiveColor = this.emissiveColor.clone();
-        ret.envIntensity = this.envIntensity;
-        ret.normalScale = this.normalScale;
-        ret.emissiveIntensity = this.emissiveIntensity;
-        ret.alphaCutoff = this.alphaCutoff;
-
-        ret.transparent = this.transparent;
-        ret.cullMode = this.cullMode;
-        ret.blendMode = this.blendMode;
-
-        this.cloneObject(this.shaderState, ret.shaderState);
-        this.cloneObject(this.renderShader.defineValue, ret.renderShader.shaderState);
-        this.cloneObject(this.renderShader.constValues, ret.renderShader.constValues);
-
-        return ret as this;
-    }
-
-    debug() {
-    }
 }
-
-registerMaterial('UnLitMaterial', UnLitMaterial);

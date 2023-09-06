@@ -180,6 +180,7 @@ export class Graphic3DFixedRenderPipeline {
             'Graphic3DFixedRenderPipeline.vs',
             Preprocessor.parse(Graphic3DShader_vs, {})
         );
+
         this.mFragmentShader = this.createShaderModule(
             'Graphic3DFixedRenderPipeline.fs',
             Preprocessor.parse(Graphic3DShader_fs, {})

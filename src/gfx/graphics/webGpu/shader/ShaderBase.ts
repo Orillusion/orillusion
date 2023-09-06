@@ -10,6 +10,7 @@ import { StructStorageGPUBuffer } from "../core/buffer/StructStorageGPUBuffer";
 import { UniformGPUBuffer } from "../core/buffer/UniformGPUBuffer";
 import { UniformNode } from "../core/uniforms/UniformNode";
 import { ShaderReflection } from "./value/ShaderReflectionInfo";
+import { UniformValue } from "./value/UniformValue";
 
 
 export class ShaderBase {
@@ -60,7 +61,7 @@ export class ShaderBase {
 
     protected _bufferDic: Map<string, GPUBufferBase>;
     protected _shaderChange: boolean = true;
-    protected _stateChange: boolean = false;
+    protected _valueChange: boolean = false;
 
     constructor() {
         this.instanceID = UUID();
@@ -80,17 +81,17 @@ export class ShaderBase {
     /**
      * notice shader state change
      */
-    public noticeStateChange() {
-        this._stateChange = true;
+    public noticeValueChange() {
+        this._valueChange = true;
     }
 
     /**
-* set storage gpu buffer
-* @param name buffer name
-* @param buffer storage useAge gpu buffer
-*/
+    * set storage gpu buffer
+    * @param name buffer name
+    * @param buffer storage useAge gpu buffer
+    */
     public setStorageBuffer(name: string, buffer: StorageGPUBuffer) {
-        if (this._bufferDic.has(name)) {
+        if (!this._bufferDic.has(name)) {
             this._bufferDic.set(name, buffer);
             this.noticeBufferChange(name);
         } else {
@@ -134,9 +135,8 @@ export class ShaderBase {
     public setDefine(defineName: string, value: any) {
         if (this.defineValue[defineName] == null || this.defineValue[defineName] != value) {
             this.defineValue[defineName] = value;
-            this.noticeStateChange();
+            this.noticeValueChange();
             this.noticeShaderChange();
-            // console.log("USE_CLEARCOAT");
         }
         this.defineValue[defineName] = value;
     }
@@ -167,7 +167,7 @@ export class ShaderBase {
     public setUniformFloat(name: string, value: number) {
         if (!this.uniforms[name]) {
             this.uniforms[name] = new UniformNode(value);
-            this.noticeStateChange();
+            this.noticeValueChange();
         } else {
             this.uniforms[name].value = value;
         }
@@ -181,6 +181,7 @@ export class ShaderBase {
     public setUniformVector2(name: string, value: Vector2) {
         if (!this.uniforms[name]) {
             this.uniforms[name] = new UniformNode(value);
+            this.noticeValueChange();
         } else {
             this.uniforms[name].vector2 = value;
         }
@@ -236,6 +237,18 @@ export class ShaderBase {
         } else {
             this.uniforms[name].float32Array(value);
         }
+    }
+
+    public setUniform(name: string, value: UniformValue) {
+        if (!this.uniforms[name]) {
+            this.uniforms[name] = new UniformNode(value);
+        } else {
+            this.uniforms[name].data = value;
+        }
+    }
+
+    public getUniform(name: string): UniformValue {
+        return this.uniforms[name].data;
     }
 
     protected noticeBufferChange(name: string) {

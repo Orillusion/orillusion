@@ -1,12 +1,14 @@
-import { Vector4 } from "../../..";
+import { RendererType } from "../../..";
 import { Engine3D } from "../../../Engine3D";
 import { ShaderLib } from "../../../assets/shader/ShaderLib";
 import { GPUCompareFunction, GPUCullMode } from "../../../gfx/graphics/webGpu/WebGPUConst";
 import { Texture } from "../../../gfx/graphics/webGpu/core/texture/Texture";
+import { RenderShader } from "../../../gfx/graphics/webGpu/shader/RenderShader";
 import { BlendMode } from "../../../materials/BlendMode";
-import { MaterialBase } from "../../../materials/MaterialBase";
+import { Material } from "../../../materials/Material";
 import { registerMaterial } from "../../../materials/MaterialRegister";
 import { Vector2 } from "../../../math/Vector2";
+import { Vector4 } from "../../../math/Vector4";
 import { GUISpace } from "../GUIConfig";
 import { GUIShader } from "./GUIShader";
 
@@ -14,7 +16,7 @@ import { GUIShader } from "./GUIShader";
  * material used in rendering GUI
  * @group GPU GUI
  */
-export class GUIMaterial extends MaterialBase {
+export class GUIMaterial extends Material {
     private _scissorRect: Vector4;
     private _screenSize: Vector2 = new Vector2(1024, 768);
     private _scissorEnable: boolean = false;
@@ -25,61 +27,64 @@ export class GUIMaterial extends MaterialBase {
         ShaderLib.register('GUI_shader_world', GUIShader.GUI_shader_world);
 
         let shaderKey: string = space == GUISpace.View ? 'GUI_shader_view' : 'GUI_shader_world';
-        let shader = this.setShader(shaderKey, shaderKey);
-        shader.setShaderEntry(`VertMain`, `FragMain`);
+        let colorPass = new RenderShader(shaderKey, shaderKey);
+        colorPass.setShaderEntry(`VertMain`, `FragMain`);
 
-        shader.setUniformVector2('screenSize', this._screenSize);
-        shader.setUniformVector2('guiSolution', this._screenSize);
-        shader.setUniformVector4('scissorRect', new Vector4());
-        shader.setUniformFloat('scissorCornerRadius', 0.0);
-        shader.setUniformFloat('scissorFadeOutSize', 0.0);
-        shader.setUniformFloat('limitVertex', 0);
-        shader.setUniformFloat('pixelRatio', 1);
+        colorPass.setUniformVector2('screenSize', this._screenSize);
+        colorPass.setUniformVector2('guiSolution', this._screenSize);
+        colorPass.setUniformVector4('scissorRect', new Vector4());
+        colorPass.setUniformFloat('scissorCornerRadius', 0.0);
+        colorPass.setUniformFloat('scissorFadeOutSize', 0.0);
+        colorPass.setUniformFloat('limitVertex', 0);
+        colorPass.setUniformFloat('pixelRatio', 1);
 
-        let shaderState = shader.shaderState;
+        let shaderState = colorPass.shaderState;
         // shaderState.useZ = false;
         shaderState.depthWriteEnabled = false;
-        this.blendMode = BlendMode.ALPHA;
-        this.depthCompare = space == GUISpace.View ? GPUCompareFunction.always : GPUCompareFunction.less_equal;
-        this.cullMode = GPUCullMode.back;
+        colorPass.blendMode = BlendMode.ALPHA;
+        colorPass.depthCompare = space == GUISpace.View ? GPUCompareFunction.always : GPUCompareFunction.less_equal;
+        colorPass.cullMode = GPUCullMode.back;
 
-        this.transparent = true;
-        this.receiveEnv = false;
+        // colorPass.transparent = true;
+        // colorPass.receiveEnv = false;
+
+        this.defaultPass = colorPass;
+
     }
 
     /**
     * Write effective vertex count (vertex index < vertexCount)
     */
     public setLimitVertex(vertexCount: number) {
-        this.renderShader.setUniformFloat('limitVertex', vertexCount);
+        this.defaultPass.setUniformFloat('limitVertex', vertexCount);
     }
 
     public setGUISolution(value: Vector2, pixelRatio: number) {
-        this.renderShader.setUniformVector2('guiSolution', value);
-        this.renderShader.setUniformFloat('pixelRatio', pixelRatio);
+        this.defaultPass.setUniformVector2('guiSolution', value);
+        this.defaultPass.setUniformFloat('pixelRatio', pixelRatio);
     }
 
     public setScissorRect(left: number, bottom: number, right: number, top: number) {
         this._scissorRect ||= new Vector4();
         this._scissorRect.set(left, bottom, right, top);
-        this.renderShader.setUniformVector4('scissorRect', this._scissorRect);
+        this.defaultPass.setUniformVector4('scissorRect', this._scissorRect);
     }
 
     public setScissorEnable(value: boolean) {
         if (this._scissorEnable != value) {
             this._scissorEnable = value;
             if (value) {
-                this.renderShader.setDefine("SCISSOR_ENABLE", true);
+                this.defaultPass.setDefine("SCISSOR_ENABLE", true);
             } else {
-                this.renderShader.deleteDefine('SCISSOR_ENABLE');
+                this.defaultPass.deleteDefine('SCISSOR_ENABLE');
             }
-            this.renderShader.noticeStateChange();
+            this.defaultPass.noticeValueChange();
         }
     }
 
     public setScissorCorner(radius: number, fadeOut: number) {
-        this.renderShader.setUniformFloat('scissorCornerRadius', radius);
-        this.renderShader.setUniformFloat('scissorFadeOutSize', fadeOut);
+        this.defaultPass.setUniformFloat('scissorCornerRadius', radius);
+        this.defaultPass.setUniformFloat('scissorFadeOutSize', fadeOut);
     }
 
     /**
@@ -87,7 +92,7 @@ export class GUIMaterial extends MaterialBase {
      */
     public setScreenSize(width: number, height: number): this {
         this._screenSize.set(width, height);
-        this.renderShader.setUniformVector2('screenSize', this._screenSize);
+        this.defaultPass.setUniformVector2('screenSize', this._screenSize);
         return this;
     }
 
@@ -97,7 +102,7 @@ export class GUIMaterial extends MaterialBase {
     public setTextures(list: Texture[]) {
         for (let i = 0; i < 7; i++) {
             let texture = list[i] || Engine3D.res.whiteTexture;
-            this.renderShader.setTexture(`tex_${i}`, texture);
+            this.defaultPass.setTexture(`tex_${i}`, texture);
             this.setVideoTextureDefine(i, texture.isVideoTexture);
         }
     }
@@ -107,16 +112,16 @@ export class GUIMaterial extends MaterialBase {
         let changed = false;
         if (isVideoTexture != this._videoTextureFlags[i]) {
             if (isVideoTexture) {
-                this.renderShader.setDefine(`VideoTexture${i}`, true);
+                this.defaultPass.setDefine(`VideoTexture${i}`, true);
             } else {
-                this.renderShader.deleteDefine(`VideoTexture${i}`);
+                this.defaultPass.deleteDefine(`VideoTexture${i}`);
             }
             this._videoTextureFlags[i] = isVideoTexture;
             changed = true;
         }
 
         if (changed) {
-            this.renderShader.noticeStateChange();
+            this.defaultPass.noticeValueChange();
         }
 
     }
@@ -130,4 +135,3 @@ export class GUIMaterial extends MaterialBase {
     public set irradianceDepthMap(value: Texture) { }
 }
 
-registerMaterial('GUIMaterial', GUIMaterial as any);

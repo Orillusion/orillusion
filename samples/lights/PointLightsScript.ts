@@ -73,7 +73,7 @@ export class PointLightsScript extends ComponentBase {
         let poi = obj.addComponent(PointLight);
         poi.name = UUID();
         poi.transform.x = this._boundBox.center.x + this._boundBox.extents.x * Math.random();
-        poi.transform.y = this._boundBox.center.y + this._boundBox.extents.y * Math.random();
+        poi.transform.y = 10;//this._boundBox.center.y + this._boundBox.extents.y * Math.random();
         poi.transform.z = this._boundBox.center.z + this._boundBox.extents.z * Math.random();
         poi.range = 30
         poi.r = Math.random() + 0.1;
@@ -121,7 +121,7 @@ export class PointLightsScript extends ComponentBase {
                 Vector3.HELP_0.scaleBy(Time.delta * 0.001 * pd.speed * 0.1);
 
                 po.transform.x += Vector3.HELP_0.x;
-                po.transform.y += Vector3.HELP_0.y;
+                // po.transform.y += Vector3.HELP_0.y;
                 po.transform.z += Vector3.HELP_0.z;
             }
         }

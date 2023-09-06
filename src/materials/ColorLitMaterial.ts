@@ -1,3 +1,4 @@
+import { RenderShader } from '..';
 import { Engine3D } from '../Engine3D';
 import { ShaderLib } from '../assets/shader/ShaderLib';
 import { ColorLitShader } from '../assets/shader/materials/ColorLitShader';
@@ -18,26 +19,26 @@ export class ColorLitMaterial extends PhysicMaterial {
 
         ShaderLib.register("ColorLitShader", ColorLitShader.Ori_AllShader);
 
-        let shader = this.setShader(`ColorLitShader`, `ColorLitShader`);
-        shader.setDefine("USE_BRDF", true);
-        shader.setShaderEntry(`VertMain`, `FragMain`)
-        shader.setUniformColor(`baseColor`, new Color());
-        shader.setUniformColor(`emissiveColor`, new Color());
-        shader.setUniformFloat(`envIntensity`, 1);
-        shader.setUniformFloat(`normalScale`, 1);
-        shader.setUniformFloat(`roughness`, 0.0);
-        shader.setUniformFloat(`metallic`, 0.0);
-        shader.setUniformFloat(`ao`, 1.0);
-        shader.setUniformFloat(`alphaCutoff`, 0.0);
+        let renderShader = new RenderShader(`ColorLitShader`, `ColorLitShader`);
+        renderShader.setDefine("USE_BRDF", true);
+        renderShader.setShaderEntry(`VertMain`, `FragMain`)
+        renderShader.setUniformColor(`baseColor`, new Color());
+        renderShader.setUniformColor(`emissiveColor`, new Color());
+        renderShader.setUniformFloat(`envIntensity`, 1);
+        renderShader.setUniformFloat(`normalScale`, 1);
+        renderShader.setUniformFloat(`roughness`, 0.0);
+        renderShader.setUniformFloat(`metallic`, 0.0);
+        renderShader.setUniformFloat(`ao`, 1.0);
+        renderShader.setUniformFloat(`alphaCutoff`, 0.0);
 
-        let shaderState = shader.shaderState;
+        let shaderState = renderShader.shaderState;
         shaderState.acceptShadow = true;
         shaderState.receiveEnv = true;
         shaderState.acceptGI = true;
         shaderState.useLight = true;
 
-        shader.setTexture("normalMap", Engine3D.res.normalTexture);
-        shader.setTexture("emissiveMap", Engine3D.res.blackTexture);
+        renderShader.setTexture("normalMap", Engine3D.res.normalTexture);
+        renderShader.setTexture("emissiveMap", Engine3D.res.blackTexture);
     }
 
     clone(): this {

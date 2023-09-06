@@ -18,11 +18,11 @@ export class ClusterLightingBuffer {
         this.assignTableBuffer.visibility = GPUShaderStage.FRAGMENT | GPUShaderStage.COMPUTE;
     }
 
-    public update(width: number, height: number, clusterPix: number, clusterTileX: number, clusterTileY: number, clusterTileZ: number, maxNumLights: number, maxNumLightsPerCluster: number, near: number, far: number) {
+    public update(width: number, height: number, clusterPix: number, clusterTileX: number, clusterTileY: number, clusterTileZ: number, numLights: number, maxNumLightsPerCluster: number, near: number, far: number) {
         this.clustersUniformBuffer.setFloat('clusterTileX', clusterTileX);
         this.clustersUniformBuffer.setFloat('clusterTileY', clusterTileY);
         this.clustersUniformBuffer.setFloat('clusterTileZ', clusterTileZ);
-        this.clustersUniformBuffer.setFloat('numLights', maxNumLights);
+        this.clustersUniformBuffer.setFloat('numLights', numLights);
         this.clustersUniformBuffer.setFloat('maxNumLightsPerCluster', maxNumLightsPerCluster);
 
         this.clustersUniformBuffer.setFloat('near', near);

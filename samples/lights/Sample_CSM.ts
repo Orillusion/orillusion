@@ -41,6 +41,7 @@ class Sample_CSM {
         GUIHelp.add(mainCamera, 'enableCSM');
         GUIHelp.add(Engine3D.setting.shadow, 'csmScatteringExp', 0.5, 1.0, 0.01);
         GUIHelp.add(Engine3D.setting.shadow, 'csmMargin', 0.01, 0.5, 0.01);
+        GUIHelp.add(Engine3D.setting.shadow, 'csmAreaScale', 0.1, 1, 0.01);
         GUIHelp.open();
         GUIHelp.endFolder();
         Engine3D.startRenderView(view);
@@ -101,8 +102,8 @@ class Sample_CSM {
         let box = new Object3D();
         let geom = new BoxGeometry(1, 1, 1);
         let material = new LitMaterial();
-        material.transparent = true;
-        material.shaderState.depthWriteEnabled = false
+        // material.transparent = true;
+        // material.shaderState.depthWriteEnabled = false
         material.blendMode = BlendMode.NORMAL;
         material.cullMode = "front";
         material.baseColor = new Color(0.2, 0.2, 0, 0.1);

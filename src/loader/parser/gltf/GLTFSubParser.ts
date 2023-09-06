@@ -300,10 +300,10 @@ export class GLTFSubParser {
         return this._skeletonParser.parseSkeletonAnimation(skeleton, animation);
     }
 
-    private async trivarse(parentNode, nodeInfos) {
+    private async traverse(parentNode, nodeInfos) {
         for (let i = 0; i < nodeInfos.length; i++) {
             const node = await this.parseObject3D(nodeInfos[i], parentNode);
-            await this.trivarse(node, nodeInfos[i].children);
+            await this.traverse(node, nodeInfos[i].children);
         }
     }
 
@@ -315,7 +315,7 @@ export class GLTFSubParser {
         const textures = [];
         const skins = [];
         const cameras = [];
-        await this.trivarse(rootNode, nodes);
+        await this.traverse(rootNode, nodes);
 
         let animas;
         // apply skins

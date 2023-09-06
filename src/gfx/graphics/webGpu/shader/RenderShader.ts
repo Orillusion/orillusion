@@ -1,15 +1,11 @@
 import { ShaderLib } from "../../../../assets/shader/ShaderLib";
+import { Color } from "../../../../math/Color";
+import { VertexAttributeName } from "../../../../core/geometry/VertexAttributeName";
+import { GPUContext } from "../../../renderJob/GPUContext";
+import { BlendFactor, BlendMode } from "../../../../materials/BlendMode";
 import { IESProfiles } from "../../../../components/lights/IESProfiles";
 import { GeometryBase } from "../../../../core/geometry/GeometryBase";
-import { VertexAttributeName } from "../../../../core/geometry/VertexAttributeName";
 import { Engine3D } from "../../../../Engine3D";
-import { BlendFactor, BlendMode } from "../../../../materials/BlendMode";
-import { MaterialBase } from "../../../../materials/MaterialBase";
-import { MaterialPass } from "../../../../materials/MaterialPass";
-import { Color } from "../../../../math/Color";
-import { Vector4 } from "../../../../math/Vector4";
-
-import { GPUContext } from "../../../renderJob/GPUContext";
 import { GlobalBindGroupLayout } from "../core/bindGroups/GlobalBindGroupLayout";
 import { GPUBufferBase } from "../core/buffer/GPUBufferBase";
 import { UniformNode } from "../core/uniforms/UniformNode";
@@ -22,15 +18,17 @@ import { Preprocessor } from "./util/Preprocessor";
 import { ShaderReflection, ShaderReflectionVarInfo } from "./value/ShaderReflectionInfo";
 import { ShaderState } from "./value/ShaderState";
 import { RendererPassState } from "../../../renderJob/passRenderer/state/RendererPassState";
-import { RendererType } from "../../../renderJob/passRenderer/state/RendererType";
 import { GPUBufferType } from "../core/buffer/GPUBufferType";
-
 import { MaterialDataUniformGPUBuffer } from "../core/buffer/MaterialDataUniformGPUBuffer";
 import { ShaderUtil } from "./util/ShaderUtil";
 import { Reference } from "../../../../util/Reference";
 import { CSM } from "../../../../core/csm/CSM";
+import { GPUCompareFunction, GPUCullMode } from "../WebGPUConst";
+import { UniformValue } from "./value/UniformValue";
+import { PipelinePool } from "../PipelinePool";
 
 export class RenderShader extends ShaderBase {
+
     public useRz: boolean = false;
 
     /**
@@ -68,6 +66,10 @@ export class RenderShader extends ShaderBase {
      */
     public materialDataUniformBuffer: MaterialDataUniformGPUBuffer;
 
+    public envMap: Texture;
+
+    public prefilterMap: Texture;
+
     protected _sourceVS: string;
     protected _sourceFS: string;
     protected _destVS: string;
@@ -76,13 +78,7 @@ export class RenderShader extends ShaderBase {
     protected _fsShaderModule: GPUShaderModule;
     protected _textureGroup: number = -1;
     protected _textureChange: boolean = false;
-
-
-    private _vs_limit = [];
-    private _fs_limit = [];
-    private _cs_limit = [];
-    private _groupsShaderReflectionVarInfos: ShaderReflectionVarInfo[][];
-    private _passShaderCache: Map<RendererType, MaterialBase> = new Map<RendererType, MaterialBase>();
+    protected _groupsShaderReflectionVarInfos: ShaderReflectionVarInfo[][];
 
     constructor(vs: string, fs: string) {
         super();
@@ -116,30 +112,68 @@ export class RenderShader extends ShaderBase {
         this._bufferDic.set(`materialUniform`, this.materialDataUniformBuffer);
     }
 
+
     /**
-     * Cull mode
+     * Blend mode
+     */
+    public get renderOrder(): number {
+        return this.shaderState.renderOrder;
+    }
+
+    public set renderOrder(value: number) {
+        if (this.shaderState.renderOrder != value) {
+            this._valueChange = true;
+        }
+        this.shaderState.renderOrder = value;
+    }
+
+    /**
+        * Cull mode
+        */
+    public get doubleSide(): boolean {
+        return this.shaderState.cullMode == GPUCullMode.none;
+    }
+
+    public set doubleSide(value: boolean) {
+        let b = value ? GPUCullMode.none : this.cullMode;
+        if (this.shaderState.cullMode != b) {
+            this._valueChange = true;
+        }
+        this.shaderState.cullMode = b;
+    }
+
+    /**
+     * get render face cull mode
      */
     public get cullMode(): GPUCullMode {
         return this.shaderState.cullMode;
     }
 
+    /**
+     * set render face cull mode
+     */
     public set cullMode(value: GPUCullMode) {
         if (this.shaderState.cullMode != value) {
-            this._stateChange = true;
+            this._valueChange = true;
         }
         this.shaderState.cullMode = value;
     }
 
     /**
-     * Front face
+     * get front face mode
+     * @GPUFrontFace
      */
     public get frontFace(): GPUFrontFace {
         return this.shaderState.frontFace;
     }
 
+    /**
+     * set front face mode
+     * @GPUFrontFace value
+     */
     public set frontFace(value: GPUFrontFace) {
         if (this.shaderState.frontFace != value) {
-            this._stateChange = true;
+            this._valueChange = true;
         }
         this.shaderState.frontFace = value;
     }
@@ -153,7 +187,7 @@ export class RenderShader extends ShaderBase {
 
     public set depthBias(value: number) {
         if (this.shaderState.depthBias != value) {
-            this._stateChange = true;
+            this._valueChange = true;
         }
         this.shaderState.depthBias = value;
     }
@@ -167,7 +201,7 @@ export class RenderShader extends ShaderBase {
 
     public set topology(value: GPUPrimitiveTopology) {
         if (this.shaderState.topology != value) {
-            this._stateChange = true;
+            this._valueChange = true;
         }
         this.shaderState.topology = value;
     }
@@ -181,7 +215,10 @@ export class RenderShader extends ShaderBase {
 
     public set blendMode(value: BlendMode) {
         if (this.shaderState.blendMode != value) {
-            this._stateChange = true;
+            this._valueChange = true;
+            if (value != BlendMode.NORMAL && value != BlendMode.NONE) {
+                this.renderOrder = 3000;
+            }
         }
         this.shaderState.blendMode = value;
     }
@@ -195,63 +232,10 @@ export class RenderShader extends ShaderBase {
 
     public set depthCompare(value: GPUCompareFunction) {
         if (this.shaderState.depthCompare != value) {
-            this._stateChange = true;
+            this._valueChange = true;
         }
         this.shaderState.depthCompare = value;
     }
-
-    /**
-     * Create a RenderShader with vertex shaders and fragment shaders
-     * @param vs Vertex shader name
-     * @param fs Fragment shader name
-     * @returns Returns the instance ID of the RenderShader
-     */
-    public static createShader(vs: string, fs: string): string {
-        let shader = new RenderShader(vs, fs);
-        ShaderUtil.renderShader.set(shader.instanceID, shader);
-
-        return shader.instanceID;
-    }
-
-    /**
-     * Destroy a RenderShader object
-     * @param instanceID instance ID of the RenderShader
-     */
-    public static destroyShader(instanceID: string) {
-        if (ShaderUtil.renderShader.has(instanceID)) {
-            let shader = ShaderUtil.renderShader.get(instanceID);
-            shader.destroy();
-            ShaderUtil.renderShader.delete(instanceID)
-        }
-    }
-
-    /**
-     * Get the RenderShader object by specifying the RenderShader instance ID
-     * @param instanceID instance ID of the RenderShader
-     * @returns RenderShader object
-     */
-    public static getShader(instanceID: string) {
-        return ShaderUtil.renderShader.get(instanceID);
-    }
-
-    /**
-     * Set the material shader for the specified render type
-     * @param rendererType 
-     * @param materialPass 
-     */
-    public setPassShader(rendererType: RendererType, materialPass: MaterialBase) {
-        this._passShaderCache.set(rendererType, materialPass);
-    }
-
-    /**
-     * Get the material shader for the specified render type
-     * @param rendererType 
-     * @returns 
-     */
-    public getPassShader(rendererType: RendererType): MaterialBase {
-        return this._passShaderCache.get(rendererType);
-    }
-
 
     /**
      * Sets the entry point names for the RenderShader vertex phase and fragment phase
@@ -261,6 +245,16 @@ export class RenderShader extends ShaderBase {
     public setShaderEntry(vsEntryPoint: string = '', fsEntryPoint: string = '') {
         this.vsEntryPoint = vsEntryPoint;
         this.fsEntryPoint = fsEntryPoint;
+    }
+
+    /**
+     * 
+     * @param String name 
+     * @param UniformValue value 
+     */
+    public setUniform(name: string, value: UniformValue) {
+        super.setUniform(name, value);
+        this.materialDataUniformBuffer.onChange();
     }
 
     /**
@@ -286,8 +280,13 @@ export class RenderShader extends ShaderBase {
         }
     }
 
-    public envMap: Texture;
-    public prefilterMap: Texture;
+    public get baseColor(): Color {
+        return this.getUniform(`baseColor`);
+    }
+
+    public set baseColor(value: Color) {
+        this.setUniform(`baseColor`, value);
+    }
 
     /**
      * Get the texture used in the Render Shader code
@@ -327,7 +326,7 @@ export class RenderShader extends ShaderBase {
      * @param rendererPassState 
      * @param noticeFun 
      */
-    public apply(geometry: GeometryBase, materialPass: MaterialPass, rendererPassState: RendererPassState, noticeFun?: Function) {
+    public apply(geometry: GeometryBase, rendererPassState: RendererPassState, noticeFun?: Function) {
         this.materialDataUniformBuffer.apply();
 
         if (this._textureChange && this._textureGroup != -1) {
@@ -335,14 +334,14 @@ export class RenderShader extends ShaderBase {
             this.genGroups(this._textureGroup, this.shaderReflection.groups, true);
         }
 
-        if (this._stateChange) {
+        if (this._valueChange) {
             if (this._shaderChange) {
                 this.preCompile(geometry);
                 this._shaderChange = false;
             }
+            this.shaderVariant = ShaderReflection.genRenderShaderVariant(this);
             this.reBuild(geometry, rendererPassState);
-
-            this._stateChange = false;
+            this._valueChange = false;
             // this.genRenderPipeline(geometry, rendererPassState);
             if (noticeFun) {
                 noticeFun();
@@ -370,9 +369,7 @@ export class RenderShader extends ShaderBase {
     public applyPostDefine(shader: string, renderPassState: RendererPassState) {
         //*********************************/
         //******************/
-        if (Engine3D.setting.pick.mode == `pixel`) {
-            this.defineValue[`USE_WORLDPOS`] = true;
-        }
+
         if (renderPassState.outAttachments.length > 1) {
             this.defineValue[`USE_WORLDPOS`] = true;
             this.defineValue[`USEGBUFFER`] = true;
@@ -380,19 +377,8 @@ export class RenderShader extends ShaderBase {
             this.defineValue[`USE_WORLDPOS`] = false;
             this.defineValue[`USEGBUFFER`] = false;
         }
-        if (Engine3D.setting.gi.enable) {
-            this.defineValue[`USEGI`] = true;
-        } else {
-            this.defineValue[`USEGI`] = false;
-        }
-        if (Engine3D.setting.material.materialChannelDebug) {
-            this.defineValue[`USE_DEBUG`] = true;
-        }
-        if (this.shaderState.useLight) {
-            this.defineValue[`USE_LIGHT`] = true;
-        } else {
-            this.defineValue[`USE_LIGHT`] = false;
-        }
+
+
         //*********************************/
         //*********************************/
         return Preprocessor.parse(shader, this.defineValue);
@@ -405,79 +391,6 @@ export class RenderShader extends ShaderBase {
      */
     public setBindGroup(groupIndex: number, group: GPUBindGroup) {
         this.bindGroups[groupIndex] = group;
-    }
-
-    /**
-     * Set the render shader default value
-     */
-    public setDefault() {
-        this.setUniformFloat(`shadowBias`, 0.00035);
-        this.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));
-        this.setUniformVector4(`transformUV2`, new Vector4(0, 0, 1, 1));
-        this.setUniformColor(`baseColor`, new Color());
-        this.setUniformColor(`emissiveColor`, new Color(1, 1, 1));
-        this.setUniformVector4(`materialF0`, new Vector4(0.04, 0.04, 0.04, 1));
-        this.setUniformFloat(`envIntensity`, 1);
-        this.setUniformFloat(`normalScale`, 1);
-        this.setUniformFloat(`roughness`, 1.0);
-        this.setUniformFloat(`metallic`, 0.0);
-        this.setUniformFloat(`ao`, 1.0);
-        this.setUniformFloat(`roughness_min`, 0.0);
-        this.setUniformFloat(`roughness_max`, 1.0);
-        this.setUniformFloat(`metallic_min`, 0.0);
-        this.setUniformFloat(`metallic_max`, 1.0);
-        this.setUniformFloat(`emissiveIntensity`, 0.0);
-        this.setUniformFloat(`alphaCutoff`, 0.0);
-        this.setUniformFloat(`ior`, 1.5);
-        this.setUniformFloat(`clearcoatFactor`, 0.0);
-        this.setUniformFloat(`clearcoatRoughnessFactor`, 0.0);
-        this.setUniformColor(`clearcoatColor`, new Color(1, 1, 1));
-        this.setUniformFloat(`clearcoatWeight`, 0.0);
-    }
-
-    /**
-     * Destroy and release render shader related resources
-     */
-    public destroy(force?: boolean) {
-        for (const key in this.textures) {
-            if (Object.prototype.hasOwnProperty.call(this.textures, key)) {
-                const texture = this.textures[key];
-                Reference.getInstance().detached(texture, this);
-                if (force && !Reference.getInstance().hasReference(texture)) {
-                    texture.destroy(force);
-                    // console.log("destroy");
-                } else {
-                    texture.destroy(false);
-                    // console.log("has use , cant destroy", Reference.getInstance().getReferenceCount(texture));
-                    let table = Reference.getInstance().getReference(texture);
-                    let list = [];
-                    table.forEach((v, k) => {
-                        if (`name` in v) {
-                            list.push(v[`name`]);
-                        } else {
-                            list.push(`NaN`);
-                        }
-                    });
-                    // console.log("ref", list);
-                }
-            }
-        }
-
-
-        this.bindGroups.length = 0;
-        this._passShaderCache.clear();
-        this.shaderState = null;
-        this.textures = null;
-        this.pipeline = null;
-        this.bindGroupLayouts = null;
-        this._sourceVS = null;
-        this._sourceFS = null;
-        this._destVS = null;
-        this._destFS = null;
-        this._vsShaderModule = null;
-        this._fsShaderModule = null;
-        this.materialDataUniformBuffer.destroy(force);;
-        this.materialDataUniformBuffer = null;
     }
 
     protected checkBuffer(bufferName: string, buffer: GPUBufferBase) {
@@ -556,7 +469,6 @@ export class RenderShader extends ShaderBase {
             const info = infos[i];
             if (!info) {
                 continue;
-                // console.error( `info is null` , this.vsName , this.fsName );
             }
             if (info.varType == `uniform`) {
                 if (!this._bufferDic.has(info.varName)) {
@@ -597,7 +509,6 @@ export class RenderShader extends ShaderBase {
                             }
                             entries.push(entry);
                             this._textureGroup = index;
-                            // console.log(info.binding, entry );
                         }
                         break;
                     case `sampler_comparison`:
@@ -611,7 +522,6 @@ export class RenderShader extends ShaderBase {
                             }
                             entries.push(entry);
                             this._textureGroup = index;
-                            // console.log(info.binding, entry );
                         }
                         break;
                     case `texture_2d<f32>`:
@@ -630,10 +540,6 @@ export class RenderShader extends ShaderBase {
                             }
                             entries.push(entry);
                             this._textureGroup = index;
-                            // console.log(info.binding, entry );
-                            // if(info.binding == 8){
-                            //     console.log(info.binding, entry );
-                            // }
                             Reference.getInstance().attached(texture, this);
                         }
                         break;
@@ -647,7 +553,6 @@ export class RenderShader extends ShaderBase {
                             }
                             entries.push(entry);
                             this._textureGroup = index;
-                            // console.log(info.binding, entry );
                             Reference.getInstance().attached(texture, this);
                         }
                         break;
@@ -661,7 +566,6 @@ export class RenderShader extends ShaderBase {
                             }
                             entries.push(entry);
                             this._textureGroup = index;
-                            // console.log(info.binding, entry );
                             Reference.getInstance().attached(texture, this);
                         }
                         break;
@@ -674,6 +578,7 @@ export class RenderShader extends ShaderBase {
         return entries;
     }
 
+    private _cacheEntries
     protected genGroups(groupIndex: number, infos: ShaderReflectionVarInfo[][], force: boolean = false) {
         if (!this.bindGroups[groupIndex] || force) {
             const shaderRefs: ShaderReflectionVarInfo[] = infos[groupIndex];
@@ -741,7 +646,6 @@ export class RenderShader extends ShaderBase {
                                 resource: texture.gpuSampler
                             }
                             entries.push(entry);
-                            // console.log(refs.binding, entry );
                         } else {
                             console.error(`shader${this.vsName}-${this.fsName}`, `texture ${refs.varName} is missing! `);
                         }
@@ -754,8 +658,6 @@ export class RenderShader extends ShaderBase {
                                 resource: texture.gpuSampler_comparison
                             }
                             entries.push(entry);
-
-                            // console.log(refs.binding, entry );
                         } else {
                             console.error(`shader${this.vsName}-${this.fsName}`, `texture ${refs.varName} is missing! `);
                         }
@@ -771,10 +673,6 @@ export class RenderShader extends ShaderBase {
                                 resource: texture.getGPUView(),
                             }
                             entries.push(entry);
-                            // console.log(refs.binding, texture );
-                            // if(refs.binding == 9){
-                            //     console.log(refs.binding, texture );
-                            // }
                         } else {
                             console.error(`shader${this.vsName}-${this.fsName}`, `texture ${refs.varName} is missing! `);
                         }
@@ -800,7 +698,7 @@ export class RenderShader extends ShaderBase {
             if (shaderState.blendMode != BlendMode.NONE) {
                 target.blend = BlendFactor.getBlend(shaderState.blendMode);
             } else {
-                target.blend = undefined;
+                delete target[`blend`];
             }
         }
 
@@ -839,12 +737,10 @@ export class RenderShader extends ShaderBase {
 
         if (renderPassState.zPreTexture || renderPassState.depthTexture) {
             let blendEnable = shaderState.blendMode != BlendMode.NONE;
-            // let depthWriteEnabled =  !blendEnable  ;!blendEnable && 
             if (Engine3D.setting.render.zPrePass && renderPassState.zPreTexture && shaderState.useZ) {
-                // if (!blendEnable && !shaderState.depthWriteEnabled && Engine3D.engineSetting.Render.zPrePass && renderPassState.depthMask && shaderState.useZ ) {
                 renderPipelineDescriptor[`depthStencil`] = {
-                    depthWriteEnabled: shaderState.depthWriteEnabled,
-                    depthCompare: shaderState.depthCompare,
+                    depthWriteEnabled: false,
+                    depthCompare: GPUCompareFunction.less,
                     format: renderPassState.zPreTexture.format,
                 };
             } else {
@@ -852,16 +748,18 @@ export class RenderShader extends ShaderBase {
                     depthWriteEnabled: shaderState.depthWriteEnabled,
                     depthCompare: shaderState.depthCompare,
                     format: renderPassState.depthTexture.format,
-                    // depthBias:-0.5
                 };
 
-                if (this.useRz) {
-                    // tmpDes[`depthStencil`].depthCompare = GPUCompareFunction.less ;
-                }
             }
         }
 
-        this.pipeline = GPUContext.createPipeline(renderPipelineDescriptor as GPURenderPipelineDescriptor);
+        let pipeline = PipelinePool.getSharePipeline(this.shaderVariant);
+        if (pipeline) {
+            this.pipeline = pipeline;
+        } else {
+            this.pipeline = GPUContext.createPipeline(renderPipelineDescriptor as GPURenderPipelineDescriptor);
+            PipelinePool.setSharePipeline(this.shaderVariant, this.pipeline);
+        }
     }
 
     private createGroupLayouts() {
@@ -877,7 +775,7 @@ export class RenderShader extends ShaderBase {
                 this._groupsShaderReflectionVarInfos[i] = shaderRefs;
                 let layout = webGPUContext.device.createBindGroupLayout({
                     entries,
-                    label: `vs${this.vsName} fs${this.fsName}`
+                    label: `vs${this.vsName} fs${this.fsName} ${shaderRefs.length}`
                 });
                 this.bindGroupLayouts[i] = layout;
             } else {
@@ -910,44 +808,85 @@ export class RenderShader extends ShaderBase {
         // this.vertexAttributes = "" ;
         // check geometry vertex attributes
         let isSkeleton = geometry.hasAttribute(VertexAttributeName.joints0);
-        // this.vertexAttributes += `isSkeleton:${isSkeleton}` ;
+
         let hasMorphTarget = geometry.hasAttribute(VertexAttributeName.a_morphPositions_0);
-        // this.vertexAttributes += `isMorpher:${isMorpher}` ;
+
         let useTangent = geometry.hasAttribute(VertexAttributeName.TANGENT);
-        // this.vertexAttributes += `useTangent:${useTangent}` ;
+
         let useVertexColor = geometry.hasAttribute(VertexAttributeName.color);
-        // this.vertexAttributes += `useVertexColor:${useVertexColor}` ;
 
         let useGI = this.shaderState.acceptGI;
+
         let useLight = this.shaderState.useLight;
 
         this.defineValue[`USE_SKELETON`] = isSkeleton;
         this.defineValue[`USE_MORPHTARGETS`] = hasMorphTarget;
-        this.defineValue[`USE_TANGENT`] = useTangent;
+
+        if (!('USE_TANGENT' in this.defineValue)) {
+            this.defineValue[`USE_TANGENT`] = useTangent;
+        }
+
         this.defineValue[`USE_GI`] = useGI;
         this.defineValue[`USE_CASTSHADOW`] = this.shaderState.castShadow;
         this.defineValue[`USE_SHADOWMAPING`] = this.shaderState.acceptShadow;
         this.defineValue[`USE_LIGHT`] = useLight;
         this.defineValue[`USE_VERTXCOLOR`] = useVertexColor;
 
+        if (Engine3D.setting.pick.mode == `pixel`) {
+            this.defineValue[`USE_WORLDPOS`] = true;
+        }
+
+        if (Engine3D.setting.gi.enable) {
+            this.defineValue[`USEGI`] = true;
+        } else {
+            this.defineValue[`USEGI`] = false;
+        }
+
+        if (Engine3D.setting.render.debug) {
+            this.defineValue[`USE_DEBUG`] = true;
+            this.defineValue[`DEBUG_CLUSTER`] = true;
+        }
+
+        if (this.shaderState.useLight) {
+            this.defineValue[`USE_LIGHT`] = true;
+        } else {
+            this.defineValue[`USE_LIGHT`] = false;
+        }
+
+        if (Engine3D.setting.render.useLogDepth) {
+            this.defineValue[`USE_LOGDEPTH`] = true;
+            this.shaderState.useFragDepth = true;
+        } else {
+            this.defineValue[`USE_LOGDEPTH`] = false;
+        }
+
+        if (this.shaderState.useFragDepth) {
+            this.defineValue[`USE_OUTDEPTH`] = true;
+        } else {
+            this.defineValue[`USE_OUTDEPTH`] = false;
+        }
+
         this.defineValue[`USE_PCF_SHADOW`] = Engine3D.setting.shadow.type == `PCF`;
         this.defineValue[`USE_HARD_SHADOW`] = Engine3D.setting.shadow.type == `HARD`;
         this.defineValue[`USE_SOFT_SHADOW`] = Engine3D.setting.shadow.type == `SOFT`;
         this.defineValue[`USE_CSM`] = CSM.Cascades > 1;
         this.defineValue[`USE_IES_PROFILE`] = IESProfiles.use;
+
     }
 
     private genReflection() {
-        this.shaderVariant += ShaderReflection.genRenderShaderVariant(this);
+        this.shaderVariant = ShaderReflection.genRenderShaderVariant(this);
         let reflection = ShaderReflection.poolGetReflection(this.shaderVariant);
         if (!reflection) {
             //TODO: key check shader compile info
             let vsPreShader = Preprocessor.parse(this._destVS, this.defineValue);
             vsPreShader = Preprocessor.parse(vsPreShader, this.defineValue);
             ShaderReflection.getShaderReflection2(vsPreShader, this);
+
             let fsPreShader = Preprocessor.parse(this._destFS, this.defineValue);
             fsPreShader = Preprocessor.parse(fsPreShader, this.defineValue);
             ShaderReflection.getShaderReflection2(fsPreShader, this);
+
             ShaderReflection.final(this);
         } else {
             this.shaderReflection = reflection;
@@ -956,7 +895,79 @@ export class RenderShader extends ShaderBase {
         this.shaderState.splitTexture = this.shaderReflection.useSplit;
     }
 
-    ;
+    /**
+     * Destroy and release render shader related resources
+     */
+    public destroy(force?: boolean) {
+        for (const key in this.textures) {
+            if (Object.prototype.hasOwnProperty.call(this.textures, key)) {
+                const texture = this.textures[key];
+                Reference.getInstance().detached(texture, this);
+                if (force && !Reference.getInstance().hasReference(texture)) {
+                    texture.destroy(force);
+                } else {
+                    texture.destroy(false);
+                    let table = Reference.getInstance().getReference(texture);
+                    let list = [];
+                    table.forEach((v, k) => {
+                        if (`name` in v) {
+                            list.push(v[`name`]);
+                        } else {
+                            list.push(`NaN`);
+                        }
+                    });
+                }
+            }
+        }
+
+        this.bindGroups.length = 0;
+        this.shaderState = null;
+        this.textures = null;
+        this.pipeline = null;
+        this.bindGroupLayouts = null;
+        this._sourceVS = null;
+        this._sourceFS = null;
+        this._destVS = null;
+        this._destFS = null;
+        this._vsShaderModule = null;
+        this._fsShaderModule = null;
+        this.materialDataUniformBuffer.destroy(force);;
+        this.materialDataUniformBuffer = null;
+    }
+
+    /**
+     * Destroy a RenderShader object
+     * @param instanceID instance ID of the RenderShader
+     */
+    public static destroyShader(instanceID: string) {
+        if (ShaderUtil.renderShader.has(instanceID)) {
+            let shader = ShaderUtil.renderShader.get(instanceID);
+            shader.destroy();
+            ShaderUtil.renderShader.delete(instanceID)
+        }
+    }
+
+    /**
+     * Get the RenderShader object by specifying the RenderShader instance ID
+     * @param instanceID instance ID of the RenderShader
+     * @returns RenderShader object
+     */
+    public static getShader(instanceID: string) {
+        return ShaderUtil.renderShader.get(instanceID);
+    }
+
+    /**
+     * Create a RenderShader with vertex shaders and fragment shaders
+     * @param vs Vertex shader name
+     * @param fs Fragment shader name
+     * @returns Returns the instance ID of the RenderShader
+     */
+    public static createShader(vs: string, fs: string): string {
+        let shader = new RenderShader(vs, fs);
+        ShaderUtil.renderShader.set(shader.instanceID, shader);
+        return shader.instanceID;
+    }
+
 }
 
 

@@ -20,6 +20,7 @@ class Sample_ClearCoat {
             enable: true,
             blurX: 4,
             blurY: 4,
+            exposure: 1,
             luminosityThreshold: 0.8,
             strength: 0.86,
             radius: 4,

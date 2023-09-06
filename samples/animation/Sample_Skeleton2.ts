@@ -81,6 +81,7 @@ class Sample_Skeleton2 {
 
                 cloneObj.x = (maxCol * -0.5 + col) * 30;
                 cloneObj.z = (maxRow * -0.5 + row) * 30;
+                cloneObj.rotationX = -90;
                 scene.addChild(cloneObj);
 
                 let animation = cloneObj.getComponentsInChild(SkeletonAnimationComponent)[0];

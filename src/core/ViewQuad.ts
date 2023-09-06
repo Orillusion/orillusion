@@ -1,5 +1,3 @@
-import { QuadGlsl_fs, QuadGlsl_vs } from '../assets/shader/glsl/Quad_glsl';
-import { ShaderLib } from '../assets/shader/ShaderLib';
 import { MeshRenderer } from '../components/renderer/MeshRenderer';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
 import { UniformNode } from '../gfx/graphics/webGpu/core/uniforms/UniformNode';
@@ -8,7 +6,6 @@ import { GPUCompareFunction } from '../gfx/graphics/webGpu/WebGPUConst';
 import { webGPUContext } from '../gfx/graphics/webGpu/Context3D';
 import { RTFrame } from '../gfx/renderJob/frame/RTFrame';
 import { BlendMode } from '../materials/BlendMode';
-import { MaterialBase } from '../materials/MaterialBase';
 import { Color } from '../math/Color';
 import { PlaneGeometry } from '../shape/PlaneGeometry';
 
@@ -18,6 +15,7 @@ import { Engine3D } from '../Engine3D';
 import { GPUContext } from '../gfx/renderJob/GPUContext';
 import { RendererType } from '../gfx/renderJob/passRenderer/state/RendererType';
 import { View3D } from './View3D';
+import { Material, RenderShader } from '..';
 /**
  * @internal
  * @group Entity
@@ -26,29 +24,28 @@ export class ViewQuad extends Object3D {
     width: number = 128;
     height: number = 128;
     quadRenderer: MeshRenderer;
-    material: MaterialBase;
+    material: Material;
     uniforms: { [key: string]: UniformNode };
     rendererPassState: RendererPassState;
+    pass: RenderShader;
 
     constructor(vs: string = 'QuadGlsl_vs', fs: string = 'QuadGlsl_fs', rtFrame: RTFrame, shaderUniforms?: { [uniName: string]: UniformNode }, multisample: number = 0, f: boolean = false) {
         super();
 
         let renderTexture = rtFrame ? rtFrame.attachments : [];
 
-        ShaderLib.register("QuadGlsl_vs", QuadGlsl_vs);
-        ShaderLib.register("QuadGlsl_fs", QuadGlsl_fs);
+        this.material = new Material();
+        this.pass = new RenderShader(vs, fs);
+        this.material.addPass(RendererType.COLOR, this.pass);
 
-        this.material = new MaterialBase();
-        this.material.setShader(vs, fs);
-        let shader = this.material.getShader();
-        this.material.blendMode = BlendMode.NONE;
-        let shaderState = shader.shaderState;
+        this.pass.blendMode = BlendMode.NONE;
+        let shaderState = this.pass.shaderState;
         shaderState.frontFace = `cw`;
         // shaderState.cullMode = `back`;
         shaderState.depthWriteEnabled = false;
         shaderState.depthCompare = GPUCompareFunction.always;
         shaderState.multisample = multisample;
-        this.uniforms = shader.uniforms = shaderUniforms ? shaderUniforms : { color: new UniformNode(new Color()) };
+        this.uniforms = this.pass.uniforms = shaderUniforms ? shaderUniforms : { color: new UniformNode(new Color()) };
 
         this.quadRenderer = this.addComponent(MeshRenderer);
         this.quadRenderer.material = this.material;
@@ -57,16 +54,18 @@ export class ViewQuad extends Object3D {
         this.quadRenderer.drawType = f ? 2 : 0;
         // this.quadRenderer.renderOrder = 99999;
         this.quadRenderer.geometry = new PlaneGeometry(100, 100, 1, 1);
+
+        this.colorTexture = Engine3D.res.blackTexture;
+
+        this.pass.setUniformFloat(`x`, 0);
+        this.pass.setUniformFloat(`y`, 0);
+        this.pass.setUniformFloat(`width`, 100);
+        this.pass.setUniformFloat(`height`, 100);
+
+        this.quadRenderer.material = this.material;
         this.quadRenderer[`__start`]();
         this.quadRenderer[`_enable`] = true;
         this.quadRenderer[`onEnable`]();
-        this.colorTexture = Engine3D.res.blackTexture;
-
-        shader.setUniformFloat(`x`, 0);
-        shader.setUniformFloat(`y`, 0);
-        shader.setUniformFloat(`width`, 100);
-        shader.setUniformFloat(`height`, 100);
-
         // this.createRendererPassState(renderTargets, depth);
         // this.rendererPassState = WebGPUDescriptorPool.createRendererPassState(renderTargets, shaderState.multisample>0 ? false : true);
         this.rendererPassState = WebGPUDescriptorCreator.createRendererPassState(rtFrame, `load`);
@@ -85,7 +84,7 @@ export class ViewQuad extends Object3D {
     }
 
     public set colorTexture(tex: Texture) {
-        this.material.baseMap = tex;
+        this.material.getPass(RendererType.COLOR)[0].setTexture(`baseMap`, tex);
     }
 
     /**

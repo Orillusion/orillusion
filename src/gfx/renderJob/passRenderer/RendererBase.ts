@@ -80,7 +80,7 @@ export class RendererBase extends CEventDispatcher {
         let scene = view.scene;
 
         this.rendererPassState.camera3D = camera;
-        let collectInfo = EntityCollect.instance.getRenderNodes(scene);
+        let collectInfo = EntityCollect.instance.getRenderNodes(scene, camera);
         // this.compute(collectInfo, scene, occlusionSystem);
 
         let op_bundleList = this.renderBundleOp(view, collectInfo, occlusionSystem, clusterLightingBuffer);
@@ -189,8 +189,8 @@ export class RendererBase extends CEventDispatcher {
         GPUContext.bindCamera(encoder, view.camera);
         for (let i = Engine3D.setting.render.drawOpMin; i < Math.min(nodes.length, Engine3D.setting.render.drawOpMax); ++i) {
             let renderNode = nodes[i];
-            if (!occlusionSystem.renderCommitTesting(view.camera, renderNode))
-                continue;
+            // if (!occlusionSystem.renderCommitTesting(view.camera, renderNode))
+            //     continue;
             if (!renderNode.transform.enable)
                 continue;
             if (!renderNode.enable)

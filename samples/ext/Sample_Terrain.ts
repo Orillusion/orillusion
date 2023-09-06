@@ -22,15 +22,15 @@ class Sample_Terrain {
         this.view.scene.addComponent(AtmosphericComponent);
 
         this.view.camera = CameraUtil.createCamera3DObject(this.view.scene);
-        this.view.camera.perspective(60, webGPUContext.aspect, 1, 5000.0);
+        this.view.camera.perspective(60, webGPUContext.aspect, 1, 50000.0);
         this.view.camera.object3D.z = -15;
-        this.view.camera.object3D.addComponent(HoverCameraController).setCamera(35, -20, 500);
+        this.view.camera.object3D.addComponent(HoverCameraController).setCamera(35, -20, 10000);
 
         Engine3D.startRenderView(this.view);
 
         this.post = this.view.scene.addComponent(PostProcessingComponent);
         let fog = this.post.addPost(GlobalFog);
-        fog.start = 116;
+        fog.start = 2000;
         fog.end = 0;
         fog.fogHeightScale = 0.116;
         fog.density = 0.094;
@@ -49,27 +49,33 @@ class Sample_Terrain {
     }
 
     private async createScene(scene: Scene3D) {
+        {
+            let sunObj = new Object3D();
+            let sunLight = sunObj.addComponent(DirectLight);
+            sunLight.lightColor = KelvinUtil.color_temperature_to_rgb(6553);
+            sunLight.castShadow = true;
+            sunLight.intensity = 49;
+            sunObj.transform.rotationX = 50;
+            sunObj.transform.rotationY = 50;
+            GUIUtil.renderDirLight(sunLight);
+            scene.addChild(sunObj);
+        }
+
         //bitmap
         let bitmapTexture = await Engine3D.res.loadTexture('terrain/test01/bitmap.png');
         let heightTexture = await Engine3D.res.loadTexture('terrain/test01/height.png');
+        // let heightTexture = await Engine3D.res.loadTexture('terrain/test01/china.png');
+
+        // let heightTexture = await Engine3D.res.loadTexture('terrain/grass/GustNoise.png');
         let grassTexture = await Engine3D.res.loadTexture('terrain/grass/GrassThick.png');
         let gustNoiseTexture = await Engine3D.res.loadTexture('terrain/grass/displ_noise_curl_1.png');
-        let sunObj = new Object3D();
-        let sunLight = sunObj.addComponent(DirectLight);
-        sunLight.lightColor = KelvinUtil.color_temperature_to_rgb(6553);
-        sunLight.castShadow = true;
-        sunLight.intensity = 49;
-        sunObj.transform.rotationX = 50;
-        sunObj.transform.rotationY = 50;
-        GUIUtil.renderDirLight(sunLight);
-        scene.addChild(sunObj);
-
-        let terrainSize = 1000;
+        let terrainSizeW = 20488;
+        let terrainSizeH = 20488;
         let terrainGeometry: TerrainGeometry;
         {
             let mat = new LitMaterial();
-            terrainGeometry = new TerrainGeometry(terrainSize, terrainSize);
-            terrainGeometry.setHeight(heightTexture as BitmapTexture2D, 300);
+            terrainGeometry = new TerrainGeometry(terrainSizeW, terrainSizeH, 2000, 2000);
+            terrainGeometry.setHeight(heightTexture as BitmapTexture2D, 5000);
             let floor = new Object3D();
             let mr = floor.addComponent(MeshRenderer);
             mr.geometry = terrainGeometry;

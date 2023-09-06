@@ -5,6 +5,12 @@ export let BxdfDebug_frag: string = /*wgsl*/ `
             ORI_FragmentOutput.color = vec4<f32>(ORI_VertexVarying.vWorldPos.xyz,1.0);
         }
 
+        fn debugMeshID(){
+            let meshIDColor = u32(ORI_VertexVarying.vWorldPos.w ) ;
+            let color = colorSet[ meshIDColor % 9u] ;
+            ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(color.rgb),1.0);
+        }
+
         fn debugNormal(){
             ORI_FragmentOutput.color = vec4<f32>(ORI_ShadingInput.Normal.xyz,1.0);
         }
@@ -18,7 +24,7 @@ export let BxdfDebug_frag: string = /*wgsl*/ `
         }
 
         fn debugDiffuse(){
-            ORI_FragmentOutput.color = vec4<f32>(1.0/3.1415926 * fragData.Albedo.rgb,1.0);
+            ORI_FragmentOutput.color = vec4<f32>( fragData.LightChannel.rgb,1.0);
             // ORI_FragmentOutput.color = vec4<f32>(0.2,0.2,0.2,1.0);
         }
 
@@ -50,6 +56,10 @@ export let BxdfDebug_frag: string = /*wgsl*/ `
             ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(fragData.Irradiance),1.0);
         }
 
+        fn debugTangent(){
+            ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(fragData.TangentChannel),1.0);
+        }
+
         fn debugFragmentOut(){
             if(ORI_VertexVarying.fragCoord.x > globalUniform.renderState_split) {
                 switch (globalUniform.renderState_right)
@@ -67,10 +77,10 @@ export let BxdfDebug_frag: string = /*wgsl*/ `
                     debugIrradiance();
                   }
                   case 4: {
-                    debugDiffuse();
+                    debugTangent();
                   }
                   case 5: {
-                    // debugAmbient();
+                    // debugTangent();
                   }
                   case 6: {
                     debugEmissive();
@@ -94,7 +104,7 @@ export let BxdfDebug_frag: string = /*wgsl*/ `
                     debugAmbient();
                   }
                   case 13: {
-                    debugPosition();
+                    debugMeshID();
                   }
                   case 14: {
                     #if DEBUG_CLUSTER
@@ -130,10 +140,10 @@ export let BxdfDebug_frag: string = /*wgsl*/ `
                     debugIrradiance();
                   }
                   case 4: {
-                    debugDiffuse();
+                    debugTangent();
                   }
                   case 5: {
-                    // debugAmbient();
+                    // debugTangent();
                   }
                   case 6: {
                     debugEmissive();
@@ -157,16 +167,22 @@ export let BxdfDebug_frag: string = /*wgsl*/ `
                     debugAmbient();
                   }
                   case 13: {
-                    debugPosition();
+                    debugMeshID();
                   }
                   case 14: {
-                    // debugCluster( vec4<f32>(ORI_VertexVarying.fragCoord.xyz,0.0));
+                    #if DEBUG_CLUSTER
+                      debugCluster( ORI_VertexVarying.fragCoord );
+                    #endif
                   }
                   case 15: {
-                    // debugClusterBox( vec4<f32>(ORI_VertexVarying.fragCoord.xyz,0.0));
+                    #if DEBUG_CLUSTER
+                      debugClusterBox( ORI_VertexVarying.fragCoord );
+                    #endif
                   }
                   case 16: {
-                    // debugClusterLightCount( vec4<f32>(ORI_VertexVarying.fragCoord.xyz,0.0));
+                    #if DEBUG_CLUSTER
+                      debugClusterLightCount( vec4<f32>(ORI_VertexVarying.fragCoord.xyz,0.0));
+                      #endif
                   }
                   default: {
                   }

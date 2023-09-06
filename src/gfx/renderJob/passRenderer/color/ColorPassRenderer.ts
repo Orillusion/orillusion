@@ -4,13 +4,11 @@ import { View3D } from "../../../../core/View3D";
 import { ProfilerUtil } from "../../../../util/ProfilerUtil";
 import { GPUContext } from "../../GPUContext";
 import { EntityCollect } from "../../collect/EntityCollect";
-import { RenderShaderCollect } from "../../collect/RenderShaderCollect";
 import { OcclusionSystem } from "../../occlusion/OcclusionSystem";
 import { RenderContext } from "../RenderContext";
 import { RendererBase } from "../RendererBase";
 import { ClusterLightingBuffer } from "../cluster/ClusterLightingBuffer";
 import { RendererType } from "../state/RendererType";
-
 
 /**
  *  @internal
@@ -31,7 +29,7 @@ export class ColorPassRenderer extends RendererBase {
         let camera = view.camera;
 
         this.rendererPassState.camera3D = camera;
-        let collectInfo = EntityCollect.instance.getRenderNodes(scene);
+        let collectInfo = EntityCollect.instance.getRenderNodes(scene, camera);
 
         let op_bundleList = this.renderBundleOp(view, collectInfo, occlusionSystem, clusterLightingBuffer);
         let tr_bundleList = maskTr ? [] : this.renderBundleTr(view, collectInfo, occlusionSystem, clusterLightingBuffer);
@@ -131,8 +129,8 @@ export class ColorPassRenderer extends RendererBase {
 
             for (let i = Engine3D.setting.render.drawOpMin; i < Math.min(nodes.length, Engine3D.setting.render.drawOpMax); ++i) {
                 let renderNode = nodes[i];
-                if (!occlusionSystem.renderCommitTesting(view.camera, renderNode))
-                    continue;
+                // if (!occlusionSystem.renderCommitTesting(view.camera, renderNode))
+                //     continue;
                 if (!renderNode.transform.enable)
                     continue;
                 if (!renderNode.enable)

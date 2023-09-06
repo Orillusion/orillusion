@@ -37,14 +37,14 @@ fn directLighting( albedo:vec3<f32>, N:vec3<f32>, V:vec3<f32>,  roughness:f32 , 
       }
 
       #if USE_LAMBERT
-        color = vec3<f32>(1.0,0.5,1.0) ;
+        color = vec3<f32>(1.0,1.0,1.0) ;
       #endif 
 
       #if USE_BRDF
         color = simpleBRDF(albedo,N,V,L,att,lightColor,roughness,metallic) ;
       #endif 
     #endif 
-    return color ;
+    return color;
 }
 
 fn pointLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, roughness:f32 , metallic:f32 ,light:LightData ) -> vec3<f32> {
@@ -80,7 +80,7 @@ fn pointLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, rough
         lightColor = getHDRColor(lightColor , light.linear )  ;
 
         #if USE_LAMBERT
-          color = vec3<f32>(1.0,0.5,1.0) ;
+          color = vec3<f32>(1.0,1.0,1.0) ;
         #endif 
 
         #if USE_BRDF
@@ -114,8 +114,6 @@ fn spotLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, roughn
         if(angle < light.outerCutOff){
           if(angle > light.innerCutOff){
             atten *= 1.0 - smoothstep(light.innerCutOff, light.outerCutOff, angle) ;
-          
-          
           }
         }else{
             atten = 0.0 ;

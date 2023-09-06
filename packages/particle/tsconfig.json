@@ -23,7 +23,8 @@
         "strictNullChecks": false,
         "strict": false,
         "paths": {
-            "@orillusion/core": ["../../src"]
+            "@orillusion/core": ["../../src"],
+            "@orillusion/*": ["../*"],
         }
     }
 }

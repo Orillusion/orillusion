@@ -23,15 +23,15 @@ export class ShaderState {
     public castReflection: boolean = false;
     public receiveEnv: boolean = false;
     public renderLayer: number = 1000;
-    public renderOrder: number = 0;
+    public renderOrder: number = 2000;
     public unclippedDepth: boolean = false;
-
+    public transparent: boolean = false;
     public multisample: number = 0;
-
     public label: string;
     public useZ: boolean = true;
-
     public splitTexture: boolean = false;
+    public alphaCutoff: number;
+    public useFragDepth: boolean = false;
 
     public setFromMapValues(values: Map<string, any>) {
         if (values.has('blendMode')) {

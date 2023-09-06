@@ -64,6 +64,7 @@ export class PropertyAnimation extends ComponentBase {
      */
     public appendClip(clip: PropertyAnimClip) {
         this._clips.push(clip);
+        this.play(clip.name);
     }
 
     private statusCall(tag: number, last: number, now: number): void {

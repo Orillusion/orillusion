@@ -1,3 +1,4 @@
+import { ComponentCollect } from '../..';
 import { IComponent } from '../../components/IComponent';
 import { RenderNode } from '../../components/renderer/RenderNode';
 import { Transform } from '../../components/Transform';
@@ -32,13 +33,7 @@ export class Entity extends CEventDispatcher {
         return this._instanceID;
     }
 
-    /**
-     *
-     * The layer membership of the object.
-     *  The object is only visible when it has at least one common layer with the camera in use.
-     * When using a ray projector, this attribute can also be used to filter out unwanted objects in ray intersection testing.
-     */
-    private _renderLayer: RenderLayer = RenderLayer.None;
+
 
     /**
      *
@@ -74,17 +69,7 @@ export class Entity extends CEventDispatcher {
     private _dispose: boolean = false;
     // private _visible: boolean = true;
 
-    public get renderLayer(): RenderLayer {
-        return this._renderLayer;
-    }
 
-    public set renderLayer(value: RenderLayer) {
-        for (let i = 0; i < this.entityChildren.length; i++) {
-            const element = this.entityChildren[i];
-            element.renderLayer = value;
-        }
-        this._renderLayer = value;
-    }
 
     /**
      *
@@ -312,6 +297,36 @@ export class Entity extends CEventDispatcher {
     }
 
     /**
+     *
+     * @private
+     * @returns
+     */
+    public waitUpdate(): void {
+        if (this._dispose) {
+            if (this.transform.parent) {
+                this.transform.parent.object3D.removeChild(this);
+            }
+            this.components.forEach((v, k) => {
+                v.enable = false;
+                v.destroy();
+            });
+            this.components.clear();
+        } else {
+            ComponentCollect.waitStartComponent.forEach((v, k) => {
+                // v.forEach((v) => {
+                //     v[`__start`]();
+                // })
+                while (v.length > 0) {
+                    const element = v.shift();
+                    element[`__start`]();
+                }
+                ComponentCollect.waitStartComponent.delete(k);
+            });
+        }
+    }
+
+
+    /**
      * release current object
      */
     public destroy(force?: boolean) {
@@ -326,6 +341,9 @@ export class Entity extends CEventDispatcher {
             this.entityChildren.forEach((c) => {
                 c.destroy(force);
             })
+
+            this.removeAllChild();
+
             this.transform.parent = null;
             this._dispose = true;
             super.destroy();

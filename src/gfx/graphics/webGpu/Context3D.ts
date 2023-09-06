@@ -82,7 +82,6 @@ class Context3D {
                 "depth32float-stencil8",
                 "indirect-first-instance",
                 "rg11b10ufloat-renderable",
-                "texture-compression-bc"
             ],
             requiredLimits: {
                 minUniformBufferOffsetAlignment: 256,

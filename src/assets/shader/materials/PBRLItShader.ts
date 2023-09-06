@@ -51,7 +51,7 @@ export let PBRLItShader: string = /*wgsl*/ `
         var uv = transformUV1.zw * ORI_VertexVarying.fragUV0 + transformUV1.xy; 
 
         ORI_ShadingInput.BaseColor = textureSample(baseMap, baseMapSampler, uv ) ;
-        ORI_ShadingInput.BaseColor = vec4<f32>(gammaToLiner(ORI_ShadingInput.BaseColor.rgb/ORI_ShadingInput.BaseColor.w ) * materialUniform.baseColor.rgb,ORI_ShadingInput.BaseColor.w*materialUniform.baseColor.a)  ;
+        ORI_ShadingInput.BaseColor = vec4<f32>(gammaToLiner(ORI_ShadingInput.BaseColor.rgb*ORI_ShadingInput.BaseColor.w ) * materialUniform.baseColor.rgb,ORI_ShadingInput.BaseColor.w*materialUniform.baseColor.a)  ;
         #if USE_ALPHACUT
             if( (ORI_ShadingInput.BaseColor.a - materialUniform.alphaCutoff) <= 0.0 ){
                 ORI_FragmentOutput.color = vec4<f32>(0.0,0.0,0.0,1.0);
@@ -95,7 +95,7 @@ export let PBRLItShader: string = /*wgsl*/ `
             ORI_ShadingInput.Metallic = materialUniform.metallic ;
             ORI_ShadingInput.AmbientOcclusion =  materialUniform.ao ;
             #if USE_AOTEX
-                var aoMap = textureSample(aomapMap, aoMapSampler, ORI_VertexVarying.fragUV0.xy );
+                var aoMap = textureSample(aomapMap, aoMapSampler, uv );
                 ORI_ShadingInput.AmbientOcclusion = mix(0.0,aoMap.r,materialUniform.ao) ;
             #endif
         #endif
@@ -107,7 +107,7 @@ export let PBRLItShader: string = /*wgsl*/ `
         emissiveColor = vec4<f32>(gammaToLiner(emissiveColor.rgb),emissiveColor.w);
         ORI_ShadingInput.EmissiveColor = vec4<f32>(materialUniform.emissiveColor.rgb * emissiveColor.rgb * materialUniform.emissiveIntensity,1.0);
 
-        var Normal = textureSample(normalMap,normalMapSampler,ORI_VertexVarying.fragUV0).rgb ;
+        var Normal = textureSample(normalMap,normalMapSampler,uv).rgb ;
         // Normal.y = 1.0 - Normal.y ;
         // let normal = unPackNormal(Normal,1.0,materialUniform.normalScale) ;
         let normal = unPackNormal(Normal,materialUniform.normalScale) ;  

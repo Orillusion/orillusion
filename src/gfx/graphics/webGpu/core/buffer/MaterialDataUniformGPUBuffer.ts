@@ -42,7 +42,7 @@ export class MaterialDataUniformGPUBuffer extends GPUBufferBase {
         }
     }
 
-    private onChange() {
+    public onChange() {
         this._onChange = true;
     }
 

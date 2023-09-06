@@ -1,10 +1,10 @@
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { Stats } from '@orillusion/stats'
-import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D, Vector3, Vector3Ex, UnLitMaterial, InstanceDrawComponent, LambertMaterial, Time, BoundingBox, Color, OcclusionSystem, PostProcessingComponent, GlobalFog, SphereGeometry } from '@orillusion/core';
+import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D, Vector3, Vector3Ex, UnLitMaterial, InstanceDrawComponent, LambertMaterial, Time, BoundingBox, Color, OcclusionSystem, PostProcessingComponent, GlobalFog, SphereGeometry, RendererMask, RenderLayer } from '@orillusion/core';
 import { GUIUtil } from '@samples/utils/GUIUtil';
 
 // simple base demo
-class Sample_drawCall {
+export class Sample_drawCallShareGeometry {
     scene: Scene3D;
     public anim: boolean = false;
     async run() {
@@ -66,18 +66,27 @@ class Sample_drawCall {
     private _rotList: number[] = [];
     initScene() {
         let shareGeometry = new BoxGeometry();
-        let material = new LambertMaterial();
-        material.baseColor = new Color(
-            Math.random(),
-            Math.random(),
-            Math.random(),
-        )
+
+        let mats = [];
+        for (let i = 0; i < 1; i++) {
+            const mat = new LambertMaterial();
+            mat.baseColor = new Color(
+                Math.random() * 0.85,
+                Math.random() * 0.85,
+                Math.random() * 0.85,
+            )
+
+            // mat.baseColor = new Color().hexToRGB(0xcccccc)
+            mats.push(mat);
+        }
+
 
         let group = new Object3D();
-        let count = 50000;
+        let count = 5 * 10000;
 
         GUIHelp.addFolder('info');
         GUIHelp.open();
+        GUIHelp.addLabel(`normal draw box`);
         GUIHelp.addInfo(`count `, count);
 
         let ii = 0;
@@ -87,8 +96,9 @@ class Sample_drawCall {
             // let pos = Vector3Ex.getRandomXYZ(-2, 2);
             let obj = new Object3D();
             let mr = obj.addComponent(MeshRenderer);
+            // mr.renderLayer = RenderLayer.DynamicBatch;
             mr.geometry = shareGeometry;
-            mr.material = material;
+            mr.material = mats[Math.floor(Math.random() * mats.length)];
             obj.localPosition = pos;
             group.addChild(obj);
             this._list.push(obj);
@@ -103,13 +113,18 @@ class Sample_drawCall {
 
             this._rotList.push((Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 100);
 
+            obj.transform.localDetailRot = new Vector3(
+                (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 50 * 0.001 * 0.5,
+                (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 50 * 0.001 * 0.5,
+                (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 50 * 0.001 * 0.5);
             if (i % 10000 == 0) {
                 ii++;
             }
         }
 
-        group.addComponent(InstanceDrawComponent);
-        this._rotList.push(1.0);
+        // group.addComponent(InstanceDrawComponent);
+        group.transform.localDetailRot = new Vector3(0, 1.0 * 0.001 * 0.15, 0);
+        this._rotList.push(1.0 * 0.35);
 
         group.bound = new BoundingBox(Vector3.SAFE_MIN, Vector3.SAFE_MAX);
         this._list.push(group);
@@ -122,11 +137,11 @@ class Sample_drawCall {
             for (let i = 0; i < this._list.length; i++) {
                 const element = this._list[i];
                 // element.transform.rotationY += Time.delta * 0.01 * this._rotList[i];
-                element.transform._localRot.y += Time.delta * 0.01 * this._rotList[i];
-                element.transform._localChange = true;
+                // element.transform._localRot.y += Time.delta * 0.01 * this._rotList[i];
+                element.transform.localChange = true;
             }
         }
     }
 }
 
-new Sample_drawCall().run()
+// new Sample_drawCallShareGeometry().run()

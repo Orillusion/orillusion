@@ -1,14 +1,18 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Scene3D, HoverCameraController, Engine3D, AtmosphericComponent, Object3D, Camera3D, Vector3, View3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer, BoxGeometry, CameraUtil, SphereGeometry, Color, Object3DUtil } from "@orillusion/core";
+import { Scene3D, HoverCameraController, Engine3D, AtmosphericComponent, Object3D, Camera3D, Vector3, View3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer, BoxGeometry, CameraUtil, SphereGeometry, Color, Object3DUtil, BlendMode } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
 //sample of direction light
 class Sample_DirectLightShadow {
     scene: Scene3D;
     async run() {
+        Engine3D.setting.shadow.enable = true;
+        // Engine3D.setting.render.zPrePass = true;
         Engine3D.setting.shadow.autoUpdate = true;
-        Engine3D.setting.shadow.shadowBound = 400;
-
+        Engine3D.setting.shadow.shadowSize = 1024;
+        Engine3D.setting.render.debug = true;
+        Engine3D.setting.render.useLogDepth = false;
+        Engine3D.setting.occlusionQuery.octree = { width: 1000, height: 1000, depth: 1000, x: 0, y: 0, z: 0 }
         await Engine3D.init({});
 
         GUIHelp.init();
@@ -18,6 +22,7 @@ class Sample_DirectLightShadow {
 
         // init camera3D
         let mainCamera = CameraUtil.createCamera3D(null, this.scene);
+        // mainCamera.enableCSM = true;
         mainCamera.perspective(60, Engine3D.aspect, 1, 5000.0);
         //set camera data
         mainCamera.object3D.z = -15;
@@ -31,6 +36,7 @@ class Sample_DirectLightShadow {
         view.camera = mainCamera;
 
         Engine3D.startRenderView(view);
+        GUIUtil.renderDebug();
     }
 
     // create direction light
@@ -52,11 +58,19 @@ class Sample_DirectLightShadow {
 
     initScene() {
         {
+            let geometry = new BoxGeometry(20, 100, 20);
+            let material = new LitMaterial();
+            // material.blendMode = BlendMode.ADD;
+            // let size = 900;
+            // for (let i = 0; i < 1; i++) {
             let obj = new Object3D();
             let mr = obj.addComponent(MeshRenderer);
-            mr.geometry = new BoxGeometry(20, 100, 20);
-            mr.material = new LitMaterial();
+            mr.geometry = geometry;
+            mr.material = material;
+            // obj.transform.x = Math.random() * size - size * 0.5;
+            // obj.transform.z = Math.random() * size - size * 0.5;
             this.scene.addChild(obj);
+            // }
         }
         {
             let mat = new LitMaterial();
