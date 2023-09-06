@@ -55,7 +55,7 @@ export class GLTFSubParserMaterial {
             Object.assign(dmaterial, {
                 baseColorFactor: baseColorFactor || [1, 1, 1, 1],
                 metallicFactor: metallicFactor === undefined ? 1.0 : metallicFactor,
-                roughnessFactor: roughnessFactor === undefined ? 0.15 : roughnessFactor,
+                roughnessFactor: roughnessFactor === undefined ? 0.5 : roughnessFactor,
             });
 
             if (baseColorTexture) {

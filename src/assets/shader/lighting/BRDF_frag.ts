@@ -30,6 +30,9 @@ export let BRDF_frag: string = /*wgsl*/ `
         ClearcoatRoughness:f32,
         EnvColor: vec3<f32>,
         Irradiance: vec3<f32>,
+
+        LightChannel: vec3<f32>,
+        TangentChannel: vec3<f32>,
     };
 
     var<private> fragData: FragData;

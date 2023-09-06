@@ -83,6 +83,9 @@ export class Material {
     public set transparent(value: boolean) {
         let colorPass = this.defaultPass;
         colorPass.shaderState.transparent = value;
+        if (value) {
+            colorPass.renderOrder = 3000;
+        }
     }
 
     public get cullMode(): GPUCullMode {

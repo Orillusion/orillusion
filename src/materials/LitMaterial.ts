@@ -28,6 +28,8 @@ export class LitMaterial extends PhysicMaterial {
         this.baseMap = Engine3D.res.whiteTexture;
         this.normalMap = Engine3D.res.normalTexture;
         this.emissiveMap = Engine3D.res.blackTexture;
+
+        this.alphaCutoff = 0.5;
     }
 
     public clone(): Material {

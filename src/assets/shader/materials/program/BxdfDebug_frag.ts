@@ -24,7 +24,7 @@ export let BxdfDebug_frag: string = /*wgsl*/ `
         }
 
         fn debugDiffuse(){
-            ORI_FragmentOutput.color = vec4<f32>(1.0/3.1415926 * fragData.Albedo.rgb,1.0);
+            ORI_FragmentOutput.color = vec4<f32>( fragData.LightChannel.rgb,1.0);
             // ORI_FragmentOutput.color = vec4<f32>(0.2,0.2,0.2,1.0);
         }
 
@@ -56,6 +56,10 @@ export let BxdfDebug_frag: string = /*wgsl*/ `
             ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(fragData.Irradiance),1.0);
         }
 
+        fn debugTangent(){
+            ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(fragData.TangentChannel),1.0);
+        }
+
         fn debugFragmentOut(){
             if(ORI_VertexVarying.fragCoord.x > globalUniform.renderState_split) {
                 switch (globalUniform.renderState_right)
@@ -76,7 +80,7 @@ export let BxdfDebug_frag: string = /*wgsl*/ `
                     debugDiffuse();
                   }
                   case 5: {
-                    // debugAmbient();
+                    // debugTangent();
                   }
                   case 6: {
                     debugEmissive();
@@ -139,7 +143,7 @@ export let BxdfDebug_frag: string = /*wgsl*/ `
                     debugDiffuse();
                   }
                   case 5: {
-                    // debugAmbient();
+                    // debugTangent();
                   }
                   case 6: {
                     debugEmissive();

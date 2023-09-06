@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AtmosphericComponent, BillboardType, Color, DirectLight, Engine3D, GPUCullMode, GlobalFog, GlobalIlluminationComponent, HDRBloomPost, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
+import { AtmosphericComponent, BillboardType, BlendMode, Color, DirectLight, Engine3D, GPUCullMode, GlobalFog, GlobalIlluminationComponent, HDRBloomPost, LitMaterial, Material, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
@@ -400,4 +400,49 @@ export class GUIUtil {
         GUIHelp.endFolder();
     }
     // }
+
+    public static renderMaterial(mat: Material, open: boolean = true, name?: string) {
+        name ||= 'Material';
+        GUIHelp.addFolder(name);
+
+        if (mat instanceof LitMaterial) {
+            GUIHelp.addColor(mat, 'baseColor').onChange((v) => {
+                mat.defaultPass.baseColor = v;
+            });
+
+            let blendMode = {
+                NONE: BlendMode.NONE,
+                NORMAL: BlendMode.NORMAL,
+                ADD: BlendMode.ADD,
+                ALPHA: BlendMode.ALPHA,
+            }
+            // change blend mode by click dropdown box
+            GUIHelp.add({ blendMode: mat.blendMode }, 'blendMode', blendMode).onChange((v) => {
+                mat.blendMode = BlendMode[BlendMode[parseInt(v)]];
+            });
+
+            GUIHelp.add(mat, 'alphaCutoff', 0.0, 1.0, 0.0001).onChange((v) => {
+                mat.alphaCutoff = v;
+            });
+
+            GUIHelp.add(mat, 'doubleSide').onChange((v) => {
+                mat.doubleSide = v;
+            });
+
+            GUIHelp.add(mat, 'roughness').onChange((v) => {
+                mat.roughness = v;
+            });
+
+            GUIHelp.add(mat, 'metallic').onChange((v) => {
+                mat.metallic = v;
+            });
+
+            GUIHelp.add(mat, 'envIntensity').onChange((v) => {
+                mat.envIntensity = v;
+            });
+        }
+
+        open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
 }

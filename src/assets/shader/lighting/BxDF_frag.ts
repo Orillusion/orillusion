@@ -57,6 +57,11 @@ export let BxDF_frag: string = /*wgsl*/ `
           let MAX_REFLECTION_LOD  = f32(textureNumLevels(prefilterMap)) ;
           irradiance += (globalUniform.skyExposure * textureSampleLevel(prefilterMap, prefilterMapSampler, fragData.N.xyz, 0.8 * (MAX_REFLECTION_LOD) ).rgb);
       #endif
+      fragData.Irradiance = LinearToGammaSpace(irradiance.rgb) ;
+
+      #if USE_TANGENT
+        fragData.TangentChannel = ORI_VertexVarying.TANGENT.xyz * ORI_VertexVarying.TANGENT.w ;
+      #endif
 
       //***********lighting-PBR part********* 
       var specColor = vec3<f32>(0.0) ;
@@ -82,13 +87,16 @@ export let BxDF_frag: string = /*wgsl*/ `
           }
         }
       }
+      fragData.LightChannel = specColor ;
+
+
       //***********lighting-PBR part********* 
       var F = FresnelSchlickRoughness(fragData.NoV, fragData.F0, fragData.Roughness);
       var kS = F;
       var kD = vec3(1.0) - kS;
       kD = kD * (1.0 - fragData.Metallic);
       let env =  materialUniform.envIntensity * approximateSpecularIBL( F , fragData.Roughness , fragData.R , fragData.NoV ) ;
-
+      fragData.EnvColor = env ;
       //***********indirect-specular part********* 
       
       var surfaceReduction = 1.0/(fragData.Roughness*fragData.Roughness+1.0);   //Reduce the reflection coefficient of non-metallic materials     

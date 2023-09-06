@@ -81,7 +81,9 @@ export class PhysicMaterial extends Material {
         return this.defaultPass.shaderState.alphaCutoff;
     }
     public set alphaCutoff(value: any) {
+        this.defaultPass.setDefine("USE_ALPHACUT", true);
         this.defaultPass.shaderState.alphaCutoff = value;
+        this.defaultPass.setUniform(`alphaCutoff`, value);
     }
 
     public get emissiveColor(): Color {
