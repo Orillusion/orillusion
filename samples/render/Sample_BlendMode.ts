@@ -1,93 +1,109 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, HoverCameraController, Engine3D, AtmosphericComponent, View3D, DirectLight, KelvinUtil, MeshRenderer, BoxGeometry, LitMaterial, Color, BlendMode, GPUCullMode, CameraUtil } from "@orillusion/core";
+import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, Object3D, DirectLight, KelvinUtil, MeshRenderer, UnLitMaterial, PlaneGeometry, BlendMode, GPUCullMode, LitMaterial, Color } from "@orillusion/core";
 
-//sample of change BlendMode and CullMode
-class Sample_BlendMode {
-    lightObj: Object3D;
+class Sample_BlendMode2 {
     scene: Scene3D;
-
+    lightObj: Object3D;
     async run() {
+        await Engine3D.init();
 
         Engine3D.setting.material.materialChannelDebug = true;
-        await Engine3D.init({});
+        Engine3D.setting.shadow.shadowBound = 5;
+        Engine3D.setting.render.postProcessing.bloom = {
+            enable: true,
+            blurX: 4,
+            blurY: 4,
+            luminosityThreshold: 0.8,
+            strength: 0.86,
+            radius: 4,
+            debug: false
+        };
 
         this.scene = new Scene3D();
         let sky = this.scene.addComponent(AtmosphericComponent);
 
-        let mainCamera = CameraUtil.createCamera3DObject(this.scene, 'camera');
-        mainCamera.perspective(60, Engine3D.aspect, 1, 5000.0);
+        let camera = CameraUtil.createCamera3DObject(this.scene);
+        camera.perspective(60, Engine3D.aspect, 0.01, 5000.0);
 
-        mainCamera.object3D.addComponent(HoverCameraController).setCamera(-125, 0, 120);
-
-        await this.initScene(this.scene);
-
+        camera.object3D.addComponent(HoverCameraController).setCamera(25, -60, 200);
 
         let view = new View3D();
         view.scene = this.scene;
-        view.camera = mainCamera;
+        view.camera = camera;
 
-        this.initLight();
-        sky.relativeTransform = this.lightObj.transform;
-        // 
         Engine3D.startRenderView(view);
+
+        await this.initScene();
+
+        sky.relativeTransform = this.lightObj.transform;
     }
 
-    private initLight(): void {
-        this.lightObj = new Object3D();
-        this.lightObj.x = 0;
-        this.lightObj.y = 30;
-        this.lightObj.z = -40;
-        this.lightObj.rotationX = 46;
-        this.lightObj.rotationY = 62;
-        this.lightObj.rotationZ = 360;
-        let lc = this.lightObj.addComponent(DirectLight);
-        lc.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
-        lc.castShadow = false;
-        lc.intensity = 200;
-        lc.debug();
-        this.scene.addChild(this.lightObj);
-    }
-
-    async initScene(scene: Scene3D) {
-
-        //create a box into scene
-        let box = new Object3D();
-        scene.addChild(box);
-
-        //register a mesh renderer
-        let meshRenderer = box.addComponent(MeshRenderer);
-        meshRenderer.geometry = new BoxGeometry(20, 20, 20);
-        let material = meshRenderer.material = new LitMaterial();
-        material.baseColor = new Color(0.1, 0.3, 0.6, 0.5);
-        material.blendMode = BlendMode.ADD;
-
-        // blend mode
-        let blendMode = {
-            NONE: BlendMode.NONE,
-            NORMAL: BlendMode.NORMAL,
-            ADD: BlendMode.ADD,
-            ALPHA: BlendMode.ALPHA,
+    async initScene() {
+        /******** sky *******/
+        {
+            this.scene.exposure = 1;
+            this.scene.roughness = 0.0;
         }
-        GUIHelp.init();
-        // change blend mode by click dropdown box
-        GUIHelp.add({ blendMode: material.blendMode }, 'blendMode', blendMode).onChange((v) => {
-            material.blendMode = BlendMode[BlendMode[parseInt(v)]];
-        });
+        /******** light *******/
+        {
+            let lightObj = this.lightObj = new Object3D();
+            lightObj.rotationX = 57;
+            lightObj.rotationY = 347;
+            lightObj.rotationZ = 10;
 
-        //cull mode
-        let cullMode = {};
-        cullMode[GPUCullMode.none] = GPUCullMode.none;
-        cullMode[GPUCullMode.front] = GPUCullMode.front;
-        cullMode[GPUCullMode.back] = GPUCullMode.back;
+            let directLight = lightObj.addComponent(DirectLight);
+            directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
+            directLight.castShadow = true;
+            directLight.intensity = 6;
+            directLight.debug();
+            this.scene.addChild(lightObj);
+        }
 
-        // change cull mode by click dropdown box
-        GUIHelp.add({ cullMode: GPUCullMode.none }, 'cullMode', cullMode).onChange((v) => {
-            material.cullMode = v;
-        });
+        {
+            // add plane into scene
+            let plane = new Object3D();
+            let renderer = plane.addComponent(MeshRenderer);
+            let material = new UnLitMaterial();
+            material.baseMap = await Engine3D.res.loadTexture("particle/T_Fx_Object_229.png");;
+            renderer.material = material;
+            renderer.geometry = new PlaneGeometry(100, 100, 1, 1);
+            material.blendMode = BlendMode.ALPHA;
+            this.scene.addChild(plane);
 
-        GUIHelp.open();
-        GUIHelp.endFolder();
+            GUIHelp.init();
+
+            // blend mode
+            let blendMode = {
+                NONE: BlendMode.NONE,
+                NORMAL: BlendMode.NORMAL,
+                ADD: BlendMode.ADD,
+                ALPHA: BlendMode.ALPHA,
+            }
+            // change blend mode by click dropdown box
+            GUIHelp.add({ blendMode: material.blendMode }, 'blendMode', blendMode).onChange((v) => {
+                material.blendMode = BlendMode[BlendMode[parseInt(v)]];
+            });
+            GUIHelp.open();
+            GUIHelp.endFolder();
+
+        }
+
+        {
+            // add floor
+            let floor = new Object3D();
+            let material = new LitMaterial();
+            material.doubleSide = true;
+            material.baseMap = await Engine3D.res.loadTexture("textures/diffuse.jpg");
+
+            let renderer = floor.addComponent(MeshRenderer);
+            renderer.material = material;
+            renderer.geometry = new PlaneGeometry(200, 200, 1, 1);
+
+            floor.y = -10;
+            this.scene.addChild(floor);
+        }
     }
+
 }
 
-new Sample_BlendMode().run();
+new Sample_BlendMode2().run();

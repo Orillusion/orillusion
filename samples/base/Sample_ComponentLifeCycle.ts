@@ -32,6 +32,8 @@ class TestComponent2 extends ComponentBase {
     }
 }
 
+Engine3D.setting.shadow.type = 'HARD'
+Engine3D.setting.shadow.shadowBound = 100
 Engine3D.init().then(() => {
     let exampleScene = createExampleScene();
     //floor
