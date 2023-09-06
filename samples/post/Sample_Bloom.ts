@@ -5,6 +5,8 @@ import {
 	CameraUtil, webGPUContext, BoxGeometry, TAAPost, AtmosphericComponent, GTAOPost, Color, HDRBloomPost
 } from '@orillusion/core';
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
+import { GUI } from '@orillusion/debug/dat.gui.module';
+import { GUIUtil } from '@samples/utils/GUIUtil';
 
 class Sample_Bloom {
 	lightObj: Object3D;
@@ -35,11 +37,13 @@ class Sample_Bloom {
 
 		let postProcessing = this.scene.addComponent(PostProcessingComponent);
 		let post = postProcessing.addPost(HDRBloomPost);
-		post.blurX = 4;
-		post.blurY = 4;
-		post.luminosityThreshold = 1.5;
-		post.strength = 4.0;
-		this.gui();
+		post.blurX = 5;
+		post.blurY = 5;
+		post.luminosityThreshold = 1.1;
+		post.strength = 1.0;
+
+		GUIHelp.init();
+		GUIUtil.renderBloom(post, true);
 	}
 
 	async initScene() {
@@ -131,21 +135,6 @@ class Sample_Bloom {
 			}
 		}
 	}
-
-	private gui() {
-		GUIHelp.init();
-		let postProcessing = this.scene.getComponent(PostProcessingComponent);
-		let post = postProcessing.getPost(HDRBloomPost);
-
-		GUIHelp.addFolder("Bloom");
-		GUIHelp.add(post, "blurX", 0.0, 5, 1);
-		GUIHelp.add(post, "blurY", 0.0, 5, 1);
-		GUIHelp.add(post, "radius", 0.0, 5, 1);
-		GUIHelp.add(post, "luminosityThreshold", 0.0, 5, 0.001);
-		GUIHelp.add(post, "strength", 0.0, 10, 0.001);
-		GUIHelp.endFolder();
-	}
-
 }
 
 new Sample_Bloom().run();

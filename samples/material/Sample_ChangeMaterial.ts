@@ -17,6 +17,7 @@ class Sample_ChangeMaterial {
             blurX: 4,
             blurY: 4,
             luminosityThreshold: 0.8,
+            exposure: 1,
             strength: 0.86,
             radius: 4,
             debug: false

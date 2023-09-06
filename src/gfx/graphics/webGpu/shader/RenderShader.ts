@@ -821,7 +821,11 @@ export class RenderShader extends ShaderBase {
 
         this.defineValue[`USE_SKELETON`] = isSkeleton;
         this.defineValue[`USE_MORPHTARGETS`] = hasMorphTarget;
-        this.defineValue[`USE_TANGENT`] = useTangent;
+
+        if (!('USE_TANGENT' in this.defineValue)) {
+            this.defineValue[`USE_TANGENT`] = useTangent;
+        }
+
         this.defineValue[`USE_GI`] = useGI;
         this.defineValue[`USE_CASTSHADOW`] = this.shaderState.castShadow;
         this.defineValue[`USE_SHADOWMAPING`] = this.shaderState.acceptShadow;

@@ -33,7 +33,6 @@ export class HDRBloomPost extends PostBase {
 
         bloomSetting.enable = true;
 
-
         let presentationSize = webGPUContext.presentationSize;
         let outTextures = this.createRTTexture('HDRBloomPost-outTextures', presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float, false);
         RTResourceMap.createRTTexture(RTResourceConfig.colorBufferTex_NAME, presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float, false);
@@ -81,6 +80,7 @@ export class HDRBloomPost extends PostBase {
             this.compositeView = this.createViewQuad(`compositeView`, `Bloom_composite_frag_wgsl`, outTextures, {
                 tintColor: new UniformNode(new Color(1, 1, 1)),
                 bloomStrength: new UniformNode(bloomSetting.strength),
+                exposure: new UniformNode(bloomSetting.exposure),
                 bloomRadius: new UniformNode(1),
             });
         }
@@ -117,6 +117,15 @@ export class HDRBloomPost extends PostBase {
     public set strength(value: number) {
         this.compositeView.uniforms['bloomStrength'].value = value;
     }
+
+    public get exposure() {
+        return this.compositeView.uniforms['exposure'].value;
+    }
+
+    public set exposure(value: number) {
+        this.compositeView.uniforms['exposure'].value = value;
+    }
+
 
     public get radius() {
         return this.compositeView.uniforms['bloomRadius'].value;

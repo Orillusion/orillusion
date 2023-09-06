@@ -103,7 +103,7 @@ export let PBRLItShader: string = /*wgsl*/ `
         ORI_ShadingInput.Roughness = clamp(ORI_ShadingInput.Roughness,0.084,1.0);
         ORI_ShadingInput.Specular = 0.5 ;
 
-        var emissiveColor = textureSample(emissiveMap, emissiveMapSampler , ORI_VertexVarying.fragUV1.xy) ;
+        var emissiveColor = textureSample(emissiveMap, emissiveMapSampler , ORI_VertexVarying.fragUV0.xy) ;
         emissiveColor = vec4<f32>(gammaToLiner(emissiveColor.rgb),emissiveColor.w);
         ORI_ShadingInput.EmissiveColor = vec4<f32>(materialUniform.emissiveColor.rgb * emissiveColor.rgb * materialUniform.emissiveIntensity,1.0);
 

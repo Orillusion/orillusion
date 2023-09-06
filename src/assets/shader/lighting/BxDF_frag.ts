@@ -60,7 +60,7 @@ export let BxDF_frag: string = /*wgsl*/ `
       fragData.Irradiance = LinearToGammaSpace(irradiance.rgb) ;
 
       #if USE_TANGENT
-        fragData.TangentChannel = ORI_VertexVarying.TANGENT.xyz * ORI_VertexVarying.TANGENT.w ;
+        fragData.TangentChannel = vec3<f32>(ORI_VertexVarying.TANGENT.w);// ORI_VertexVarying.TANGENT.xyz * ORI_VertexVarying.TANGENT.w ;
       #endif
 
       //***********lighting-PBR part********* 

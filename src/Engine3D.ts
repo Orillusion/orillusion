@@ -208,6 +208,7 @@ export class Engine3D {
                     blurX: 4,
                     blurY: 4,
                     strength: 0.25,
+                    exposure: 1,
                     radius: 1.3,
                     luminosityThreshold: 0.98,
                     debug: false,

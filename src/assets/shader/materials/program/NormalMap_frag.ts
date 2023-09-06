@@ -7,11 +7,13 @@ export let NormalMap_frag: string = /*wgsl*/ `
         var N = surf_norm;
         var q1perp = cross( q1, N );
         var q0perp = cross( N, q0 );
+
         #if USE_TANGENT
             var T = ORI_VertexVarying.TANGENT.xyz ;
         #else
             var T = q1perp * st0.x + q0perp * st1.x;
         #endif
+        
         var B = q1perp * st0.y + q0perp * st1.y;
 
         var det = max( dot( T, T ), dot( B, B ) );

@@ -77,7 +77,7 @@ export let BxdfDebug_frag: string = /*wgsl*/ `
                     debugIrradiance();
                   }
                   case 4: {
-                    debugDiffuse();
+                    debugTangent();
                   }
                   case 5: {
                     // debugTangent();
@@ -140,7 +140,7 @@ export let BxdfDebug_frag: string = /*wgsl*/ `
                     debugIrradiance();
                   }
                   case 4: {
-                    debugDiffuse();
+                    debugTangent();
                   }
                   case 5: {
                     // debugTangent();

@@ -82,8 +82,9 @@ export class GUIUtil {
         GUIHelp.add(bloom, 'enable');
         GUIHelp.addColor(bloom, 'tintColor');
         GUIHelp.add(bloom, 'luminosityThreshold');
-        GUIHelp.add(bloom, 'strength');
-        GUIHelp.add(bloom, 'radius');
+        GUIHelp.add(bloom, 'strength', 0, 3, 0.001);
+        GUIHelp.add(bloom, 'exposure');
+        GUIHelp.add(bloom, 'radius', 0, 1.0, 0.001);
         GUIHelp.add(bloom, 'blurX');
         GUIHelp.add(bloom, 'blurY');
         open && GUIHelp.open();
@@ -376,9 +377,9 @@ export class GUIUtil {
         let debugChanel = {
             PositionView: 0,
             ColorView: 1,
-            NormalView: 2,
+            normalView: 2,
             IrradianceView: 3,
-            LightView: 4,
+            tangentView: 4,
             FinalView: 5,
             EmissiveView: 6,
             specularRadiance: 7,

@@ -103,70 +103,42 @@ export class Bloom_shader {
       var<uniform> global: uniformData;
 
       fn main1() {
-          var uv: vec2<f32>;
-          var tex_offset: vec2<f32>;
+       
+          return;
+      }
+
+      const buffer1: array<f32,5> = array<f32,5>(0.22702699899673462, 0.194594606757164, 0.12162160128355026, 0.05405399948358536, 0.01621600054204464);
+
+      @fragment
+      fn main(@location(0) fragUV: vec2<f32>) -> FragmentOutput {
           var result: vec3<f32>;
           var i: i32 = 1;
-          var local: array<f32,5> = array<f32,5>(0.22702699899673462, 0.194594606757164, 0.12162160128355026, 0.05405399948358536, 0.01621600054204464);
-          var local1: array<f32,5> = array<f32,5>(0.22702699899673462, 0.194594606757164, 0.12162160128355026, 0.05405399948358536, 0.01621600054204464);
           var j: i32 = 1;
-          var local2: array<f32,5> = array<f32,5>(0.22702699899673462, 0.194594606757164, 0.12162160128355026, 0.05405399948358536, 0.01621600054204464);
-          var local3: array<f32,5> = array<f32,5>(0.22702699899673462, 0.194594606757164, 0.12162160128355026, 0.05405399948358536, 0.01621600054204464);
-
-          let e13: vec2<f32> = fragUV1;
-          uv = e13.xy;
-          let e18: vec2<f32> = uv;
-          uv.y = (1.0 - e18.y);
-          let e22: vec2<f32> = global.texSize;
-          tex_offset = (vec2<f32>(1.0) / vec2<f32>(e22));
-          let e28: vec2<f32> = uv;
-          let e29: vec4<f32> = textureSample(baseMap, baseMapSampler, e28);
-          result = (e29.xyz * array<f32,5>(0.22702699899673462, 0.194594606757164, 0.12162160128355026, 0.05405399948358536, 0.01621600054204464)[0]);
-          let e35: f32 = global.horizontal;
-          if ((e35 > 1.0)) {
+          var uv: vec2<f32> = fragUV;
+          uv.y = (1.0 - uv.y);
+          var tex_offset: vec2<f32> = (vec2<f32>(1.0) / vec2<f32>(global.texSize));
+          let color: vec4<f32> = textureSample(baseMap, baseMapSampler, uv);
+          result = (color.xyz * buffer1[0]);
+        
+          if ((global.horizontal > 1.0)) {
               {
                   loop {
-                      let e40: i32 = i;
-                      if (!((e40 < 5))) {
+                      if (!((i < 5))) {
                           break;
                       }
                       {
-                          let e47: vec3<f32> = result;
-                          let e48: vec2<f32> = uv;
-                          let e49: vec2<f32> = tex_offset;
-                          let e51: i32 = i;
-                          let e54: f32 = global.hScale;
-                          let e59: vec2<f32> = uv;
-                          let e60: vec2<f32> = tex_offset;
-                          let e62: i32 = i;
-                          let e65: f32 = global.hScale;
-                          let e70: vec4<f32> = textureSample(baseMap, baseMapSampler, (e59 + vec2<f32>(((e60.x * f32(e62)) * e65), 0.0)));
-                          let e72: i32 = i;
-                          let e75: f32 = local[e72];
-                          result = (e47 + (e70.xyz * e75));
-                          let e78: vec3<f32> = result;
-                          let e79: vec2<f32> = uv;
-                          let e80: vec2<f32> = tex_offset;
-                          let e82: i32 = i;
-                          let e85: f32 = global.hScale;
-                          let e90: vec2<f32> = uv;
-                          let e91: vec2<f32> = tex_offset;
-                          let e93: i32 = i;
-                          let e96: f32 = global.hScale;
-                          let e101: vec4<f32> = textureSample(baseMap, baseMapSampler, (e90 - vec2<f32>(((e91.x * f32(e93)) * e96), 0.0)));
-                          let e103: i32 = i;
-                          let e106: f32 = local1[e103];
-                          result = (e78 + (e101.xyz * e106));
+                          let c1: vec4<f32> = textureSample(baseMap, baseMapSampler, (uv + vec2<f32>(((tex_offset.x * f32(i)) * global.hScale), 0.0)));
+                          result = (result + (c1.xyz * buffer1[i]));
+                          let e101: vec4<f32> = textureSample(baseMap, baseMapSampler, (uv - vec2<f32>(((tex_offset.x * f32(i)) * global.hScale), 0.0)));
+                          result = (result + (e101.xyz * buffer1[i]));
                       }
                       continuing {
-                          let e44: i32 = i;
-                          i = (e44 + 1);
+                          i = (i + 1);
                       }
                   }
               }
           }
-          let e109: f32 = global.horizontal;
-          if ((e109 < 1.0)) {
+          if ((global.horizontal < 1.0)) {
               {
                   loop {
                       let e114: i32 = j;
@@ -174,58 +146,28 @@ export class Bloom_shader {
                           break;
                       }
                       {
-                          let e121: vec3<f32> = result;
-                          let e122: vec2<f32> = uv;
-                          let e124: vec2<f32> = tex_offset;
-                          let e126: i32 = j;
-                          let e129: f32 = global.vScale;
-                          let e133: vec2<f32> = uv;
-                          let e135: vec2<f32> = tex_offset;
-                          let e137: i32 = j;
-                          let e140: f32 = global.vScale;
-                          let e144: vec4<f32> = textureSample(baseMap, baseMapSampler, (e133 + vec2<f32>(0.0, ((e135.y * f32(e137)) * e140))));
-                          let e146: i32 = j;
-                          let e149: f32 = local2[e146];
-                          result = (e121 + (e144.xyz * e149));
-                          let e152: vec3<f32> = result;
-                          let e153: vec2<f32> = uv;
-                          let e155: vec2<f32> = tex_offset;
-                          let e157: i32 = j;
-                          let e160: f32 = global.vScale;
-                          let e164: vec2<f32> = uv;
-                          let e166: vec2<f32> = tex_offset;
-                          let e168: i32 = j;
-                          let e171: f32 = global.vScale;
-                          let e175: vec4<f32> = textureSample(baseMap, baseMapSampler, (e164 - vec2<f32>(0.0, ((e166.y * f32(e168)) * e171))));
-                          let e177: i32 = j;
-                          let e180: f32 = local3[e177];
-                          result = (e152 + (e175.xyz * e180));
+                          let e144: vec4<f32> = textureSample(baseMap, baseMapSampler, (uv + vec2<f32>(0.0, ((tex_offset.y * f32(j)) * global.vScale))));
+                          result = (result + (e144.xyz * buffer1[j]));
+                          let e175: vec4<f32> = textureSample(baseMap, baseMapSampler, (uv - vec2<f32>(0.0, ((tex_offset.y * f32(j)) * global.vScale))));
+                          result = (result + (e175.xyz *  buffer1[j]));
                       }
                       continuing {
-                          let e118: i32 = j;
-                          j = (e118 + 1);
+                          j = (j + 1);
                       }
                   }
               }
           }
-          let e183: vec3<f32> = result;
-          o_Target = vec4<f32>(e183, 1.0);
-          return;
-      }
-
-      @fragment
-      fn main(@location(0) fragUV: vec2<f32>) -> FragmentOutput {
-          fragUV1 = fragUV;
-          main1();
-          let e27: vec4<f32> = o_Target;
-          return FragmentOutput(e27);
+          o_Target = vec4<f32>(result, 1.0);
+          return FragmentOutput(o_Target);
       }
     `;
 
     public static Bloom_composite_frag_wgsl: string = /* wgsl */ `
+    #include "ColorUtil"
       struct UniformData {
-          tintColor:vec3<f32>,
+          tintColor:vec4<f32>,
           bloomStrength: f32,
+          exposure: f32,
           bloomRadius: f32,
       };
 
@@ -262,58 +204,45 @@ export class Bloom_shader {
       @group(2) @binding(0)
       var<uniform> global: UniformData;
 
+      const bloomFactors = array<f32,5>(1.0, 0.800000011920929, 0.6000000238418579, 0.4000000059604645, 0.20000000298023224);
+     
       fn lerpBloomFactor(factor: f32) -> f32 {
-          var factor1: f32;
-          var mirrorFactor: f32;
-
-          factor1 = factor;
-          let e23: f32 = factor1;
-          mirrorFactor = (1.2000000476837158 - e23);
-          let e29: f32 = factor1;
-          let e30: f32 = mirrorFactor;
-          let e31: f32 = global.bloomRadius;
-          return mix(e29, e30, e31);
+          var mirrorFactor: f32 = (1.2000000476837158 - factor);
+          return mix(factor, mirrorFactor, global.bloomRadius);
       }
 
       fn main1() {
-          var uv: vec2<f32>;
-          var source: vec4<f32>;
-
-          let e20: vec2<f32> = fragUV1;
-          uv = e20.xy;
-          let e25: vec2<f32> = uv;
-          uv.y = (1.0 - e25.y);
-          let e29: vec2<f32> = uv;
-          let e30: vec4<f32> = textureSample(baseMap, baseMapSampler, e29);
-          source = e30;
-          let e32: vec4<f32> = source;
-          let e33: f32 = global.bloomStrength;
-          let e38: f32 = lerpBloomFactor(array<f32,5>(1.0, 0.800000011920929, 0.6000000238418579, 0.4000000059604645, 0.20000000298023224)[0]);
-          let e45: vec2<f32> = uv;
-          let e46: vec4<f32> = textureSample(blurTex1, blurTex1Sampler, e45);
-          let e52: f32 = lerpBloomFactor(array<f32,5>(1.0, 0.800000011920929, 0.6000000238418579, 0.4000000059604645, 0.20000000298023224)[1]);
-          let e59: vec2<f32> = uv;
-          let e60: vec4<f32> = textureSample(blurTex2, blurTex2Sampler, e59);
-          let e67: f32 = lerpBloomFactor(array<f32,5>(1.0, 0.800000011920929, 0.6000000238418579, 0.4000000059604645, 0.20000000298023224)[2]);
-          let e74: vec2<f32> = uv;
-          let e75: vec4<f32> = textureSample(blurTex3, blurTex3Sampler, e74);
-          let e82: f32 = lerpBloomFactor(array<f32,5>(1.0, 0.800000011920929, 0.6000000238418579, 0.4000000059604645, 0.20000000298023224)[3]);
-          let e89: vec2<f32> = uv;
-          let e90: vec4<f32> = textureSample(blurTex4, blurTex4Sampler, e89);
-          let e97: f32 = lerpBloomFactor(array<f32,5>(1.0, 0.800000011920929, 0.6000000238418579, 0.4000000059604645, 0.20000000298023224)[4]);
-          let e104: vec2<f32> = uv;
-          let e105: vec4<f32> = textureSample(blurTex5, blurTex5Sampler, e104);
-          o_Target = (e32 + (e33 * ((((((e38 * vec4<f32>(array<vec3<f32>,5>(vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0))[0], 1.0)) * e46) + ((e52 * vec4<f32>(array<vec3<f32>,5>(vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0))[1], 1.0)) * e60)) + ((e67 * vec4<f32>(array<vec3<f32>,5>(vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0))[2], 1.0)) * e75)) + ((e82 * vec4<f32>(array<vec3<f32>,5>(vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0))[3], 1.0)) * e90)) + ((e97 * vec4<f32>(array<vec3<f32>,5>(vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0))[4], 1.0)) * e105))));
-          o_Target = vec4<f32>(o_Target.rgb * global.tintColor.rgb, e30.a) ;
+    
           return;
       } 
 
       @fragment
       fn main(@location(0) fragUV: vec2<f32>) -> FragmentOutput {
-          fragUV1 = fragUV;
-          main1();
-        //   let e81: vec4<f32> = pow(o_Target,vec4<f32>(vec3<f32>(2.2),o_Target.w));
+          var uv: vec2<f32> = fragUV;
+          uv.y = (1.0 - uv.y);
+        
+          let e38: f32 = lerpBloomFactor(bloomFactors[0]);
+          let e46: vec4<f32> = textureSample(blurTex1, blurTex1Sampler, uv);
+          let e52: f32 = lerpBloomFactor(bloomFactors[1]);
+          let e60: vec4<f32> = textureSample(blurTex2, blurTex2Sampler, uv);
+          let e67: f32 = lerpBloomFactor(bloomFactors[2]);
+          let e75: vec4<f32> = textureSample(blurTex3, blurTex3Sampler, uv);
+          let e82: f32 = lerpBloomFactor(bloomFactors[3]);
+          let e90: vec4<f32> = textureSample(blurTex4, blurTex4Sampler, uv);
+          let e97: f32 = lerpBloomFactor(bloomFactors[4]);
+          let e105: vec4<f32> = textureSample(blurTex5, blurTex5Sampler, uv);
+          o_Target = ((((((((e38 * vec4<f32>(array<vec3<f32>,5>(vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0))[0], 1.0)) * e46) + ((e52 * vec4<f32>(array<vec3<f32>,5>(vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0))[1], 1.0)) * e60)) + ((e67 * vec4<f32>(array<vec3<f32>,5>(vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0))[2], 1.0)) * e75)) + ((e82 * vec4<f32>(array<vec3<f32>,5>(vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0))[3], 1.0)) * e90)) + ((e97 * vec4<f32>(array<vec3<f32>,5>(vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0))[4], 1.0)) * e105))));
+          
+          let baseColor: vec4<f32> = textureSample(baseMap, baseMapSampler, uv);
+          
+          var bloomLight = global.bloomStrength * o_Target.rgb;
+
+          bloomLight = getHDRColor(bloomLight.rgb,global.exposure);
+          bloomLight = LinearToGammaSpace(bloomLight);
+
+          o_Target =  baseColor + vec4<f32>(bloomLight * global.tintColor.rgb, baseColor.a) ;
+          o_Target.a = min(o_Target.a,1.0);
           return FragmentOutput(o_Target);
       }
-      `;
+  `;
 }
