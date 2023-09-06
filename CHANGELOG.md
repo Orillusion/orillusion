@@ -16,6 +16,7 @@
 ### Features
 
 * **wasm:** update matrix by WASM ([#292](https://github.com/Orillusion/orillusion/issues/292)) ([2c8e8ab](https://github.com/Orillusion/orillusion/commit/2c8e8ab5c44b8ae8499bb690c6789021e17aebb6))
+* **csm:** add feature of Cascaded Shadow Map ([#286](https://github.com/Orillusion/orillusion/issues/286)) ([d798bd2](https://github.com/Orillusion/orillusion/commit/d798bd24002cc170881dd6daf1f3691ba112a3d2))
 * **material:** use new material framework ([5111699](https://github.com/Orillusion/orillusion/commit/511169978ecd72aa213a644bc4f3614bc6807981))
 * **pipelinePool:** add pipeline shader share ([c88b687](https://github.com/Orillusion/orillusion/commit/c88b6871e407b7e1025e2c07a8df9d6ef10631cf))
 * add log z depth ([520b2bb](https://github.com/Orillusion/orillusion/commit/520b2bb7be1cf803e2b11c5f222ddd3d9667fd4a))
