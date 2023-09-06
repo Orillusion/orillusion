@@ -1,4 +1,4 @@
-import { BlendMode } from "..";
+import { BlendMode, GPUCompareFunction } from "..";
 import { RenderShader } from "../gfx/graphics/webGpu/shader/RenderShader";
 import { RendererType } from "../gfx/renderJob/passRenderer/state/RendererType";
 
@@ -22,7 +22,7 @@ export class Material {
 
     private _renderPasses: Map<RendererType, RenderShader[]>;
 
-    private _depthCompare: GPUCompareFunction;
+    private _depthCompare: GPUCompareFunction = GPUCompareFunction.less;
 
     constructor() {
         this._renderPasses = new Map<RendererType, RenderShader[]>();

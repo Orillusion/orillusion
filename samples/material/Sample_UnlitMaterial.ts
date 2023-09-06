@@ -44,7 +44,7 @@ class Sample_UnlitMaterial {
         // create a unlit plane
         {
             let texture = new BitmapTexture2D();
-            await texture.load('gltfs/Demonstration/T_Rollets_BC.jpg');
+            await texture.load('textures/grid.jpg');
             let mat = new UnLitMaterial();
             mat.baseMap = texture;
             mat.baseColor = new Color(1, 1, 1, 1);
