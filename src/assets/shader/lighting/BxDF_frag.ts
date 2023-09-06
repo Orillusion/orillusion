@@ -57,7 +57,8 @@ export let BxDF_frag: string = /*wgsl*/ `
           let MAX_REFLECTION_LOD  = f32(textureNumLevels(prefilterMap)) ;
           irradiance += (globalUniform.skyExposure * textureSampleLevel(prefilterMap, prefilterMapSampler, fragData.N.xyz, 0.8 * (MAX_REFLECTION_LOD) ).rgb);
       #endif
-      fragData.Irradiance = LinearToGammaSpace(irradiance.rgb) ;
+      irradiance = LinearToGammaSpace(irradiance.rgb);
+      fragData.Irradiance = irradiance.rgb ;
 
       #if USE_TANGENT
         fragData.TangentChannel = vec3<f32>(ORI_VertexVarying.TANGENT.w);// ORI_VertexVarying.TANGENT.xyz * ORI_VertexVarying.TANGENT.w ;
@@ -100,20 +101,20 @@ export let BxDF_frag: string = /*wgsl*/ `
       //***********indirect-specular part********* 
       
       var surfaceReduction = 1.0/(fragData.Roughness*fragData.Roughness+1.0);   //Reduce the reflection coefficient of non-metallic materials     
-      var oneMinusReflectivity = materialUniform.materialF0.a - materialUniform.materialF0.a * fragData.Metallic ;
-      var grazingTerm= clamp((1.0 - fragData.Roughness ) + (1.0 - oneMinusReflectivity),0.0,1.0);
-      var t = pow5(1.0-fragData.NoV);
-      var fresnelLerp = mix(fragData.F0,vec3<f32>(grazingTerm),t);   //Controlling Fresnel and metallic reflections
+      var oneMinusReflectivity = oneMinusReflectivity(fragData.Metallic , materialUniform.materialF0.r );// materialUniform.materialF0.a - materialUniform.materialF0.a * fragData.Metallic ;
+      var grazingTerm = clamp((1.0 - fragData.Roughness ) + (1.0 - oneMinusReflectivity),0.0,1.0);
+      var t = pow5(fragData.NoV);
+      var fresnelLerp = FresnelLerp(fragData.NoV,fragData.F0.rgb,vec3<f32>(grazingTerm)) ;   //Controlling Fresnel and metallic reflections
       var iblSpecularResult = surfaceReduction*env*fresnelLerp ;
       //***********indirect-specular part********* 
       
       //***********indirect-ambient part********* 
-      var kdLast = (1.0 - F) * (1.0 - fragData.Metallic);     //Dim the edges, there should be more specular reflection at the edges
+      var kdLast = (1.0 - fragData.F0.r) * (1.0 - fragData.Metallic);     //Dim the edges, there should be more specular reflection at the edges
       var iblDiffuseResult = irradiance * kdLast * fragData.Albedo.rgb ;
       //***********indirect-ambient part********* 
       let sunLight = lightBuffer[0] ;
       var indirectResult = (iblSpecularResult + iblDiffuseResult) * fragData.Ao * max(sunLight.quadratic,0.05) ;
-
+      // let test = indirectResult ;
 
       ORI_FragmentOutput.color = vec4<f32>(0.0);
 
@@ -147,6 +148,9 @@ export let BxDF_frag: string = /*wgsl*/ `
       #endif
       
       ORI_FragmentOutput.color = vec4<f32>(LinearToGammaSpace(color.rgb),fragData.Albedo.a) ;
+
+      // var iblSpecularResult = surfaceReduction*env*fresnelLerp ;
+      // ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(test),fragData.Albedo.a) ;
   }
 
   `

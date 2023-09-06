@@ -100,8 +100,8 @@ export class GUIUtil {
         GUIHelp.add(light.transform, 'rotationY', 0.0, 360.0, 0.01);
         GUIHelp.add(light.transform, 'rotationZ', 0.0, 360.0, 0.01);
         GUIHelp.addColor(light, 'lightColor');
-        GUIHelp.add(light, 'intensity', 0.0, 160.0, 0.01);
-        GUIHelp.add(light, 'indirect', 0.0, 10.0, 0.01);
+        GUIHelp.add(light, 'intensity', 0.0, 300.0, 0.01);
+        GUIHelp.add(light, 'indirect', 0.0, 1.0, 0.01);
         GUIHelp.add(light, 'castShadow');
 
         open && GUIHelp.open();

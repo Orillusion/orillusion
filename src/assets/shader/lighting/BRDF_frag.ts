@@ -92,6 +92,18 @@ export let BRDF_frag: string = /*wgsl*/ `
         return F0 + (1.0 - F0) * pow(1.0 - NoV, 5.0);
     }
 
+    fn FresnelTerm( cosA:f32,  F0:vec3<f32>) -> vec3<f32>
+    {
+        let t = pow5( 1.0 - cosA );
+        return F0 + (1.0 - F0) * t;
+    }
+
+    fn FresnelLerp( cosA:f32, F0:vec3<f32> , F90:vec3<f32>) -> vec3<f32>
+    {
+        let t = pow5( 1.0 - cosA );
+        return mix( F0 ,F90,t ) ;
+    }
+
     fn FresnelSchlickRoughness( NoV:f32,  F0:vec3<f32>,  roughness:f32) -> vec3<f32>
     {
         return F0 + (max(vec3(roughness), F0) - F0) * pow(1.0 - NoV, 5.0);
@@ -280,6 +292,11 @@ export let BRDF_frag: string = /*wgsl*/ `
         var Fc = pow5( 1.0 - VoH );
         let rt = clamp(50.0 * SpecularColor.g,0.0,1.0) ;
         return rt * Fc + (1.0 - Fc) * SpecularColor;
+    }
+
+    fn oneMinusReflectivity ( metallic : f32 , F0:f32 ) -> f32 {
+        let range = 1.0 - F0;
+        return range - metallic * range;
     }
 
     //https://google.github.io/filament/Filament.html materialsystem/clearcoatmodel/clearcoatparameterization
