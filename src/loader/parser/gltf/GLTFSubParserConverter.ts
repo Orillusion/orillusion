@@ -1,3 +1,4 @@
+import { LitMaterial, Material } from "../../..";
 import { Engine3D } from "../../../Engine3D";
 import { SkeletonAnimationComponent } from "../../../components/SkeletonAnimationComponent";
 import { DirectLight } from "../../../components/lights/DirectLight";
@@ -9,15 +10,12 @@ import { Object3D } from "../../../core/entities/Object3D";
 import { GeometryBase } from "../../../core/geometry/GeometryBase";
 import { VertexAttributeName } from "../../../core/geometry/VertexAttributeName";
 import { BlendMode } from "../../../materials/BlendMode";
-import { LitMaterial } from "../../../materials/LitMaterial";
-import { MaterialBase } from "../../../materials/MaterialBase";
 import { PhysicMaterial } from "../../../materials/PhysicMaterial";
 import { Color } from "../../../math/Color";
 import { RADIANS_TO_DEGREES } from "../../../math/MathUtil";
 import { Quaternion } from "../../../math/Quaternion";
 import { UUID } from "../../../util/Global";
 import { GLTF_Info, GLTF_Node } from "./GLTFInfo";
-import { GLTFParser } from "./GLTFParser";
 import { GLTFSubParser } from "./GLTFSubParser";
 import { GLTFType } from "./GLTFType";
 import { KHR_materials_clearcoat } from "./extends/KHR_materials_clearcoat";
@@ -164,14 +162,14 @@ export class GLTFSubParserConverter {
             if (md.name == undefined) {
                 md.name = UUID();
             }
-            let mat: MaterialBase;
+            let mat: Material;
 
             let materialKey = `matkey_${md.name}`;
 
             if (md && this.gltf.resources[materialKey]) {
                 mat = this.gltf.resources[materialKey];
             } else {
-                let newMat: MaterialBase = (mat = new LitMaterial());
+                let newMat: Material = (mat = new LitMaterial());
                 // let newMat: MaterialBase = (mat = new UnLitMaterial());
                 this.gltf.resources[materialKey] = newMat;
                 // newMat.doubleSided
@@ -183,7 +181,7 @@ export class GLTFSubParserConverter {
                     if (`enableBlend` in primitive.material) {
                         if (primitive.material[`enableBlend`]) {
                             physicMaterial.blendMode = BlendMode.NORMAL;
-                            physicMaterial.shaderState.depthWriteEnabled = false;
+                            physicMaterial.depthWriteEnabled = false;
                         } else {
                             physicMaterial.blendMode = BlendMode.NONE;
                         }
@@ -192,7 +190,7 @@ export class GLTFSubParserConverter {
                             if (primitive.material.defines.indexOf(`ALPHA_BLEND`) != -1) {
                                 physicMaterial.blendMode = BlendMode.ALPHA;
                                 physicMaterial.transparent = true;
-                                physicMaterial.shaderState.depthWriteEnabled = false;
+                                physicMaterial.depthWriteEnabled = false;
                             }
                         }
                     }
@@ -201,7 +199,7 @@ export class GLTFSubParserConverter {
                         physicMaterial.alphaCutoff = alphaCutoff;
                         physicMaterial.blendMode = BlendMode.NORMAL;
                         physicMaterial.transparent = true;
-                        physicMaterial.shaderState.depthWriteEnabled = false;
+                        physicMaterial.depthWriteEnabled = false;
                     }
 
                     if (primitive.material.transformUV1) physicMaterial.uvTransform_1 = primitive.material.transformUV1;
@@ -246,11 +244,6 @@ export class GLTFSubParserConverter {
                         let emissiveFactorA = emissiveFactor[3] ? emissiveFactor[3] : 1.0;
                         physicMaterial.emissiveColor = new Color(emissiveFactor[0], emissiveFactor[1], emissiveFactor[2], emissiveFactorA);
                         physicMaterial.emissiveIntensity = 1;
-                    }
-
-                    //todo add material debug
-                    if (Engine3D.setting.material.materialDebug) {
-                        physicMaterial.debug();
                     }
                 }
             }
@@ -424,7 +417,7 @@ export class GLTFSubParserConverter {
         return geometry;
     }
 
-    private applyMaterialExtensions(dmaterial: any, mat: MaterialBase): MaterialBase {
+    private applyMaterialExtensions(dmaterial: any, mat: Material): Material {
         KHR_materials_clearcoat.apply(this.gltf, dmaterial, mat);
         KHR_materials_unlit.apply(this.gltf, dmaterial, mat);
         KHR_materials_emissive_strength.apply(this.gltf, dmaterial, mat);

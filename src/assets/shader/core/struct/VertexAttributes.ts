@@ -95,11 +95,12 @@ export let VertexAttributes: string = /*wgsl*/ `
 
     ORI_VertexOut.varying_UV0 = vertex.uv.xy ;
     ORI_VertexOut.varying_UV1 = vertex.TEXCOORD_1.xy;
-    ORI_VertexOut.varying_ViewPos = viewPosition / viewPosition.w;
+    ORI_VertexOut.varying_ViewPos = viewPosition ;
     ORI_VertexOut.varying_Clip = clipPosition ;
     ORI_VertexOut.varying_WPos = worldPos ;
     ORI_VertexOut.varying_WPos.w = f32(vertex.index);
     ORI_VertexOut.varying_WNormal = normalize(ORI_NORMALMATRIX * vertexNormal.xyz) ;
+
     ORI_VertexOut.member = clipPosition ;
     }
 `

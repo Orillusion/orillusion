@@ -58,7 +58,13 @@ $ git submodule update --init # init /public assets folder, it may take a long t
 After cloning the repo, run:
 
 ```bash
-$ pnpm i # install dev deps of the project
+$ pnpm i # install all deps of the project
+```
+
+If you don't need electron/CI test in local, you can set `ELECTRON_SKIP_BINARY_DOWNLOAD` env to skip electron downloading process
+
+```bash
+$ ELECTRON_SKIP_BINARY_DOWNLOAD=1 pnpm i # install deps without downloading electron binary
 ```
 
 A high level overview of main tools used:

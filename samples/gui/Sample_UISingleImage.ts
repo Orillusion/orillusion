@@ -6,7 +6,6 @@ import { GUIUtil } from "@samples/utils/GUIUtil";
 export class Sample_UISingleImage {
     async run() {
         Engine3D.setting.shadow.autoUpdate = true;
-        Engine3D.setting.shadow.shadowBias = 0.002;
 
         GUIHelp.init();
 

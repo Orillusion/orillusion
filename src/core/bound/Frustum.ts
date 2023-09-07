@@ -2,61 +2,49 @@ import { BoundingSphere } from './BoundingSphere';
 import { Matrix4 } from '../../math/Matrix4';
 import { Object3D } from '../entities/Object3D';
 import { Vector3 } from '../../math/Vector3';
+import { BoundingBox } from './BoundingBox';
 
 /**
  * @internal
  * @group Core
  */
 export class Frustum {
-    public viewProj = new Matrix4();
     public planes: Vector3[];
     public corners: Vector3[];
+    public boundingBox: BoundingBox = new BoundingBox();
 
-    private _centerSize: Vector3;
     constructor() {
-        this._centerSize = new Vector3();
         this.planes = [];
         this.corners = [];
         for (var i = 0; i < 6; i++) this.planes[i] = new Vector3();
         for (var i = 0; i < 2 * 2 * 2; i++) this.corners[i] = new Vector3();
     }
 
-    genBox(pvInv: Matrix4) {
+    public updateBoundBox(pvInv: Matrix4): this {
+        this.boundingBox.makeEmpty();
+        let min = this.boundingBox.min;
+        let max = this.boundingBox.max;
         let i = 0;
-        let minX = 9999999;
-        let minY = 9999999;
-        let minZ = 9999999;
-
-        let maxX = -9999999;
-        let maxY = -9999999;
-        let maxZ = -9999999;
         for (let x = 0; x < 2; ++x) {
             for (let y = 0; y < 2; ++y) {
                 for (let z = 0; z < 2; ++z) {
                     let pt = this.corners[i];
+                    i++;
                     pt.set(2.0 * x - 1.0, 2.0 * y - 1.0, z, 1.0);
                     pvInv.transformVector4(pt, pt);
                     pt.div(pt.w, pt);
-                    i++;
-                    minX = Math.min(pt.x, minX);
-                    minY = Math.min(pt.y, minY);
-                    minZ = Math.min(pt.z, minZ);
+                    min.x = Math.min(pt.x, min.x);
+                    min.y = Math.min(pt.y, min.y);
+                    min.z = Math.min(pt.z, min.z);
 
-                    maxX = Math.max(pt.x, maxX);
-                    maxY = Math.max(pt.y, maxY);
-                    maxZ = Math.max(pt.z, maxZ);
+                    max.x = Math.max(pt.x, max.x);
+                    max.y = Math.max(pt.y, max.y);
+                    max.z = Math.max(pt.z, max.z);
                 }
             }
         }
-
-        this._centerSize.x = maxX - minX;
-        this._centerSize.y = maxY - minY;
-        this._centerSize.x = maxZ - minZ;
-
-        return {
-            minX, minY, minZ,
-            maxX, maxY, maxZ
-        };
+        this.boundingBox.setFromMinMax(min, max);
+        return this;
     }
 
     setFrustumCorners(pvInv: Matrix4) {

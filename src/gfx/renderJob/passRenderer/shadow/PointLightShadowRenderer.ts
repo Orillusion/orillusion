@@ -104,9 +104,6 @@ export class PointLightShadowRenderer extends RendererBase {
         //*********************/
         //***shadow light******/
         //*********************/
-        let collectInfo = EntityCollect.instance.getRenderNodes(scene);
-
-
         let shadowLight = ShadowLightsCollect.getPointShadowLightWhichScene(scene);
         let li = 0;
         let shadowLightCount = shadowLight.length;
@@ -124,24 +121,31 @@ export class PointLightShadowRenderer extends RendererBase {
                 cubeShadowMapInfo.cubeCamera.y = worldPos.y;
                 cubeShadowMapInfo.cubeCamera.z = worldPos.z;
 
+                let collectInfo: CollectInfo;
                 cubeShadowMapInfo.cubeCamera.transform.updateWorldMatrix(true);
                 {
                     occlusionSystem.update(cubeShadowMapInfo.cubeCamera.right_camera, scene);
+                    collectInfo = EntityCollect.instance.getRenderNodes(scene, cubeShadowMapInfo.cubeCamera.right_camera);
                     this.renderSceneOnce(0, cubeShadowMapInfo, view, cubeShadowMapInfo.cubeCamera.right_camera, collectInfo, occlusionSystem);
 
                     occlusionSystem.update(cubeShadowMapInfo.cubeCamera.left_camera, scene);
+                    collectInfo = EntityCollect.instance.getRenderNodes(scene, cubeShadowMapInfo.cubeCamera.left_camera);
                     this.renderSceneOnce(1, cubeShadowMapInfo, view, cubeShadowMapInfo.cubeCamera.left_camera, collectInfo, occlusionSystem);
 
                     occlusionSystem.update(cubeShadowMapInfo.cubeCamera.up_camera, scene);
+                    collectInfo = EntityCollect.instance.getRenderNodes(scene, cubeShadowMapInfo.cubeCamera.up_camera);
                     this.renderSceneOnce(2, cubeShadowMapInfo, view, cubeShadowMapInfo.cubeCamera.up_camera, collectInfo, occlusionSystem);
 
                     occlusionSystem.update(cubeShadowMapInfo.cubeCamera.down_camera, scene);
+                    collectInfo = EntityCollect.instance.getRenderNodes(scene, cubeShadowMapInfo.cubeCamera.down_camera);
                     this.renderSceneOnce(3, cubeShadowMapInfo, view, cubeShadowMapInfo.cubeCamera.down_camera, collectInfo, occlusionSystem);
 
                     occlusionSystem.update(cubeShadowMapInfo.cubeCamera.front_camera, scene);
+                    collectInfo = EntityCollect.instance.getRenderNodes(scene, cubeShadowMapInfo.cubeCamera.front_camera);
                     this.renderSceneOnce(4, cubeShadowMapInfo, view, cubeShadowMapInfo.cubeCamera.front_camera, collectInfo, occlusionSystem);
 
                     occlusionSystem.update(cubeShadowMapInfo.cubeCamera.back_camera, scene);
+                    collectInfo = EntityCollect.instance.getRenderNodes(scene, cubeShadowMapInfo.cubeCamera.back_camera);
                     this.renderSceneOnce(5, cubeShadowMapInfo, view, cubeShadowMapInfo.cubeCamera.back_camera, collectInfo, occlusionSystem);
                 }
                 let qCommand = GPUContext.beginCommandEncoder();
@@ -210,21 +214,23 @@ export class PointLightShadowRenderer extends RendererBase {
                 let matrixIndex = renderNode.transform.worldMatrix.index;
                 if (!renderNode.transform.enable)
                     continue;
-                if (!occlusionSystem.renderCommitTesting(shadowCamera, renderNode))
-                    continue;
+                // if (!occlusionSystem.renderCommitTesting(shadowCamera, renderNode))
+                //     continue;
                 if (!renderNode.enable)
                     continue;
-                // renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState);
+                if (!renderNode.preInit) {
+                    renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState);
+                }
 
                 for (let material of renderNode.materials) {
-                    let passes = material.renderPasses.get(this._rendererType);
+                    let passes = material.getPass(this._rendererType);
                     if (!passes || passes.length == 0)
                         continue;
 
                     GPUContext.bindGeometryBuffer(encoder, renderNode.geometry);
                     let worldMatrix = renderNode.object3D.transform._worldMatrix;
                     for (let pass of passes) {
-                        const renderShader = pass.renderShader;
+                        const renderShader = pass;
                         if (renderShader.pipeline) {
                             renderShader.setUniformFloat("cameraFar", shadowCamera.far);
                             renderShader.setUniformVector3("lightWorldPos", shadowCamera.transform.worldPosition);

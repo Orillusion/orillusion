@@ -2,15 +2,15 @@ import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { Engine3D, View3D, Scene3D, CameraUtil, AtmosphericComponent, webGPUContext, HoverCameraController, Object3D, DirectLight, KelvinUtil, PlaneGeometry, VertexAttributeName, LitMaterial, MeshRenderer, Vector4, Vector3, Matrix3, PostProcessingComponent, TAAPost, BitmapTexture2D, GlobalFog, Color } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { GrassComponent, TerrainGeometry } from "@orillusion/effect";
+import { Stats } from "@orillusion/stats";
 
 // An sample of custom vertex attribute of geometry
-class Sample_Grass {
+export class Sample_Grass {
     view: View3D;
     post: PostProcessingComponent;
     async run() {
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.updateFrameRate = 1;
-        Engine3D.setting.shadow.shadowBias = 0.0003;
         Engine3D.setting.shadow.shadowBound = 500;
         Engine3D.setting.shadow.shadowSize = 1024;
         // Engine3D.setting.render.zPrePass = true;
@@ -21,8 +21,10 @@ class Sample_Grass {
         this.view = new View3D();
         this.view.scene = new Scene3D();
         this.view.scene.addComponent(AtmosphericComponent);
+        this.view.scene.addComponent(Stats);
 
         this.view.camera = CameraUtil.createCamera3DObject(this.view.scene);
+        this.view.camera.enableCSM = true;
         this.view.camera.perspective(60, webGPUContext.aspect, 1, 5000.0);
         this.view.camera.object3D.z = -15;
         this.view.camera.object3D.addComponent(HoverCameraController).setCamera(35, -20, 500);
@@ -165,7 +167,6 @@ class Sample_Grass {
 
         GUIHelp.addFolder("shadow");
         GUIHelp.add(Engine3D.setting.shadow, "shadowBound", 0.0, 3000, 0.0001);
-        GUIHelp.add(Engine3D.setting.shadow, "shadowBias", 0.0, 1, 0.0001);
         GUIHelp.endFolder();
 
         let globalFog = this.post.getPost(GlobalFog);
@@ -174,4 +175,4 @@ class Sample_Grass {
 
 }
 
-new Sample_Grass().run();
+// new Sample_Grass().run();

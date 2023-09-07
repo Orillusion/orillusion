@@ -20,6 +20,11 @@ export type BloomSetting = {
      * Strength setting
      */
     strength: number;
+
+    /**
+     * exposure setting
+     */
+    exposure?: number;
     /**
      * Radius setting
      */

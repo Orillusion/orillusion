@@ -184,10 +184,10 @@ export class DDGIProbeRenderer extends RendererBase {
         //back***********************/
     }
 
-    public renderSceneOnce(view: View3D, probeCamera: Camera3D, encoder: GPURenderPassEncoder, lights: ILight[]) {
+    private renderSceneOnce(view: View3D, probeCamera: Camera3D, encoder: GPURenderPassEncoder, lights: ILight[]) {
         this.volume.uploadBuffer();
 
-        let collectInfo = EntityCollect.instance.getRenderNodes(view.scene);
+        let collectInfo = EntityCollect.instance.getRenderNodes(view.scene, probeCamera);
         GPUContext.bindCamera(encoder, probeCamera);
 
         let drawMin = Math.max(0, Engine3D.setting.render.drawOpMin);
@@ -238,8 +238,6 @@ export class DDGIProbeRenderer extends RendererBase {
 
     public render(view: View3D, occlusionSystem: OcclusionSystem) {
         if (!Engine3D.setting.gi.enable) return;
-        let camera = view.camera;
-        let scene = view.scene;
 
         this.volume.updateOrientation();
         this.volume.isVolumeFrameChange = false;
@@ -255,9 +253,9 @@ export class DDGIProbeRenderer extends RendererBase {
 
         if (EntityCollect.instance.state.giLightingChange || probeBeRendered || Engine3D.setting.gi.realTimeGI) {
             EntityCollect.instance.state.giLightingChange = false;
-            this.lightingPass.computer(view, this.rendererPassState);
-            this.bouncePass.computer(view, this.rendererPassState);
-            this.irradianceComputePass.computer(view, this.rendererPassState);
+            this.lightingPass.compute(view, this.rendererPassState);
+            this.bouncePass.compute(view, this.rendererPassState);
+            this.irradianceComputePass.compute(view, this.rendererPassState);
         }
 
         if (this.probeRenderResult.complete) {

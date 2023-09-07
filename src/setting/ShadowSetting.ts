@@ -4,7 +4,7 @@
  * @group Setting
  */
 export type ShadowSetting = {
-    debug: any;
+    debug: any,
     /**
      * enable
      */
@@ -31,21 +31,17 @@ export type ShadowSetting = {
      */
     type: `PCF` | `HARD` | `SOFT`;
     /**
-     * Shadow offset
-     */
-    shadowBias: number;
-    /**
     * Offset of point light shadow
     */
     pointShadowBias: number;
-    /**
-     * Shadow quality
-     */
-    shadowQuality: number;
+    // /**
+    //  * Shadow quality
+    //  */
+    // shadowQuality: number;
     /**
      * shadow boundary
      */
-    shadowBound: number;
+    shadowBound?: number;
     /**
      * shadow mapping Size
      */
@@ -59,11 +55,23 @@ export type ShadowSetting = {
      */
     pointShadowSize: number;
     /**
-     * Shadow near section
+     * Blend Shadow(0-1)
      */
-    shadowNear: number;
+    csmMargin: number;
     /**
-     * Shadow Far Section
+     * scattering csm Area Exponent for each level
      */
-    shadowFar: number;
+    csmScatteringExp: number;
+    /**
+     * scale csm Area of all level
+     */
+    csmAreaScale: number;
+    // /**
+    //  * Shadow near section
+    //  */
+    // shadowNear: number;
+    // /**
+    //  * Shadow Far Section
+    //  */
+    // shadowFar: number;
 };

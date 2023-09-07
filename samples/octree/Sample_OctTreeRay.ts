@@ -10,12 +10,13 @@ export class Sample_OctTreeRay {
     entities: OctreeEntity[] = [];
     tree: Octree;
     red = new Color(1, 0, 0, 1);
-    gree = new Color(0, 1, 0, 1);
+    green = new Color(0, 1, 0, 1);
     yellow = new Color(1, 1, 0, 1)
     blue = new Color(0, 0, 1, 1)
     white = new Color(1, 1, 1, 1)
 
     async run() {
+        Engine3D.setting.shadow.enable = false;
         Engine3D.setting.occlusionQuery.octree = { width: 400, height: 400, depth: 400, x: 0, y: 0, z: 0 }
         // init engine
         await Engine3D.init({ renderLoop: () => { this.loop() } });
@@ -25,6 +26,7 @@ export class Sample_OctTreeRay {
         param.camera.near = 0.1;
         param.camera.far = 10000;
         let exampleScene = createExampleScene(param);
+        exampleScene.light.castShadow = false;
         Engine3D.startRenderViews([exampleScene.view]);
         Engine3D.getRenderJob(exampleScene.view);
 
@@ -94,7 +96,7 @@ export class Sample_OctTreeRay {
         //show box
         for (let key in boundList) {
             let tree = boundList[key];
-            this.view.graphic3D.drawBoundingBox(key, tree.box, this.gree);
+            this.view.graphic3D.drawBoundingBox(key, tree.box, this.green);
         }
     }
 

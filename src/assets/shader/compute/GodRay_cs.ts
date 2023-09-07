@@ -1,3 +1,5 @@
+import { CSM } from "../../../core/csm/CSM";
+
 export let GodRay_cs: string = /*wgsl*/ `
 
     #include "GlobalUniform"
@@ -58,6 +60,11 @@ export let GodRay_cs: string = /*wgsl*/ `
     var<storage, read> models : Uniforms;
 
     @group(2) @binding(0) var<storage, read_write> historyGodRayData: array<CacheGodRay>;
+    
+    struct ShadowStruct{
+      directShadowVisibility:f32,
+      pointShadows:array<f32,8>,
+     }
 
     var<private> viewDirection: vec3<f32> ;
     var<private> texSize: vec2<u32>;
@@ -65,13 +72,57 @@ export let GodRay_cs: string = /*wgsl*/ `
     var<private> wPosition: vec3<f32>;
     var<private> wNormal: vec4<f32>;
     var<private> directLight: LightData;
-  
-    fn directionShadowMapping(worldPos:vec3<f32>, shadowBias:f32) -> f32 {
-      var shadowPos = globalUniform.shadowMatrix[0] * vec4<f32>(worldPos.xyz, 1.0);
-      var shadowUV = shadowPos.xy * vec2<f32>(0.5, -0.5) + vec2<f32>(0.5, 0.5) ;
-      var visibility = textureSampleCompareLevel( shadowMap, shadowMapSampler, shadowUV, 0, shadowPos.z - shadowBias );
-      return visibility;
-   }
+    var<private> shadowStrut: ShadowStruct ;
+
+    const csmCount:i32 = ${CSM.Cascades} ;
+    fn directShadowMaping(P:vec3<f32>, N:vec3<f32>, shadowBias: f32)  {
+      let enableCSM:bool = globalUniform.enableCSM > 0.5;
+      var light = lightBuffer[0];
+      var visibility = 1.0;
+      var shadowIndex = i32(light.castShadow);
+      if (shadowIndex >= 0 ) {
+        var shadowMatrix:mat4x4<f32>;
+        if(enableCSM && csmCount > 1){
+          for(var csm:i32 = 0; csm < csmCount; csm ++){
+            var csmShadowBias = globalUniform.csmShadowBias[csm];
+            shadowMatrix = globalUniform.csmMatrix[csm];
+            let csmShadowResult = directShadowMapingIndex(light, shadowMatrix, P, N, csm, csmShadowBias);
+            if(csmShadowResult.y < 0.5){
+              visibility = csmShadowResult.x;
+              break;
+            }
+          }
+        }else{
+          shadowMatrix = globalUniform.shadowMatrix[shadowIndex];
+          visibility = directShadowMapingIndex(light, shadowMatrix, P, N, shadowIndex, shadowBias).x;
+        }
+      }
+      shadowStrut.directShadowVisibility = visibility;
+    }
+    
+    fn directShadowMapingIndex(light:LightData, matrix:mat4x4<f32>, P:vec3<f32>, N:vec3<f32>, depthTexIndex:i32, shadowBias:f32) -> vec2<f32>
+    {
+      var visibility = 1.0;
+      var isOutSideArea:f32 = 1.0;
+      var shadowPosTmp = matrix * vec4<f32>(P.xyz, 1.0);
+      var shadowPos = shadowPosTmp.xyz / shadowPosTmp.w;
+      var varying_shadowUV = shadowPos.xy * vec2<f32>(0.5, -0.5) + vec2<f32>(0.5, 0.5);
+      if (varying_shadowUV.x <= 1.0
+        && varying_shadowUV.x >= 0.0
+        && varying_shadowUV.y <= 1.0
+        && varying_shadowUV.y >= 0.0
+        && shadowPosTmp.z <= 1.0
+        && shadowPosTmp.z >= 0.0)
+      {
+        isOutSideArea = 0.0;
+        var uvOnePixel = 1.0 / vec2<f32>(globalUniform.shadowMapSize);
+        var NoL = abs(dot(N, normalize(light.direction)));
+        var bias = shadowBias / max(NoL, 0.000001);
+        visibility = textureSampleCompareLevel(shadowMap, shadowMapSampler, varying_shadowUV, depthTexIndex, shadowPos.z - bias);
+        visibility += 0.001;
+      }
+      return vec2<f32>(visibility, isOutSideArea);
+    }
 
     @compute @workgroup_size( 8 , 8 , 1 )
     fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_invocation_id) globalInvocation_id : vec3<u32>)
@@ -150,13 +201,15 @@ export let GodRay_cs: string = /*wgsl*/ `
         
         var frameOffset = f32(i32(globalUniform.frame) % 4);
         frameOffset *= 0.25;
-
+        var N = normalize(wNormal.xyz);
         for(var i:f32 = 1.0; i < rayMarchCount; i += 1.0){
           var t = (i + frameOffset) / rayMarchCount;
           lastSamplePosition = samplePosition;
           samplePosition = mix(eyePosition, wPosition, t * t);
 
-          var shadowVisibility = directionShadowMapping(samplePosition, globalUniform.shadowBias);
+          // var shadowVisibility = directionShadowMapping(samplePosition, globalUniform.shadowBias);
+          directShadowMaping(samplePosition.xyz, N, globalUniform.shadowBias);
+          var shadowVisibility = shadowStrut.directShadowVisibility;
           if(shadowVisibility > 0.5){
             var stepFactor = calcGodRayValue(samplePosition, L, viewDirection);
             stepFactor *= length(lastSamplePosition - samplePosition);

@@ -1,4 +1,5 @@
 import { Object3D, Scene3D, AnimationCurve, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, Keyframe, Object3DUtil, Time } from "@orillusion/core";
+import { GUIHelp } from "@orillusion/debug/GUIHelp";
 
 class Sample_AnimCurve {
     lightObj3D: Object3D;
@@ -12,22 +13,20 @@ class Sample_AnimCurve {
     async run() {
         await Engine3D.init({ beforeRender: () => this.renderUpdate() });
 
-        Engine3D.setting.shadow.shadowBound = 100;
-        Engine3D.setting.shadow.shadowBias = 0.0001;
-        Engine3D.setting.shadow.pointShadowBias = 0.6;
-        Engine3D.setting.shadow.debug = true;
-
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.updateFrameRate = 1;
         Engine3D.setting.shadow.type = `HARD`;
+        Engine3D.setting.shadow.csmScatteringExp = 0.5;
+        GUIHelp.init();
 
         this.scene = new Scene3D();
         let sky = this.scene.addComponent(AtmosphericComponent);
 
         let camera = CameraUtil.createCamera3DObject(this.scene);
+        camera.enableCSM = true;
         camera.perspective(60, Engine3D.aspect, 0.01, 5000.0);
 
-        camera.object3D.addComponent(HoverCameraController).setCamera(-30, -25, 400);
+        camera.object3D.addComponent(HoverCameraController).setCamera(-30, -45, 200);
 
         let view = new View3D();
         view.scene = this.scene;
@@ -43,7 +42,7 @@ class Sample_AnimCurve {
         /******** light *******/
         {
             this.lightObj3D = new Object3D();
-            this.lightObj3D.rotationX = 15;
+            this.lightObj3D.rotationX = 35;
             this.lightObj3D.rotationY = 110;
             this.lightObj3D.rotationZ = 0;
             let directLight = this.lightObj3D.addComponent(DirectLight);

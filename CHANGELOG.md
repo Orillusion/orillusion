@@ -1,3 +1,28 @@
+## [0.6.9](https://github.com/Orillusion/orillusion/compare/v0.6.8...v0.6.9) (2023-09-06)
+
+### Bug Fixes
+
+* **webgpu:** fix latest WGSL error
+* **canvas:** fix external canvas style ([#284](https://github.com/Orillusion/orillusion/issues/284)) ([bb89a68](https://github.com/Orillusion/orillusion/commit/bb89a68c3bd647a105c672ae8270a33ce6eae160)), closes [#283](https://github.com/Orillusion/orillusion/issues/283)
+* fix renderer ([#281](https://github.com/Orillusion/orillusion/issues/281)) ([1f66ee8](https://github.com/Orillusion/orillusion/commit/1f66ee858eea3c19c11acf743b2cc6aa3be6ed37))
+* **GUI:** UITransform will be updated correctly ([#288](https://github.com/Orillusion/orillusion/issues/288)) ([7a30945](https://github.com/Orillusion/orillusion/commit/7a30945c8af203d6d661f426c6493810c17a8154))
+* **Octree:** Improve Octree's sample ([#289](https://github.com/Orillusion/orillusion/issues/289)) ([1321153](https://github.com/Orillusion/orillusion/commit/13211531b28b0ea881f106b44de3b2b48077ec6e))
+* **component:** fix component life cycle ([b273ab4](https://github.com/Orillusion/orillusion/commit/b273ab4cbc7cdb377914d1ed3b188cc1751d1ff8))
+* **particle:** fix particle material depth bug ([f3f1b20](https://github.com/Orillusion/orillusion/commit/f3f1b200043ccf5516002137bf68ac8d4c41a7de))
+* **WorldPanel:** fix worldPanel depth compareFun ([592b643](https://github.com/Orillusion/orillusion/commit/592b64373d66c0054cfeb890c2a253b8d28ea73e))
+* **bloom:** fix bloom uniform data offset ([39819ee](https://github.com/Orillusion/orillusion/commit/39819eed24fd01775885237d71e4814cb939c553))
+* **gtao:*** Reduce threshold of dot gtao. ([494b827](https://github.com/Orillusion/orillusion/commit/494b8276561a782277b9106b7ca421a089506911))
+
+### Features
+
+* **wasm:** update matrix by WASM ([#292](https://github.com/Orillusion/orillusion/issues/292)) ([2c8e8ab](https://github.com/Orillusion/orillusion/commit/2c8e8ab5c44b8ae8499bb690c6789021e17aebb6))
+* **csm:** add feature of Cascaded Shadow Map ([#286](https://github.com/Orillusion/orillusion/issues/286)) ([d798bd2](https://github.com/Orillusion/orillusion/commit/d798bd24002cc170881dd6daf1f3691ba112a3d2))
+* **material:** use new material framework ([5111699](https://github.com/Orillusion/orillusion/commit/511169978ecd72aa213a644bc4f3614bc6807981))
+* **pipelinePool:** add pipeline shader share ([c88b687](https://github.com/Orillusion/orillusion/commit/c88b6871e407b7e1025e2c07a8df9d6ef10631cf))
+* add log z depth ([520b2bb](https://github.com/Orillusion/orillusion/commit/520b2bb7be1cf803e2b11c5f222ddd3d9667fd4a))
+* add transform depth order ([bf40831](https://github.com/Orillusion/orillusion/commit/bf40831cb9637f7d7b18e4c4cf650ddb5c0b2e13))
+* fadeout csm shadow far away ([bf30fe7](https://github.com/Orillusion/orillusion/commit/bf30fe71f6ccba71ebb3e3406f4f248d28e7615d))
+
 ## [0.6.8](https://github.com/Orillusion/orillusion/compare/v0.6.7...v0.6.8) (2023-08-10)
 
 ### Bug Fixes

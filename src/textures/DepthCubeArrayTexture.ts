@@ -15,7 +15,7 @@ export class DepthCubeArrayTexture extends Texture implements ITexture {
     constructor(width: number, height: number, numberLayer: number) {
         super(width, height, numberLayer);
 
-        this.visibility = GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT | GPUShaderStage.COMPUTE;
+        // this.visibility = GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT | GPUShaderStage.COMPUTE;
 
         // texture_depth_2d_array
         this.format = GPUTextureFormat.depth32float;

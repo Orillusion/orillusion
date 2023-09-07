@@ -51,7 +51,9 @@ class Sample_AddRemove {
             clone.transform.x = Math.random() * 100 - 50;
             clone.transform.y = Math.random() * 100 - 50;
             clone.transform.z = Math.random() * 100 - 50;
-            clone.transform.localScale.set(20, 20, 20)
+            clone.transform.scaleX = 20;
+            clone.transform.scaleY = 20;
+            clone.transform.scaleZ = 20;
 
             this.view.scene.addChild(clone);
             list.push(clone);

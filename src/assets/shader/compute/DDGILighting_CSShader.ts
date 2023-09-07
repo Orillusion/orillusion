@@ -1,3 +1,5 @@
+import { CSM } from "../../../core/csm/CSM";
+
 export let DDGILighting_shader = /*wgsl*/`
 
 #include "GlobalUniform"
@@ -71,12 +73,11 @@ struct ShadowStruct{
  directShadowVisibility:f32,
  pointShadows:array<f32,8>,
 }
+
 var<private> shadowStrut: ShadowStruct ;
-
-var<private> wsn:vec3<f32>;
 var<private> ulitColor:vec3<f32>;
-
-var<private> shadow:f32 = 1.0;
+var<private> wPosition:vec3<f32>;
+var<private> wNormal:vec3<f32>;
 
 const LUMEN = 10.764;
 
@@ -102,24 +103,57 @@ fn sampleColor(uv:vec2<i32>) -> vec4<f32>
    return oc;
 }
 
-fn directionShadowMapping(worldPos:vec3<f32>,shadowBias:f32) {
-   var shadowPos = globalUniform.shadowMatrix[0] * vec4<f32>(worldPos.xyz, 1.0);
-   var shadowUV = shadowPos.xy * vec2<f32>(0.5, -0.5) + vec2<f32>(0.5, 0.5) ;
-   let texelSize = 1.0 / vec2<f32>(globalUniform.shadowMapSize);
-
-   var visibility = 0.0 ;
-   let oneOverShadowDepthTextureSize = texelSize ;
-   for (var y = -1; y <= 1; y++) {
-       for (var x = -1; x <= 1; x++) {
-           let offset = shadowUV * oneOverShadowDepthTextureSize;
-           visibility += textureSampleCompareLevel( shadowMap, shadowMapSampler, shadowUV + offset , 0 , shadowPos.z - shadowBias );
-       }
-   }
-   visibility /= 9.0;
-   shadowStrut.directShadowVisibility = visibility;
+const csmCount:i32 = ${CSM.Cascades} ;
+fn directShadowMaping(P:vec3<f32>, N:vec3<f32>, shadowBias: f32)  {
+  let enableCSM:bool = globalUniform.enableCSM > 0.5;
+  var light = lightBuffer[0];
+  var visibility = 1.0;
+  var shadowIndex = i32(light.castShadow);
+  if (shadowIndex >= 0 ) {
+    var shadowMatrix:mat4x4<f32>;
+    if(enableCSM && csmCount > 1){
+      for(var csm:i32 = 0; csm < csmCount; csm ++){
+        var csmShadowBias = globalUniform.csmShadowBias[csm];
+        shadowMatrix = globalUniform.csmMatrix[csm];
+        let csmShadowResult = directShadowMapingIndex(light, shadowMatrix, P, N, csm, csmShadowBias);
+        if(csmShadowResult.y < 0.5){
+          visibility = csmShadowResult.x;
+          break;
+        }
+      }
+    }else{
+      shadowMatrix = globalUniform.shadowMatrix[shadowIndex];
+      visibility = directShadowMapingIndex(light, shadowMatrix, P, N, shadowIndex, shadowBias).x;
+    }
+  }
+  shadowStrut.directShadowVisibility = visibility;
 }
 
-fn pointShadowMapCompare(worldPos:vec3<f32>,shadowBias:f32){
+fn directShadowMapingIndex(light:LightData, matrix:mat4x4<f32>, P:vec3<f32>, N:vec3<f32>, depthTexIndex:i32, shadowBias:f32) -> vec2<f32>
+{
+  var visibility = 1.0;
+  var isOutSideArea:f32 = 1.0;
+  var shadowPosTmp = matrix * vec4<f32>(P.xyz, 1.0);
+  var shadowPos = shadowPosTmp.xyz / shadowPosTmp.w;
+  var varying_shadowUV = shadowPos.xy * vec2<f32>(0.5, -0.5) + vec2<f32>(0.5, 0.5);
+  if (varying_shadowUV.x <= 1.0
+    && varying_shadowUV.x >= 0.0
+    && varying_shadowUV.y <= 1.0
+    && varying_shadowUV.y >= 0.0
+    && shadowPosTmp.z <= 1.0
+    && shadowPosTmp.z >= 0.0)
+  {
+    isOutSideArea = 0.0;
+    var uvOnePixel = 1.0 / vec2<f32>(globalUniform.shadowMapSize);
+    var NoL = abs(dot(N, normalize(light.direction)));
+    var bias = shadowBias / max(NoL, 0.000001);
+    visibility = textureSampleCompareLevel(shadowMap, shadowMapSampler, varying_shadowUV, depthTexIndex, shadowPos.z - bias);
+    visibility += 0.001;
+  }
+  return vec2<f32>(visibility, isOutSideArea);
+}
+
+fn pointShadowMapCompare(shadowBias:f32){
    for(var i:i32 = i32(0) ; i < i32(8); i = i + 1 )
    { 
        var v = 1.0 ;
@@ -129,7 +163,7 @@ fn pointShadowMapCompare(worldPos:vec3<f32>,shadowBias:f32){
          continue ;
        }
 
-       let frgToLight = worldPos - light.position.xyz;
+       let frgToLight = wPosition - light.position.xyz;
        var dir:vec3<f32> = normalize(frgToLight)  ;
 
        var len = length(frgToLight) ;
@@ -215,8 +249,7 @@ fn coordFun(fragCoord:vec2<u32>)-> vec4<f32>{
  var pos = samplePosition(uv);
 
  var normalMap = sampleNormal(uv);
- wsn = normalMap.xyz * 2.0 - 1.0;
- var normal = normalize( wsn );
+ var normal = normalize( normalMap.xyz * 2.0 - 1.0 );
 
  var color = sampleColor(uv);
  var emissive = vec4<f32>(pos.a,normalMap.a,color.a,0.0) * 1.0 ;
@@ -226,8 +259,11 @@ fn coordFun(fragCoord:vec2<u32>)-> vec4<f32>{
  var V = normalize(pos.xyz - globalUniform.cameraWorldMatrix[3].xyz);
  var N = normal.xyz ;
 
- directionShadowMapping(pos.xyz,globalUniform.shadowBias);
- pointShadowMapCompare(pos.xyz,globalUniform.shadowBias);
+ wPosition = pos.xyz;
+ wNormal = N;
+
+ directShadowMaping(wPosition, wNormal, globalUniform.shadowBias);
+ pointShadowMapCompare(globalUniform.shadowBias);
 
  var lighting = vec3<f32>(0.0);
  let lightCount = 32 ;

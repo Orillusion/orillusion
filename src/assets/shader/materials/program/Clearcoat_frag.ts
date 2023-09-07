@@ -9,12 +9,12 @@ export let Clearcoat_frag: string = /*wgsl*/ `
     @group(1) @binding(auto)
     var clearCoatRoughnessMap: texture_2d<f32>;
 
-    fn getClearcoatRoughnees() -> f32{
+    fn getClearcoatRoughness() -> f32{
         let clearcoatRoughness = textureSample(clearCoatRoughnessMap, clearCoatRoughnessMapSampler, ORI_VertexVarying.fragUV0.xy).r;
         return clearcoatRoughness;
     }
     #else
-    fn getClearcoatRoughnees() -> f32{
+    fn getClearcoatRoughness() -> f32{
         return 1.0;
     }
     #endif

@@ -1,0 +1,17 @@
+{
+    "name": "@orillusion/wasm-matrix",
+    "version": "0.7.0",
+    "author": "Orillusion",
+    "description": "Orillusion WebGPU Engine",
+    "main": "matrix.js",
+    "types": "_WasmMatrix4.d.ts",
+    "files": [
+        "matrix.js",
+        "_WasmMatrix4.d.ts"
+    ],
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Orillusion/orillusion.git"
+    }
+}

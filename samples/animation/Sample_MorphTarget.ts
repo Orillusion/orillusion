@@ -9,7 +9,7 @@ class Sample_MorphTarget {
     influenceData: { [key: string]: number } = {};
 
     async run() {
-        Engine3D.setting.shadow.shadowBias = 0.0001;
+        Engine3D.setting.shadow.shadowBound = 100;
 
         await Engine3D.init();
 

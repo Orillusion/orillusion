@@ -1,3 +1,4 @@
+import { RenderShader } from '..';
 import { GIProbeShader } from '../assets/shader/materials/GIProbeShader';
 import { ShaderLib } from '../assets/shader/ShaderLib';
 import { Engine3D } from '../Engine3D';
@@ -20,15 +21,14 @@ export class GIProbeMaterial extends PhysicMaterial {
 
     constructor(type: GIProbeMaterialType = GIProbeMaterialType.CastGI, index: number = 0) {
         super();
-
         ShaderLib.register("GIProbeShader", GIProbeShader);
-        this.setShader('GIProbeShader', 'GIProbeShader');
 
-        let shader = this.getShader();
-        shader.setDefine('USE_BRDF', true);
-        shader.setShaderEntry(`VertMain`, `FragMain`);
-        shader.setUniformVector4('probeUniform', new Vector4(index, type, 0, 0));
-        let shaderState = shader.shaderState;
+        this.defaultPass = new RenderShader('GIProbeShader', 'GIProbeShader');
+
+        this.defaultPass.setDefine('USE_BRDF', true);
+        this.defaultPass.setShaderEntry(`VertMain`, `FragMain`);
+        this.defaultPass.setUniformVector4('probeUniform', new Vector4(index, type, 0, 0));
+        let shaderState = this.defaultPass.shaderState;
         shaderState.acceptShadow = false;
         shaderState.castShadow = false;
         shaderState.receiveEnv = false;

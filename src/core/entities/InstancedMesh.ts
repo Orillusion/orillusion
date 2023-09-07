@@ -1,5 +1,5 @@
-﻿import { MeshRenderer } from "../../components/renderer/MeshRenderer";
-import { MaterialBase } from "../../materials/MaterialBase";
+﻿import { Material } from "../..";
+import { MeshRenderer } from "../../components/renderer/MeshRenderer";
 import { Matrix4 } from "../../math/Matrix4";
 import { Orientation3D } from "../../math/Orientation3D";
 import { Vector3 } from "../../math/Vector3";
@@ -9,10 +9,10 @@ import { Object3D } from "./Object3D";
 
 export class InstancedMesh extends Object3D {
     private _geometry: GeometryBase;
-    private _material: MaterialBase;
+    private _material: Material;
     private _instanceList: Object3D[];
 
-    constructor(geometry: GeometryBase, material: MaterialBase, length: number) {
+    constructor(geometry: GeometryBase, material: Material, length: number) {
         super();
         this._geometry = geometry;
         this._material = material;

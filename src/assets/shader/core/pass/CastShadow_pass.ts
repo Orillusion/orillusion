@@ -50,6 +50,8 @@ struct VertexAttributes{
   #endif
 }
 
+
+
 @vertex
 fn main(vertex:VertexAttributes) -> VertexOutput {
     worldMatrix = models.matrix[vertex.index];
@@ -71,6 +73,7 @@ fn main(vertex:VertexAttributes) -> VertexOutput {
 
     var worldPos = worldMatrix * vec4<f32>(vertexPosition, 1.0) ;
     var vPos = shadowMatrix * worldPos;
+
     return VertexOutput(vertex.uv, vPos );  
 }
 `
@@ -151,45 +154,81 @@ fn main(vertex:VertexAttributes) -> VertexOutput {
 `
 
 export let shadowCastMap_frag: string = /*wgsl*/ `
-#if USE_ALPHACUT
-@group(1) @binding(0)
-var baseMapSampler: sampler;
-@group(1) @binding(1)
-var baseMap: texture_2d<f32>;
-#endif
+    #if USE_ALPHACUT
+      @group(1) @binding(0)
+      var baseMapSampler: sampler;
+      @group(1) @binding(1)
+      var baseMap: texture_2d<f32>;
+    #endif
 
-struct FragmentOutput {
-  @location(0) o_Target: vec4<f32>,
-  @builtin(frag_depth) out_depth: f32
-};
+    struct FragmentOutput {
+      @location(0) o_Target: vec4<f32>,
+      @builtin(frag_depth) out_depth: f32
+    };
 
-struct MaterialUniform {
-lightWorldPos: vec3<f32>,
-cameraFar: f32,
-};
+    struct MaterialUniform {
+      lightWorldPos: vec3<f32>,
+      cameraFar: f32,
+    };
 
-@group(2) @binding(0)
-var<uniform> materialUniform: MaterialUniform;
+    @group(2) @binding(0)
+    var<uniform> materialUniform: MaterialUniform;
 
-@fragment
-fn main(@location(0) fragUV: vec2<f32> , @location(1) worldPos:vec3<f32> ) -> FragmentOutput {
-var distance = length(worldPos.xyz - materialUniform.lightWorldPos ) ;
-distance = distance / materialUniform.cameraFar ;
+    @fragment
+    fn main(@location(0) fragUV: vec2<f32> , @location(1) worldPos:vec3<f32> ) -> FragmentOutput {
+        var distance = length(worldPos.xyz - materialUniform.lightWorldPos ) ;
+        distance = distance / materialUniform.cameraFar ;
+        var fragOut:FragmentOutput; 
 
-#if USE_ALPHACUT
-  let Albedo = textureSample(baseMap,baseMapSampler,fragUV);
-  var fragOut:FragmentOutput; 
-  if(Albedo.w > 0.5){
-    fragOut = FragmentOutput(vec4<f32>(0.0),distance);
-  }
-//   if(Albedo.w > 0.5){
-//     fragOut = FragmentOutput(vec4<f32>(0.0),distance);
-//   }else{
-//     discard;
-//   }
-  return fragOut ;
-#else
-    fragOut = FragmentOutput(vec4<f32>(0.0),distance);
-#endif
-}
+      #if USE_ALPHACUT
+        let Albedo = textureSample(baseMap,baseMapSampler,fragUV);
+        if(Albedo.w > 0.5){
+          fragOut = FragmentOutput(vec4<f32>(0.0),distance);
+        }
+      #else
+        fragOut = FragmentOutput(vec4<f32>(0.0),distance);
+      #endif
+      
+        return fragOut ;
+    }
+`
+
+export let directionShadowCastMap_frag: string = /*wgsl*/ `
+    #if USE_ALPHACUT
+      @group(1) @binding(0)
+      var baseMapSampler: sampler;
+      @group(1) @binding(1)
+      var baseMap: texture_2d<f32>;
+    #endif
+
+    struct FragmentOutput {
+      @location(0) o_Target: vec4<f32>,
+      @builtin(frag_depth) out_depth: f32
+    };
+
+    struct MaterialUniform {
+      lightWorldPos: vec3<f32>,
+      cameraFar: f32,
+    };
+
+    @group(2) @binding(0)
+    var<uniform> materialUniform: MaterialUniform;
+
+    @fragment
+    fn main(@location(0) fragUV: vec2<f32> , @location(1) clipPos:vec3<f32> ) -> FragmentOutput {
+        // var distance = length(worldPos.xyz - materialUniform.lightWorldPos ) ;
+        // distance = distance / materialUniform.cameraFar ;
+        var fragOut:FragmentOutput; 
+
+      // #if USE_ALPHACUT
+      //   let Albedo = textureSample(baseMap,baseMapSampler,fragUV);
+      //   if(Albedo.w > 0.5){
+      //     fragOut = FragmentOutput(vec4<f32>(0.0),distance);
+      //   }
+      // #else
+      //   fragOut = FragmentOutput(vec4<f32>(0.0),distance);
+      // #endif
+      
+        return fragOut ;
+    }
 `

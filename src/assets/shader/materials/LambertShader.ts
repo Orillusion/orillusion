@@ -26,7 +26,7 @@ export let LambertShader: string = /*wgsl*/ `
         }
 
         var lightColor = vec4<f32>(0.0);
-        let lightIndex = getCluster(ORI_VertexVarying.fragCoord);
+        let lightIndex = getCluster();
         let start = max(lightIndex.start, 0.0);
         let count = max(lightIndex.count, 0.0);
         let end = max(start + count , 0.0);
@@ -54,6 +54,11 @@ export let LambertShader: string = /*wgsl*/ `
         ORI_ShadingInput.BaseColor = lightColor * materialUniform.baseColor ;
         ORI_ShadingInput.BaseColor.w = 1.0 ;
         UnLit();
+
+        // let n = globalUniform.near ;
+        // let f = globalUniform.far ;
+        // let z = ORI_VertexVarying.fragCoord.z ;
+        // ORI_FragmentOutput.out_depth = z * (n/(f-n)) ;
     }
 `
 

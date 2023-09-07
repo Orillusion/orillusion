@@ -1,10 +1,8 @@
 import { RenderNode } from '../../../components/renderer/RenderNode';
-import { BoundingBox } from '../../../core/bound/BoundingBox';
 import { Camera3D } from '../../../core/Camera3D';
 import { Scene3D } from '../../../core/Scene3D';
-import { OctreeEntity } from '../../../core/tree/octree/OctreeEntity';
 import { Engine3D } from '../../../Engine3D';
-import { EntityCollect } from '../collect/EntityCollect';
+import { CollectInfo } from '../collect/CollectInfo';
 /**
  * @internal
  * @group Post
@@ -48,71 +46,112 @@ export class OcclusionSystem {
     }
 
     public update(camera: Camera3D, scene: Scene3D) {
-        if (!OcclusionSystem.enable) return;
-        let cameraViewRenderList = this._renderList.get(camera);
-        if (!cameraViewRenderList) {
-            cameraViewRenderList = new Map<RenderNode, number>();
-            this._renderList.set(camera, cameraViewRenderList);
-        }
-        cameraViewRenderList.clear();
-        EntityCollect.instance.autoSortRenderNodes(scene);
+        // if (!OcclusionSystem.enable) return;
 
-        let collectInfo = EntityCollect.instance.getRenderNodes(scene);
-        if (Engine3D.setting.occlusionQuery.octree) {
-            let rendererList: OctreeEntity[] = [];
-            // let now = performance.now();
-            // collectInfo.rendererOctree.boxCasts(camera.frustum.boundingBox, rendererList);
+        // let cameraViewRenderList = this._renderList.get(camera);
 
-            collectInfo.opaqueList = [];
-            collectInfo.transparentList = [];
-            collectInfo.rendererOctree.frustumCasts(camera.frustum, rendererList);
+        // if (!cameraViewRenderList) {
+        //     cameraViewRenderList = new Map<RenderNode, number>();
+        //     this._renderList.set(camera, cameraViewRenderList);
+        // }
 
-            // console.log('cast', performance.now() - now, fillterList.length);
-            for (let item of rendererList) {
-                cameraViewRenderList.set(item.renderer, 1);
-                let renderer = item.renderer;
-                if (renderer.renderOrder >= 3000) {
-                    collectInfo.transparentList.push(item.renderer);
-                } else {
-                    collectInfo.opaqueList.push(item.renderer);
-                }
-            }
-        } else {
-            // let now = performance.now();
-            for (let node of collectInfo.opaqueList) {
-                let inRender = 0;
+        // cameraViewRenderList.clear();
 
-                if (node.enable && node.transform.enable) {
-                    inRender = camera.frustum.containsBox(node.object3D.bound);
-                }
+        // EntityCollect.instance.autoSortRenderNodes(scene);
 
-                if (inRender) {
-                    cameraViewRenderList.set(node, inRender);
-                }
-            }
+        // let collectInfo = EntityCollect.instance.getRenderNodes(scene);
+        // if (Engine3D.setting.occlusionQuery.octree) {
+        //     let rendererList: OctreeEntity[] = [];
+        //     // let now = performance.now();
+        //     // collectInfo.rendererOctree.boxCasts(camera.frustum.boundingBox, rendererList);
 
-            for (let node of collectInfo.transparentList) {
-                let inRender = 0;
-                if (node.enable && node.transform.enable) {
-                    inRender = camera.frustum.containsBox(node.object3D.bound);
-                }
+        //     collectInfo.opaqueList = [];
+        //     collectInfo.transparentList = [];
+        //     collectInfo.rendererOctree.frustumCasts(camera.frustum, rendererList);
 
-                if (inRender) {
-                    cameraViewRenderList.set(node, inRender);
-                }
-            }
-            // console.log('cast', performance.now() - now);
+        //     // console.log('cast', performance.now() - now, fillterList.length);
+        //     for (let item of rendererList) {
+        //         cameraViewRenderList.set(item.renderer, 1);
+        //         let renderer = item.renderer;
+        //         if (renderer.renderOrder >= 3000) {
+        //             collectInfo.transparentList.push(item.renderer);
+        //         } else {
+        //             collectInfo.opaqueList.push(item.renderer);
+        //         }
+        //     }
+        // } else {
+        //     // let now = performance.now();
+        //     for (let node of collectInfo.opaqueList) {
+        //         let inRender = 0;
 
-        }
+        //         if (node.enable && node.transform.enable) {
+        //             inRender = camera.frustum.containsBox(node.object3D.bound);
+        //         }
+
+        //         if (inRender) {
+        //             cameraViewRenderList.set(node, inRender);
+        //         }
+        //     }
+
+        //     for (let node of collectInfo.transparentList) {
+        //         let inRender = 0;
+        //         if (node.enable && node.transform.enable) {
+        //             inRender = camera.frustum.containsBox(node.object3D.bound);
+        //         }
+
+        //         if (inRender) {
+        //             cameraViewRenderList.set(node, inRender);
+        //         }
+        //     }
+        //     // console.log('cast', performance.now() - now);
+
+        // }
+    }
+
+    collect(nodes: CollectInfo, camera: Camera3D) {
+        // let cameraViewRenderList = this._renderList.get(camera);
+        // if (!cameraViewRenderList) {
+        //     cameraViewRenderList = new Map<RenderNode, number>();
+        //     this._renderList.set(camera, cameraViewRenderList);
+        // }
+        // cameraViewRenderList.clear();
+        // if (nodes.opaqueList) {
+        //     for (let node of nodes.opaqueList) {
+        //         let inRender = 0;
+
+        //         if (node.enable && node.transform.enable && node.object3D.bound) {
+        //             inRender = node.object3D.bound.inFrustum(node.object3D, camera.frustum);
+        //         }
+
+        //         if (inRender) {
+        //             cameraViewRenderList.set(node, inRender);
+        //         }
+        //     }
+        // }
+
+        // if (nodes.transparentList) {
+        //     for (let node of nodes.transparentList) {
+
+        //         let inRender = 0;
+        //         if (node.enable && node.transform.enable && node.object3D.bound) {
+        //             inRender = node.object3D.bound.inFrustum(node.object3D, camera.frustum);
+        //         }
+
+        //         if (inRender) {
+        //             cameraViewRenderList.set(node, inRender);
+        //         }
+        //     }
+        // }
     }
 
     renderCommitTesting(camera: Camera3D, renderNode: RenderNode): boolean {
-        if (!OcclusionSystem.enable) return true;
-        let cameraRenderList = this._renderList.get(camera);
-        if (cameraRenderList) {
-            return this._renderList.get(camera).get(renderNode) > 0;
-        } else {
-            return false;
-        }
+        return true;
+        // if (!OcclusionSystem.enable) return true;
+        // let cameraRenderList = this._renderList.get(camera);
+        // if (cameraRenderList) {
+        //     return this._renderList.get(camera).get(renderNode) > 0;
+        // } else {
+        //     return false;
+        // }
     }
 }

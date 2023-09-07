@@ -43,7 +43,7 @@ export class DDGIMultiBouncePass {
         this.computerShader.setSamplerTexture("irradianceMap", irradianceMap);
     }
 
-    public computer(view: View3D, renderPassState: RendererPassState) {
+    public compute(view: View3D, renderPassState: RendererPassState) {
         let command = GPUContext.beginCommandEncoder();
         let setting = this.volume.setting;
         let probesCount: number = setting.probeXCount * setting.probeYCount * setting.probeZCount;

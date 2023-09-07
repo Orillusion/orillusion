@@ -1,3 +1,5 @@
+import { ClusterConfig } from "../../../gfx/renderJob/passRenderer/cluster/ClusterConfig";
+
 export let ClusterBoundsSource_cs: string = /* wgsl */`
   #include "GlobalUniform"
 
@@ -51,8 +53,9 @@ export let ClusterBoundsSource_cs: string = /* wgsl */`
             return result;
         }
 
-        @compute @workgroup_size(16,9,1)
+        @compute @workgroup_size(${ClusterConfig.clusterTileX},${ClusterConfig.clusterTileY},1)
         fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(local_invocation_id) local_invocation_id : vec3<u32> ){
+
             let i = local_invocation_id.x ;
             let j = local_invocation_id.y ;
             let k = workgroup_id.x ;
@@ -71,7 +74,7 @@ export let ClusterBoundsSource_cs: string = /* wgsl */`
             let near = clustersUniform.near ;
             let far = clustersUniform.far ;
 
-            let titleSize = vec2<f32>( clustersUniform.screenWidth / tx ,  clustersUniform.screenHeight / ty ) ;
+            let titleSize = vec2<f32>( globalUniform.windowWidth / tx , globalUniform.windowHeight / ty ) ;
 
             var maxPointSs = vec4<f32>(vec2<f32>(f32(i) + 1.0, f32(j) + 1.0) * titleSize, 0.0, 1.0);
 	        var minPointSs = vec4<f32>(vec2<f32>(f32(i) , f32(j)) * titleSize, 0.0, 1.0);

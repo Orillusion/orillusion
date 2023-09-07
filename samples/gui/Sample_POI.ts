@@ -12,7 +12,7 @@ class Sample_POI {
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.updateFrameRate = 1;
         Engine3D.setting.shadow.shadowBound = 20;
-        Engine3D.setting.shadow.shadowBias = 0.0001;
+        Engine3D.setting.shadow.csmScatteringExp = 1;
 
         await Engine3D.init({ renderLoop: () => { this.loop(); } });
         let param = createSceneParam();
@@ -22,6 +22,7 @@ class Sample_POI {
         GUIHelp.init();
 
         this.scene = exampleScene.scene;
+        exampleScene.camera.enableCSM = true;
 
         Engine3D.startRenderView(exampleScene.view);
 

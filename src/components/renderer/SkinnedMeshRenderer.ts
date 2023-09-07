@@ -4,7 +4,6 @@ import { MeshRenderer } from "./MeshRenderer";
 import { RendererMask } from "../../gfx/renderJob/passRenderer/state/RendererMask";
 import { StorageGPUBuffer } from "../../gfx/graphics/webGpu/core/buffer/StorageGPUBuffer";
 import { RendererType } from "../../gfx/renderJob/passRenderer/state/RendererType";
-import { ClusterLightingRender } from "../../gfx/renderJob/passRenderer/cluster/ClusterLightingRender";
 import { RendererPassState } from "../../gfx/renderJob/passRenderer/state/RendererPassState";
 import { SkeletonAnimationComponent } from "../SkeletonAnimationComponent";
 import { ClusterLightingBuffer } from "../../gfx/renderJob/passRenderer/cluster/ClusterLightingBuffer";
@@ -111,9 +110,9 @@ export class SkinnedMeshRenderer extends MeshRenderer {
   public nodeUpdate(view: View3D, passType: RendererType, renderPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer) {
     for (let i = 0; i < this.materials.length; i++) {
       const material = this.materials[i];
-      let passes = material.renderPasses.get(passType);
+      let passes = material.getPass(passType);
       if (passes) for (let i = 0; i < passes.length; i++) {
-        const renderShader = passes[i].renderShader;
+        const renderShader = passes[i];
         if (!renderShader.pipeline) {
           renderShader.setStorageBuffer('jointsMatrixIndexTable', this.mSkeletonAnimation.jointMatrixIndexTableBuffer);
           renderShader.setStorageBuffer('jointsInverseMatrix', this.mInverseBindMatrixBuffer);

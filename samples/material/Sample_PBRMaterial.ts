@@ -7,20 +7,22 @@ class Sample_PBRMaterial {
     scene: Scene3D;
 
     async run() {
-        await Engine3D.init({ canvasConfig: { alpha: true, zIndex: 11, backgroundImage: '/logo/bg.webp' } });
 
         //config settings
+        Engine3D.setting.render.debug = true;
         Engine3D.setting.shadow.shadowBound = 50;
-        Engine3D.setting.shadow.shadowBias = 0.0001;
         Engine3D.setting.render.postProcessing.bloom = {
             enable: true,
             blurX: 4,
             blurY: 4,
             luminosityThreshold: 0.8,
             strength: 0.86,
+            exposure: 1,
             radius: 4,
             debug: false
         };
+
+        await Engine3D.init({ canvasConfig: { alpha: true, zIndex: 11, backgroundImage: '/logo/bg.webp' } });
 
         GUIHelp.init(999);
 
@@ -36,6 +38,8 @@ class Sample_PBRMaterial {
 
         Engine3D.startRenderView(view);
         await this.initScene();
+
+        GUIUtil.renderDebug();
     }
 
     async initScene() {
@@ -68,6 +72,8 @@ class Sample_PBRMaterial {
                 let material = item.material;
                 if (material instanceof LitMaterial) {
                     material.metallic = 1;
+                    material.roughness = 0.35;
+                    material.defaultPass.setDefine("USE_TANGENT", false);
                 }
             }
             model.transform.scaleX = 10;

@@ -1,7 +1,10 @@
+import { WasmMatrix } from '@orillusion/wasm-matrix/WasmMatrix';
 import { test, expect, end, delay } from '../util'
 import { Matrix4, Vector3 } from '@orillusion/core';
 
 await test('Matrix4', async () => {
+    await WasmMatrix.init(Matrix4.allocCount);
+
     let mat4 = new Matrix4();
 
     expect(mat4.rawData[0]).toEqual(1.0);
@@ -26,12 +29,16 @@ await test('Matrix4', async () => {
 })
 
 await test('Matrix4 lookAt', async () => {
+    await WasmMatrix.init(Matrix4.allocCount);
+
     let mat4 = new Matrix4();
 
     mat4.lookAt(new Vector3(0, 0, 10), new Vector3(0, 0, 0), Vector3.Y_AXIS);
 })
 
 await test('Matrix4 Scale', async () => {
+    await WasmMatrix.init(Matrix4.allocCount);
+
     let a = new Matrix4();
     a.createByScale(10, 1, 1);
 
@@ -44,6 +51,8 @@ await test('Matrix4 Scale', async () => {
 })
 
 await test('Matrix4 Rotation', async () => {
+    await WasmMatrix.init(Matrix4.allocCount);
+
     let a = new Matrix4();
     a.createByRotation(45, Vector3.Y_AXIS);
 
@@ -56,6 +65,8 @@ await test('Matrix4 Rotation', async () => {
 })
 
 await test('Matrix4 Translation', async () => {
+    await WasmMatrix.init(Matrix4.allocCount);
+
     let a = new Matrix4();
     a.appendTranslation(10, 10, 0);
 
@@ -68,6 +79,8 @@ await test('Matrix4 Translation', async () => {
 })
 
 await test('Matrix4 ScaleRotationTranslation', async () => {
+    await WasmMatrix.init(Matrix4.allocCount);
+
     let scaleMatrix = new Matrix4();
     scaleMatrix.createByScale(10, 10, 10);
 

@@ -30,6 +30,9 @@ export class DDGILightingPass {
         let lightUniformEntries = GlobalBindGroup.getLightEntries(view.scene);
 
         this.computeShader = new ComputeShader(DDGILighting_shader);
+        let cameraBindGroup = GlobalBindGroup.getCameraGroup(view.camera);
+        this.computeShader.setUniformBuffer("globalUniform", cameraBindGroup.uniformGPUBuffer);
+
         this.computeShader.setStorageTexture("outputBuffer", this.lightingTexture);
         this.computeShader.setStorageBuffer("lightBuffer", lightUniformEntries.storageGPUBuffer);
         this.computeShader.setStorageBuffer("models", GlobalBindGroup.modelMatrixBindGroup.matrixBufferDst);
@@ -50,12 +53,9 @@ export class DDGILightingPass {
         this.pointShadowMap = inputs[4];
     }
 
-    public computer(view: View3D, renderPassState: RendererPassState) {
+    public compute(view: View3D, renderPassState: RendererPassState) {
         if (!this.computeShader) {
             this.create(view);
-
-            let cameraBindGroup = GlobalBindGroup.getCameraGroup(view.camera);
-            this.computeShader.setUniformBuffer("globalUniform", cameraBindGroup.uniformGPUBuffer);
         }
         // EntityCollect.instance.sky ? EntityCollect.instance.sky.materials : defaultRes.defaultSky
         let command = GPUContext.beginCommandEncoder();

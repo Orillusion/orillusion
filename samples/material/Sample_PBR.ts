@@ -12,7 +12,6 @@ class Sample_PBR {
         await Engine3D.init({});
 
         Engine3D.setting.shadow.shadowBound = 5;
-        Engine3D.setting.shadow.shadowBias = 0.002;
 
         GUIHelp.init();
 

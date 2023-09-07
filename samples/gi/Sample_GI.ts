@@ -28,7 +28,6 @@ class Sample_GI {
         Engine3D.setting.gi.autoRenderProbe = true;
 
         Engine3D.setting.shadow.shadowBound = 200;
-        Engine3D.setting.shadow.shadowBias = 0.001;
         Engine3D.setting.shadow.debug = true;
 
         Engine3D.setting.shadow.autoUpdate = true;
@@ -58,6 +57,7 @@ class Sample_GI {
         let exampleScene = createExampleScene(param);
         exampleScene.atmosphericSky.exposure = 0.5;
         this.scene = exampleScene.scene;
+        exampleScene.camera.enableCSM = true;
         Engine3D.startRenderViews([exampleScene.view]);
         let job = Engine3D.getRenderJob(exampleScene.view);
         await this.initScene();

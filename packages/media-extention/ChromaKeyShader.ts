@@ -1,3 +1,4 @@
+export let ChromaKeyShader = /*wgsl*/`
 #include "Common_vert"
 #include "Common_frag"
 #include "UnLit_frag"
@@ -106,3 +107,5 @@ fn maskedTex2D(uv: vec2<f32>, texSize: vec2<u32>, key_cb: f32, key_cr: f32) -> f
     let pix_cr = rgb2cr(color.rgb);
     return colorclose(pix_cb, pix_cr, key_cb, key_cr, materialUniform.colorCutoff, materialUniform.colorFeathering);
 }
+
+`

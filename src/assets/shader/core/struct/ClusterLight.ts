@@ -71,38 +71,37 @@ export let ClusterLight: string = /*wgsl*/ `
         return lightData ;
     }
 
-    fn linear01Depth(depth : f32) -> f32 {
-        return globalUniform.far * globalUniform.near / fma(depth, globalUniform.near-globalUniform.far, globalUniform.far);
+    fn linearTo01Depth(depth : f32) -> f32 {
+        return (globalUniform.far ) * globalUniform.near / fma(depth, globalUniform.near-globalUniform.far, globalUniform.far);
     }
 
-    fn getTile(fragCoord : vec4<f32>) -> vec3<u32> {
-        var coord = fragCoord ; 
-        coord.z = linear01Depth(coord.z) ; 
+    fn getClusterId3() -> vec3<u32> {
+        let z = linearTo01Depth(ORI_VertexVarying.fragCoord.z) ; 
 
         let sliceScale = f32(clustersUniform.clusterTileZ) / log2(globalUniform.far / globalUniform.near);
         let sliceBias = -(f32(clustersUniform.clusterTileZ) * log2(globalUniform.near) / log2(globalUniform.far / globalUniform.near));
-        let zTile = u32(max(log2(coord.z) * sliceScale + sliceBias, 0.0));
-        return vec3<u32>(u32(coord.x / (clustersUniform.screenWidth / f32(clustersUniform.clusterTileX))),
-                            u32(coord.y / (clustersUniform.screenHeight / f32(clustersUniform.clusterTileY))),
-                            zTile);
+        let zTile = u32(max(log2(z) * sliceScale + sliceBias, 0.0));
+
+        var screenUV = ORI_VertexVarying.fragCoord.xy / vec2<f32>( globalUniform.windowWidth , globalUniform.windowHeight );
+        let i = u32(floor(screenUV.x * clustersUniform.clusterTileX)) ;
+        let j = u32(floor(screenUV.y * clustersUniform.clusterTileY) );
+
+        return vec3<u32>(i,j,zTile);
     }
 
-    fn getCluster(fragCoord : vec4<f32>) -> LightIndex {
-        let tile = getTile(fragCoord);
+    fn getCluster() -> LightIndex {
+        let tile = getClusterId3();
         let id = tile.x +
             tile.y * u32(clustersUniform.clusterTileX) +
             tile.z * u32(clustersUniform.clusterTileX) * u32(clustersUniform.clusterTileY);
         return assignTable[id];
     }
 
-    #if DEBUG_CLUSTER
-        fn getClusterIndex(fragCoord : vec4<f32>) -> u32 {
-            let tile = getTile(fragCoord);
-            let id = tile.x +
-                tile.y * u32(clustersUniform.clusterTileX) +
-                tile.z * u32(clustersUniform.clusterTileX) * u32(clustersUniform.clusterTileY);
-            return id;
-            // return 0u ;
-        }
-    #endif
+    fn getClusterIndex() -> u32 {
+        let tile = getClusterId3();
+        let id = tile.x +
+            tile.y * u32(clustersUniform.clusterTileX) +
+            tile.z * u32(clustersUniform.clusterTileX) * u32(clustersUniform.clusterTileY);
+        return id;
+    }
 `

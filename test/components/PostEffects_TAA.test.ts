@@ -13,7 +13,9 @@ await test('Post TAAPost test', async () => {
     let postProcessing = view.scene.addComponent(PostProcessingComponent);
     let taa = postProcessing.addPost(TAAPost);
     await delay(500)
-    expect(taa.taaTexture?.width).tobe(window.innerWidth)
+    let dest = Math.floor(window.innerWidth * window.devicePixelRatio);
+    let src = taa.taaTexture?.width;
+    expect(src).tobe(dest)
     Engine3D.pause()
 })
 
