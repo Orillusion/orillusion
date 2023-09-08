@@ -23,6 +23,11 @@
 * add transform depth order ([bf40831](https://github.com/Orillusion/orillusion/commit/bf40831cb9637f7d7b18e4c4cf650ddb5c0b2e13))
 * fadeout csm shadow far away ([bf30fe7](https://github.com/Orillusion/orillusion/commit/bf30fe71f6ccba71ebb3e3406f4f248d28e7615d))
 
+### BREAKING CHANGES
+* **material:** `MaterialBase` has beed renamed to `Material`, also need to implement `get/set` for `baseMap` for custom materials
+* **shadow:** drop `shadowBias`, `shadowNear`, `shadowFar` options in shadow settings, values will be calculated automatically
+* **Bloom:** add new `exposure` option in Bloom settings
+
 ## [0.6.8](https://github.com/Orillusion/orillusion/compare/v0.6.7...v0.6.8) (2023-08-10)
 
 ### Bug Fixes
