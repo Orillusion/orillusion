@@ -2,7 +2,7 @@
     "name": "@orillusion/effect",
     "version": "0.1.0",
     "author": "Orillusion",
-    "description": "Orillusion effect Effects",
+    "description": "Orillusion Effects Plugin",
     "main": "./dist/effect.umd.js",
     "module": "./dist/effect.es.js",
     "module:dev": "./index.ts",
@@ -19,6 +19,6 @@
         "url": "git+https://github.com/Orillusion/orillusion.git"
     },
     "dependencies": {
-        "@orillusion/core": "^0.6.3"
+        "@orillusion/core": "^0.6.9"
     }
 }
