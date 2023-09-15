@@ -3,7 +3,6 @@ import { ComponentBase } from '@orillusion/core';
 /**
  * Audio Listener
  * Used in conjunction {@link PositionAudio} or {@link StaticAudio}
- * @internal
  * @group Audio
  */
 export class AudioListener extends ComponentBase {

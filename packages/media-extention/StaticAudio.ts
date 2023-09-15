@@ -2,7 +2,6 @@ import { ComponentBase } from '@orillusion/core';
 import { AudioListener } from './AudioListener';
 /**
  * Static audio component, volume level does not vary depending on the position of the monitor
- * @internal
  * @group Audio
  */
 export class StaticAudio extends ComponentBase {

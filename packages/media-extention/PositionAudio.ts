@@ -3,7 +3,6 @@ import { AudioListener } from './AudioListener';
 import { StaticAudio } from './StaticAudio';
 /**
  * Dynamic audio component, with volume varying based on the relative position of the monitor
- * @internal
  * @group Audio
  */
 export class PositionAudio extends StaticAudio {
