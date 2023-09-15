@@ -1,4 +1,4 @@
-import { ComponentBase } from '../ComponentBase';
+import { ComponentBase } from '@orillusion/core';
 
 /**
  * Audio Listener
@@ -14,9 +14,6 @@ export class AudioListener extends ComponentBase {
         this.context = new AudioContext();
         this.gain = this.context.createGain();
         this.gain.connect(this.context.destination);
-    }
-    public start() {
-
     }
     public onUpdate() {
         if (!this.context) {
@@ -45,7 +42,6 @@ export class AudioListener extends ComponentBase {
             listener.setOrientation(_orientation.x, _orientation.y, _orientation.z, up.x, up.y, up.z);
         }
     }
-
     destroy() {
         this.gain.disconnect();
         this.context.close();

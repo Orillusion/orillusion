@@ -1,4 +1,4 @@
-import { ComponentBase } from '../ComponentBase';
+import { ComponentBase } from '@orillusion/core';
 import { AudioListener } from './AudioListener';
 /**
  * Static audio component, volume level does not vary depending on the position of the monitor
@@ -20,7 +20,7 @@ export class StaticAudio extends ComponentBase {
     constructor() {
         super();
     }
-    public setLister(listener: AudioListener): this {
+    public setLisenter(listener: AudioListener): this {
         this.listener = listener;
         this.context = listener.context as AudioContext;
         this.gainNode = this.context.createGain();
@@ -102,9 +102,6 @@ export class StaticAudio extends ComponentBase {
     }
     protected connect() {
         this.source?.connect(this.gainNode as GainNode);
-    }
-    public onUpdate() {
-        super.onUpdate();
     }
     public destroy(force?: boolean) {
         this.stop();

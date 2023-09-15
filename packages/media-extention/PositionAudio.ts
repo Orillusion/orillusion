@@ -1,9 +1,4 @@
-import { Object3D } from '../../core/entities/Object3D';
-import { UnLitMaterial } from '../../materials/UnLitMaterial';
-import { Color } from '../../math/Color';
-import { Vector3 } from '../../math/Vector3';
-import { BoxGeometry } from '../../shape/BoxGeometry';
-import { MeshRenderer } from '../renderer/MeshRenderer';
+import { BoxGeometry, Color, MeshRenderer, Object3D, UnLitMaterial, Vector3 } from '@orillusion/core';
 import { AudioListener } from './AudioListener';
 import { StaticAudio } from './StaticAudio';
 /**
@@ -20,8 +15,8 @@ export class PositionAudio extends StaticAudio {
     constructor() {
         super();
     }
-    public setLister(listener: AudioListener): this {
-        super.setLister(listener);
+    public setLisenter(listener: AudioListener): this {
+        super.setLisenter(listener);
         this.panner = this.context?.createPanner() as PannerNode;
         this.panner.panningModel = 'HRTF';
         this.panner.connect(this.gainNode as GainNode);
@@ -41,7 +36,6 @@ export class PositionAudio extends StaticAudio {
         let refLength = this.panner.refDistance;
         let maxLength = this.panner.maxDistance;
         let box = new BoxGeometry(1, 1, 1);
-
         let m1 = new UnLitMaterial();
         m1.baseColor = new Color(1, 0, 0);
         let m2 = new UnLitMaterial();
@@ -50,6 +44,7 @@ export class PositionAudio extends StaticAudio {
         m3.baseColor = new Color(0, 1, 0);
         let m4 = new UnLitMaterial();
         m4.baseColor = new Color(1, 1, 0);
+
         for (let i = 0; i < this._step; i++) {
             let group = new Object3D();
             let angle = (i * outerAngle) / (this._step - 1);
@@ -83,10 +78,10 @@ export class PositionAudio extends StaticAudio {
     }
     public hideHelper() {
         this._helper = false;
-        for (let l of this._lines) {
-            l.removeAllChild();
-            l.removeFromParent();
-            l.destroy();
+        for(let g of this._lines){
+            while(g.entityChildren.length > 0)
+                    g.entityChildren[0].destroy()
+            g.destroy()
         }
         this._lines.length = 0;
     }
