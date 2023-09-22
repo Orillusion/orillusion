@@ -2,43 +2,74 @@ import { SkeletonAnimation_shader } from "../../anim/SkeletonAnimation_shader";
 import { MorphTarget_shader } from "../../../../components/anim/morphAnim/MorphTarget_shader";
 
 export let VertexAttributes: string = /*wgsl*/ `
-    #if USE_MORPHTARGETS
-    ${MorphTarget_shader.getMorphTargetShaderBinding(3, 0)}
-    #endif
 
-    #if USE_SKELETON
-    ${SkeletonAnimation_shader.groupBindingAndFunctions(3, 0)} 
+    #if USE_METAHUMAN
+        ${MorphTarget_shader.getMorphTargetShaderBinding(3, 0)}
+        ${SkeletonAnimation_shader.groupBindingAndFunctions(3, 2)} 
+    #else
+        #if USE_MORPHTARGETS
+            ${MorphTarget_shader.getMorphTargetShaderBinding(3, 0)}
+        #endif
+
+        #if USE_SKELETON
+            ${SkeletonAnimation_shader.groupBindingAndFunctions(3, 0)} 
+        #endif
     #endif
 
     struct VertexAttributes{
-    @builtin(instance_index) index : u32,
-    @location(0) position: vec3<f32>,
-    @location(1) normal: vec3<f32>,
-    @location(2) uv: vec2<f32>,
-    @location(3) TEXCOORD_1: vec2<f32>,
+        @builtin(instance_index) index : u32,
+        @location(0) position: vec3<f32>,
+        @location(1) normal: vec3<f32>,
+        @location(2) uv: vec2<f32>,
+        @location(3) TEXCOORD_1: vec2<f32>,
 
-    #if USE_TANGENT
-        @location(4) TANGENT: vec4<f32>,
-        #if USE_SKELETON
-            @location(5) joints0: vec4<f32>,
-            @location(6) weights0: vec4<f32>,
-            #if USE_JOINT_VEC8
-            @location(7) joints1: vec4<f32>,
-            @location(8) weights1: vec4<f32>,
+        #if USE_METAHUMAN
+            #if USE_TANGENT
+                @location(4) TANGENT: vec4<f32>,
+                @location(5) joints0: vec4<f32>,
+                @location(6) weights0: vec4<f32>,
+                @location(7) joints1: vec4<f32>,
+                @location(8) weights1: vec4<f32>,
+                ${MorphTarget_shader.getMorphTargetAttr(9)}
+            #else
+                @location(4) joints0: vec4<f32>,
+                @location(5) weights0: vec4<f32>,
+                @location(6) joints1: vec4<f32>,
+                @location(7) weights1: vec4<f32>,
+                ${MorphTarget_shader.getMorphTargetAttr(8)}
+            #endif
+        #else
+            #if USE_TANGENT
+                @location(4) TANGENT: vec4<f32>,
+            #endif
+
+            #if USE_SKELETON
+                #if USE_TANGENT
+                    @location(5) joints0: vec4<f32>,
+                    @location(6) weights0: vec4<f32>,
+                    #if USE_JOINT_VEC8
+                        @location(7) joints1: vec4<f32>,
+                        @location(8) weights1: vec4<f32>,
+                    #endif
+                #else
+                    @location(4) joints0: vec4<f32>,
+                    @location(5) weights0: vec4<f32>,
+                    #if USE_JOINT_VEC8
+                        @location(6) joints1: vec4<f32>,
+                        @location(7) weights1: vec4<f32>,
+                    #endif
+                #endif
+            #endif
+
+            #if USE_MORPHTARGETS
+                #if USE_TANGENT
+                    ${MorphTarget_shader.getMorphTargetAttr(5)}
+                #else
+                    ${MorphTarget_shader.getMorphTargetAttr(4)}
+                #endif
+            #endif
+
         #endif
-        #elseif USE_MORPHTARGETS
-            ${MorphTarget_shader.getMorphTargetAttr(5)}
-        #endif
-    #elseif USE_SKELETON
-        @location(4) joints0: vec4<f32>,
-        @location(5) weights0: vec4<f32>,
-        #if USE_JOINT_VEC8
-        @location(6) joints1: vec4<f32>,
-        @location(7) weights1: vec4<f32>,
-        #endif
-    #elseif USE_MORPHTARGETS
-        ${MorphTarget_shader.getMorphTargetAttr(4)}
-    #endif
     }
 
     struct VertexOutput {
@@ -67,17 +98,28 @@ export let VertexAttributes: string = /*wgsl*/ `
     var vertexPosition = vertex.position;
     var vertexNormal = vertex.normal;
 
-    #if USE_MORPHTARGETS
-    ${MorphTarget_shader.getMorphTargetCalcVertex()}    
-    #endif
-
-    #if USE_SKELETON
+    #if USE_METAHUMAN
+        // ${MorphTarget_shader.getMorphTargetCalcVertex()}    
         #if USE_JOINT_VEC8
             let skeletonNormal = getSkeletonWorldMatrix_8(vertex.joints0, vertex.weights0, vertex.joints1, vertex.weights1);
             ORI_MATRIX_M *= skeletonNormal ;
         #else
             let skeletonNormal = getSkeletonWorldMatrix_4(vertex.joints0, vertex.weights0);
             ORI_MATRIX_M *= skeletonNormal ;
+        #endif
+    #else 
+        #if USE_MORPHTARGETS
+            ${MorphTarget_shader.getMorphTargetCalcVertex()}    
+        #endif
+
+        #if USE_SKELETON
+            #if USE_JOINT_VEC8
+                let skeletonNormal = getSkeletonWorldMatrix_8(vertex.joints0, vertex.weights0, vertex.joints1, vertex.weights1);
+                ORI_MATRIX_M *= skeletonNormal ;
+            #else
+                let skeletonNormal = getSkeletonWorldMatrix_4(vertex.joints0, vertex.weights0);
+                ORI_MATRIX_M *= skeletonNormal ;
+            #endif
         #endif
     #endif
 
@@ -94,7 +136,9 @@ export let VertexAttributes: string = /*wgsl*/ `
     ORI_CameraWorldDir = normalize(ORI_CAMERAMATRIX[3].xyz - worldPos.xyz) ;
 
     ORI_VertexOut.varying_UV0 = vertex.uv.xy ;
-    ORI_VertexOut.varying_UV1 = vertex.TEXCOORD_1.xy;
+
+     ORI_VertexOut.varying_UV1 = vertex.TEXCOORD_1.xy;
+
     ORI_VertexOut.varying_ViewPos = viewPosition ;
     ORI_VertexOut.varying_Clip = clipPosition ;
     ORI_VertexOut.varying_WPos = worldPos ;

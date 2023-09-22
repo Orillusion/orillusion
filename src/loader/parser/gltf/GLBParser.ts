@@ -1,5 +1,6 @@
 import { BitmapTexture2D } from '../../../textures/BitmapTexture2D';
 import { ParserBase } from '../ParserBase';
+import { ParserFormat } from '../ParserFormat';
 import { GLTF_Info } from './GLTFInfo';
 import { GLTFSubParser } from './GLTFSubParser';
 
@@ -29,7 +30,7 @@ export class GLBChunk {
  * @group Loader
  */
 export class GLBParser extends ParserBase {
-    static format: string = 'bin';
+    static format: ParserFormat = ParserFormat.BIN;
 
     private _gltf: GLTF_Info;
 

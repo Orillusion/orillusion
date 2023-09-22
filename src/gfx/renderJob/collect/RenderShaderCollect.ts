@@ -51,11 +51,6 @@ export class RenderShaderCollect {
                         const pass = colorPassList[i];
                         let key = `${node.geometry.instanceID + pass.instanceID}`
                         rDic.delete(key);
-                        // if (!nodeMap) {
-                        //     nodeMap = new Map<string, RenderNode>();
-                        //     rDic.set(key, nodeMap);
-                        // }
-                        // nodeMap.set(node.instanceID, node);
                     }
                 });
             }

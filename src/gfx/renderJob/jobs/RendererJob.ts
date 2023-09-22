@@ -198,7 +198,7 @@ export class RendererJob {
         this.clusterLightingRender.render(view, this.occlusionSystem);
 
         if (this.shadowMapPassRenderer) {
-            ShadowLightsCollect.update(view.scene);
+            ShadowLightsCollect.update(view);
             this.shadowMapPassRenderer.render(view, this.occlusionSystem);
         }
 

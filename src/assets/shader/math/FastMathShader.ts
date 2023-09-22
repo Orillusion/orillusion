@@ -1,11 +1,17 @@
 export let FastMathShader: string = /*wgsl*/ `
-  fn Pow3(  x : f32 ) -> f32
+  fn pow2(  x : f32 ) -> f32
+  {
+      return x * x;
+  }
+
+
+  fn pow3(  x : f32 ) -> f32
   {
       var xx = x*x;
       return x * xx;
   }
 
-  fn Pow4(  x : f32 ) -> f32
+  fn pow4(  x : f32 ) -> f32
   {
       var xx = x*x;
       return xx * xx;

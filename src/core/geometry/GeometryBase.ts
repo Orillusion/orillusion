@@ -8,12 +8,16 @@ import { GeometryIndicesBuffer } from "./GeometryIndicesBuffer";
 import { GeometryVertexType } from "./GeometryVertexType";
 import { VertexAttributeData } from "./VertexAttributeData";
 import { ArrayBufferData } from "../../gfx/graphics/webGpu/core/buffer/ArrayBufferData";
+import { Matrix4 } from "../..";
 
-export type LodLevel = {
+export type LODDescriptor = {
     indexStart: number;
     indexCount: number;
     vertexStart: number;
+    vertexCount: number;
+    firstStart: number;
     index: number;
+    topology: number;
 }
 
 
@@ -22,7 +26,7 @@ export type LodLevel = {
  * @group Geometry
  */
 export class SubGeometry {
-    public lodLevels: LodLevel[];
+    public lodLevels: LODDescriptor[];
 }
 
 
@@ -36,6 +40,8 @@ export class GeometryBase {
     public subGeometries: SubGeometry[] = [];
     public morphTargetsRelative: boolean;
     public morphTargetDictionary: { value: string; key: number };
+    public skinNames: string[];
+    public bindPose: Matrix4[];
     private _bounds: BoundingBox;
 
     private _attributeMap: Map<string, VertexAttributeData>;
@@ -90,7 +96,7 @@ export class GeometryBase {
             this._bounds.max.z = -Number.MAX_VALUE;
 
             let attributes = this.getAttribute(VertexAttributeName.position);
-            if (attributes) {
+            if (attributes && attributes.data) {
                 for (let i = 0; i < attributes.data.length / 3; i++) {
                     const px = attributes.data[i * 3 + 0];
                     const py = attributes.data[i * 3 + 1];
@@ -127,9 +133,9 @@ export class GeometryBase {
 
     /**
      * add subGeometry from lod level 
-     * @param lodLevels @see LodLevel
+     * @param lodLevels @see LODDescriptor
      */
-    public addSubGeometry(...lodLevels: LodLevel[]) {
+    public addSubGeometry(...lodLevels: LODDescriptor[]) {
         let sub = new SubGeometry();
         sub.lodLevels = lodLevels;
         this.subGeometries.push(sub);

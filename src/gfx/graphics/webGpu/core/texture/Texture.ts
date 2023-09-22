@@ -1,6 +1,7 @@
-import { GPUAddressMode } from '../../WebGPUConst';
+import { GPUAddressMode, GPUFilterMode } from '../../WebGPUConst';
 import { TextureMipmapGenerator } from './TextureMipmapGenerator';
 import { webGPUContext } from '../../Context3D';
+import { TextureMipmapCompute } from './TextureMipmapCompute';
 
 /**
  * Texture
@@ -203,9 +204,9 @@ export class Texture implements GPUSamplerDescriptor {
         this.height = height;
         this.numberLayer = numberLayer;
 
-        this.minFilter = 'linear';
-        this.magFilter = 'linear';
-        this.mipmapFilter = `linear`;
+        this.minFilter = GPUFilterMode.linear;
+        this.magFilter = GPUFilterMode.linear;
+        this.mipmapFilter = GPUFilterMode.linear;
         this.addressModeU = GPUAddressMode.repeat;
         this.addressModeV = GPUAddressMode.repeat;
         // this.visibility = GPUShaderStage.FRAGMENT;
@@ -263,6 +264,8 @@ export class Texture implements GPUSamplerDescriptor {
         } else {
             this.viewDescriptor = {
                 dimension: this.textureBindingLayout.viewDimension,
+                mipLevelCount: mipLevelCount,
+                baseMipLevel: 0
             };
         }
     }
@@ -300,6 +303,7 @@ export class Texture implements GPUSamplerDescriptor {
 
         if (this.useMipmap) {
             TextureMipmapGenerator.webGPUGenerateMipmap(this);
+            // TextureMipmapCompute.createMipmap(this,this.mipmapCount);
         }
     }
 
@@ -348,9 +352,16 @@ export class Texture implements GPUSamplerDescriptor {
         return this._sourceImageData;
     }
 
+    public getMipmapCount() {
+        let w = this.width;
+        let h = this.height;
+        let maxSize = Math.max(w, h);
+        return 1 + Math.log2(maxSize) | 0;
+    }
+
     protected updateTextureDescription() {
         // let mipmapCount = this.useMipmap ? Math.floor(Math.log2(this.width)) : 1;
-        this.mipmapCount = Math.floor(this.useMipmap ? Math.log2(Math.min(this.width, this.height)) : 1);
+        this.mipmapCount = Math.floor(this.useMipmap ? this.getMipmapCount() : 1);
         this.createTextureDescriptor(this.width, this.height, this.mipmapCount, this.format);
     }
 

@@ -7,7 +7,7 @@ export default defineConfig(option => ({
     server: {
         host: '0.0.0.0',
         port: 8000,
-        // hmr: false // open this line if no auto hot-reload required
+        hmr: false // open this line if no auto hot-reload required
     },
     publicDir: option.command === 'build' ? false : 'public',
     resolve: {

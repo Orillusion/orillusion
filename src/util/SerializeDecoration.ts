@@ -86,3 +86,11 @@ export function RegisterComponent(cls, key, p1?, p2?, p3?): any {
     }
     dic[cls.name] = cls;
 }
+
+export function GetComponentClass(name: string) {
+    let coms = window['__Component__'];
+    if (coms[name]) {
+        return coms[name];
+    }
+    return null;
+}

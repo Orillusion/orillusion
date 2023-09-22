@@ -39,7 +39,7 @@ fn directLighting( albedo:vec3<f32>, N:vec3<f32>, V:vec3<f32>,  roughness:f32 , 
       #if USE_LAMBERT
         color = vec3<f32>(1.0,1.0,1.0) ;
       #endif 
-
+      
       #if USE_BRDF
         color = simpleBRDF(albedo,N,V,L,att,lightColor,roughness,metallic) ;
       #endif 

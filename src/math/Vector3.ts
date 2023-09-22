@@ -1090,6 +1090,13 @@ export class Vector3 {
             return dotProduct / d;
         }
     }
+
+
+    static serialize(position: Vector3): Vector3 {
+        let v = new Vector3(position.x, position.y, position.z, position.w);
+        return v;
+    }
+
 }
 
 

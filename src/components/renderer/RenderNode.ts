@@ -210,7 +210,9 @@ export class RenderNode extends ComponentBase {
         if (!this._readyPipeline) {
             this.initPipeline();
         }
+
         EntityCollect.instance.addRenderNode(this.transform.scene3D, this);
+
         this.updateOctreeEntity();
     }
 
@@ -510,7 +512,6 @@ export class RenderNode extends ComponentBase {
                     let shadowRenderer = Engine3D.getRenderJob(view).shadowMapPassRenderer;
                     if (shadowRenderer && shadowRenderer.depth2DArrayTexture) {
                         renderShader.setTexture(`shadowMap`, Engine3D.getRenderJob(view).shadowMapPassRenderer.depth2DArrayTexture);
-                        renderShader.setStorageBuffer(`shadowBuffer`, ShadowLightsCollect.shadowBuffer.get(view.scene));
                     }
                     // let shadowLight = ShadowLights.list;
                     // if (shadowLight.length) {
@@ -534,7 +535,7 @@ export class RenderNode extends ComponentBase {
                     if (lightUniformEntries) {
                         renderShader.setStorageBuffer(`lightBuffer`, lightUniformEntries.storageGPUBuffer);
                         if (lightUniformEntries.irradianceVolume) {
-                            renderShader.setStructStorageBuffer(`irradianceData`, lightUniformEntries.irradianceVolume.irradianceVolumeBuffer);
+                            renderShader.setUniformBuffer(`irradianceData`, lightUniformEntries.irradianceVolume.irradianceVolumeBuffer);
                         }
                     }
 

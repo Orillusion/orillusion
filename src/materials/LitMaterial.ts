@@ -36,10 +36,12 @@ export class LitMaterial extends PhysicMaterial {
         let litMaterial = new LitMaterial();
 
         let colorPass = litMaterial.defaultPass;
+        colorPass.defineValue = { ...this.defaultPass.defineValue }
         colorPass.setUniform(`shadowBias`, this.defaultPass.getUniform(`shadowBias`));
         colorPass.setUniform(`transformUV1`, this.defaultPass.getUniform(`transformUV1`));
         colorPass.setUniform(`transformUV2`, this.defaultPass.getUniform(`transformUV2`));
         colorPass.setUniform(`baseColor`, this.defaultPass.getUniform(`baseColor`));
+        colorPass.setUniform(`specularColor`, this.defaultPass.getUniform(`specularColor`));
         colorPass.setUniform(`emissiveColor`, this.defaultPass.getUniform(`emissiveColor`));
         colorPass.setUniform(`materialF0`, this.defaultPass.getUniform(`materialF0`));
         colorPass.setUniform(`envIntensity`, this.defaultPass.getUniform(`envIntensity`));

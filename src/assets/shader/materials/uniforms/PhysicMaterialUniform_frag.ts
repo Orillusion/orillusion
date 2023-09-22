@@ -6,6 +6,7 @@ export let PhysicMaterialUniform_frag = /* wgsl */`
           baseColor: vec4<f32>,
           emissiveColor: vec4<f32>,
           materialF0: vec4<f32>,
+          specularColor: vec4<f32>,
           envIntensity: f32,
           normalScale: f32,
           roughness: f32,

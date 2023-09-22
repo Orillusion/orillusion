@@ -23,20 +23,26 @@ import { FontParser, FontInfo } from '../loader/parser/FontParser';
 import { fonts } from './Fonts';
 import { AtlasParser } from '../loader/parser/AtlasParser';
 import { Reference } from '../util/Reference';
-import { Material } from '..';
+import { Material } from '../materials/Material';
+import { Ctor, Parser } from '../util/Global';
+import { ParserBase } from '../loader/parser/ParserBase';
+import { GeometryBase } from '../core/geometry/GeometryBase';
+import { LitMaterial } from '../materials/LitMaterial';
 
 /**
  * Resource management classes for textures, materials, models, and preset bodies.
  * @group Assets
  */
 export class Res {
+
     private _texturePool: Map<string, Texture>;
     private _materialPool: Map<string, Material>;
     private _prefabPool: Map<string, Object3D>;
     // private _prefabLoaderPool: Map<string, PrefabLoader>;
     private _gltfPool: Map<string, GLTF_Info>;
+    private _geometryPool: Map<string, GeometryBase>;
     private _atlasList: Map<string, GUIAtlasTexture>;
-
+    private _obj: Map<string, any>;
 
     /**
      * @constructor
@@ -45,15 +51,34 @@ export class Res {
         this._texturePool = new Map<string, Texture>();
         this._materialPool = new Map<string, Material>();
         this._prefabPool = new Map<string, Object3D>();
+        this._geometryPool = new Map<string, GeometryBase>();
         // this._prefabLoaderPool = new Map<string, PrefabLoader>;
         this._gltfPool = new Map<string, GLTF_Info>;
         this._atlasList = new Map<string, GUIAtlasTexture>();
-
-        this.initDefault();
+        this._obj = new Map<string, any>();
+        // this.initDefault();
     }
 
     public getGltf(url: string): GLTF_Info {
         return this._gltfPool.get(url);
+    }
+
+    /**
+   * add a obj with reference of url
+   * @param url file path
+   * @param texture source obj
+   */
+    public addObj(url: string, obj: any) {
+        this._obj.set(url, obj);
+    }
+
+    /**
+     * get obj by url
+     * @param url file path
+     * @returns
+     */
+    public getObj(url: string): any {
+        return this._obj.get(url);
     }
 
     /**
@@ -72,6 +97,14 @@ export class Res {
      */
     public getTexture(url: string): Texture {
         return this._texturePool.get(url);
+    }
+
+    public addGeometry(url: string, geo: GeometryBase) {
+        this._geometryPool.set(url, geo);
+    }
+
+    public getGeometry(url: string): GeometryBase {
+        return this._geometryPool.get(url);
     }
 
     /**
@@ -127,6 +160,13 @@ export class Res {
                 return sprite;
         }
         return null;
+    }
+
+    public async load<T extends ParserBase>(url: string, c: Parser<T>, loaderFunctions?: LoaderFunctions) {
+        let loader = new FileLoader();
+        let parser = await loader.load(url, c, loaderFunctions);
+        let ret = parser.data;
+        return ret;
     }
 
     /**
@@ -229,6 +269,39 @@ export class Res {
         await texture.load(url, loaderFunctions);
         this._texturePool.set(url, texture);
         return texture;
+    }
+
+    private async loadTextureCount(urls: string[], count: number) {
+        return new Promise<BitmapTexture2D[]>(
+            async (suc, fail) => {
+                let total = 0;
+                let loadTexture = [];
+                if (count == 0) {
+                    suc(loadTexture);
+                }
+                for (let j = 0; j < count; j++) {
+                    const url = urls.shift();
+                    this.loadTexture(url).then((t) => {
+                        loadTexture.push(t);
+                        total++;
+                        if (total == count) {
+                            suc(loadTexture);
+                        }
+                    });
+                }
+            }
+        );
+    }
+
+    public async loadBitmapTextures(urls: string[], count: number = 5, loaderFunctions?: LoaderFunctions, flipY?: boolean) {
+        let loadTexture: BitmapTexture2D[] = [];
+        let loadCount = Math.floor(urls.length / count) + 1;
+        let last = Math.floor(urls.length % count)
+        for (let i = 0; i < loadCount; i++) {
+            let list = await this.loadTextureCount(urls, i == loadCount - 1 ? last : count);
+            loadTexture.push(...list);
+        }
+        return loadTexture;
     }
 
     /**
@@ -373,6 +446,7 @@ export class Res {
 
     public defaultGUITexture: GUITexture;
     public defaultGUISprite: GUISprite;
+    public defaltMaterial: LitMaterial;
 
     /**
      * create a texture
@@ -424,7 +498,7 @@ export class Res {
     /**
      * Initialize a common texture object. Provide a universal solid color texture object.
      */
-    private initDefault() {
+    public initDefault() {
         this.normalTexture = this.createTexture(32, 32, 255 * 0.5, 255 * 0.5, 255.0, 255.0, 'default-normalTexture');
         this.maskTexture = this.createTexture(32, 32, 255, 255 * 0.5, 0.0, 255.0, 'default-maskTexture');
         this.whiteTexture = this.createTexture(32, 32, 255, 255, 255, 255, 'default-whiteTexture');
@@ -458,5 +532,7 @@ export class Res {
         this.defaultGUITexture = new GUITexture(this.whiteTexture);
         this.defaultGUISprite = new GUISprite(this.defaultGUITexture);
         this.defaultGUISprite.trimSize.set(4, 4)
+
+        this.defaltMaterial = new LitMaterial();
     }
 }

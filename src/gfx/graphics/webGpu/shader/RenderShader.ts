@@ -753,13 +753,13 @@ export class RenderShader extends ShaderBase {
             }
         }
 
-        let pipeline = PipelinePool.getSharePipeline(this.shaderVariant);
-        if (pipeline) {
-            this.pipeline = pipeline;
-        } else {
-            this.pipeline = GPUContext.createPipeline(renderPipelineDescriptor as GPURenderPipelineDescriptor);
-            PipelinePool.setSharePipeline(this.shaderVariant, this.pipeline);
-        }
+        // let pipeline = PipelinePool.getSharePipeline(this.shaderVariant);
+        // if (pipeline) {
+        // this.pipeline = pipeline;
+        // } else {
+        this.pipeline = GPUContext.createPipeline(renderPipelineDescriptor as GPURenderPipelineDescriptor);
+        // PipelinePool.setSharePipeline(this.shaderVariant, this.pipeline);
+        // }
     }
 
     private createGroupLayouts() {
@@ -807,6 +807,8 @@ export class RenderShader extends ShaderBase {
     private preDefine(geometry: GeometryBase) {
         // this.vertexAttributes = "" ;
         // check geometry vertex attributes
+        let useSecondUV = geometry.hasAttribute(VertexAttributeName.TEXCOORD_1);
+
         let isSkeleton = geometry.hasAttribute(VertexAttributeName.joints0);
 
         let hasMorphTarget = geometry.hasAttribute(VertexAttributeName.a_morphPositions_0);
@@ -819,8 +821,16 @@ export class RenderShader extends ShaderBase {
 
         let useLight = this.shaderState.useLight;
 
-        this.defineValue[`USE_SKELETON`] = isSkeleton;
-        this.defineValue[`USE_MORPHTARGETS`] = hasMorphTarget;
+        if (useSecondUV) {
+            this.defineValue[`USE_SECONDUV`] = true;
+        }
+
+        if (isSkeleton && hasMorphTarget) {
+            this.defineValue[`USE_METAHUMAN`] = true;
+        } else {
+            this.defineValue[`USE_SKELETON`] = isSkeleton;
+            this.defineValue[`USE_MORPHTARGETS`] = hasMorphTarget;
+        }
 
         if (!('USE_TANGENT' in this.defineValue)) {
             this.defineValue[`USE_TANGENT`] = useTangent;

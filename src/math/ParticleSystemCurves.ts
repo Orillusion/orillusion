@@ -1,8 +1,9 @@
-﻿import { AnimationCurve, FrameCache } from './AnimationCurve';
+﻿import { AnimationCurve } from './AnimationCurve';
 import { lerp } from './MathUtil';
 import { Polynomial, PolynomialCurve } from './PolynomialCurve';
 import { quadraticPolynomialRootsGeneric } from './Polynomials';
 import { Vector2 } from './Vector2';
+import { FrameCache } from './enum/FrameCache';
 
 /**
  * @internal

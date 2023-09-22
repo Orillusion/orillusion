@@ -1,5 +1,6 @@
 import { Camera3D } from '../../core/Camera3D';
 import { UUID } from '../../util/Global';
+import { RegisterComponent } from '../../util/SerializeDecoration';
 import { LightBase } from './LightBase';
 import { LightType } from './LightData';
 /**
@@ -8,6 +9,7 @@ import { LightType } from './LightData';
  *The light of this light source is parallel, for example, sunlight. This light source can generate shadows.
  * @group Lights
  */
+@RegisterComponent
 export class DirectLight extends LightBase {
     public shadowCamera: Camera3D;
 

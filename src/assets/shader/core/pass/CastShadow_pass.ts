@@ -26,27 +26,53 @@ struct VertexAttributes{
   @location(2) uv: vec2<f32>,
   @location(3) TEXCOORD_1: vec2<f32>,
 
-  #if USE_TANGENT
-      @location(4) TANGENT: vec4<f32>,
-      #if USE_SKELETON
-          @location(5) joints0: vec4<f32>,
-          @location(6) weights0: vec4<f32>,
-          #if USE_JOINT_VEC8
-          @location(7) joints1: vec4<f32>,
-          @location(8) weights1: vec4<f32>,
-      #endif
-      #elseif USE_MORPHTARGETS
-          ${MorphTarget_shader.getMorphTargetAttr(5)}
-      #endif
-  #elseif USE_SKELETON
-      @location(4) joints0: vec4<f32>,
-      @location(5) weights0: vec4<f32>,
-      #if USE_JOINT_VEC8
-      @location(6) joints1: vec4<f32>,
-      @location(7) weights1: vec4<f32>,
-      #endif
-  #elseif USE_MORPHTARGETS
-     ${MorphTarget_shader.getMorphTargetAttr(4)}
+ 
+  #if USE_METAHUMAN
+    #if USE_TANGENT
+        @location(4) TANGENT: vec4<f32>,
+        @location(5) joints0: vec4<f32>,
+        @location(6) weights0: vec4<f32>,
+        @location(7) joints1: vec4<f32>,
+        @location(8) weights1: vec4<f32>,
+        ${MorphTarget_shader.getMorphTargetAttr(9)}
+    #else
+        @location(4) joints0: vec4<f32>,
+        @location(5) weights0: vec4<f32>,
+        @location(6) joints1: vec4<f32>,
+        @location(7) weights1: vec4<f32>,
+        ${MorphTarget_shader.getMorphTargetAttr(8)}
+    #endif
+  #else
+    #if USE_TANGENT
+        @location(4) TANGENT: vec4<f32>,
+    #endif
+
+    #if USE_SKELETON
+        #if USE_TANGENT
+            @location(5) joints0: vec4<f32>,
+            @location(6) weights0: vec4<f32>,
+            #if USE_JOINT_VEC8
+                @location(7) joints1: vec4<f32>,
+                @location(8) weights1: vec4<f32>,
+            #endif
+        #else
+            @location(4) joints0: vec4<f32>,
+            @location(5) weights0: vec4<f32>,
+            #if USE_JOINT_VEC8
+                @location(6) joints1: vec4<f32>,
+                @location(7) weights1: vec4<f32>,
+            #endif
+        #endif
+    #endif
+
+    #if USE_MORPHTARGETS
+        #if USE_TANGENT
+            ${MorphTarget_shader.getMorphTargetAttr(5)}
+        #else
+            ${MorphTarget_shader.getMorphTargetAttr(4)}
+        #endif
+    #endif
+
   #endif
 }
 
@@ -105,28 +131,54 @@ struct VertexAttributes{
   @location(2) uv: vec2<f32>,
   @location(3) TEXCOORD_1: vec2<f32>,
 
-  #if USE_TANGENT
-      @location(4) TANGENT: vec4<f32>,
-      #if USE_SKELETON
-          @location(5) joints0: vec4<f32>,
-          @location(6) weights0: vec4<f32>,
-          #if USE_JOINT_VEC8
-          @location(7) joints1: vec4<f32>,
-          @location(8) weights1: vec4<f32>,
-      #endif
-      #elseif USE_MORPHTARGETS
-         ${MorphTarget_shader.getMorphTargetAttr(5)}
-      #endif
-  #elseif USE_SKELETON
-      @location(4) joints0: vec4<f32>,
-      @location(5) weights0: vec4<f32>,
-      #if USE_JOINT_VEC8
-      @location(6) joints1: vec4<f32>,
-      @location(7) weights1: vec4<f32>,
-      #endif
-  #elseif USE_MORPHTARGETS
-      ${MorphTarget_shader.getMorphTargetAttr(4)}
-  #endif
+  
+  #if USE_METAHUMAN
+    #if USE_TANGENT
+        @location(4) TANGENT: vec4<f32>,
+        @location(5) joints0: vec4<f32>,
+        @location(6) weights0: vec4<f32>,
+        @location(7) joints1: vec4<f32>,
+        @location(8) weights1: vec4<f32>,
+        ${MorphTarget_shader.getMorphTargetAttr(9)}
+    #else
+        @location(4) joints0: vec4<f32>,
+        @location(5) weights0: vec4<f32>,
+        @location(6) joints1: vec4<f32>,
+        @location(7) weights1: vec4<f32>,
+        ${MorphTarget_shader.getMorphTargetAttr(8)}
+    #endif
+    #else
+    #if USE_TANGENT
+        @location(4) TANGENT: vec4<f32>,
+    #endif
+
+    #if USE_SKELETON
+        #if USE_TANGENT
+            @location(5) joints0: vec4<f32>,
+            @location(6) weights0: vec4<f32>,
+            #if USE_JOINT_VEC8
+                @location(7) joints1: vec4<f32>,
+                @location(8) weights1: vec4<f32>,
+            #endif
+        #else
+            @location(4) joints0: vec4<f32>,
+            @location(5) weights0: vec4<f32>,
+            #if USE_JOINT_VEC8
+                @location(6) joints1: vec4<f32>,
+                @location(7) weights1: vec4<f32>,
+            #endif
+        #endif
+    #endif
+
+    #if USE_MORPHTARGETS
+        #if USE_TANGENT
+            ${MorphTarget_shader.getMorphTargetAttr(5)}
+        #else
+            ${MorphTarget_shader.getMorphTargetAttr(4)}
+        #endif
+    #endif
+
+    #endif
 }
 
 @vertex
@@ -134,6 +186,15 @@ fn main(vertex:VertexAttributes) -> VertexOutput {
     worldMatrix = models.matrix[vertex.index];
     let shadowMatrix: mat4x4<f32> = globalUniform.projMat * globalUniform.viewMat ;
     var vertexPosition = vertex.position.xyz;
+
+    #if USE_METAHUMAN
+        ${MorphTarget_shader.getMorphTargetCalcVertex()}
+        #if USE_JOINT_VEC8
+            worldMatrix *= getSkeletonWorldMatrix_8(vertex.joints0, vertex.weights0, vertex.joints1, vertex.weights1);
+        #else
+            worldMatrix *= getSkeletonWorldMatrix_4(vertex.joints0, vertex.weights0);
+        #endif
+    #endif
 
     #if USE_MORPHTARGETS
         ${MorphTarget_shader.getMorphTargetCalcVertex()}

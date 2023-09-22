@@ -219,24 +219,34 @@ export let BRDF_frag: string = /*wgsl*/ `
     fn simpleBRDF( albedo:vec3<f32>, N:vec3<f32>, V:vec3<f32>,L:vec3<f32>,att:f32,lightColor:vec3<f32>,roughness:f32 ,metallic:f32)-> vec3<f32>{
         let H = normalize(V + L);
         let Context:BxDFContext = getContext(N,V,H,L);
-
+        let alpha = pow(roughness,2.0);
         let F0 = mix(vec3<f32>(materialUniform.materialF0.rgb), albedo , metallic);
-        let D = DistributionGGX( Context.NoH , roughness);
-        let G = GeometrySmith(Context.NoV,Context.NoL, roughness );
+        let D = DistributionGGX( Context.NoH , alpha);
+        let G = GeometrySmith(Context.NoV,Context.NoL, alpha );
         let F = FresnelSchlick(Context.VoH, vec3<f32>(F0));
         let specular = ( D * G * F ) / (4.0 * Context.NoV * Context.NoL + 0.001);
         let kS = F;
         var kd = 1.0 - kS ;
         kd *= 1.0 - metallic ;
-        var diffuse = kd * (albedo.rgb / PI ) ;
+
+        // #if USE_SRGB_ALBEDO
+        //     var diffuse = kd ;
+        // #else 
+            var diffuse = kd * (albedo.rgb / PI ) ;
+        // #endif
+
         let ambient = specular.rgb ;
 
         fragData.KD += kd;
         fragData.KS += F;
 
-        var col = (diffuse + ambient) * Context.NoL * lightColor * att ;
+        let lightAtt = Context.NoL * lightColor * att ; 
+        var diffuseIBL = diffuse * lightAtt; 
+        // diffuseIBL = diffuseIBL / ( 2.4 + diffuseIBL) ;
+        let ambientIBL = ambient * lightAtt; 
+        var col = (diffuseIBL + ambientIBL ) ;
         // var col = (diffuse + ambient) * Context.NoL * lightColor ;
-        return (col.rgb ) ;
+        return (col.rgb) ;
     }
 
     fn getSpecularDominantDir (  N : vec3<f32> , R : vec3<f32> , roughness : f32 ) -> vec3<f32>
@@ -251,10 +261,11 @@ export let BRDF_frag: string = /*wgsl*/ `
        
         let MAX_REFLECTION_LOD  = i32(textureNumLevels(prefilterMap)) ;
         let mip = roughnessToMipmapLevel(roughness,MAX_REFLECTION_LOD);
-        var prefilteredColor: vec3<f32> = (textureSampleLevel(prefilterMap, prefilterMapSampler, getSpecularDominantDir(fragData.N,R,roughness) , mip ).rgb);
-        prefilteredColor = globalUniform.skyExposure * (prefilteredColor);
+        fragData.EnvColor = (textureSampleLevel(prefilterMap, prefilterMapSampler, getSpecularDominantDir(fragData.N,R,roughness) , mip ).rgb);
+        // var prefilteredColor: vec3<f32> = (textureSampleLevel(prefilterMap, prefilterMapSampler, getSpecularDominantDir(fragData.N,R,roughness) , mip ).rgb);
+        fragData.EnvColor = globalUniform.skyExposure * (fragData.EnvColor);
         var envBRDF = textureSampleLevel(brdflutMap, brdflutMapSampler, vec2<f32>(NoV, roughness) , 0.0 ) ;
-        return prefilteredColor * (specularColor.rgb * envBRDF.x + saturate( 50.0 * specularColor.g ) * envBRDF.y) ;
+        return fragData.EnvColor * (specularColor.rgb * envBRDF.x + saturate( 50.0 * specularColor.g ) * envBRDF.y) ;
     }
 
     fn fresnel_coat(n:vec3<f32>,v:vec3<f32>,ior:f32) -> f32 {

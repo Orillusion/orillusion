@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AtmosphericComponent, BillboardType, BlendMode, Color, DirectLight, Engine3D, GPUCullMode, GlobalFog, GlobalIlluminationComponent, HDRBloomPost, LitMaterial, Material, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
+import { AtmosphericComponent, BillboardType, BlendMode, Color, DirectLight, Engine3D, GPUCullMode, GlobalFog, GlobalIlluminationComponent, HDRBloomPost, LitMaterial, Material, Object3D, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
@@ -87,6 +87,20 @@ export class GUIUtil {
         GUIHelp.add(bloom, 'radius', 0, 1.0, 0.001);
         GUIHelp.add(bloom, 'blurX');
         GUIHelp.add(bloom, 'blurY');
+        open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
+
+    public static renderVector3(obj: Object3D, open: boolean = true, name?: string) {
+        name ||= 'Vector3';
+        GUIHelp.addFolder(name);
+        GUIHelp.add(obj, 'x', -10.0, 10.0, 0.01);
+        GUIHelp.add(obj, 'y', -10.0, 10.0, 0.01);
+        GUIHelp.add(obj, 'z', -10.0, 10.0, 0.01);
+
+        GUIHelp.add(obj.transform, 'rotationX', 0.0, 360.0, 0.01);
+        GUIHelp.add(obj.transform, 'rotationY', 0.0, 360.0, 0.01);
+        GUIHelp.add(obj.transform, 'rotationZ', 0.0, 360.0, 0.01);
         open && GUIHelp.open();
         GUIHelp.endFolder();
     }

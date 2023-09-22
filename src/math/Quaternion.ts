@@ -7,6 +7,7 @@ import { Vector3 } from './Vector3';
  * @group Math
  */
 export class Quaternion {
+
     public static HELP_0: Quaternion = new Quaternion(0, 0, 0, 1);
     public static HELP_1: Quaternion = new Quaternion(0, 0, 0, 1);
     public static HELP_2: Quaternion = new Quaternion(0, 0, 0, 1);
@@ -547,6 +548,11 @@ export class Quaternion {
             maxInclusive = temp;
         }
         return value < minInclusive ? minInclusive : value < maxInclusive ? value : maxInclusive;
+    }
+
+    static serialize(value: Quaternion): Quaternion {
+        let v = new Quaternion(value.x, value.y, value.z, value.w);
+        return v;
     }
 }
 

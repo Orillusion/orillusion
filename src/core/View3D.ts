@@ -60,7 +60,7 @@ export class View3D extends CEventListener {
         this._scene = value;
         value.view = this;
 
-        ShadowLightsCollect.createBuffer(value);
+        ShadowLightsCollect.createBuffer(this);
 
         if (this.graphic3D)
             value.addChild(this.graphic3D);

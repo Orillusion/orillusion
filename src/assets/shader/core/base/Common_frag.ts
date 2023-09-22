@@ -26,9 +26,6 @@ export let Common_frag: string = /*wgsl*/ `
       debugFragmentOut();
     #endif
 
-    // var d1 = logDepth( ORI_VertexVarying.fragCoord.w , globalUniform.far);
-    // ORI_FragmentOutput.out_depth = d1 ;
-
     #if USE_OUTDEPTH
       #if USE_LOGDEPTH
         ORI_FragmentOutput.out_depth = log2Depth(ORI_VertexVarying.fragCoord.z,globalUniform.near,globalUniform.far) ;
@@ -36,10 +33,6 @@ export let Common_frag: string = /*wgsl*/ `
         ORI_FragmentOutput.out_depth = ORI_ShadingInput.FragDepth ;
       #endif
     #endif
-
-    // var d1 = log2(ORI_VertexVarying.fragCoord.w + 1.0) * 2.0 / (log(f + 1.0) / 0.6931471805599453) * 0.5 ;
-    // 2.0 / (Math.log(camera.far + 1.0) / Math.LN2)
-    // ORI_FragmentOutput.out_depth = d1 ;
 
     return ORI_FragmentOutput ;
   }

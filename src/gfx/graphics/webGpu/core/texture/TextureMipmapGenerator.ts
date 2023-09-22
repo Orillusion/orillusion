@@ -1,5 +1,6 @@
 import { GPUContext } from '../../../../renderJob/GPUContext';
 import { webGPUContext } from '../../Context3D';
+import { GPUFilterMode } from '../../WebGPUConst';
 import { Texture } from './Texture';
 /**
  * @internal
@@ -80,6 +81,13 @@ export class TextureMipmapGenerator {
         return pipeline;
     }
 
+    public static getMipmapCount(texture: Texture) {
+        let w = texture.width;
+        let h = texture.height;
+        let maxSize = Math.max(w, h);
+        return 1 + Math.log2(maxSize) | 0;
+    }
+
     // TextureDescriptor should be the descriptor that the texture was created with.
     // This version only works for basic 2D textures.
     public static webGPUGenerateMipmap(texture: Texture) {
@@ -112,7 +120,7 @@ export class TextureMipmapGenerator {
 
         @fragment
         fn fragmentMain(@location(0) texCoord : vec2<f32>) -> @location(0) vec4<f32> {
-          var outColor: vec4<f32> = textureSample(img, imgSampler, texCoord);
+          var outColor: vec4<f32> = textureSampleLevel(img, imgSampler, texCoord , 0.0 );
           return outColor;
         }
       `,
@@ -149,8 +157,8 @@ export class TextureMipmapGenerator {
             });
         } else {
             sampler = gpuDevice.createSampler({
-                minFilter: `linear`,
-                magFilter: `linear`,
+                minFilter: GPUFilterMode.linear,
+                magFilter: GPUFilterMode.linear,
             });
         }
 

@@ -18,6 +18,9 @@ export class BitmapTexture2D extends Texture {
     constructor(useMipmap: boolean = true) {
         super();
         this.useMipmap = useMipmap;
+
+        this.lodMinClamp = 0;
+        this.lodMaxClamp = 4;
         // this.visibility = GPUShaderStage.COMPUTE | GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT;
     }
 
@@ -55,6 +58,7 @@ export class BitmapTexture2D extends Texture {
      * @param loaderFunctions callback function when load complete
      */
     public async load(url: string, loaderFunctions?: LoaderFunctions) {
+        this.name = StringUtil.getURLName(url);
         if (url.indexOf(';base64') != -1) {
             const img = document.createElement('img');
             let start = url.indexOf('data:image');
@@ -71,20 +75,26 @@ export class BitmapTexture2D extends Texture {
             this.format = GPUTextureFormat.rgba8unorm;
             this.generate(imageBitmap);
         } else {
-            const r = await fetch(url, {
-                headers: Object.assign({
-                    'Accept': 'image/avif,image/webp,*/*'
-                }, loaderFunctions?.headers)
-            });
-            // const img = await r.blob();
-            // await this.loadFromBlob(img);
-            let chunks = await LoaderBase.read(url, r, loaderFunctions);
-            let img = new Blob([chunks], { type: 'image/jpeg' });
-            chunks = null;
+            return new Promise((succ, fial) => {
+                fetch(url, {
+                    headers: Object.assign({
+                        'Accept': 'image/avif,image/webp,*/*'
+                    }, loaderFunctions?.headers)
+                }).then((r) => {
+                    // const img = await r.blob();
+                    // await this.loadFromBlob(img);
+                    LoaderBase.read(url, r, loaderFunctions).then((chunks) => {
+                        let img = new Blob([chunks], { type: 'image/jpeg' });
+                        chunks = null;
+                        this.loadFromBlob(img).then(() => {
+                            succ(true);
+                        });
+                    });
 
-            await this.loadFromBlob(img);
+                })
+            })
+
         }
-        this.name = StringUtil.getURLName(url);
         return true;
     }
 

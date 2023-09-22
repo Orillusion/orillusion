@@ -27,6 +27,7 @@ export class PhysicMaterial extends Material {
         colorPass.setUniformColor(`baseColor`, new Color());
         colorPass.setUniformColor(`emissiveColor`, new Color(1, 1, 1));
         colorPass.setUniformVector4(`materialF0`, new Vector4(0.04, 0.04, 0.04, 1));
+        colorPass.setUniformColor(`specularColor`, new Color(0.04, 0.04, 0.04));
         colorPass.setUniformFloat(`envIntensity`, 1);
         colorPass.setUniformFloat(`normalScale`, 1);
         colorPass.setUniformFloat(`roughness`, 1.0);
@@ -114,7 +115,7 @@ export class PhysicMaterial extends Material {
      */
     public set uvTransform_1(value: Vector4) {
         // this.defaultPass.uniforms[`transformUV1`].v4 = value;
-        this.defaultPass.setUniformVector4(`transformUV1`, value);
+        this.defaultPass.setUniform(`transformUV1`, value);
     }
 
     /**
@@ -129,7 +130,7 @@ export class PhysicMaterial extends Material {
      */
     public set uvTransform_2(value: Vector4) {
         // this.defaultPass.uniforms[`transformUV2`].v4 = value;
-        this.defaultPass.setUniformVector4(`transformUV2`, value);
+        this.defaultPass.setUniform(`transformUV2`, value);
     }
 
     public get depthWriteEnabled(): boolean {
@@ -150,7 +151,21 @@ export class PhysicMaterial extends Material {
      * set reflectivity
      */
     public set materialF0(value: Vector4) {
-        this.defaultPass.setUniformVector4(`materialF0`, value);
+        this.defaultPass.setUniform(`materialF0`, value);
+    }
+
+    /**
+ * get specularColor
+ */
+    public get specularColor(): Color {
+        return this.defaultPass.uniforms[`specularColor`].color;
+    }
+
+    /**specularColor
+     * set reflectivity
+     */
+    public set specularColor(value: Color) {
+        this.defaultPass.setUniform(`specularColor`, value);
     }
 
     /**
@@ -164,7 +179,7 @@ export class PhysicMaterial extends Material {
      * set roughness
      */
     public set roughness(value: number) {
-        this.defaultPass.setUniformFloat(`roughness`, value);
+        this.defaultPass.setUniform(`roughness`, value);
     }
 
     /**
@@ -178,7 +193,7 @@ export class PhysicMaterial extends Material {
      * set metallic
      */
     public set metallic(value: number) {
-        this.defaultPass.setUniformFloat(`metallic`, value);
+        this.defaultPass.setUniform(`metallic`, value);
     }
 
     /**
@@ -192,7 +207,7 @@ export class PhysicMaterial extends Material {
      * set Ambient Occlussion, dealing with the effect of ambient light on object occlusion
      */
     public set ao(value: number) {
-        this.defaultPass.setUniformFloat(`ao`, value);
+        this.defaultPass.setUniform(`ao`, value);
     }
 
     /**
@@ -206,7 +221,7 @@ export class PhysicMaterial extends Material {
      * set min metallic
      */
     public set metallic_min(value: number) {
-        this.defaultPass.setUniformFloat(`metallic_min`, value);
+        this.defaultPass.setUniform(`metallic_min`, value);
     }
 
     /**
@@ -220,7 +235,7 @@ export class PhysicMaterial extends Material {
      * set max metallic
      */
     public set metallic_max(value: number) {
-        this.defaultPass.setUniformFloat(`metallic_max`, value);
+        this.defaultPass.setUniform(`metallic_max`, value);
     }
 
     /**
@@ -234,7 +249,7 @@ export class PhysicMaterial extends Material {
      * set min roughness
      */
     public set roughness_min(value: number) {
-        this.defaultPass.setUniformFloat(`roughness_min`, value);
+        this.defaultPass.setUniform(`roughness_min`, value);
     }
 
     /**
@@ -248,7 +263,7 @@ export class PhysicMaterial extends Material {
      * set max roughness
      */
     public set roughness_max(value: number) {
-        this.defaultPass.setUniformFloat(`roughness_max`, value);
+        this.defaultPass.setUniform(`roughness_max`, value);
     }
 
     /**
@@ -262,7 +277,7 @@ export class PhysicMaterial extends Material {
      * Set the influence of Normal mapping on materials
      */
     public set normalScale(value: number) {
-        this.defaultPass.setUniformFloat(`normalScale`, value);
+        this.defaultPass.setUniform(`normalScale`, value);
     }
 
     /**
@@ -285,7 +300,9 @@ export class PhysicMaterial extends Material {
      */
     public set maskMap(value: Texture) {
         // USE_MR
-        // USE_ARMC
+        // USE_ORMC
+        // USE_RMOC
+        // USE_CRMC
         this.defaultPass.setDefine(`USE_MR`, true);
         this.defaultPass.setTexture(`maskMap`, value);
     }

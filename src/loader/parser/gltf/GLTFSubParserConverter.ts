@@ -181,25 +181,16 @@ export class GLTFSubParserConverter {
                     if (`enableBlend` in primitive.material) {
                         if (primitive.material[`enableBlend`]) {
                             physicMaterial.blendMode = BlendMode.NORMAL;
-                            physicMaterial.depthWriteEnabled = false;
                         } else {
                             physicMaterial.blendMode = BlendMode.NONE;
                         }
-
-                        if (primitive.material.defines) {
-                            if (primitive.material.defines.indexOf(`ALPHA_BLEND`) != -1) {
-                                physicMaterial.blendMode = BlendMode.ALPHA;
-                                physicMaterial.transparent = true;
-                                physicMaterial.depthWriteEnabled = false;
-                            }
-                        }
                     }
 
-                    if (`alphaCutoff` in primitive.material && alphaCutoff > 0) {
+                    if (`alphaCutoff` in primitive.material && alphaCutoff > 0 && alphaCutoff < 1) {
                         physicMaterial.alphaCutoff = alphaCutoff;
                         physicMaterial.blendMode = BlendMode.NORMAL;
                         physicMaterial.transparent = true;
-                        physicMaterial.depthWriteEnabled = false;
+                        // physicMaterial.depthWriteEnabled = false;
                     }
 
                     if (primitive.material.transformUV1) physicMaterial.uvTransform_1 = primitive.material.transformUV1;
@@ -412,6 +403,9 @@ export class GLTFSubParserConverter {
                 indexCount: indicesAttribute.data.length,
                 vertexStart: 0,
                 index: 0,
+                vertexCount: 0,
+                firstStart: 0,
+                topology: 0
             }
         )
         return geometry;

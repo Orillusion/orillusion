@@ -7,13 +7,14 @@ import { RendererPassState } from '../../gfx/renderJob/passRenderer/state/Render
 import { RendererType } from '../../gfx/renderJob/passRenderer/state/RendererType';
 import { MorphTargetData } from '../anim/morphAnim/MorphTargetData';
 import { RenderNode } from './RenderNode';
-import { EditorInspector } from '../../util/SerializeDecoration';
+import { EditorInspector, RegisterComponent } from '../../util/SerializeDecoration';
 import { Material } from '../..';
 
 /**
  * The mesh renderer component is a component used to render the mesh
  * @group Components
  */
+@RegisterComponent
 export class MeshRenderer extends RenderNode {
     /**
      * Enabling this option allows the grid to display any shadows cast on the grid.
@@ -71,7 +72,7 @@ export class MeshRenderer extends RenderNode {
         }
 
         this.object3D.bound = this._geometry.bounds.clone();
-        if (this._readyPipeline) {
+        if (!this._readyPipeline) {
             this.initPipeline();
         }
     }

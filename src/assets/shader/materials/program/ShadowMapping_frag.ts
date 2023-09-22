@@ -13,22 +13,7 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
       directShadowVisibility: array<f32, 8>,
       pointShadows: array<f32, 8>,
     }
-
-    var<private>shadowStrut: ShadowStruct;
-
-    struct ShadowBuffer{
-      nDirShadowStart: i32,
-      nDirShadowEnd: i32,
-      nPointShadowStart: i32,
-      nPointShadowEnd: i32,
-      shadowLights:array<u32,16>
-    }
-
-    #if DEBUG_CLUSTER
-        @group(2) @binding(6) var<storage,read> shadowBuffer: ShadowBuffer;
-    #else
-        @group(2) @binding(5) var<storage,read> shadowBuffer: ShadowBuffer;
-    #endif
+    var<private> shadowStrut: ShadowStruct ;
 
     fn useShadow(){
         shadowStrut.directShadowVisibility = array<f32, 8>( 1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0) ;
@@ -51,9 +36,9 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
       #if USE_SHADOWMAPING
         let enableCSM:bool = globalUniform.enableCSM > 0.5;
         for (var i: i32 = 0; i < dirCount ; i = i + 1) {
-          if( i >= shadowBuffer.nDirShadowStart && i < shadowBuffer.nDirShadowEnd ){
-            let ldx = shadowBuffer.shadowLights[i];
-            var light = lightBuffer[ldx];
+          if( i >= globalUniform.nDirShadowStart && i < globalUniform.nDirShadowEnd ){
+            let ldx = globalUniform.shadowLights[u32(i) / 4u][u32(i) % 4u];
+            let light = lightBuffer[u32(ldx)] ;
             var shadowIndex = i32(light.castShadow);
             var visibility = 1.0;
             var shadowMatrix:mat4x4<f32>;
@@ -96,7 +81,7 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
                 if(validCount == 0){
                   visibility = 1.0;
                 }else{
-                  visibility = visibility / totalWeight;
+                  visibility = visibility / totalWeight ;
                 }
               }else{
                 shadowMatrix = globalUniform.shadowMatrix[shadowIndex];
@@ -161,9 +146,9 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
       let offset = 0.1;
 
       for (var i: i32 = 0; i < pointCount ; i = i + 1) {
-        if( i >= shadowBuffer.nPointShadowStart && i < shadowBuffer.nPointShadowEnd ){
-          let ldx = shadowBuffer.shadowLights[i];
-          let light = lightBuffer[ldx] ;
+        if( i >= globalUniform.nPointShadowStart && i < globalUniform.nPointShadowEnd ){
+          let ldx = globalUniform.shadowLights[u32(i) / 4u][u32(i) % 4u];
+          let light = lightBuffer[u32(ldx)] ;
 
           #if USE_SHADOWMAPING
           let lightPos = light.position.xyz;

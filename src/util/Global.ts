@@ -1,3 +1,5 @@
+import { ParserFormat } from "../loader/parser/ParserFormat";
+
 /**
  * UUID
  * @param len
@@ -71,3 +73,4 @@ export let ArrayItemIndex = function (array: any[], item: any) {
  * Constructor
  */
 export type Ctor<T> = { new(any?): T, prototype: any };
+export type Parser<T> = { new(any?): T, prototype: any, format: ParserFormat };

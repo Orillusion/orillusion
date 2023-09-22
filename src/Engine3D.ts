@@ -327,6 +327,8 @@ export class Engine3D {
 
         this.res = new Res();
 
+        this.res.initDefault();
+
         this._beforeRender = descriptor.beforeRender;
         this._renderLoop = descriptor.renderLoop;
         this._lateRender = descriptor.lateRender;
@@ -486,6 +488,20 @@ export class Engine3D {
                 if (f.enable) {
                     c(k);
                 };
+            }
+        }
+
+        if (this.setting.render.debug) {
+            for (const iterator of ComponentCollect.graphicComponent) {
+                let k = iterator[0];
+                let v = iterator[1];
+                for (const iterator2 of v) {
+                    let f = iterator2[0];
+                    let c = iterator2[1];
+                    if (f.enable) {
+                        c(k);
+                    };
+                }
             }
         }
 

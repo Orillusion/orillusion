@@ -24,6 +24,16 @@ export class GlobalUniformGroup {
     private uniformByteLength: number;
     private matrixesByteLength: number;
 
+    private shadowMatrixRaw = new Float32Array(8 * 16);
+    private csmMatrixRaw = new Float32Array(CSM.Cascades * 16);
+    private csmShadowBias = new Float32Array(4);
+
+    public shadowLights = new Float32Array(16);
+    public dirShadowStart = 0;
+    public dirShadowEnd = 0;
+    public pointShadowStart = 0;
+    public pointShadowEnd = 0;
+
     /**
      * 
      * @param matrixBindGroup global matrix bindgroup 
@@ -67,9 +77,7 @@ export class GlobalUniformGroup {
         });
     }
 
-    private shadowMatrixRaw = new Float32Array(8 * 16);
-    private csmMatrixRaw = new Float32Array(CSM.Cascades * 16);
-    private csmShadowBias = new Float32Array(4);
+
 
     public setCamera(camera: Camera3D) {
         this.uniformGPUBuffer.setMatrix(`_projectionMatrix`, camera.projectionMatrix);
@@ -133,6 +141,12 @@ export class GlobalUniformGroup {
 
         this.uniformGPUBuffer.setFloat(`csmMargin`, Engine3D.setting.shadow.csmMargin);
 
+        this.uniformGPUBuffer.setInt32(`nDirShadowStart`, this.dirShadowStart);
+        this.uniformGPUBuffer.setInt32(`nDirShadowEnd`, this.dirShadowEnd);
+        this.uniformGPUBuffer.setInt32(`nPointShadowStart`, this.pointShadowStart);
+        this.uniformGPUBuffer.setInt32(`nPointShadowEnd`, this.pointShadowEnd);
+        this.uniformGPUBuffer.setFloat32Array(`shadowLights`, this.shadowLights);
+
         this.uniformGPUBuffer.apply();
     }
 
@@ -178,12 +192,16 @@ export class GlobalUniformGroup {
         this.uniformGPUBuffer.setFloat(`enableCSM`, 0);
 
         this.uniformGPUBuffer.setFloat(`csmMargin`, Engine3D.setting.shadow.csmMargin);
-
+        this.uniformGPUBuffer.setInt32(`nDirShadowStart`, this.dirShadowStart);
+        this.uniformGPUBuffer.setInt32(`nDirShadowEnd`, this.dirShadowEnd);
+        this.uniformGPUBuffer.setInt32(`nPointShadowStart`, this.pointShadowStart);
+        this.uniformGPUBuffer.setInt32(`nPointShadowEnd`, this.pointShadowEnd);
+        this.uniformGPUBuffer.setFloat32Array(`shadowLights`, this.shadowLights);
 
         this.uniformGPUBuffer.apply();
     }
 
-    public addUniformNode() { }
+    public setShadowLight() { }
 
 
 }

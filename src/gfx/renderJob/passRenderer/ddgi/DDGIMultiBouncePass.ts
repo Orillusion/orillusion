@@ -28,7 +28,7 @@ export class DDGIMultiBouncePass {
 
         this.computerShader = new ComputeShader(MultiBouncePass_cs);
         this.computerShader.setStorageTexture("outputBuffer", this.blendTexture);
-        this.computerShader.setStorageBuffer("uniformData", this.volume.irradianceVolumeBuffer);
+        this.computerShader.setUniformBuffer("uniformData", this.volume.irradianceVolumeBuffer);
     }
 
     public setInputs(inputs: VirtualTexture[]) {

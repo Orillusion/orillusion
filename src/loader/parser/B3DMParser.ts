@@ -1,8 +1,9 @@
 ﻿import { Object3D } from '../../core/entities/Object3D';
 import { ParserBase } from './ParserBase';
+import { ParserFormat } from './ParserFormat';
 
 export class B3DMParser extends ParserBase {
-    static format: string = 'bin';
+    static format: ParserFormat = ParserFormat.JSON;
 
     public async parseBuffer(buffer: ArrayBuffer) {
         let loader = new B3DMLoader();

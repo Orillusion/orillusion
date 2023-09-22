@@ -1,6 +1,7 @@
 import { StringUtil } from '../../../util/StringUtil';
 import { FileLoader } from '../../FileLoader';
 import { ParserBase } from '../ParserBase';
+import { ParserFormat } from '../ParserFormat';
 import { GLTF_Info } from './GLTFInfo';
 import { GLTFSubParser } from './GLTFSubParser';
 
@@ -10,7 +11,7 @@ import { GLTFSubParser } from './GLTFSubParser';
  * @group Loader
  */
 export class GLTFParser extends ParserBase {
-    static format: string = 'json';
+    static format: ParserFormat = ParserFormat.JSON;
     private _gltf: GLTF_Info;
 
     public async parseJson(obj: object) {

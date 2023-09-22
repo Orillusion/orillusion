@@ -3,9 +3,10 @@ import { GUITexture } from "../../components/gui/core/GUITexture";
 import { Engine3D } from "../../Engine3D";
 import { Texture } from "../../gfx/graphics/webGpu/core/texture/Texture";
 import { ParserBase } from "../../loader/parser/ParserBase";
+import { ParserFormat } from "./ParserFormat";
 
 export class AtlasParser extends ParserBase {
-    static format: string = 'text';
+    static format: ParserFormat = ParserFormat.TEXT;
 
     private _json: any;
     private _texture: Texture;

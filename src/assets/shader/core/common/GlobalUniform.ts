@@ -40,10 +40,16 @@ export let GlobalUniform: string = /*wgsl*/ `
     enableCSM:f32,
 
     csmMargin:f32,
-    notUsed1:f32,
-    notUsed2:f32,
-    notUsed3:f32
-    
+    nDirShadowStart: i32,
+    nDirShadowEnd: i32,
+    nPointShadowStart: i32,
+
+    nPointShadowEnd: i32,
+    empty1: i32,
+    empty2: i32,
+    empty3: i32,
+
+    shadowLights:mat4x4<f32>
   };
 
   @group(0) @binding(0)

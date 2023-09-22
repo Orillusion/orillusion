@@ -7,6 +7,7 @@ import { ComponentBase } from "../../ComponentBase";
 import { MorphTargetFrame } from "./MorphTargetFrame";
 import { MeshRenderer } from "../../renderer/MeshRenderer";
 import { RendererMask, RendererMaskUtil } from "../../../gfx/renderJob/passRenderer/state/RendererMask";
+import { SkinnedMeshRenderer } from "../../..";
 
 export class MorphTargetBlender extends ComponentBase {
     private _targetRenderers: { [key: string]: MeshRenderer[] } = {};
@@ -88,6 +89,13 @@ export class MorphTargetBlender extends ComponentBase {
     private fetchMorphRenderers(obj: Object3D): MeshRenderer[] {
         let sourceRenders: MeshRenderer[] = obj.getComponentsInChild(MeshRenderer);
         let result: MeshRenderer[] = [];
+        for (let renderer of sourceRenders) {
+            if (renderer.hasMask(RendererMask.MorphTarget)) {
+                result.push(renderer);
+            }
+        }
+
+        sourceRenders = obj.getComponentsInChild(SkinnedMeshRenderer);
         for (let renderer of sourceRenders) {
             if (renderer.hasMask(RendererMask.MorphTarget)) {
                 result.push(renderer);
