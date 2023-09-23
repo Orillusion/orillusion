@@ -98,20 +98,34 @@ export class PrefabMeshParser extends ParserBase {
             }
             if (useBlendShape) {
                 geometry.blendShapeData = prefabMesh.blendShapeData;
-
-                geometry.setAttribute(VertexAttributeName.all, prefabMesh.vertexBuffer);
-
-                // for (let i = 0; i < prefabMesh.blendShapeData.blendCount; i++) {
-                geometry.setAttribute("a_morphPositions_0", prefabMesh.blendShapeData.positionList);
-                geometry.setAttribute("a_morphNormals_0", prefabMesh.blendShapeData.normalList);
                 geometry.morphTargetsRelative = true;
                 geometry.morphTargetDictionary = {};
                 for (let i = 0; i < prefabMesh.blendShapeData.blendCount; i++) {
-                    let blendName = prefabMesh.blendShapeData.shapeNames[i];
-                    let blendIndex = prefabMesh.blendShapeData.shapeIndexs[i];
-                    geometry.morphTargetDictionary[blendName] = blendIndex;
+                    // if (i == 0) {
+                    //     for (let index = 0; index < prefabMesh.blendShapeData.blendShapePropertyDatas[i].blendPositionList.length; index++) {
+                    //         if (prefabMesh.blendShapeData.blendShapePropertyDatas[i].blendPositionList[index] != 0) {
+                    //             console.error("has");
+                    //         }
+                    //     }
+                    // }
+                    geometry.setAttribute("a_morphPositions_" + i, prefabMesh.blendShapeData.blendShapePropertyDatas[i].blendPositionList);
+                    geometry.setAttribute("a_morphNormals_" + i, prefabMesh.blendShapeData.blendShapePropertyDatas[i].blendNormalList);
+                    for (let i = 0; i < prefabMesh.blendShapeData.blendCount; i++) {
+                        let blendName = prefabMesh.blendShapeData.shapeNames[i];
+                        let blendIndex = prefabMesh.blendShapeData.shapeIndexs[i];
+                        geometry.morphTargetDictionary[blendName] = blendIndex;
+                    }
                 }
-                // geometry.setAttribute("a_morphNormals_" + i, prefabMesh.vertexBuffer);
+
+
+                // geometry.setAttribute("a_morphPositions_0", prefabMesh.blendShapeData.positionList);
+                // geometry.setAttribute("a_morphNormals_0", prefabMesh.blendShapeData.normalList);
+                // geometry.morphTargetsRelative = true;
+                // geometry.morphTargetDictionary = {};
+                // for (let i = 0; i < prefabMesh.blendShapeData.blendCount; i++) {
+                //     let blendName = prefabMesh.blendShapeData.shapeNames[i];
+                //     let blendIndex = prefabMesh.blendShapeData.shapeIndexs[i];
+                //     geometry.morphTargetDictionary[blendName] = blendIndex;
                 // }
             }
             for (let ii = 0; ii < attributes.length; ii++) {
@@ -155,7 +169,7 @@ let MeshVertexAttribute = {
     "TexCoord4": VertexAttributeName.TEXCOORD_4,
     "TexCoord5": VertexAttributeName.TEXCOORD_5,
     "TexCoord6": VertexAttributeName.TEXCOORD_6,
-    "TexCoord7": VertexAttributeName.TEXCOORD_7,
+    "TexCoord7": VertexAttributeName.vIndex,
     "BlendIndices": VertexAttributeName.joints0,
     "BlendWeight": VertexAttributeName.weights0,
 }

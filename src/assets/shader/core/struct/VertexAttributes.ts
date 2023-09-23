@@ -28,15 +28,23 @@ export let VertexAttributes: string = /*wgsl*/ `
                 @location(4) TANGENT: vec4<f32>,
                 @location(5) joints0: vec4<f32>,
                 @location(6) weights0: vec4<f32>,
-                @location(7) joints1: vec4<f32>,
-                @location(8) weights1: vec4<f32>,
-                ${MorphTarget_shader.getMorphTargetAttr(9)}
+                #if USE_JOINT_VEC8
+                    @location(7) joints1: vec4<f32>,
+                    @location(8) weights1: vec4<f32>,
+                    ${MorphTarget_shader.getMorphTargetAttr(9)}
+                #else
+                    ${MorphTarget_shader.getMorphTargetAttr(7)}
+                #endif
             #else
                 @location(4) joints0: vec4<f32>,
                 @location(5) weights0: vec4<f32>,
-                @location(6) joints1: vec4<f32>,
-                @location(7) weights1: vec4<f32>,
-                ${MorphTarget_shader.getMorphTargetAttr(8)}
+                #if USE_JOINT_VEC8
+                    @location(6) joints1: vec4<f32>,
+                    @location(7) weights1: vec4<f32>,
+                    ${MorphTarget_shader.getMorphTargetAttr(8)}
+                #else
+                    ${MorphTarget_shader.getMorphTargetAttr(6)}
+                #endif
             #endif
         #else
             #if USE_TANGENT

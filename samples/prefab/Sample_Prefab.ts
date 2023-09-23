@@ -47,7 +47,6 @@ export class Sample_Prefab {
         // let bloom = post.addPost(HDRBloomPost);
         // GUIUtil.renderBloom(bloom);
         // post.addPost(SSRPost);
-
         // GUIUtil.renderDebug();
     }
 
@@ -74,6 +73,7 @@ export class Sample_Prefab {
 
         {
             let node = await Engine3D.res.load("prefab/as.bin", PrefabParser);
+            GUIUtil.blendShape(node);
             this.scene.addChild(node);
         }
     }

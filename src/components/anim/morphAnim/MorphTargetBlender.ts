@@ -5,18 +5,17 @@ import { Quaternion } from "../../../math/Quaternion";
 import { Vector3 } from "../../../math/Vector3";
 import { ComponentBase } from "../../ComponentBase";
 import { MorphTargetFrame } from "./MorphTargetFrame";
-import { MeshRenderer } from "../../renderer/MeshRenderer";
+import { SkinnedMeshRenderer2 } from "../../renderer/SkinnedMeshRenderer2";
 import { RendererMask, RendererMaskUtil } from "../../../gfx/renderJob/passRenderer/state/RendererMask";
-import { SkinnedMeshRenderer } from "../../..";
 
 export class MorphTargetBlender extends ComponentBase {
-    private _targetRenderers: { [key: string]: MeshRenderer[] } = {};
+    private _targetRenderers: { [key: string]: SkinnedMeshRenderer2[] } = {};
     private _vec3 = new Vector3();
     private _matrix4: Matrix4 = new Matrix4();
     private _quaternion: Quaternion = new Quaternion();
 
     public init(param?: any): void {
-        let meshRenders: MeshRenderer[] = this.fetchMorphRenderers(this.object3D);
+        let meshRenders: SkinnedMeshRenderer2[] = this.fetchMorphRenderers(this.object3D);
         for (const renderer of meshRenders) {
             let hasMorphTarget = RendererMaskUtil.hasMask(renderer.rendererMask, RendererMask.MorphTarget);
             if (hasMorphTarget) {
@@ -31,11 +30,11 @@ export class MorphTargetBlender extends ComponentBase {
 
     }
 
-    public getMorphRenderersByKey(key: string): MeshRenderer[] {
+    public getMorphRenderersByKey(key: string): SkinnedMeshRenderer2[] {
         return this._targetRenderers[key];
     }
 
-    public cloneMorphRenderers(): { [key: string]: MeshRenderer[] } {
+    public cloneMorphRenderers(): { [key: string]: SkinnedMeshRenderer2[] } {
         let dst = {} as any;
         for (let key in this._targetRenderers) {
             dst[key] = this._targetRenderers[key];
@@ -80,22 +79,15 @@ export class MorphTargetBlender extends ComponentBase {
         }
     }
 
-    private applyMorphTargetInfluence(key: string, influence: number, rendererList: MeshRenderer[]): void {
+    private applyMorphTargetInfluence(key: string, influence: number, rendererList: SkinnedMeshRenderer2[]): void {
         for (let renderer of rendererList) {
             renderer.setMorphInfluence(key, influence);
         }
     }
 
-    private fetchMorphRenderers(obj: Object3D): MeshRenderer[] {
-        let sourceRenders: MeshRenderer[] = obj.getComponentsInChild(MeshRenderer);
-        let result: MeshRenderer[] = [];
-        for (let renderer of sourceRenders) {
-            if (renderer.hasMask(RendererMask.MorphTarget)) {
-                result.push(renderer);
-            }
-        }
-
-        sourceRenders = obj.getComponentsInChild(SkinnedMeshRenderer);
+    private fetchMorphRenderers(obj: Object3D): SkinnedMeshRenderer2[] {
+        let sourceRenders: SkinnedMeshRenderer2[] = obj.getComponentsInChild(SkinnedMeshRenderer2);
+        let result: SkinnedMeshRenderer2[] = [];
         for (let renderer of sourceRenders) {
             if (renderer.hasMask(RendererMask.MorphTarget)) {
                 result.push(renderer);

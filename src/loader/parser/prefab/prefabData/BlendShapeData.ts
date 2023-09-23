@@ -9,8 +9,8 @@ export class BlendShapeData {
 
     public blendCount: number;
 
-    public positionList: Float32Array;
-    public normalList: Float32Array;
+    // public positionList: Float32Array;
+    // public normalList: Float32Array;
 
     public blendShapePropertyDatas: BlendShapePropertyData[];
     public blendShapeMap: Map<string, BlendShapePropertyData>;
@@ -26,19 +26,19 @@ export class BlendShapeData {
 
         this.blendCount = bytes.readInt32();
 
-        let posCount = bytes.readInt32();
-        this.positionList = bytes.readFloat32Array(posCount * 3);
-        let normalCount = bytes.readInt32();
-        this.normalList = bytes.readFloat32Array(normalCount * 3);
+        // let posCount = bytes.readInt32();
+        // this.positionList = bytes.readFloat32Array(posCount * 3);
+        // let normalCount = bytes.readInt32();
+        // this.normalList = bytes.readFloat32Array(normalCount * 3);
 
 
-        // for (let i = 0; i < this.blendCount; i++) {
-        //     let propertyData = new BlendShapePropertyData();
-        //     propertyData.formBytes(bytes);
+        for (let i = 0; i < this.blendCount; i++) {
+            let propertyData = new BlendShapePropertyData();
+            propertyData.formBytes(bytes);
 
-        //     this.blendShapePropertyDatas.push(propertyData);
-        //     this.blendShapeMap.set(propertyData.shapeName, propertyData);
-        // }
+            this.blendShapePropertyDatas.push(propertyData);
+            this.blendShapeMap.set(propertyData.shapeName, propertyData);
+        }
         return byteArray;
     }
 

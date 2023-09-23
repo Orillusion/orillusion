@@ -6,8 +6,8 @@ export class BlendShapePropertyData {
     public shapeIndex: number;
     public frameCount: number;
     // public blendShapeFrameDatas: BlendShapeFrameData[];
-    // public blendPositionList = new Float32Array();
-    // public blendNormalList = new Float32Array();
+    public blendPositionList = new Float32Array();
+    public blendNormalList = new Float32Array();
     public formBytes(byteArray: BytesArray) {
         let bytes = byteArray.readBytesArray();
 
@@ -15,10 +15,10 @@ export class BlendShapePropertyData {
         this.shapeIndex = bytes.readInt32();
         this.frameCount = bytes.readInt32();
 
-        // let len = bytes.readInt32();
-        // this.blendPositionList = bytes.readFloat32Array(len * 3);
+        let len = bytes.readInt32();
+        this.blendPositionList = bytes.readFloat32Array(len * 3);
 
-        // let len2 = bytes.readInt32();
-        // this.blendNormalList = bytes.readFloat32Array(len2 * 3);
+        let len2 = bytes.readInt32();
+        this.blendNormalList = bytes.readFloat32Array(len2 * 3);
     }
 }

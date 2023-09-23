@@ -125,7 +125,9 @@ export class MorphTargetData {
         this._computeShader.workerSizeY = this._computeWorkGroupXY;
         this._computeShader.workerSizeZ = 1;
 
+        // if (false) {
         GPUContext.computeCommand(command, this._computeShaders);
+        // }
     }
 
     public updateInfluence(index: number, value: number) {

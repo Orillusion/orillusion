@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AtmosphericComponent, BillboardType, BlendMode, Color, DirectLight, Engine3D, GPUCullMode, GlobalFog, GlobalIlluminationComponent, HDRBloomPost, LitMaterial, Material, Object3D, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
+import { AtmosphericComponent, BillboardType, BlendMode, Color, DirectLight, Engine3D, GPUCullMode, GlobalFog, GlobalIlluminationComponent, HDRBloomPost, LitMaterial, Material, MorphTargetBlender, Object3D, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
@@ -458,6 +458,29 @@ export class GUIUtil {
         }
 
         open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
+
+    public static blendShape(obj: Object3D) {
+        GUIHelp.addFolder('morph controller');
+        // register MorphTargetBlender component
+        let blendShapeComponent = obj.addComponent(MorphTargetBlender);
+        let targetRenderers = blendShapeComponent.cloneMorphRenderers();
+
+        let influenceData = {};
+        // bind influenceData to gui
+        for (let key in targetRenderers) {
+            influenceData[key] = 0.0;
+            GUIHelp.add(influenceData, key, 0, 1, 0.01).onChange((v) => {
+                influenceData[key] = v;
+                let list = blendShapeComponent.getMorphRenderersByKey(key);
+                for (let renderer of list) {
+                    renderer.setMorphInfluence(key, v);
+                }
+            });
+        }
+
+        GUIHelp.open();
         GUIHelp.endFolder();
     }
 }
