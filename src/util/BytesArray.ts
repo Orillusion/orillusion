@@ -161,6 +161,15 @@ export class BytesArray extends DataView {
         return v;
     }
 
+    public readVector3Array() {
+        let list = [];
+        let len = this.readInt32();
+        for (let i = 0; i < len; i++) {
+            list.push(this.readVector3());
+        }
+        return list;
+    }
+
     public readVector4() {
         let v = new Vector4();
         v.x = this.readFloat32();
@@ -169,6 +178,16 @@ export class BytesArray extends DataView {
         v.w = this.readFloat32();
         return v;
     }
+
+    public readVector4Array() {
+        let list = [];
+        let len = this.readInt32();
+        for (let i = 0; i < len; i++) {
+            list.push(this.readVector4());
+        }
+        return list;
+    }
+
 
     public readColor() {
         let v = new Color();
@@ -179,6 +198,15 @@ export class BytesArray extends DataView {
         return v;
     }
 
+    public readColorArray() {
+        let list = [];
+        let len = this.readInt32();
+        for (let i = 0; i < len; i++) {
+            list.push(this.readColor());
+        }
+        return list;
+    }
+
     public readQuaternion() {
         let v = new Quaternion();
         v.x = this.readFloat32();
@@ -186,6 +214,15 @@ export class BytesArray extends DataView {
         v.z = this.readFloat32();
         v.w = this.readFloat32();
         return v;
+    }
+
+    public readQuaternionArray() {
+        let list = [];
+        let len = this.readInt32();
+        for (let i = 0; i < len; i++) {
+            list.push(this.readQuaternion());
+        }
+        return list;
     }
 
     public readMatrix44(): Matrix4 {
@@ -220,10 +257,18 @@ export class BytesArray extends DataView {
         return list;
     }
 
+    public readFloat32Array(len: number): Float32Array {
+        let ret = new Float32Array(this.buffer, this.position, len);
+        ret = ret.slice(0, this.byteLength);
+        this.position += len * Float32Array.BYTES_PER_ELEMENT;
+        return ret;
+    }
+
     public getFloat32Array(): Float32Array {
         let ret = new Float32Array(this.buffer, this.byteOffset, this.byteLength / Float32Array.BYTES_PER_ELEMENT);
         ret = ret.slice(0, this.byteLength);
         return ret;
     }
+
 
 }

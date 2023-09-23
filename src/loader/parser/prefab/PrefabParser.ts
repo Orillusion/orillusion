@@ -67,7 +67,7 @@ export class PrefabParser extends ParserBase {
                         }
                     }
                 } else {
-                    console.warn("no component", comData.comName);
+                    // console.warn("no component", comData.comName);
                 }
             }
         }

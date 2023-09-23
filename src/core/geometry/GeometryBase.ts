@@ -8,7 +8,7 @@ import { GeometryIndicesBuffer } from "./GeometryIndicesBuffer";
 import { GeometryVertexType } from "./GeometryVertexType";
 import { VertexAttributeData } from "./VertexAttributeData";
 import { ArrayBufferData } from "../../gfx/graphics/webGpu/core/buffer/ArrayBufferData";
-import { Matrix4 } from "../..";
+import { BlendShapeData, Matrix4 } from "../..";
 
 export type LODDescriptor = {
     indexStart: number;
@@ -39,9 +39,10 @@ export class GeometryBase {
     public name: string;
     public subGeometries: SubGeometry[] = [];
     public morphTargetsRelative: boolean;
-    public morphTargetDictionary: { value: string; key: number };
+    public morphTargetDictionary: { [blenderName: string]: number };
     public skinNames: string[];
     public bindPose: Matrix4[];
+    public blendShapeData: BlendShapeData;
     private _bounds: BoundingBox;
 
     private _attributeMap: Map<string, VertexAttributeData>;

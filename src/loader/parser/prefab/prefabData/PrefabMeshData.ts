@@ -1,4 +1,5 @@
 import { Matrix4 } from "../../../..";
+import { BlendShapeData } from "./BlendShapeData";
 
 export class PrefabMeshData {
     public name: string;
@@ -10,11 +11,8 @@ export class PrefabMeshData {
     public indices: Uint16Array | Uint32Array;
 
     public attributes: { attribute: string, dim: number, pos: number }[];
-    public blendShapeCount: number;
-    public blendShapeNames: string[];
-    public blendShapeWeights: string[];
-
 
     public bones: string[];
     public bindPose: Matrix4[];
+    public blendShapeData: BlendShapeData;
 }

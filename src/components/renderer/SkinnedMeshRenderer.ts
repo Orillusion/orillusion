@@ -37,8 +37,6 @@ export class SkinnedMeshRenderer extends MeshRenderer {
         this.skinJointsName = value.skinNames;
         let matrixList: Float32Array[] = [];
         for (let i = 0; i < value.bindPose.length; i++) {
-            // value.bindPose[i].transpose();
-            // matrixList.push(value.bindPose[i].rawData.slice(0, 16));
             Matrix4.helpMatrix.identity();
             matrixList.push(new Float32Array(Matrix4.helpMatrix.rawData));
         }

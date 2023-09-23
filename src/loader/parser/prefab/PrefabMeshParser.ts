@@ -6,6 +6,7 @@ import { BytesArray } from "../../../util/BytesArray";
 import { ParserBase } from "../ParserBase";
 import { ParserFormat } from "../ParserFormat";
 import { PrefabParser } from "./PrefabParser";
+import { BlendShapeData } from "./prefabData/BlendShapeData";
 import { PrefabMeshData } from "./prefabData/PrefabMeshData";
 
 
@@ -29,10 +30,16 @@ export class PrefabMeshParser extends ParserBase {
             let useColor = meshBytesArray.readFloat32() > 0;
             let useSecondUV = meshBytesArray.readFloat32() > 0;
             let useSkeleton = meshBytesArray.readFloat32() > 0;
+            let useBlendShape = meshBytesArray.readFloat32() > 0;
 
             if (useSkeleton) {
                 prefabMesh.bones = meshBytesArray.readStringArray();
                 prefabMesh.bindPose = meshBytesArray.readMatrix44Array();
+            }
+
+            if (useBlendShape) {
+                prefabMesh.blendShapeData = new BlendShapeData();
+                prefabMesh.blendShapeData.formBytes(meshBytesArray);
             }
 
             let vertexBlock = meshBytesArray.readBytesArray();
@@ -88,6 +95,24 @@ export class PrefabMeshParser extends ParserBase {
             if (useSkeleton) {
                 geometry.skinNames = prefabMesh.bones;
                 geometry.bindPose = prefabMesh.bindPose;
+            }
+            if (useBlendShape) {
+                geometry.blendShapeData = prefabMesh.blendShapeData;
+
+                geometry.setAttribute(VertexAttributeName.all, prefabMesh.vertexBuffer);
+
+                // for (let i = 0; i < prefabMesh.blendShapeData.blendCount; i++) {
+                geometry.setAttribute("a_morphPositions_0", prefabMesh.blendShapeData.positionList);
+                geometry.setAttribute("a_morphNormals_0", prefabMesh.blendShapeData.normalList);
+                geometry.morphTargetsRelative = true;
+                geometry.morphTargetDictionary = {};
+                for (let i = 0; i < prefabMesh.blendShapeData.blendCount; i++) {
+                    let blendName = prefabMesh.blendShapeData.shapeNames[i];
+                    let blendIndex = prefabMesh.blendShapeData.shapeIndexs[i];
+                    geometry.morphTargetDictionary[blendName] = blendIndex;
+                }
+                // geometry.setAttribute("a_morphNormals_" + i, prefabMesh.vertexBuffer);
+                // }
             }
             for (let ii = 0; ii < attributes.length; ii++) {
                 const element = attributes[ii].att;
