@@ -10,7 +10,7 @@ export class Sample_Prefab {
 
     async run() {
         //config settings
-        Engine3D.setting.render.debug = false;
+        Engine3D.setting.render.debug = true;
         Engine3D.setting.shadow.shadowBound = 20;
         Engine3D.setting.shadow.shadowSize = 4096;
         Engine3D.setting.shadow.type = "SOFT";
@@ -48,7 +48,7 @@ export class Sample_Prefab {
         // let bloom = post.addPost(HDRBloomPost);
         // GUIUtil.renderBloom(bloom);
         // post.addPost(SSRPost);
-        // GUIUtil.renderDebug();
+        GUIUtil.renderDebug();
     }
 
     async initScene() {

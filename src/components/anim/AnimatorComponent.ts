@@ -7,7 +7,7 @@ import { GUIUtil } from "@samples/utils/GUIUtil";
 
 @RegisterComponent
 export class AnimatorComponent extends ComponentBase {
-    protected jointMatrixIndexTableBuffer: StorageGPUBuffer;
+    public jointMatrixIndexTableBuffer: StorageGPUBuffer;
     protected inverseBindMatrices: Float32Array[];
     protected _avatar: PrefabAvatarData;
     protected _rendererList: SkinnedMeshRenderer2[];

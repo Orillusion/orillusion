@@ -8,11 +8,11 @@ export let NormalMap_frag: string = /*wgsl*/ `
         var q1perp = cross( q1, N );
         var q0perp = cross( N, q0 );
 
-        // #if USE_TANGENT
-        //     var T = ORI_VertexVarying.TANGENT.xyz ;
-        // #else
+        #if USE_TANGENT
+            var T = ORI_VertexVarying.TANGENT.xyz ;
+        #else
             var T = q1perp * st0.x + q0perp * st1.x;
-        // #endif
+        #endif
         
         var B = q1perp * st0.y + q0perp * st1.y;
 
@@ -21,6 +21,7 @@ export let NormalMap_frag: string = /*wgsl*/ `
         if( det != 0.0 ){
             scale = inverseSqrt( det ) ;
         }
+
         #if USE_TANGENT
             scale = scale * ORI_VertexVarying.TANGENT.w ;
         #endif
