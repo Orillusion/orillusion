@@ -62,6 +62,11 @@ export class SkinnedMeshRenderer2 extends MeshRenderer {
         // this.skinInverseBindMatrices = this.skeletonAnimation.inverseBindMatrices;
     }
 
+    public get blendShape() {
+        // key: string, value: number
+        return this.morphData
+    }
+
     public onEnable(): void {
         super.onEnable();
     }

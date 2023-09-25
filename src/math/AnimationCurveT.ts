@@ -13,6 +13,7 @@ export type CurveValueT = number | Vector2 | Vector3 | Vector4 | Quaternion;
 export class AnimationCurveT {
     public path: string;
     public attribute: string;
+    public propertys: string[];
     public preInfinity: number;
     public postInfinity: number;
     public rotationOrder: number;
@@ -135,6 +136,8 @@ export class AnimationCurveT {
         this.check();
 
         this.attribute = bytes.readUTF();
+
+        this.propertys = this.attribute.split(".");
         this.preInfinity = bytes.readInt32();
         this.postInfinity = bytes.readInt32();
         this.rotationOrder = bytes.readInt32();

@@ -67,6 +67,9 @@ export class MorphTargetData {
 
     protected _collectMorphTargetData: MorphTargetCollectData;
 
+    private _blendTarget: { [key: string]: any }
+
+
     constructor() {
         this._isInfluenceDirty = true;
         this.generateGPUBuffer();
@@ -135,10 +138,22 @@ export class MorphTargetData {
         this._morphInfluenceArray[index] = value;
     }
 
+    public get blendShape() {
+        return this._blendTarget;
+    }
+
     private collectMorphTargetList(geometry: GeometryBase): MorphTargetCollectData {
         let posAttrList = this.collectAttribute('a_morphPositions_', geometry);
         let morphTargetCount = posAttrList.length;
         let vertexCount: number = posAttrList[0].data.length / 3;
+
+        this._blendTarget = {};
+        for (let i = 0; i < geometry.blendShapeData.shapeIndexs.length; i++) {
+            let index = geometry.blendShapeData.shapeIndexs[i];
+            let shapeNames = geometry.blendShapeData.shapeNames[i].split(".");
+            let shapeName = shapeNames[shapeNames.length - 1];
+            this._blendTarget[shapeName] = (value) => this.updateInfluence(index, value);
+        }
 
         //position
         let posArray: Float32Array = new Float32Array(vertexCount * morphTargetCount * 3);

@@ -1,6 +1,7 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { Engine3D, Object3D, Scene3D, CameraUtil, HoverCameraController, View3D, AtmosphericComponent, DirectLight, KelvinUtil, PrefabMeshParser, LitMaterial, MeshRenderer, PostProcessingComponent, GTAOPost, HDRBloomPost, SSRPost, PrefabParser } from "../../src";
+import { WebRtcClientComponents } from "./component/WebRtcClientComponents";
 
 
 export class Sample_Prefab {
@@ -55,6 +56,7 @@ export class Sample_Prefab {
         let sky: AtmosphericComponent;
         {
             sky = this.scene.addComponent(AtmosphericComponent);
+            sky.enable = false;
         }
         /******** light *******/
         {
@@ -72,7 +74,8 @@ export class Sample_Prefab {
         }
 
         {
-            let node = await Engine3D.res.load("prefab/as.bin", PrefabParser);
+            let node = await Engine3D.res.load("prefab/as.bin", PrefabParser) as Object3D;
+            node.addComponent(WebRtcClientComponents);
             GUIUtil.blendShape(node);
             this.scene.addChild(node);
         }

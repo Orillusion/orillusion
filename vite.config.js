@@ -2,7 +2,7 @@
 import { defineConfig } from 'vite'
 import { readFile, writeFile, readdir, lstat } from 'fs/promises'
 import { resolve, parse } from 'path'
-// import basicSsl from '@vitejs/plugin-basic-ssl'
+import basicSsl from '@vitejs/plugin-basic-ssl'
 export default defineConfig(option => ({
     server: {
         host: '0.0.0.0',
@@ -59,14 +59,13 @@ export default defineConfig(option => ({
     }, {
         name: 'cors',
         configureServer: server => {
-            server.middlewares.use((_req, res, next) => {
-                res.setHeader("Cross-Origin-Resource-Policy", "cross-origin")
-                res.setHeader("Cross-Origin-Opener-Policy", "same-origin")
-                res.setHeader("Cross-Origin-Embedder-Policy", "require-corp")
-                next();
-            })
+            // server.middlewares.use((_req, res, next) => {
+            //     res.setHeader("Cross-Origin-Resource-Policy", "cross-origin")
+            //     res.setHeader("Cross-Origin-Opener-Policy", "same-origin")
+            //     res.setHeader("Cross-Origin-Embedder-Policy", "require-corp")
+            // })
         }
-    }],
+    }, basicSsl()],
     build: {
         lib: {
             entry: resolve(__dirname, './src/index.ts'),

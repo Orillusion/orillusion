@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { BoxGeometry, DEGREES_TO_RADIANS, Engine3D, LitMaterial, Matrix4, MeshFilter, MeshRenderer, Object3D, PrefabAvatarData, Quaternion, Skeleton, SkeletonPose, StorageGPUBuffer, Time, Vector2, Vector3, Vector4, View3D, makeMatrix44 } from "../..";
+import { BoxGeometry, DEGREES_TO_RADIANS, Engine3D, LitMaterial, Matrix4, MeshFilter, MeshRenderer, Object3D, PrefabAvatarData, Quaternion, RenderNode, RendererBase, Skeleton, SkeletonPose, SkinnedMeshRenderer2, StorageGPUBuffer, Time, Vector2, Vector3, Vector4, View3D, makeMatrix44 } from "../..";
 import { PropertyAnimationClip } from "../../math/AnimationCurveClip";
 import { RegisterComponent } from "../../util/SerializeDecoration";
 import { ComponentBase } from "../ComponentBase";
@@ -7,12 +7,46 @@ import { GUIUtil } from "@samples/utils/GUIUtil";
 
 @RegisterComponent
 export class AnimatorComponent extends ComponentBase {
-    private _currentClip: PropertyAnimationClip;
-    public jointMatrixIndexTableBuffer: StorageGPUBuffer;
-    public inverseBindMatrices: Float32Array[];
-    private _avatar: PrefabAvatarData;
-    public init(param?: any): void {
+    protected jointMatrixIndexTableBuffer: StorageGPUBuffer;
+    protected inverseBindMatrices: Float32Array[];
+    protected _avatar: PrefabAvatarData;
+    protected _rendererList: SkinnedMeshRenderer2[];
+    protected propertyCache: Map<RenderNode, { [name: string]: any }>
 
+    protected _clips: PropertyAnimationClip[];
+    protected _clipsMap: Map<string, PropertyAnimationClip>;
+    protected _currentSkeletonClip: PropertyAnimationClip;
+    protected _currentBlendAnimClip: PropertyAnimationClip;
+
+    private _skeletonTime: number = 0;
+    private _blendShapeTime: number = 0;
+    private _skeletonSpeed: number = 1;
+    private _blendShapeSpeed: number = 1;
+    private _skeletonStart: boolean = true;
+    private _blendShapeStart: boolean = true;
+
+    public init(param?: any): void {
+        this.propertyCache = new Map<RenderNode, { [name: string]: any }>();
+        this._clipsMap = new Map<string, PropertyAnimationClip>();
+        this._clips = [];
+    }
+
+    public start(): void {
+        this._rendererList = this.object3D.getComponentsInChild(SkinnedMeshRenderer2);
+    }
+
+    playAnim(anim: string, time: number = 0, speed: number = 1) {
+        this._currentSkeletonClip = this._clipsMap.get(anim);
+        this._skeletonTime = time;
+        this._skeletonSpeed = speed;
+        this._skeletonStart = true;
+    }
+
+    playBlendShape(shapeName: string, time: number = 0, speed: number = 1) {
+        this._currentBlendAnimClip = this._clipsMap.get(shapeName);
+        this._blendShapeTime = time;
+        this._blendShapeSpeed = speed;
+        this._blendShapeStart = true;
     }
 
     public set avatar(name: string) {
@@ -34,99 +68,81 @@ export class AnimatorComponent extends ComponentBase {
         return result;
     }
 
-    private debugObj: { [name: string]: Object3D } = {};
+    private skeltonPoseObject3D: { [name: string]: Object3D } = {};
     private buildSkeletonPose(): number[] {
         let list = [];
-        let matrixList: Matrix4[] = [];
-        let totalTime = 18.06667;
-        let totalFrame = 543;
-        let frame = totalTime / totalFrame;
-        let mesh = new BoxGeometry(0.1, 0.1, 0.1);
-        let mat = new LitMaterial();
-
-        GUIHelp.addFolder("anim");
-        GUIHelp.add(this, "_auto")
-        GUIHelp.add({ frame: 0 }, "frame", 0.0, totalFrame, 1).onChange((v) => {
-            this._time = v * frame;
-            // let joint = this._skeleton.joints[0];
-            // let obj = this.debugObj[joint.name];
-            // console.log(joint.name, obj.rotationX, obj.rotationY, obj.rotationZ);
-        });
-
-
         for (const joint of this._avatar.boneData) {
             let obj = new Object3D();
-            // let mr = obj.addComponent(MeshRenderer);
-            // mr.geometry = mesh;
-            // mr.material = mat;
-            this.debugObj[joint.boneName] = obj;
-
+            this.skeltonPoseObject3D[joint.boneName] = obj;
             Matrix4.getEuler(Vector3.HELP_6, joint.q, true, 'ZYX');
-
             obj.localPosition = joint.t.clone();
             obj.localRotation = Vector3.HELP_6.clone();
             obj.localScale = Vector3.ONE; joint.s.clone();
 
             if (joint.parentBoneName && joint.parentBoneName != "") {
-                this.debugObj[joint.parentBoneName].addChild(obj);
+                this.skeltonPoseObject3D[joint.parentBoneName].addChild(obj);
             } else {
                 this.object3D.addChild(obj);
             }
 
             list.push(obj.transform.worldMatrix.index);
-
-
-            // GUIUtil.renderVector3(this.debugObj[joint.boneName], false, joint.boneName);
             let local = new Matrix4();
             local.copyFrom(obj.transform.worldMatrix);
-            // makeMatrix44(obj.localRotation, obj.localPosition, obj.localScale, local);
             local.invert();
             this.inverseBindMatrices.push(local.rawData);
         }
 
-
-
-
-        GUIHelp.endFolder();
+        // GUIHelp.endFolder();
 
         return list;
     }
 
     public set clips(clips: PropertyAnimationClip[]) {
-        console.log(clips);
-
-        let clip = clips[0];
-        this._currentClip = clip;
-
-        let hips = clip.positionCurves.get("Hips");
-
-        let value = hips.getValue(0.2);
-        console.log("Hips -> " + value);
+        this._clips = clips;
+        for (const clip of clips) {
+            this._clipsMap.set(clip.clipName, clip);
+        }
+        // this.playAnim(clips[0].clipName);
     }
 
-    private _time: number = 0;
-    private _auto: boolean = false;
+    public get clips(): PropertyAnimationClip[] {
+        return this._clips;
+    }
+
     private updateTime() {
-        if (this._auto)
-            this._time += Time.delta * 0.001;
-        if (this._time > 18) {
-            this._time = 0;
+        if (this._skeletonStart) {
+            this._skeletonTime += Time.delta * 0.001 * this._skeletonSpeed;
+            if (this._currentSkeletonClip && this._currentSkeletonClip.loopTime) {
+                this._skeletonTime = this._skeletonTime % this._currentSkeletonClip.stopTime;
+            }
+        }
+
+        if (this._blendShapeStart) {
+            this._blendShapeTime += Time.delta * 0.001 * this._skeletonSpeed;
+            if (this._currentBlendAnimClip && this._currentBlendAnimClip.loopTime) {
+                this._blendShapeTime = this._blendShapeTime % this._currentBlendAnimClip.stopTime;
+            }
         }
     }
 
     public onUpdate(view?: View3D) {
         this.updateTime();
-        if (this._currentClip) {
+        this.updateSkeletonAnim();
+        this.updateMorphAnim();
+    }
+
+    private updateSkeletonAnim() {
+        if (this._currentSkeletonClip) {
             let joints = this._avatar.boneData;
             let i = 0;
             let len = joints.length;
             for (i = 0; i < len; i++) {
                 const joint = joints[i];
-                let pos = this.getPosition(joint.bonePath, this._time);
-                let rot = this.getRotation(joint.bonePath, this._time);
-                let scale = this.getScale(joint.bonePath, this._time);
+                let pos = this.getPosition(joint.bonePath, this._skeletonTime);
+                let rot = this.getRotation(joint.bonePath, this._skeletonTime);
+                let scale = this.getScale(joint.bonePath, this._skeletonTime);
 
-                let obj = this.debugObj[joint.boneName];
+                let obj = this.skeltonPoseObject3D[joint.boneName];
                 obj.transform.localPosition = pos;
                 obj.transform.localRotation = rot;
                 obj.transform.localScale = scale;
@@ -134,20 +150,83 @@ export class AnimatorComponent extends ComponentBase {
         }
     }
 
+    private updateMorphAnim() {
+        if (this._currentBlendAnimClip && this._currentBlendAnimClip.floatCurves) {
+            if (this._currentBlendAnimClip.floatCurves.size > 0 && this._rendererList) {
+                for (const iterator of this._currentBlendAnimClip.floatCurves) {
+                    let key = iterator[0];
+                    let curve = iterator[1];
+                    let attributes = curve.propertys;
+                    let value = this.getFloat(key, this._skeletonTime) / 100;
+                    for (const renderer of this._rendererList) {
+                        if (renderer.blendShape) {
+                            let property: any = this.propertyCache.get(renderer);
+                            if (property && key in property) {
+                                property[key](value);
+                            } else {
+                                property = renderer;
+                                for (const att of attributes) {
+                                    if (!property[att])
+                                        break;
+                                    property = property[att];
+                                }
+                                if (!property || property == renderer) break;
+
+                                if (!this.propertyCache.get(renderer))
+                                    this.propertyCache.set(renderer, {})
+                                this.propertyCache.get(renderer)[key] = property;
+                                property(value);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public updateBlendShape(attributes: string[], key: string, value: number) {
+        for (const renderer of this._rendererList) {
+            if (renderer.blendShape) {
+                let property: any = this.propertyCache.get(renderer);
+                if (property && key in property) {
+                    property[key](value);
+                } else {
+                    property = renderer;
+                    for (const att of attributes) {
+                        if (!property[att])
+                            break;
+                        property = property[att];
+                    }
+                    if (!property || property == renderer) break;
+
+                    if (!this.propertyCache.get(renderer))
+                        this.propertyCache.set(renderer, {})
+                    this.propertyCache.get(renderer)[key] = property;
+                    property(value);
+                }
+            }
+        }
+    }
+
     private getPosition(boneName: string, time: number) {
-        let t = this._currentClip.positionCurves.get(boneName).getValue(time) as Vector3;
+        let t = this._currentSkeletonClip.positionCurves.get(boneName).getValue(time) as Vector3;
         return t;
     }
 
     private getRotation(boneName: string, time: number) {
-        let v4 = this._currentClip.rotationCurves.get(boneName).getValue(time) as Vector4;
+        let v4 = this._currentSkeletonClip.rotationCurves.get(boneName).getValue(time) as Vector4;
         Quaternion.HELP_2.set(v4.x, v4.y, v4.z, v4.w);
         Matrix4.getEuler(Vector3.HELP_6, Quaternion.HELP_2, true, 'ZYX');
         return Vector3.HELP_6;
     }
 
     private getScale(boneName: string, time: number) {
-        let x = this._currentClip.scaleCurves.get(boneName).getValue(time) as Vector3;
+        let x = this._currentSkeletonClip.scaleCurves.get(boneName).getValue(time) as Vector3;
+        return x;
+    }
+
+    private getFloat(propertyName: string, time: number) {
+        let x = this._currentSkeletonClip.floatCurves.get(propertyName).getValue(time) as number;
         return x;
     }
 }
