@@ -1,7 +1,6 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { GUIUtil } from "@samples/utils/GUIUtil";
-import { Engine3D, Object3D, Scene3D, CameraUtil, HoverCameraController, View3D, AtmosphericComponent, DirectLight, KelvinUtil, PrefabMeshParser, LitMaterial, MeshRenderer, PostProcessingComponent, GTAOPost, HDRBloomPost, SSRPost, PrefabParser } from "../../src";
-import { WebRtcClientComponents } from "./component/WebRtcClientComponents";
+import { Engine3D, Object3D, Scene3D, CameraUtil, HoverCameraController, View3D, AtmosphericComponent, DirectLight, KelvinUtil, PrefabMeshParser, LitMaterial, MeshRenderer, PostProcessingComponent, GTAOPost, HDRBloomPost, SSRPost, PrefabParser, AnimatorComponent } from "../../src";
 
 
 export class Sample_Prefab {
@@ -10,7 +9,7 @@ export class Sample_Prefab {
 
     async run() {
         //config settings
-        Engine3D.setting.render.debug = true;
+        Engine3D.setting.render.debug = false;
         Engine3D.setting.shadow.shadowBound = 20;
         Engine3D.setting.shadow.shadowSize = 4096;
         Engine3D.setting.shadow.type = "SOFT";
@@ -48,7 +47,7 @@ export class Sample_Prefab {
         // let bloom = post.addPost(HDRBloomPost);
         // GUIUtil.renderBloom(bloom);
         // post.addPost(SSRPost);
-        GUIUtil.renderDebug();
+        // GUIUtil.renderDebug();
     }
 
     async initScene() {
@@ -74,10 +73,17 @@ export class Sample_Prefab {
         }
 
         {
-            let node = await Engine3D.res.load("prefab/as.bin", PrefabParser) as Object3D;
-            node.addComponent(WebRtcClientComponents);
-            GUIUtil.blendShape(node);
+            let node = await Engine3D.res.load("prefab/room.o3d", PrefabParser) as Object3D;
             this.scene.addChild(node);
         }
+
+        {
+            let node = await Engine3D.res.load("prefab/nvhai.o3d", PrefabParser) as Object3D;
+            let anim = node.getComponents(AnimatorComponent);
+            GUIUtil.renderAnimator(anim[0]);
+            this.scene.addChild(node);
+        }
+
+
     }
 }

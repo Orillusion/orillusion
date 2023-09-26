@@ -35,6 +35,9 @@ export class AnimatorComponent extends ComponentBase {
         this._rendererList = this.object3D.getComponentsInChild(SkinnedMeshRenderer2);
     }
 
+    private debug() {
+    }
+
     playAnim(anim: string, time: number = 0, speed: number = 1) {
         this._currentSkeletonClip = this._clipsMap.get(anim);
         this._skeletonTime = time;
@@ -69,15 +72,19 @@ export class AnimatorComponent extends ComponentBase {
     }
 
     private skeltonPoseObject3D: { [name: string]: Object3D } = {};
+    private skeltonTPoseObject3D: { [name: string]: Object3D } = {};
     private buildSkeletonPose(): number[] {
         let list = [];
         for (const joint of this._avatar.boneData) {
             let obj = new Object3D();
-            this.skeltonPoseObject3D[joint.boneName] = obj;
+
             Matrix4.getEuler(Vector3.HELP_6, joint.q, true, 'ZYX');
             obj.localPosition = joint.t.clone();
             obj.localRotation = Vector3.HELP_6.clone();
             obj.localScale = Vector3.ONE; joint.s.clone();
+
+            this.skeltonPoseObject3D[joint.boneName] = obj;
+            this.skeltonTPoseObject3D[joint.bonePath] = obj.clone();
 
             if (joint.parentBoneName && joint.parentBoneName != "") {
                 this.skeltonPoseObject3D[joint.parentBoneName].addChild(obj);
@@ -138,14 +145,21 @@ export class AnimatorComponent extends ComponentBase {
             let len = joints.length;
             for (i = 0; i < len; i++) {
                 const joint = joints[i];
-                let pos = this.getPosition(joint.bonePath, this._skeletonTime);
-                let rot = this.getRotation(joint.bonePath, this._skeletonTime);
-                let scale = this.getScale(joint.bonePath, this._skeletonTime);
-
                 let obj = this.skeltonPoseObject3D[joint.boneName];
-                obj.transform.localPosition = pos;
+
+                if (this._currentSkeletonClip.useSkeletonPos) {
+                    let pos = this.getPosition(joint.bonePath, this._skeletonTime);
+                    obj.transform.localPosition = pos;
+                }
+
+                let rot = this.getRotation(joint.bonePath, this._skeletonTime);
                 obj.transform.localRotation = rot;
-                obj.transform.localScale = scale;
+
+
+                if (this._currentSkeletonClip.useSkeletonScale) {
+                    let scale = this.getScale(joint.bonePath, this._skeletonTime);
+                    obj.transform.localScale = scale;
+                }
             }
         }
     }
@@ -209,20 +223,29 @@ export class AnimatorComponent extends ComponentBase {
     }
 
     private getPosition(boneName: string, time: number) {
-        let t = this._currentSkeletonClip.positionCurves.get(boneName).getValue(time) as Vector3;
-        return t;
+        if (this._currentSkeletonClip.positionCurves.has(boneName)) {
+            let t = this._currentSkeletonClip.positionCurves.get(boneName).getValue(time) as Vector3;
+            return t;
+        }
+        return this.skeltonTPoseObject3D[boneName].localPosition;
     }
 
     private getRotation(boneName: string, time: number) {
-        let v4 = this._currentSkeletonClip.rotationCurves.get(boneName).getValue(time) as Vector4;
-        Quaternion.HELP_2.set(v4.x, v4.y, v4.z, v4.w);
-        Matrix4.getEuler(Vector3.HELP_6, Quaternion.HELP_2, true, 'ZYX');
-        return Vector3.HELP_6;
+        if (this._currentSkeletonClip.rotationCurves.has(boneName)) {
+            let v4 = this._currentSkeletonClip.rotationCurves.get(boneName).getValue(time) as Vector4;
+            Quaternion.HELP_2.set(v4.x, v4.y, v4.z, v4.w);
+            Matrix4.getEuler(Vector3.HELP_6, Quaternion.HELP_2, true, 'ZYX');
+            return Vector3.HELP_6;
+        }
+        return this.skeltonTPoseObject3D[boneName].localRotation;
     }
 
     private getScale(boneName: string, time: number) {
-        let x = this._currentSkeletonClip.scaleCurves.get(boneName).getValue(time) as Vector3;
-        return x;
+        if (this._currentSkeletonClip.scaleCurves.has(boneName)) {
+            let x = this._currentSkeletonClip.scaleCurves.get(boneName).getValue(time) as Vector3;
+            return x;
+        }
+        return this.skeltonTPoseObject3D[boneName].localScale;
     }
 
     private getFloat(propertyName: string, time: number) {

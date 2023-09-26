@@ -1,8 +1,9 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AtmosphericComponent, BillboardType, BlendMode, Color, DirectLight, Engine3D, GPUCullMode, GlobalFog, GlobalIlluminationComponent, HDRBloomPost, LitMaterial, Material, MorphTargetBlender, Object3D, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
+import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, Color, DirectLight, Engine3D, GPUCullMode, GlobalFog, GlobalIlluminationComponent, HDRBloomPost, LitMaterial, Material, MorphTargetBlender, Object3D, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
+
 
 
     public static renderShadowSetting(open: boolean = true) {
@@ -482,5 +483,21 @@ export class GUIUtil {
 
         GUIHelp.open();
         GUIHelp.endFolder();
+    }
+
+    static renderAnimator(com: AnimatorComponent) {
+        let anim = {}
+        for (let i = 0; i < com.clips.length; i++) {
+            const clip = com.clips[i];
+            anim[clip.clipName] = clip.clipName;
+        }
+
+        GUIHelp.addFolder('morph controller');
+
+        GUIHelp.add({ anim: anim }, 'anim', anim).onChange((v) => {
+            com.playAnim(v);
+        });
+        GUIHelp.endFolder();
+
     }
 }
