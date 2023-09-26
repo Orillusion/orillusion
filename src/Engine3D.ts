@@ -136,6 +136,15 @@ export class Engine3D {
             useLogDepth: false,
             gi: false,
             postProcessing: {
+                bloomPost: {
+                    downSampleStep: 5,
+                    downSampleBlurSize: 5,
+                    downSampleBlurSigma: 1.0,
+                    upSampleBlurSize: 5,
+                    upSampleBlurSigma: 1.0,
+                    luminanceThreshole: 1.0,
+                    bloomIntensity: 1.0,
+                },
                 globalFog: {
                     debug: false,
                     enable: false,

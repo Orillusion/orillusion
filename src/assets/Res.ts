@@ -321,6 +321,53 @@ export class Res {
         return hdrTexture;
     }
 
+    private async loadTextureCount(urls: string[], count: number) {
+        return new Promise<BitmapTexture2D[]>(
+            async (suc, fail) => {
+                let total = 0;
+                let loadTexture = [];
+                if (count == 0) {
+                    suc(loadTexture);
+                }
+
+                // for (let j = 0; j < count; j++) {
+                //     const url = urls.shift();
+                //     this.loadTexture(url).then((t) => {
+                //         loadTexture.push(t);
+                //         total++;
+                //         if (total == count) {
+                //             suc(loadTexture);
+                //         }
+                //     });
+                // }
+
+                let textureIndex: { [key: string]: number } = {};
+                for (let j = 0; j < count; j++) {
+                    const url = urls.shift();
+                    textureIndex[url] = j;
+                    this.loadTexture(url).then((t) => {
+                        let index = textureIndex[url];
+                        loadTexture[index] = t;
+                        total++;
+                        if (total == count) {
+                            suc(loadTexture);
+                        }
+                    });
+                }
+            }
+        );
+    }
+
+    public async loadBitmapTextures(urls: string[], count: number = 5, loaderFunctions?: LoaderFunctions, flipY?: boolean) {
+        let loadTexture: BitmapTexture2D[] = [];
+        let loadCount = Math.floor(urls.length / count) + 1;
+        let last = Math.floor(urls.length % count)
+        for (let i = 0; i < loadCount; i++) {
+            let list = await this.loadTextureCount(urls, i == loadCount - 1 ? last : count);
+            loadTexture.push(...list);
+        }
+        return loadTexture;
+    }
 
     /**
      * load hdr cube texture

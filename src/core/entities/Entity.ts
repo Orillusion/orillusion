@@ -308,6 +308,7 @@ export class Entity extends CEventDispatcher {
             }
             this.components.forEach((v, k) => {
                 v.enable = false;
+                v.beforeDestroy();
                 v.destroy();
             });
             this.components.clear();

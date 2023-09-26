@@ -18,56 +18,24 @@ export class Bloom_shader {
     var<uniform> global: uniformData;
 
     fn Brightness(c: vec3<f32>) -> f32 {
-        var c1: vec3<f32>;
-
-        c1 = c;
-        let e8: vec3<f32> = c1;
-        let e10: vec3<f32> = c1;
-        let e12: vec3<f32> = c1;
-        let e14: vec3<f32> = c1;
-        let e17: vec3<f32> = c1;
-        let e19: vec3<f32> = c1;
-        let e21: vec3<f32> = c1;
-        let e23: vec3<f32> = c1;
-        let e25: vec3<f32> = c1;
-        let e28: vec3<f32> = c1;
-        return max(max(e23.x, e25.y), e28.z);
+        return max(max(c.x, c.y), c.z);
     }
 
     fn main1() {
         var uv: vec2<f32>;
-        var LinearColor: vec4<f32>;
+        var LinearColor: vec3<f32>;
         var TotalLuminance: f32;
         var BloomLuminance: f32;
         var BloomAmount: f32;
 
-        let e6: vec2<f32> = fragUV1;
-        uv = e6.xy;
-        let e11: vec2<f32> = uv;
-        uv.y = (1.0 - e11.y);
-        let e15: vec2<f32> = uv;
-        let e16: vec4<f32> = textureSample(baseMap, baseMapSampler, e15);
-        LinearColor = e16;
-        let e18: vec4<f32> = LinearColor;
-        let e27: vec4<f32> = LinearColor;
-        let e36: vec4<f32> = LinearColor;
-        let e38: vec3<f32> = min(vec3<f32>(f32(65000), f32(65000), f32(65000)), e36.xyz);
-        LinearColor.x = e38.x;
-        LinearColor.y = e38.y;
-        LinearColor.z = e38.z;
-        let e45: vec4<f32> = LinearColor;
-        let e47: vec4<f32> = LinearColor;
-        let e49: f32 = Brightness(e47.xyz);
-        TotalLuminance = e49;
-        let e51: f32 = TotalLuminance;
-        let e52: f32 = global.luminosityThreshold;
-        BloomLuminance = (e51 - e52);
-        let e55: f32 = BloomLuminance;
-        let e60: f32 = BloomLuminance;
-        BloomAmount = clamp((e60 * 0.5), 0.0, 1.0);
-        let e67: f32 = BloomAmount;
-        let e68: vec4<f32> = LinearColor;
-        o_Target = vec4<f32>((e67 * e68.xyz), f32(0));
+        uv = fragUV1.xy;
+        uv.y = (1.0 - uv.y);
+        LinearColor = textureSample(baseMap, baseMapSampler, uv).xyz;
+        LinearColor = min(vec3<f32>(65000.0), LinearColor.xyz);
+        TotalLuminance = Brightness(LinearColor.xyz);
+        BloomLuminance = (TotalLuminance - global.luminosityThreshold);
+        BloomAmount = clamp((BloomLuminance * 0.5), 0.0, 1.0);
+        o_Target = vec4<f32>((BloomAmount * LinearColor.xyz), f32(0));
         return;
     }
 
@@ -75,8 +43,7 @@ export class Bloom_shader {
     fn main(@location(0) fragUV: vec2<f32>) -> FragmentOutput {
         fragUV1 = fragUV;
         main1();
-        let e13: vec4<f32> = o_Target;
-        return FragmentOutput(e13);
+        return FragmentOutput(o_Target);
     }
     `;
 
@@ -101,11 +68,6 @@ export class Bloom_shader {
       var baseMap: texture_2d<f32>;
       @group(2) @binding(0)
       var<uniform> global: uniformData;
-
-      fn main1() {
-       
-          return;
-      }
 
       const buffer1: array<f32,5> = array<f32,5>(0.22702699899673462, 0.194594606757164, 0.12162160128355026, 0.05405399948358536, 0.01621600054204464);
 
@@ -221,17 +183,17 @@ export class Bloom_shader {
           var uv: vec2<f32> = fragUV;
           uv.y = (1.0 - uv.y);
         
-          let e38: f32 = lerpBloomFactor(bloomFactors[0]);
-          let e46: vec4<f32> = textureSample(blurTex1, blurTex1Sampler, uv);
-          let e52: f32 = lerpBloomFactor(bloomFactors[1]);
-          let e60: vec4<f32> = textureSample(blurTex2, blurTex2Sampler, uv);
-          let e67: f32 = lerpBloomFactor(bloomFactors[2]);
-          let e75: vec4<f32> = textureSample(blurTex3, blurTex3Sampler, uv);
-          let e82: f32 = lerpBloomFactor(bloomFactors[3]);
-          let e90: vec4<f32> = textureSample(blurTex4, blurTex4Sampler, uv);
-          let e97: f32 = lerpBloomFactor(bloomFactors[4]);
-          let e105: vec4<f32> = textureSample(blurTex5, blurTex5Sampler, uv);
-          o_Target = ((((((((e38 * vec4<f32>(array<vec3<f32>,5>(vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0))[0], 1.0)) * e46) + ((e52 * vec4<f32>(array<vec3<f32>,5>(vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0))[1], 1.0)) * e60)) + ((e67 * vec4<f32>(array<vec3<f32>,5>(vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0))[2], 1.0)) * e75)) + ((e82 * vec4<f32>(array<vec3<f32>,5>(vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0))[3], 1.0)) * e90)) + ((e97 * vec4<f32>(array<vec3<f32>,5>(vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, 1.0, 1.0))[4], 1.0)) * e105))));
+          let lp0: f32 = lerpBloomFactor(bloomFactors[0]);
+          let bl0: vec4<f32> = textureSample(blurTex1, blurTex1Sampler, uv);
+          let lp1: f32 = lerpBloomFactor(bloomFactors[1]);
+          let bl1: vec4<f32> = textureSample(blurTex2, blurTex2Sampler, uv);
+          let lp2: f32 = lerpBloomFactor(bloomFactors[2]);
+          let bl2: vec4<f32> = textureSample(blurTex3, blurTex3Sampler, uv);
+          let lp3: f32 = lerpBloomFactor(bloomFactors[3]);
+          let bl3: vec4<f32> = textureSample(blurTex4, blurTex4Sampler, uv);
+          let lp4: f32 = lerpBloomFactor(bloomFactors[4]);
+          let bl4: vec4<f32> = textureSample(blurTex5, blurTex5Sampler, uv);
+          o_Target = lp0 * bl0 + lp1 * bl0 + lp2 * bl1 + lp3 * bl2 + lp4 * bl3;
           
           let baseColor: vec4<f32> = textureSample(baseMap, baseMapSampler, uv);
           
