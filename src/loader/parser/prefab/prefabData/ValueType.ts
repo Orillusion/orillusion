@@ -30,4 +30,8 @@ export enum ValueEnumType {
     materials,
     skeleton,
     animClip,
+    vector2Int,
+    int32List,
+    colorList,
+    color32List,
 }

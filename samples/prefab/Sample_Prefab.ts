@@ -73,18 +73,26 @@ export class Sample_Prefab {
         }
 
         {
-            let sc = await Engine3D.res.load("prefab/room.o3d", PrefabParser) as Object3D;
-            this.scene.addChild(sc);
+            // let sc = await Engine3D.res.load("prefab/room.o3d", PrefabParser) as Object3D;
+            // this.scene.addChild(sc);
 
-            let node = await Engine3D.res.load("prefab/nvhai.o3d", PrefabParser) as Object3D;
-            let anim = node.getComponents(AnimatorComponent);
-            GUIUtil.renderAnimator(anim[0]);
-            node.x = 5 ;
-            sc.addChild(node);
+            // let node = await Engine3D.res.load("prefab/nvhai.o3d", PrefabParser) as Object3D;
+            // let anim = node.getComponents(AnimatorComponent);
+            // GUIUtil.renderAnimator(anim[0]);
+            // node.x = 5 ;
+            // sc.addChild(node);
 
-            let box = Object3DUtil.GetCube();
-            box.x = 5 ;
-            sc.addChild(box);
+            // let box = Object3DUtil.GetCube(value);
+            // box.x = 5 ;
+            // sc.addChild(box);
+        }
+
+        {
+            //  let point = await Engine3D.res.load("prefab/PointData.o3d", PrefabParser) as Object3D;
+            // this.scene.addChild(point);
+
+              let aStar = await Engine3D.res.load("prefab/aStar.o3d", PrefabParser) as Object3D;
+            this.scene.addChild(aStar); 
         }
 
     }

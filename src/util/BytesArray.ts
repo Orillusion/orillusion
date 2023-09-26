@@ -126,6 +126,15 @@ export class BytesArray extends DataView {
         return ret;
     }
 
+    public readInt32List(): number[] {
+        let len = this.readInt32();
+        let ret = [];
+        for (let i = 0; i < len; i++) {
+            ret.push(this.readInt32());
+        }
+        return ret;
+    }
+
     public readFloatArray(): number[] {
         let len = this.readInt32();
         let ret = [];
@@ -144,6 +153,13 @@ export class BytesArray extends DataView {
             ret.push(v);
         }
         return ret;
+    }
+
+    public readVector2int() {
+        let v = new Vector2();
+        v.x = this.readInt32();
+        v.y = this.readInt32();
+        return v;
     }
 
     public readVector2() {
