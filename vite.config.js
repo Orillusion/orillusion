@@ -2,7 +2,6 @@
 import { defineConfig } from 'vite'
 import { readFile, writeFile, readdir, lstat } from 'fs/promises'
 import { resolve, parse } from 'path'
-import basicSsl from '@vitejs/plugin-basic-ssl'
 export default defineConfig(option => ({
     server: {
         host: '0.0.0.0',
@@ -65,7 +64,7 @@ export default defineConfig(option => ({
             //     res.setHeader("Cross-Origin-Embedder-Policy", "require-corp")
             // })
         }
-    }, basicSsl()],
+    }],
     build: {
         lib: {
             entry: resolve(__dirname, './src/index.ts'),

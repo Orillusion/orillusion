@@ -29,21 +29,6 @@ export class SkinnedMeshRenderer extends MeshRenderer {
         this.addRendererMask(RendererMask.SkinnedMesh);
     }
 
-    public get geometry(): GeometryBase {
-        return this._geometry;
-    }
-
-    public set geometry(value: GeometryBase) {
-        this.skinJointsName = value.skinNames;
-        let matrixList: Float32Array[] = [];
-        for (let i = 0; i < value.bindPose.length; i++) {
-            Matrix4.helpMatrix.identity();
-            matrixList.push(new Float32Array(Matrix4.helpMatrix.rawData));
-        }
-        this.skinInverseBindMatrices = matrixList;
-        super.geometry = value;
-    }
-
     public start() {
         super.start();
         this.skeletonAnimation = this.object3D.getComponent(SkeletonAnimationComponent);
