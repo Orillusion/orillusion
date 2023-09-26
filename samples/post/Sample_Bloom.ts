@@ -2,7 +2,7 @@ import {
 	View3D, DirectLight, Engine3D,
 	PostProcessingComponent, LitMaterial, HoverCameraController,
 	KelvinUtil, MeshRenderer, Object3D, PlaneGeometry, Scene3D, SphereGeometry,
-	CameraUtil, webGPUContext, BoxGeometry, TAAPost, AtmosphericComponent, GTAOPost, Color, HDRBloomPost
+	CameraUtil, webGPUContext, BoxGeometry, TAAPost, AtmosphericComponent, GTAOPost, Color, HDRBloomPost, BloomPost
 } from '@orillusion/core';
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { GUI } from '@orillusion/debug/dat.gui.module';
@@ -36,14 +36,9 @@ class Sample_Bloom {
 		Engine3D.startRenderView(view);
 
 		let postProcessing = this.scene.addComponent(PostProcessingComponent);
-		let post = postProcessing.addPost(HDRBloomPost);
-		post.blurX = 5;
-		post.blurY = 5;
-		post.luminosityThreshold = 1.1;
-		post.strength = 1.0;
-
+		let post = postProcessing.addPost(BloomPost);
 		GUIHelp.init();
-		GUIUtil.renderBloom(post, true);
+		GUIUtil.renderBloomPost(post, true);
 	}
 
 	async initScene() {

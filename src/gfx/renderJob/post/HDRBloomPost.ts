@@ -72,8 +72,8 @@ export class HDRBloomPost extends PostBase {
                 qr: qr,
             });
 
-            sizeW /= 2;
-            sizeH /= 2;
+            sizeW = Math.ceil(sizeW * 0.5);
+            sizeH = Math.ceil(sizeH * 0.5);
         }
 
         {

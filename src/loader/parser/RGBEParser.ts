@@ -38,7 +38,7 @@ export class RGBEHeader {
  * @group Loader
  */
 export class RGBEParser extends ParserBase {
-    static format: string = 'bin';
+    // static format: string = 'bin';
     private _rgbeArray: Uint8Array;
     private _width: number;
     private _height: number;

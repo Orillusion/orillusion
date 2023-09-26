@@ -271,6 +271,23 @@ export class Res {
         return texture;
     }
 
+    /**
+     * load a hdr texture
+     * @param url texture url
+     * @param loaderFunctions callback
+     * @returns
+     */
+    public async loadHDRTexture(url: string, loaderFunctions?: LoaderFunctions) {
+        if (this._texturePool.has(url)) {
+            return this._texturePool.get(url);
+        }
+
+        let hdrTexture = new HDRTexture();
+        hdrTexture = await hdrTexture.load(url, loaderFunctions);
+        this._texturePool.set(url, hdrTexture);
+        return hdrTexture;
+    }
+
     private async loadTextureCount(urls: string[], count: number) {
         return new Promise<BitmapTexture2D[]>(
             async (suc, fail) => {
@@ -279,10 +296,25 @@ export class Res {
                 if (count == 0) {
                     suc(loadTexture);
                 }
+
+                // for (let j = 0; j < count; j++) {
+                //     const url = urls.shift();
+                //     this.loadTexture(url).then((t) => {
+                //         loadTexture.push(t);
+                //         total++;
+                //         if (total == count) {
+                //             suc(loadTexture);
+                //         }
+                //     });
+                // }
+
+                let textureIndex: { [key: string]: number } = {};
                 for (let j = 0; j < count; j++) {
                     const url = urls.shift();
+                    textureIndex[url] = j;
                     this.loadTexture(url).then((t) => {
-                        loadTexture.push(t);
+                        let index = textureIndex[url];
+                        loadTexture[index] = t;
                         total++;
                         if (total == count) {
                             suc(loadTexture);
@@ -303,24 +335,6 @@ export class Res {
         }
         return loadTexture;
     }
-
-    /**
-     * load a hdr texture
-     * @param url texture url
-     * @param loaderFunctions callback
-     * @returns
-     */
-    public async loadHDRTexture(url: string, loaderFunctions?: LoaderFunctions) {
-        if (this._texturePool.has(url)) {
-            return this._texturePool.get(url);
-        }
-
-        let hdrTexture = new HDRTexture();
-        hdrTexture = await hdrTexture.load(url, loaderFunctions);
-        this._texturePool.set(url, hdrTexture);
-        return hdrTexture;
-    }
-
 
     /**
      * load hdr cube texture
