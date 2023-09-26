@@ -5,6 +5,7 @@ import { GTAOSetting } from "./post/GTAOSetting";
 import { OutlineSetting } from "./post/OutlineSetting";
 import { SSRSetting } from "./post/SSRSetting";
 import { TAASetting } from "./post/TAASetting";
+import { BloomPostSetting } from "./post/BloomPostSetting";
 
 export type RenderSetting = {
     debug: boolean;
@@ -31,6 +32,7 @@ export type RenderSetting = {
     postProcessing: {
         enable?: boolean;
         bloom?: BloomSetting;
+        bloomPost?: BloomPostSetting,
         ssao?: {
             debug: any;
             enable: boolean;
