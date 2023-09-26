@@ -24,6 +24,7 @@ export class AnimatorComponent extends ComponentBase {
     private _blendShapeSpeed: number = 1;
     private _skeletonStart: boolean = true;
     private _blendShapeStart: boolean = true;
+    root: Object3D;
 
     public init(param?: any): void {
         this.propertyCache = new Map<RenderNode, { [name: string]: any }>();
@@ -89,7 +90,11 @@ export class AnimatorComponent extends ComponentBase {
             if (joint.parentBoneName && joint.parentBoneName != "") {
                 this.skeltonPoseObject3D[joint.parentBoneName].addChild(obj);
             } else {
-                this.object3D.addChild(obj);
+                // this.object3D.addChild(obj);
+                if(this.object3D.transform.scene3D){
+                    this.object3D.transform.scene3D.addChild(obj);
+                }
+                this.root = obj ;
             }
 
             list.push(obj.transform.worldMatrix.index);
@@ -133,6 +138,11 @@ export class AnimatorComponent extends ComponentBase {
     }
 
     public onUpdate(view?: View3D) {
+        let worldMatrix = this.transform.worldMatrix ;
+        // this.root.x = -worldMatrix.position.x ;
+        // this.root.y = -worldMatrix.position.y ;
+        // this.root.z = -worldMatrix.position.z ;
+
         this.updateTime();
         this.updateSkeletonAnim();
         this.updateMorphAnim();

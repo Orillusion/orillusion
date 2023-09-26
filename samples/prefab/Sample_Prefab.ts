@@ -1,6 +1,6 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { GUIUtil } from "@samples/utils/GUIUtil";
-import { Engine3D, Object3D, Scene3D, CameraUtil, HoverCameraController, View3D, AtmosphericComponent, DirectLight, KelvinUtil, PrefabMeshParser, LitMaterial, MeshRenderer, PostProcessingComponent, GTAOPost, HDRBloomPost, SSRPost, PrefabParser, AnimatorComponent } from "../../src";
+import { Engine3D, Object3D, Scene3D, CameraUtil, HoverCameraController, View3D, AtmosphericComponent, DirectLight, KelvinUtil, PrefabMeshParser, LitMaterial, MeshRenderer, PostProcessingComponent, GTAOPost, HDRBloomPost, SSRPost, PrefabParser, AnimatorComponent, Object3DUtil } from "../../src";
 
 
 export class Sample_Prefab {
@@ -73,17 +73,19 @@ export class Sample_Prefab {
         }
 
         {
-            let node = await Engine3D.res.load("prefab/room.o3d", PrefabParser) as Object3D;
-            this.scene.addChild(node);
-        }
+            let sc = await Engine3D.res.load("prefab/room.o3d", PrefabParser) as Object3D;
+            this.scene.addChild(sc);
 
-        {
             let node = await Engine3D.res.load("prefab/nvhai.o3d", PrefabParser) as Object3D;
             let anim = node.getComponents(AnimatorComponent);
             GUIUtil.renderAnimator(anim[0]);
-            this.scene.addChild(node);
-        }
+            node.x = 5 ;
+            sc.addChild(node);
 
+            let box = Object3DUtil.GetCube();
+            box.x = 5 ;
+            sc.addChild(box);
+        }
 
     }
 }
