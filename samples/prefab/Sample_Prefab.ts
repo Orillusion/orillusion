@@ -1,6 +1,6 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { GUIUtil } from "@samples/utils/GUIUtil";
-import { Engine3D, Object3D, Scene3D, CameraUtil, HoverCameraController, View3D, AtmosphericComponent, DirectLight, KelvinUtil, PrefabMeshParser, LitMaterial, MeshRenderer, PostProcessingComponent, GTAOPost, HDRBloomPost, SSRPost, PrefabParser, AnimatorComponent } from "../../src";
+import { Engine3D, Object3D, Scene3D, CameraUtil, HoverCameraController, View3D, AtmosphericComponent, DirectLight, KelvinUtil, PrefabMeshParser, LitMaterial, MeshRenderer, PostProcessingComponent, GTAOPost, SSRPost, PrefabParser, AnimatorComponent } from "../../src";
 
 
 export class Sample_Prefab {
@@ -13,16 +13,6 @@ export class Sample_Prefab {
         Engine3D.setting.shadow.shadowBound = 20;
         Engine3D.setting.shadow.shadowSize = 4096;
         Engine3D.setting.shadow.type = "SOFT";
-        Engine3D.setting.render.postProcessing.bloom = {
-            enable: true,
-            blurX: 4,
-            blurY: 4,
-            luminosityThreshold: 0.8,
-            strength: 0.86,
-            exposure: 1,
-            radius: 4,
-            debug: false
-        };
 
         await Engine3D.init({ canvasConfig: { alpha: true, zIndex: 11 } });
 
@@ -44,7 +34,7 @@ export class Sample_Prefab {
 
         let post = this.scene.addComponent(PostProcessingComponent);
         post.addPost(GTAOPost);
-        // let bloom = post.addPost(HDRBloomPost);
+        // let bloom = post.addPost(BloomPost);
         // GUIUtil.renderBloom(bloom);
         // post.addPost(SSRPost);
         // GUIUtil.renderDebug();

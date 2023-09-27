@@ -1,7 +1,7 @@
 import { test, end, delay } from '../util'
-import { Camera3D, CameraUtil, Engine3D, HDRBloomPost, Object3D, PostProcessingComponent, Scene3D, View3D } from '@orillusion/core';
+import { BloomPost, Camera3D, CameraUtil, Engine3D, Object3D, PostProcessingComponent, Scene3D, View3D } from '@orillusion/core';
 
-await test('Post HDRBloomPost test', async () => {
+await test('Post BloomPost test', async () => {
     await Engine3D.init();
     Engine3D.frameRate = 10;
 
@@ -11,7 +11,7 @@ await test('Post HDRBloomPost test', async () => {
     Engine3D.startRenderView(view);
 
     let postProcessing = view.scene.addComponent(PostProcessingComponent);
-    postProcessing.addPost(HDRBloomPost);
+    postProcessing.addPost(BloomPost);
     await delay(100)
     Engine3D.pause()
 })

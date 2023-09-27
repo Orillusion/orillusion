@@ -1,4 +1,3 @@
-import { Bloom_shader } from './post/Bloom_shader';
 import { ClusterDebug_frag } from './materials/program/ClusterDebug_frag';
 import { CubeSky_Shader } from './sky/CubeSky_Shader';
 import { LightingFunction_frag } from './lighting/LightingFunction_frag';
@@ -94,9 +93,6 @@ export class ShaderLib {
         ShaderLib.register('Quad_depthCube_frag_wgsl', Quad_depthCube_frag_wgsl);
         ShaderLib.register('sky_vs_frag_wgsl', CubeSky_Shader.sky_vs_frag_wgsl);
         ShaderLib.register('sky_fs_frag_wgsl', CubeSky_Shader.sky_fs_frag_wgsl);
-        ShaderLib.register('Bloom_Brightness_frag_wgsl', Bloom_shader.Bloom_Brightness_frag_wgsl);
-        ShaderLib.register('Bloom_blur_frag_wgsl', Bloom_shader.Bloom_blur_frag_wgsl);
-        ShaderLib.register('Bloom_composite_frag_wgsl', Bloom_shader.Bloom_composite_frag_wgsl);
 
         ShaderLib.register("LambertShader", LambertShader);
 

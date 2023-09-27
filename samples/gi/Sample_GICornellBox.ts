@@ -1,5 +1,5 @@
 import { createExampleScene, createSceneParam } from "@samples/utils/ExampleScene";
-import { Object3D, Scene3D, Engine3D, GlobalIlluminationComponent, Vector3, GTAOPost, PostProcessingComponent, HDRBloomPost } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, GlobalIlluminationComponent, Vector3, GTAOPost, PostProcessingComponent, BloomPost } from "@orillusion/core";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
@@ -36,15 +36,6 @@ class Sample_GICornellBox {
         Engine3D.setting.shadow.updateFrameRate = 1;
 
         Engine3D.setting.render.debug = true;
-        Engine3D.setting.render.postProcessing.bloom = {
-            enable: true,
-            debug: false,
-            blurX: 4,
-            blurY: 4,
-            luminosityThreshold: 0.9,
-            radius: 4,
-            strength: 1.2
-        };
 
         await Engine3D.init({
             renderLoop: () => {
@@ -66,7 +57,7 @@ class Sample_GICornellBox {
 
         let postProcessing = this.scene.addComponent(PostProcessingComponent);
         postProcessing.addPost(GTAOPost);
-        postProcessing.addPost(HDRBloomPost);
+        postProcessing.addPost(BloomPost);
 
         Engine3D.setting.shadow.csmScatteringExp = 0.8;
         GUIHelp.add(Engine3D.setting.shadow, 'csmScatteringExp', 0.5, 1, 0.001);

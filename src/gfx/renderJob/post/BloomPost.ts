@@ -17,7 +17,7 @@ import { downSample, post, threshold, upSample } from '../../../assets/shader/co
  * Bloom Effects
  * ```
  * bloom setting
- * let cfg = {@link Engine3D.setting.render.postProcessing.bloomCfg};
+ * let cfg = {@link Engine3D.setting.render.postProcessing.bloom};
  *```
  * @group Post Effects
  */
@@ -56,14 +56,14 @@ export class BloomPost extends PostBase {
      * @internal
      */
     onAttach(view: View3D,) {
-        Engine3D.setting.render.postProcessing.bloomPost.enable = true;
+        Engine3D.setting.render.postProcessing.bloom.enable = true;
         this.createGUI();
     }
     /**
      * @internal
      */Render
     onDetach(view: View3D,) {
-        Engine3D.setting.render.postProcessing.bloomPost.enable = false;
+        Engine3D.setting.render.postProcessing.bloom.enable = false;
         this.removeGUI();
     }
 
@@ -74,46 +74,46 @@ export class BloomPost extends PostBase {
     }
 
     public get downSampleBlurSize(): number {
-        return Engine3D.setting.render.postProcessing.bloomPost.downSampleBlurSize;
+        return Engine3D.setting.render.postProcessing.bloom.downSampleBlurSize;
     }
     public set downSampleBlurSize(value: number) {
-        Engine3D.setting.render.postProcessing.bloomPost.downSampleBlurSize = value;
+        Engine3D.setting.render.postProcessing.bloom.downSampleBlurSize = value;
     }
 
 
     public get downSampleBlurSigma(): number {
-        return Engine3D.setting.render.postProcessing.bloomPost.downSampleBlurSigma;
+        return Engine3D.setting.render.postProcessing.bloom.downSampleBlurSigma;
     }
     public set downSampleBlurSigma(value: number) {
-        Engine3D.setting.render.postProcessing.bloomPost.downSampleBlurSigma = value;
+        Engine3D.setting.render.postProcessing.bloom.downSampleBlurSigma = value;
     }
 
     public get upSampleBlurSize(): number {
-        return Engine3D.setting.render.postProcessing.bloomPost.upSampleBlurSize;
+        return Engine3D.setting.render.postProcessing.bloom.upSampleBlurSize;
     }
     public set upSampleBlurSize(value: number) {
-        Engine3D.setting.render.postProcessing.bloomPost.upSampleBlurSize = value;
+        Engine3D.setting.render.postProcessing.bloom.upSampleBlurSize = value;
     }
 
     public get upSampleBlurSigma(): number {
-        return Engine3D.setting.render.postProcessing.bloomPost.upSampleBlurSigma;
+        return Engine3D.setting.render.postProcessing.bloom.upSampleBlurSigma;
     }
     public set upSampleBlurSigma(value: number) {
-        Engine3D.setting.render.postProcessing.bloomPost.upSampleBlurSigma = value;
+        Engine3D.setting.render.postProcessing.bloom.upSampleBlurSigma = value;
     }
 
     public get luminanceThreshole(): number {
-        return Engine3D.setting.render.postProcessing.bloomPost.luminanceThreshole;
+        return Engine3D.setting.render.postProcessing.bloom.luminanceThreshole;
     }
     public set luminanceThreshole(value: number) {
-        Engine3D.setting.render.postProcessing.bloomPost.luminanceThreshole = value;
+        Engine3D.setting.render.postProcessing.bloom.luminanceThreshole = value;
     }
 
     public get bloomIntensity(): number {
-        return Engine3D.setting.render.postProcessing.bloomPost.bloomIntensity;
+        return Engine3D.setting.render.postProcessing.bloom.bloomIntensity;
     }
     public set bloomIntensity(value: number) {
-        Engine3D.setting.render.postProcessing.bloomPost.bloomIntensity = value;
+        Engine3D.setting.render.postProcessing.bloom.bloomIntensity = value;
     }
 
     private createThreshouldCompute() {
@@ -128,7 +128,7 @@ export class BloomPost extends PostBase {
     }
 
     private createDownSampleComputes() {
-        let setting = Engine3D.setting.render.postProcessing.bloomPost;
+        let setting = Engine3D.setting.render.postProcessing.bloom;
         const N = setting.downSampleStep;  // 下采样次数
         this.downSampleComputes = [];
 
@@ -150,7 +150,7 @@ export class BloomPost extends PostBase {
     }
 
     private createUpSampleComputes() {
-        let setting = Engine3D.setting.render.postProcessing.bloomPost;
+        let setting = Engine3D.setting.render.postProcessing.bloom;
         const N = setting.downSampleStep;  // 下采样次数
         this.upSampleComputes = [];
         {
@@ -186,7 +186,7 @@ export class BloomPost extends PostBase {
     }
 
     private createPostCompute() {
-        let setting = Engine3D.setting.render.postProcessing.bloomPost;
+        let setting = Engine3D.setting.render.postProcessing.bloom;
         const N = setting.downSampleStep;  // 融合结果
 
         this.postCompute = new ComputeShader(post);
@@ -203,7 +203,7 @@ export class BloomPost extends PostBase {
 
 
     private createResource() {
-        let setting = Engine3D.setting.render.postProcessing.bloomPost;
+        let setting = Engine3D.setting.render.postProcessing.bloom;
 
         this.bloomSetting = new UniformGPUBuffer(4 * 2); //vector4 * 2
 
@@ -261,7 +261,7 @@ export class BloomPost extends PostBase {
             this.rendererPassState = WebGPUDescriptorCreator.createRendererPassState(this.rtFrame, null);
             this.rendererPassState.label = "Bloom";
         }
-        let cfg = Engine3D.setting.render.postProcessing.bloomPost;
+        let cfg = Engine3D.setting.render.postProcessing.bloom;
 
         this.bloomSetting.setFloat('downSampleStep', cfg.downSampleStep);
         this.bloomSetting.setFloat('downSampleBlurSize', cfg.downSampleBlurSize);

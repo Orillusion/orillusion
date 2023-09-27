@@ -19,7 +19,7 @@ import { ComponentCollect } from './gfx/renderJob/collect/ComponentCollect';
 import { ShadowLightsCollect } from './gfx/renderJob/collect/ShadowLightsCollect';
 import { GUIConfig } from './components/gui/GUIConfig';
 import { WasmMatrix } from '@orillusion/wasm-matrix/WasmMatrix';
-import { Matrix4 } from '.';
+import { Matrix4 } from './math/Matrix4';
 
 /** 
  * Orillusion 3D Engine
@@ -136,7 +136,7 @@ export class Engine3D {
             useLogDepth: false,
             gi: false,
             postProcessing: {
-                bloomPost: {
+                bloom: {
                     downSampleStep: 5,
                     downSampleBlurSize: 5,
                     downSampleBlurSigma: 1.0,
@@ -211,16 +211,6 @@ export class Engine3D {
                     powDotRN: 0.2,
                     mixThreshold: 0.1,
                     debug: true,
-                },
-                bloom: {
-                    enable: false,
-                    blurX: 4,
-                    blurY: 4,
-                    strength: 0.25,
-                    exposure: 1,
-                    radius: 1.3,
-                    luminosityThreshold: 0.98,
-                    debug: false,
                 },
                 fxaa: {
                     enable: false,

@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, BloomPost, Color, DirectLight, Engine3D, GPUCullMode, GlobalFog, GlobalIlluminationComponent, HDRBloomPost, LitMaterial, Material, MorphTargetBlender, Object3D, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
+import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, BloomPost, Color, DirectLight, Engine3D, GPUCullMode, GlobalFog, GlobalIlluminationComponent, LitMaterial, Material, MorphTargetBlender, Object3D, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
@@ -73,7 +73,7 @@ export class GUIUtil {
         GUIHelp.endFolder();
     }
 
-    public static renderBloomPost(bloom: BloomPost, open: boolean = true, name?: string) {
+    public static renderBloom(bloom: BloomPost, open: boolean = true, name?: string) {
         name ||= 'Bloom';
         GUIHelp.addFolder(name);
         GUIHelp.add(bloom, 'downSampleBlurSize', 3, 15, 1);
@@ -83,22 +83,6 @@ export class GUIUtil {
         GUIHelp.add(bloom, 'luminanceThreshole', 0.001, 10.0, 0.001);
         GUIHelp.add(bloom, 'bloomIntensity', 0.001, 10.0, 0.001);
         GUIHelp.add(bloom, 'useACESToneMapping');
-        open && GUIHelp.open();
-        GUIHelp.endFolder();
-    }
-
-    //render bloom gui panel
-    public static renderBloom(bloom: HDRBloomPost, open: boolean = true, name?: string) {
-        name ||= 'HDRBloom';
-        GUIHelp.addFolder(name);
-        GUIHelp.add(bloom, 'enable');
-        GUIHelp.addColor(bloom, 'tintColor');
-        GUIHelp.add(bloom, 'luminosityThreshold');
-        GUIHelp.add(bloom, 'strength', 0, 3, 0.001);
-        GUIHelp.add(bloom, 'exposure');
-        GUIHelp.add(bloom, 'radius', 0, 1.0, 0.001);
-        GUIHelp.add(bloom, 'blurX');
-        GUIHelp.add(bloom, 'blurY');
         open && GUIHelp.open();
         GUIHelp.endFolder();
     }

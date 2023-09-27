@@ -11,16 +11,6 @@ class Sample_PBRMaterial {
         //config settings
         Engine3D.setting.render.debug = true;
         Engine3D.setting.shadow.shadowBound = 50;
-        Engine3D.setting.render.postProcessing.bloom = {
-            enable: true,
-            blurX: 4,
-            blurY: 4,
-            luminosityThreshold: 0.8,
-            strength: 0.86,
-            exposure: 1,
-            radius: 4,
-            debug: false
-        };
 
         await Engine3D.init({ canvasConfig: { alpha: true, zIndex: 11, backgroundImage: '/logo/bg.webp' } });
 

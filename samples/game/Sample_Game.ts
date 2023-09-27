@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Scene3D, HoverCameraController, Engine3D, AtmosphericComponent, Object3D, Camera3D, Vector3, View3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer, BoxGeometry, CameraUtil, SphereGeometry, Color, Object3DUtil, BlendMode, Vector4, PostProcessingComponent, GTAOPost, SkinnedMeshRenderer, MorphTargetBlender, StorageUtil, Interpolator, HDRBloomPost } from "@orillusion/core";
+import { Scene3D, HoverCameraController, Engine3D, AtmosphericComponent, Object3D, Camera3D, Vector3, View3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer, BoxGeometry, CameraUtil, SphereGeometry, Color, Object3DUtil, BlendMode, Vector4, PostProcessingComponent, GTAOPost, SkinnedMeshRenderer, MorphTargetBlender, StorageUtil, Interpolator, BloomPost } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { GUIController } from "@orillusion/debug/dat.gui.module";
 
@@ -43,7 +43,7 @@ class Sample_Game {
 
         let post = this.scene.addComponent(PostProcessingComponent);
         post.addPost(GTAOPost);
-        let bloom = post.addPost(HDRBloomPost);
+        let bloom = post.addPost(BloomPost);
         GUIUtil.renderBloom(bloom);
     }
 

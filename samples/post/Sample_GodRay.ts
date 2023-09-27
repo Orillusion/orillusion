@@ -2,8 +2,7 @@ import {
 	View3D, DirectLight, Engine3D,
 	PostProcessingComponent, LitMaterial, HoverCameraController,
 	KelvinUtil, MeshRenderer, Object3D, PlaneGeometry, Scene3D, SphereGeometry,
-	CameraUtil, webGPUContext, BoxGeometry, AtmosphericComponent, Time,
-	HDRBloomPost, GodRayPost
+	CameraUtil, webGPUContext, BoxGeometry, AtmosphericComponent, Time, GodRayPost, BloomPost
 } from '@orillusion/core';
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { GUIUtil } from '@samples/utils/GUIUtil';
@@ -38,7 +37,7 @@ class Sample_GodRay {
 
 		let postProcessing = this.scene.addComponent(PostProcessingComponent);
 		postProcessing.addPost(GodRayPost);
-		postProcessing.addPost(HDRBloomPost);
+		postProcessing.addPost(BloomPost);
 
 		GUIUtil.renderAtomosphericSky(sky, false);
 	}

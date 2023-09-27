@@ -1,5 +1,5 @@
 import { createExampleScene, createSceneParam } from "@samples/utils/ExampleScene";
-import { Object3D, Scene3D, Engine3D, GlobalIlluminationComponent, Object3DUtil, GTAOPost, HDRBloomPost, PostProcessingComponent, TAAPost, Vector3, Color, AnimationCurve, Keyframe } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, GlobalIlluminationComponent, Object3DUtil, GTAOPost, PostProcessingComponent, TAAPost, Vector3, Color, AnimationCurve, Keyframe } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 
@@ -10,16 +10,6 @@ class Sample_GraphicLine {
 
         Engine3D.setting.material.materialChannelDebug = true;
         Engine3D.setting.material.materialDebug = false;
-
-        Engine3D.setting.render.postProcessing.bloom = {
-            enable: true,
-            debug: false,
-            blurX: 4,
-            blurY: 4,
-            luminosityThreshold: 0.9,
-            radius: 4,
-            strength: 1.2
-        };
 
         await Engine3D.init({});
         GUIHelp.init();

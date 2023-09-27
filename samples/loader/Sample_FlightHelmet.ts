@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, HoverCameraController, Engine3D, CameraUtil, View3D, SSRPost, HDRBloomPost, AtmosphericComponent, DirectLight, KelvinUtil, Time } from "@orillusion/core";
+import { Object3D, Scene3D, HoverCameraController, Engine3D, CameraUtil, View3D, SSRPost, AtmosphericComponent, DirectLight, KelvinUtil, Time } from "@orillusion/core";
 import { GUIUtil as GUIUtil } from "@samples/utils/GUIUtil";
 
 class Sample_FlightHelmet {
@@ -22,16 +22,6 @@ class Sample_FlightHelmet {
         Engine3D.setting.shadow.shadowBound = 10;
         Engine3D.setting.render.postProcessing.ssao.radius = 0.018;
         Engine3D.setting.render.postProcessing.ssao.aoPower = 1;
-        Engine3D.setting.render.postProcessing.bloom = {
-            enable: true,
-            blurX: 4,
-            blurY: 4,
-            strength: 1.5,
-            luminosityThreshold: 0.1,
-            radius: 4,
-            debug: false
-        };
-
 
         this.scene = new Scene3D();
         let camera = CameraUtil.createCamera3DObject(this.scene);
