@@ -16,6 +16,7 @@ export class APatch extends ComponentBase {
     public aPaths: number[];
 
     public onGraphic(view?: View3D) {
+        return;
         
         // for (let i = this.size.x ; i > 0 ; i--) {
             for (let i = 0; i < this.size.x; i++) {
