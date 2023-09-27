@@ -89,7 +89,7 @@ export class Graphic3DFixedRenderPipeline {
             let targets = rendererPassState.outAttachments;
             if (rendererPassState.outColor != -1) {
                 let target = targets[rendererPassState.outColor];
-                target.blend = BlendFactor.getBlend(BlendMode.NONE);
+                target.blend = BlendFactor.getBlend(BlendMode.ALPHA);
             }
 
             this.mRenderPipelineLayout = device.createPipelineLayout({
@@ -111,7 +111,7 @@ export class Graphic3DFixedRenderPipeline {
                 },
                 primitive: {
                     topology: this.mGPUPrimitiveTopology,
-                    cullMode: GPUCullMode.back,
+                    cullMode: GPUCullMode.none,
                     frontFace: 'ccw',
                 },
             };
