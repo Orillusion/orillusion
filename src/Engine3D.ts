@@ -500,7 +500,6 @@ export class Engine3D {
             }
         }
 
-        if (this.setting.render.debug) {
             for (const iterator of ComponentCollect.graphicComponent) {
                 let k = iterator[0];
                 let v = iterator[1];
@@ -512,7 +511,6 @@ export class Engine3D {
                     };
                 }
             }
-        }
 
         if (this._renderLoop) {
             this._renderLoop();
