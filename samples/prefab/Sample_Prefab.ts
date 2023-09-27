@@ -74,28 +74,25 @@ export class Sample_Prefab {
 
         {
             let node = await Engine3D.res.load("prefab/room.o3d", PrefabParser) as Object3D;
-            node.x = 0 ;
-            node.y = 0 ;
-            node.z = 0 ;
+            // node.scaleX = -1 ;
+            // node.scaleZ = -1 ;
             this.scene.addChild(node);
+
+            GUIUtil.renderTransform(node.transform,true,"room");
         }
 
         {
             let node = await Engine3D.res.load("prefab/nvhai.o3d", PrefabParser) as Object3D;
-            node.x = 0 ;
-            node.y = 0 ;
-            node.z = 0 ;
             let anim = node.getComponents(AnimatorComponent);
             GUIUtil.renderAnimator(anim[0]);
             this.scene.addChild(node);
+            GUIUtil.renderTransform(node.transform,true,"nvhai");
         }
 
         {
             let node = await Engine3D.res.load("prefab/aStar.o3d", PrefabParser) as Object3D;
-            node.x = 0 ;
-            node.y = 0 ;
-            node.z = 0 ;
             this.scene.addChild(node);
+            GUIUtil.renderTransform(node.transform,true,"aStar");
         }
 
 
