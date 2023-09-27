@@ -105,6 +105,30 @@ export class ValueParser {
                     }
                     return { t: ValueEnumType.animClip, v: animClipDatas };
                 }
+                case ValueEnumType.vector2Int:
+                return { t: ValueEnumType.vector2Int, v: bytes.readVector2int() };
+                    break;
+                    case ValueEnumType.int32List:
+                        return { t: ValueEnumType.int32List, v: bytes.readInt32List() };
+                            break;
+                            case ValueEnumType.colorList:
+                                let len = bytes.readInt32();
+                                let list = [] ;
+                                for (let i = 0; i < len ; i++) {
+                                    const element = ValueParser.parser(bytes).v as Color;
+                                    list.push(element);
+                                }
+                        return { t: ValueEnumType.colorList, v: list };
+                            break;
+                            case ValueEnumType.color32List:
+                                let len2 = bytes.readInt32();
+                                let list2 = [] ;
+                                for (let i = 0; i < len2 ; i++) {
+                                    const element = ValueParser.parser(bytes).v as Color;
+                                    list2.push(element);
+                                }
+                        return { t: ValueEnumType.color32List, v: list2 };
+                            break;
         }
     }
 

@@ -248,9 +248,9 @@ export class Graphic3D extends Object3D {
         this.mFillRender.fillShapeData(uuid, 'fill', color, [
             origin,
             new Vector3(origin.x + width, origin.y, origin.z),
-            new Vector3(origin.x + width, origin.y + height, origin.z),
-            new Vector3(origin.x + width, origin.y + height, origin.z),
-            new Vector3(origin.x, origin.y + height, origin.z),
+            new Vector3(origin.x + width, origin.y , origin.z + height),
+            new Vector3(origin.x + width, origin.y , origin.z + height),
+            new Vector3(origin.x, origin.y, origin.z  + height),
             origin
         ]);
     }

@@ -65,9 +65,9 @@ export class GUIUtil {
         GUIHelp.add(transform, 'rotationX', 0.0, 360.0, 0.01);
         GUIHelp.add(transform, 'rotationY', 0.0, 360.0, 0.01);
         GUIHelp.add(transform, 'rotationZ', 0.0, 360.0, 0.01);
-        GUIHelp.add(transform, 'scaleX', 0.0, 2.0, 0.01);
-        GUIHelp.add(transform, 'scaleY', 0.0, 2.0, 0.01);
-        GUIHelp.add(transform, 'scaleZ', 0.0, 2.0, 0.01);
+        GUIHelp.add(transform, 'scaleX', -2.0 , 2.0, 0.01);
+        GUIHelp.add(transform, 'scaleY', -2.0 , 2.0, 0.01);
+        GUIHelp.add(transform, 'scaleZ', -2.0 , 2.0, 0.01);
 
         open && GUIHelp.open();
         GUIHelp.endFolder();

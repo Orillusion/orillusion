@@ -39,7 +39,7 @@ export class PrefabParser extends ParserBase {
 
         this.nodeData = this.parserPrefabNode(bytesStream);
 
-        this.data = this.data = this.parserNodeTree(this.nodeData); 0
+        this.data = this.data = this.parserNodeTree(this.nodeData);
     }
 
     private parserPrefabNode(bytesStream: BytesArray) {
@@ -52,7 +52,7 @@ export class PrefabParser extends ParserBase {
         root.localPosition = Vector3.serialize(nodeData.position);
         root.localQuaternion = Quaternion.serialize(nodeData.rotation);
         root.localScale = Vector3.serialize(nodeData.scale);
-
+        root.name = nodeData.name;
         if (nodeData.comDatas) {
             for (let i = 0; i < nodeData.comDatas.length; i++) {
                 const comData = nodeData.comDatas[i];

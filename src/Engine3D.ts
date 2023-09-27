@@ -490,17 +490,15 @@ export class Engine3D {
             }
         }
 
-        if (this.setting.render.debug) {
-            for (const iterator of ComponentCollect.graphicComponent) {
-                let k = iterator[0];
-                let v = iterator[1];
-                for (const iterator2 of v) {
-                    let f = iterator2[0];
-                    let c = iterator2[1];
-                    if (f.enable) {
-                        c(k);
-                    };
-                }
+        for (const iterator of ComponentCollect.graphicComponent) {
+            let k = iterator[0];
+            let v = iterator[1];
+            for (const iterator2 of v) {
+                let f = iterator2[0];
+                let c = iterator2[1];
+                if (k && f.enable) {
+                    c(k);
+                };
             }
         }
 
