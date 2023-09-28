@@ -8,6 +8,7 @@ import { GUIUtil } from "@samples/utils/GUIUtil";
 @RegisterComponent
 export class AnimatorComponent extends ComponentBase {
     public jointMatrixIndexTableBuffer: StorageGPUBuffer;
+    public playBlendShapeLoop: boolean = false;
     protected inverseBindMatrices: Float32Array[];
     protected _avatar: PrefabAvatarData;
     protected _rendererList: SkinnedMeshRenderer2[];
@@ -40,17 +41,26 @@ export class AnimatorComponent extends ComponentBase {
     }
 
     playAnim(anim: string, time: number = 0, speed: number = 1) {
-        this._currentSkeletonClip = this._clipsMap.get(anim);
-        this._skeletonTime = time;
-        this._skeletonSpeed = speed;
-        this._skeletonStart = true;
+        if (this._clipsMap.has(anim)) {
+            this._currentSkeletonClip = this._clipsMap.get(anim);
+            this._skeletonTime = time;
+            this._skeletonSpeed = speed;
+            this._skeletonStart = true;
+        } else {
+            console.warn(`not has anim ${anim}`);
+        }
+
     }
 
     playBlendShape(shapeName: string, time: number = 0, speed: number = 1) {
-        this._currentBlendAnimClip = this._clipsMap.get(shapeName);
-        this._blendShapeTime = time;
-        this._blendShapeSpeed = speed;
-        this._blendShapeStart = true;
+        if (this._clipsMap.has(shapeName)) {
+            this._currentBlendAnimClip = this._clipsMap.get(shapeName);
+            this._blendShapeTime = time;
+            this._blendShapeSpeed = speed;
+            this._blendShapeStart = true;
+        } else {
+            console.warn(`not has blendShape ${shapeName}`);
+        }
     }
 
     public set avatar(name: string) {
@@ -91,10 +101,10 @@ export class AnimatorComponent extends ComponentBase {
                 this.skeltonPoseObject3D[joint.parentBoneName].addChild(obj);
             } else {
                 // this.object3D.addChild(obj);
-                if(this.object3D.transform.scene3D){
+                if (this.object3D.transform.scene3D) {
                     this.object3D.transform.scene3D.addChild(obj);
                 }
-                this.root = obj ;
+                this.root = obj;
             }
 
             list.push(obj.transform.worldMatrix.index);
@@ -130,15 +140,19 @@ export class AnimatorComponent extends ComponentBase {
         }
 
         if (this._blendShapeStart) {
-            this._blendShapeTime += Time.delta * 0.001 * this._skeletonSpeed;
-            if (this._currentBlendAnimClip && this._currentBlendAnimClip.loopTime) {
-                this._blendShapeTime = this._blendShapeTime % this._currentBlendAnimClip.stopTime;
+            this._blendShapeTime += Time.delta * 0.001 * this._blendShapeSpeed;
+            if (this._currentBlendAnimClip) {
+                if (this._currentBlendAnimClip.loopTime && this.playBlendShapeLoop) {
+                    this._blendShapeTime = this._blendShapeTime % this._currentBlendAnimClip.stopTime;
+                } else {
+                    this._blendShapeTime = Math.min(this._blendShapeTime, this._currentBlendAnimClip.stopTime) - 0.0001;
+                }
             }
         }
     }
 
     public onUpdate(view?: View3D) {
-        let worldMatrix = this.transform.worldMatrix ;
+        let worldMatrix = this.transform.worldMatrix;
         // this.root.x = -worldMatrix.position.x ;
         // this.root.y = -worldMatrix.position.y ;
         // this.root.z = -worldMatrix.position.z ;
@@ -165,7 +179,6 @@ export class AnimatorComponent extends ComponentBase {
                 let rot = this.getRotation(joint.bonePath, this._skeletonTime);
                 obj.transform.localRotation = rot;
 
-
                 if (this._currentSkeletonClip.useSkeletonScale) {
                     let scale = this.getScale(joint.bonePath, this._skeletonTime);
                     obj.transform.localScale = scale;
@@ -181,7 +194,9 @@ export class AnimatorComponent extends ComponentBase {
                     let key = iterator[0];
                     let curve = iterator[1];
                     let attributes = curve.propertys;
-                    let value = this.getFloat(key, this._skeletonTime) / 100;
+
+                    let x = this._currentBlendAnimClip.floatCurves.get(key).getValue(this._blendShapeTime) as number;
+                    let value = x / 100;
                     for (const renderer of this._rendererList) {
                         if (renderer.blendShape) {
                             let property: any = this.propertyCache.get(renderer);

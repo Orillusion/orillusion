@@ -1,4 +1,4 @@
-import { BitmapTexture2D, Engine3D } from "../../..";
+import { BitmapTexture2D, BlendMode, Engine3D } from "../../..";
 import { LitMaterial } from "../../../materials/LitMaterial";
 import { Material } from "../../../materials/Material";
 import { Color } from "../../../math/Color";
@@ -20,6 +20,7 @@ export class PrefabMaterialParser extends ParserBase {
 
             let matName = matBytes.readUTF();
             let id = matBytes.readUTF();
+            let renderType = matBytes.readUTF();
             let defines = matBytes.readStringArray();
             let uvTransform_1 = matBytes.readVector4();
             let uvTransform_2 = matBytes.readVector4();
@@ -57,6 +58,9 @@ export class PrefabMaterialParser extends ParserBase {
             mat.uvTransform_2 = uvTransform_2;
             mat.roughness = 1;
             mat.metallic = 1;
+            mat.alphaCutoff = 0.5;
+
+            mat.blendMode = renderType == "Opaque" ? BlendMode.NONE : BlendMode.ALPHA;
 
             for (let i = 0; i < defines.length; i++) {
                 const define = defines[i];

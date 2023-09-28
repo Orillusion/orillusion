@@ -20,16 +20,16 @@ import { PrefabNode } from "./prefabData/PrefabNode";
 
 
 export class PrefabParser extends ParserBase {
+    public static useWebp: boolean = true;
     static format: ParserFormat = ParserFormat.BIN;
     public avatarDic: { [name: string]: PrefabAvatarData };
     public nodeData: PrefabNode;
-
     public async parseBuffer(buffer: ArrayBuffer) {
         this.avatarDic = {};
 
         let bytesStream = new BytesArray(buffer, 0);
 
-        await PrefabTextureParser.parserTexture(bytesStream, this);
+        await PrefabTextureParser.parserTexture(bytesStream, this, this.loaderFunctions);
 
         PrefabAvatarParser.parser(bytesStream, this);
 
