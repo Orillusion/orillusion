@@ -43,7 +43,7 @@ export let GTAO_cs: string = /*wgsl*/ `
       if(wNormal.w < 0.5){//sky
           
       }else{
-          wPosition = textureLoad(posTex, fragCoord, 0).xyz;
+          wPosition = textureLoad(posTex, fragCoord, 0).xyz ;
           let ndc = globalUniform.projMat * globalUniform.viewMat * vec4<f32>(wPosition, 1.0);
           let ndcZ = ndc.z / ndc.w;
           maxPixelScaled = calcPixelByNDC(ndcZ);

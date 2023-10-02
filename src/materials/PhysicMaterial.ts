@@ -16,6 +16,24 @@ export class PhysicMaterial extends Material {
         super();
     }
 
+    public set shader(shader: RenderShader) {
+        this._shader = shader;
+        this.defaultPass = shader;
+
+        let bdrflutTex = Engine3D.res.getTexture(`BRDFLUT`);
+        this.brdfLUT = bdrflutTex;
+
+        this.setDefault();
+        this.baseMap = Engine3D.res.whiteTexture;
+        this.normalMap = Engine3D.res.normalTexture;
+        this.emissiveMap = Engine3D.res.blackTexture;
+        this.alphaCutoff = 0.5;
+    }
+
+    public get shader(): RenderShader {
+        return this._shader;
+    }
+
     /**
      * Set the render shader default value
      */

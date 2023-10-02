@@ -219,7 +219,7 @@ export let BRDF_frag: string = /*wgsl*/ `
     fn simpleBRDF( albedo:vec3<f32>, N:vec3<f32>, V:vec3<f32>,L:vec3<f32>,att:f32,lightColor:vec3<f32>,roughness:f32 ,metallic:f32)-> vec3<f32>{
         let H = normalize(V + L);
         let Context:BxDFContext = getContext(N,V,H,L);
-        let alpha = pow(roughness,2.0);
+        let alpha = pow(roughness,5.0) ;
         let F0 = mix(vec3<f32>(materialUniform.materialF0.rgb), albedo , metallic);
         let D = DistributionGGX( Context.NoH , alpha);
         let G = GeometrySmith(Context.NoV,Context.NoL, alpha );

@@ -6,6 +6,7 @@ import { BytesArray } from "../../../util/BytesArray";
 import { ParserBase } from "../ParserBase";
 import { ParserFormat } from "../ParserFormat";
 import { PrefabParser } from "./PrefabParser";
+import { MaterialUtilities } from "./mats/MaterialUtilities";
 import { KV } from "./prefabData/KVData";
 import { PrefabTextureData } from "./prefabData/PrefabTextureData";
 
@@ -52,37 +53,32 @@ export class PrefabMaterialParser extends ParserBase {
                 textures.push(textureData);
             }
 
-            let mat = new LitMaterial();
+            let mat = MaterialUtilities.GetMaterial(shaderName);
             mat.name = matName;
-            mat.uvTransform_1 = uvTransform_1;
-            mat.uvTransform_2 = uvTransform_2;
-            mat.roughness = 1;
-            mat.metallic = 1;
-            mat.alphaCutoff = 0.5;
+            // mat.uvTransform_1 = uvTransform_1;
+            // mat.uvTransform_2 = uvTransform_2;
+            // mat.roughness = 1;
+            // mat.metallic = 1;
+            // mat.alphaCutoff = 0.5;
 
-            mat.blendMode = renderType == "Opaque" ? BlendMode.NONE : BlendMode.ALPHA;
+            // mat.blendMode = renderType == "Opaque" ? BlendMode.NONE : BlendMode.ALPHA;
 
             for (let i = 0; i < defines.length; i++) {
                 const define = defines[i];
                 mat.defaultPass.setDefine(define, true);
             }
 
-            for (let ii = 0; ii < textures.length; ii++) {
-                const tex = textures[ii];
-                if (tex.property in Texture_transformer.prototype) {
-                    let { property, value } = Texture_transformer.prototype[tex.property](tex, mat);
-                    if (property in mat) {
-                        mat[property] = value;
-                    }
-                }
-            }
+            MaterialUtilities.applyMaterialTexture(mat, textures);
+            MaterialUtilities.applyMaterialProperties(mat, properties);
 
-            for (let k = 0; k < properties.length; k++) {
-                const kv = properties[k];
-                if (kv.key in Material_transformer.prototype) {
-                    Material_transformer.prototype[kv.key](kv, mat);
-                }
-            }
+            // for (let k = 0; k < properties.length; k++) {
+            //     const kv = properties[k];
+
+            //     // mat.setu(texInfo.property, texInfo.texture);
+            //     // if (kv.key in Material_transformer.prototype) {
+            //     //     Material_transformer.prototype[kv.key](kv, mat);
+            //     // }
+            // }
 
             Engine3D.res.addMat(id, mat);
         }

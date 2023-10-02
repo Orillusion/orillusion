@@ -1,9 +1,11 @@
+import { GTAOPost } from '../../src/index.js';
 import { GUI } from './dat.gui.module.js'
 
 /**
  * @internal
  */
 class _GUIHelp {
+
     public debug: boolean = false;
     public data: any;
     public gui: GUI;

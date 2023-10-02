@@ -1,3 +1,4 @@
+import { GeometryBase } from '../..';
 import { Engine3D } from '../../Engine3D';
 import { RegisterComponent } from '../../util/SerializeDecoration';
 import { MeshRenderer } from './MeshRenderer';
@@ -10,6 +11,12 @@ import { MeshRenderer } from './MeshRenderer';
 export class MeshFilter extends MeshRenderer {
     constructor() {
         super();
+    }
+
+    public get geometry(): GeometryBase {
+        return null;
+    }
+    public set geometry(value: GeometryBase) {
 
     }
 

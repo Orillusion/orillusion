@@ -1,11 +1,13 @@
 import { BytesArray } from "../../../../util/BytesArray";
 import { ValueParser } from "./ValueParser";
+import { ValueEnumType } from "./ValueType";
 
 
 
 export class KV {
 
     public key: string;
+    public type: ValueEnumType;
     private _data: any;
 
     public getValue<T>(): T {
@@ -14,7 +16,9 @@ export class KV {
 
     formBytes(matBytes: BytesArray) {
         this.key = matBytes.readUTF();
-        this._data = ValueParser.parser(matBytes).v;
+        let { t, v } = ValueParser.parser(matBytes);
+        this.type = t;
+        this._data = v;
     }
 }
 

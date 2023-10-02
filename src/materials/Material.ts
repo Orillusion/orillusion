@@ -1,4 +1,4 @@
-import { BlendMode, GPUCompareFunction } from "..";
+import { BlendMode, Color, Engine3D, GPUCompareFunction, StorageGPUBuffer, Texture, UniformGPUBuffer, Vector2, Vector3, Vector4 } from "..";
 import { RenderShader } from "../gfx/graphics/webGpu/shader/RenderShader";
 import { RendererType } from "../gfx/renderJob/passRenderer/state/RendererType";
 
@@ -159,6 +159,16 @@ export class Material {
         return null;
     }
 
+    protected _shader: RenderShader;
+    public set shader(shader: RenderShader) {
+        this._shader = shader;
+        this.defaultPass = shader;
+    }
+
+    public get shader(): RenderShader {
+        return this._shader;
+    }
+
     destroy(force: boolean) {
         for (const iterator of this._renderPasses) {
             let passList = iterator[1];
@@ -169,6 +179,79 @@ export class Material {
                         texture.destroy(force);
                     }
                 }
+            }
+        }
+    }
+
+    public setTexture(propertyName: string, texture: Texture) {
+        for (const iterator of this._renderPasses) {
+            let passList = iterator[1];
+            for (const pass of passList) {
+                pass.setTexture(propertyName, texture);
+            }
+        }
+    }
+
+    public setStorageBuffer(propertyName: string, buffer: StorageGPUBuffer) {
+        for (const iterator of this._renderPasses) {
+            let passList = iterator[1];
+            for (const pass of passList) {
+                pass.setStorageBuffer(propertyName, buffer);
+            }
+        }
+    }
+
+    public setUniformBuffer(propertyName: string, buffer: UniformGPUBuffer) {
+        for (const iterator of this._renderPasses) {
+            let passList = iterator[1];
+            for (const pass of passList) {
+                pass.setUniformBuffer(propertyName, buffer);
+            }
+        }
+    }
+
+
+    public setFloat(propertyName: string, value: number) {
+        for (const iterator of this._renderPasses) {
+            let passList = iterator[1];
+            for (const pass of passList) {
+                pass.setUniform(propertyName, value);
+            }
+        }
+    }
+
+    public setVector2(propertyName: string, value: Vector2) {
+        for (const iterator of this._renderPasses) {
+            let passList = iterator[1];
+            for (const pass of passList) {
+                pass.setUniformVector2(propertyName, value);
+            }
+        }
+    }
+
+    public setVector3(propertyName: string, value: Vector3) {
+        for (const iterator of this._renderPasses) {
+            let passList = iterator[1];
+            for (const pass of passList) {
+                pass.setUniformVector3(propertyName, value);
+            }
+        }
+    }
+
+    public setVector4(propertyName: string, value: Vector4) {
+        for (const iterator of this._renderPasses) {
+            let passList = iterator[1];
+            for (const pass of passList) {
+                pass.setUniformVector4(propertyName, value);
+            }
+        }
+    }
+
+    public setColor(propertyName: string, value: Color) {
+        for (const iterator of this._renderPasses) {
+            let passList = iterator[1];
+            for (const pass of passList) {
+                pass.setUniformColor(propertyName, value);
             }
         }
     }

@@ -64,7 +64,14 @@ export let PBRLItShader: string = /*wgsl*/ `
             ORI_ShadingInput.BaseColor = textureSample(baseMap, baseMapSampler, uv )  ;
             ORI_ShadingInput.BaseColor = vec4<f32>(gammaToLiner(ORI_ShadingInput.BaseColor.rgb) * materialUniform.baseColor.rgb , ORI_ShadingInput.BaseColor.w * materialUniform.baseColor.a)  ;
         #endif
+
+        var maskTex = textureSample(maskMap, maskMapSampler, uv ) ;
        
+        #if USE_ALPHA_A
+            ORI_ShadingInput.BaseColor.a =  ORI_ShadingInput.BaseColor.a * (maskTex.a) ;
+            ORI_ShadingInput.BaseColor =  vec4f(ORI_ShadingInput.BaseColor.rgb/ORI_ShadingInput.BaseColor.a,ORI_ShadingInput.BaseColor.a) ;
+        #endif
+
         #if USE_ALPHACUT 
             if( (ORI_ShadingInput.BaseColor.a - materialUniform.alphaCutoff) <= 0.0 ){
                 ORI_FragmentOutput.color = vec4<f32>(0.0,0.0,0.0,1.0);
@@ -79,7 +86,7 @@ export let PBRLItShader: string = /*wgsl*/ `
             useShadow();
         #endif
 
-        var maskTex = textureSample(maskMap, maskMapSampler, uv ) ;
+        // maskTex =vec4f( gammaToLiner(maskTex.rgb), maskTex.a );
 
         var roughnessChannel:f32 = 1.0 ;
         #if USE_ROUGHNESS_A
@@ -94,12 +101,12 @@ export let PBRLItShader: string = /*wgsl*/ `
             roughnessChannel = ORI_ShadingInput.BaseColor.a ;
         #endif  
 
-        #if USE_SMOOTHNESS
-            roughnessChannel = ( 1.0 - roughnessChannel * materialUniform.roughness) ;
-            ORI_ShadingInput.Roughness = clamp(roughnessChannel  ,0.084,1.0);
+        #if USE_SMOOTH
+            var roughness = ( 1.0 - roughnessChannel ) * materialUniform.roughness;
+            ORI_ShadingInput.Roughness = clamp(roughness , 0.0001 , 1.0);
         #else
-            ORI_ShadingInput.Roughness = clamp(roughnessChannel * materialUniform.roughness ,0.084,1.0);
-        #endif  
+            ORI_ShadingInput.Roughness = clamp(roughnessChannel * materialUniform.roughness ,0.0001,1.0);
+        #endif 
 
         var metallicChannel:f32 = 1.0 ;
         #if USE_METALLIC_A
@@ -128,6 +135,8 @@ export let PBRLItShader: string = /*wgsl*/ `
                 aoChannel = maskTex.b ;
             #endif  
         #endif
+
+        // ORI_ShadingInput.BaseColor.a = maskTex.a ;
 
         ORI_ShadingInput.AmbientOcclusion = aoChannel ;
 

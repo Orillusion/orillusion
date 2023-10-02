@@ -8,11 +8,11 @@ export class LitMaterial extends PhysicMaterial {
     constructor() {
         super();
 
-        let colorPass = new RenderShader('PBRLItShader', 'PBRLItShader');
-        this.defaultPass = colorPass;
+        let shader = new RenderShader('PBRLItShader', 'PBRLItShader');
+        this.shader = shader;
 
-        colorPass.setShaderEntry(`VertMain`, `FragMain`)
-        let shaderState = colorPass.shaderState;
+        shader.setShaderEntry(`VertMain`, `FragMain`)
+        let shaderState = shader.shaderState;
         shaderState.acceptShadow = true;
         shaderState.castShadow = true;
         shaderState.receiveEnv = true;
@@ -21,7 +21,7 @@ export class LitMaterial extends PhysicMaterial {
 
         let bdrflutTex = Engine3D.res.getTexture(`BRDFLUT`);
         this.brdfLUT = bdrflutTex;
-        colorPass.setDefine('USE_BRDF', true);
+        shader.setDefine('USE_BRDF', true);
 
         this.setDefault();
 

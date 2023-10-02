@@ -5,8 +5,8 @@ export let NormalMap_frag: string = /*wgsl*/ `
         var st0 = dpdx( ORI_VertexVarying.fragUV0.xy );
         var st1 = dpdy( ORI_VertexVarying.fragUV0.xy );
         var N = surf_norm;
-        var q1perp = cross( q1, N );
         var q0perp = cross( N, q0 );
+        var q1perp = cross( q1, N );
 
         #if USE_TANGENT
             var T = ORI_VertexVarying.TANGENT.xyz ;

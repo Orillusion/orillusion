@@ -128,6 +128,7 @@ export let BxDF_frag: string = /*wgsl*/ `
       // ORI_FragmentOutput.color = vec4<f32>(ORI_FragmentOutput.color.xyz,fragData.Albedo.a) ;
       #if USE_WORLDPOS
           ORI_FragmentOutput.worldPos = vec4<f32>(ORI_VertexVarying.vWorldPos.xyzw);
+          // ORI_FragmentOutput.worldPos = vec4<f32>(0.0,0.0,1.0,1.0);
       #endif
 
       #if USEGBUFFER

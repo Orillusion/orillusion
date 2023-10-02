@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, BloomPost, Color, DirectLight, Engine3D, GPUCullMode, GlobalFog, GlobalIlluminationComponent, LitMaterial, Material, MorphTargetBlender, Object3D, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
+import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, BloomPost, Color, DirectLight, Engine3D, GPUCullMode, GTAOPost, GlobalFog, GlobalIlluminationComponent, LitMaterial, Material, MorphTargetBlender, Object3D, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
@@ -65,9 +65,9 @@ export class GUIUtil {
         GUIHelp.add(transform, 'rotationX', 0.0, 360.0, 0.01);
         GUIHelp.add(transform, 'rotationY', 0.0, 360.0, 0.01);
         GUIHelp.add(transform, 'rotationZ', 0.0, 360.0, 0.01);
-        GUIHelp.add(transform, 'scaleX', -2.0 , 2.0, 0.01);
-        GUIHelp.add(transform, 'scaleY', -2.0 , 2.0, 0.01);
-        GUIHelp.add(transform, 'scaleZ', -2.0 , 2.0, 0.01);
+        GUIHelp.add(transform, 'scaleX', -2.0, 2.0, 0.01);
+        GUIHelp.add(transform, 'scaleY', -2.0, 2.0, 0.01);
+        GUIHelp.add(transform, 'scaleZ', -2.0, 2.0, 0.01);
 
         open && GUIHelp.open();
         GUIHelp.endFolder();
@@ -494,5 +494,17 @@ export class GUIUtil {
         });
         GUIHelp.endFolder();
 
+    }
+
+
+    public static renderGTAO(post: GTAOPost) {
+        GUIHelp.addFolder("GTAO");
+        GUIHelp.add(post, "maxDistance", 0.0, 50, 1);
+        GUIHelp.add(post, "maxPixel", 0.0, 50, 1);
+        GUIHelp.add(post, "rayMarchSegment", 0.0, 50, 0.001);
+        GUIHelp.add(post, "darkFactor", 0.0, 5, 0.001);
+        GUIHelp.add(post, "blendColor");
+        GUIHelp.add(post, "multiBounce");
+        GUIHelp.endFolder();
     }
 }
