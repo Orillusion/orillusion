@@ -4,6 +4,15 @@ export let UnLit: string = /*wgsl*/ `
     #include "UnLit_frag"
     #include "UnLitMaterialUniform_frag"
 
+    #if USE_CUSTOMUNIFORM
+        struct MaterialUniform {
+            transformUV1:vec4<f32>,
+            transformUV2:vec4<f32>,
+            baseColor: vec4<f32>,
+            alphaCutoff: f32,
+        };
+    #endif
+
     @group(1) @binding(0)
     var baseMapSampler: sampler;
     @group(1) @binding(1)

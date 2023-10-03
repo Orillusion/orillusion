@@ -1,15 +1,18 @@
-import { BlendMode, GPUCullMode, RegisterComponent, RegisterShader, Texture } from "../../../../..";
+import { GUIUtil } from "@samples/utils/GUIUtil";
+import { BlendMode, GPUCullMode, PBRLitSSSShader, RegisterComponent, RegisterShader, ShaderLib, ShaderUtil, Texture } from "../../../../..";
 import { Engine3D } from "../../../../../Engine3D";
 import { RenderShader } from "../../../../../gfx/graphics/webGpu/shader/RenderShader";
 import { Color } from "../../../../../math/Color";
 import { Vector4 } from "../../../../../math/Vector4";
+import { GUIHelp } from "@orillusion/debug/GUIHelp";
 
 
 @RegisterShader
-export class LitShader extends RenderShader {
+export class LitSSSShader extends RenderShader {
 
     constructor() {
-        super('PBRLItShader', 'PBRLItShader');
+        ShaderLib.register("PBRLitSSSShader", PBRLitSSSShader);
+        super('PBRLitSSSShader', 'PBRLitSSSShader');
         this.setShaderEntry(`VertMain`, `FragMain`)
         let shaderState = this.shaderState;
         shaderState.acceptShadow = true;
@@ -22,8 +25,31 @@ export class LitShader extends RenderShader {
         this.setDefine('USE_ROUGHNESS_G', true);
         this.setDefine('USE_METALLIC_B', true);
         this.setDefine('USE_ALPHA_A', true);
-
+        this.setDefine('USE_CUSTOMUNIFORM', true);
         this.setDefault();
+        this.debug();
+    }
+
+    public debug() {
+        GUIHelp.addFolder("skin");
+        GUIHelp.addColor({ SkinColor: new Color() }, "SkinColor").onChange((v) => {
+            let newColor = new Color();
+            newColor.copyFromArray(v);
+            this._SkinColor = newColor;
+        });
+        GUIHelp.add({ skinPower: 1 }, "skinPower", 0.0, 10.0).onChange((v) => {
+            this._SkinPower = v;
+        });
+        GUIHelp.add({ skinColorIns: 1 }, "skinColorIns", 0.0, 10.0).onChange((v) => {
+            this._SkinColorIns = v;
+        });
+        GUIHelp.add({ roughness: 1 }, "roughness", 0.0, 1.0).onChange((v) => {
+            this._Roughness = v;
+        });
+        GUIHelp.add({ metallic: 1 }, "metallic", 0.0, 1.0).onChange((v) => {
+            this._Metallic = v;
+        });
+        GUIHelp.endFolder();
     }
 
     public setDefault() {
@@ -50,6 +76,10 @@ export class LitShader extends RenderShader {
         this.setUniformFloat(`clearcoatRoughnessFactor`, 0.0);
         this.setUniformColor(`clearcoatColor`, new Color(1, 1, 1));
         this.setUniformFloat(`clearcoatWeight`, 0.0);
+
+        this.setUniformColor(`skinColor`, new Color(1, 0, 0));
+        this.setUniformFloat(`skinPower`, 3.4);
+        this.setUniformFloat(`skinColorIns`, 0.5);
     }
 
     public set _MainTex(value: Texture) {
@@ -58,6 +88,10 @@ export class LitShader extends RenderShader {
 
     public set _BumpMap(value: Texture) {
         this.setTexture("normalMap", value);
+    }
+
+    public set _SSSMap(value: Texture) {
+        this.setTexture("sssMap", value);
     }
 
     public set _MaskTex(value: Texture) {
@@ -88,6 +122,20 @@ export class LitShader extends RenderShader {
     public set _DoubleSidedEnable(value: number) {
         this.shaderState.cullMode = value ? GPUCullMode.none : this.shaderState.cullMode;
     }
+
+    public set _SkinColor(value: Color) {
+        this.setUniformColor("skinColor", value);
+    }
+
+    public set _SkinPower(value: number) {
+        this.setUniformFloat("skinPower", value);
+    }
+
+    public set _SkinColorIns(value: number) {
+        this.setUniformFloat("skinColorIns", value);
+    }
+
+
 
     public set _SurfaceType(value: number) {
         if (value == 0) {

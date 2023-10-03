@@ -21,7 +21,7 @@ export class Sample_Prefab {
         this.scene = new Scene3D();
         let camera = CameraUtil.createCamera3DObject(this.scene);
         // camera.enableCSM = true;
-        camera.perspective(60, Engine3D.aspect, 1, 2000.0);
+        camera.perspective(60, Engine3D.aspect, 0.01, 2000.0);
 
         camera.object3D.addComponent(HoverCameraController).setCamera(-25, -5, 30);
 
@@ -34,7 +34,7 @@ export class Sample_Prefab {
 
         let post = this.scene.addComponent(PostProcessingComponent);
         let gtao = post.addPost(GTAOPost);
-        let bloom = post.addPost(BloomPost);
+        // let bloom = post.addPost(BloomPost);
         // GUIUtil.renderBloom(bloom);
         // post.addPost(SSRPost);
         GUIUtil.renderDebug();
@@ -64,14 +64,21 @@ export class Sample_Prefab {
         }
 
         {
-            PrefabParser.useWebp = true;
-            let node = await Engine3D.res.load("prefab/new/Room.o3d", PrefabParser) as Object3D;
-            this.scene.addChild(node);
-            GUIUtil.renderTransform(node.transform, true, "room");
+            // PrefabParser.useWebp = true;
+            // let node = await Engine3D.res.load("prefab/new/Room.o3d", PrefabParser) as Object3D;
+            // this.scene.addChild(node);
+            // GUIUtil.renderTransform(node.transform, true, "room");
         }
 
         {
-            PrefabParser.useWebp = true;
+            // PrefabParser.useWebp = false;
+            // let node = await Engine3D.res.load("prefab/new/PotPlant.o3d", PrefabParser) as Object3D;
+            // this.scene.addChild(node);
+            // GUIUtil.renderTransform(node.transform, true, "PotPlant");
+        }
+
+        {
+            PrefabParser.useWebp = false;
             let node = await Engine3D.res.load("prefab/new/nvhai.o3d", PrefabParser) as Object3D;
             let anim = node.getComponents(AnimatorComponent);
             GUIUtil.renderAnimator(anim[0]);
@@ -79,19 +86,19 @@ export class Sample_Prefab {
             GUIUtil.renderTransform(node.transform, true, "nvhai");
         }
 
-        {
-            PrefabParser.useWebp = true;
-            let node = await Engine3D.res.load("prefab/new/aStar.o3d", PrefabParser) as Object3D;
-            this.scene.addChild(node);
-            GUIUtil.renderTransform(node.transform, true, "aStar");
-        }
+        // {
+        //     PrefabParser.useWebp = true;
+        //     let node = await Engine3D.res.load("prefab/new/aStar.o3d", PrefabParser) as Object3D;
+        //     this.scene.addChild(node);
+        //     GUIUtil.renderTransform(node.transform, true, "aStar");
+        // }
 
-        {
-            PrefabParser.useWebp = true;
-            let node = await Engine3D.res.load("prefab/new/PointData.o3d", PrefabParser) as Object3D;
-            this.scene.addChild(node);
-            GUIUtil.renderTransform(node.transform, true, "PointData");
-        }
+        // {
+        //     PrefabParser.useWebp = true;
+        //     let node = await Engine3D.res.load("prefab/new/PointData.o3d", PrefabParser) as Object3D;
+        //     this.scene.addChild(node);
+        //     GUIUtil.renderTransform(node.transform, true, "PointData");
+        // }
 
 
     }

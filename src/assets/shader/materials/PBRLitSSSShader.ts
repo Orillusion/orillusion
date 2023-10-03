@@ -1,4 +1,4 @@
-export let PBRLItShader: string = /*wgsl*/ `
+export let PBRLitSSSShader: string = /*wgsl*/ `
     #include "Common_vert"
     #include "Common_frag"
     #include "BxDF_frag"
@@ -13,6 +13,41 @@ export let PBRLItShader: string = /*wgsl*/ `
     @group(1) @binding(auto)
     var normalMap: texture_2d<f32>;
 
+    #if USE_CUSTOMUNIFORM
+        struct MaterialUniform {
+          transformUV1:vec4<f32>,
+          transformUV2:vec4<f32>,
+
+          baseColor: vec4<f32>,
+          emissiveColor: vec4<f32>,
+          materialF0: vec4<f32>,
+          specularColor: vec4<f32>,
+          envIntensity: f32,
+          normalScale: f32,
+          roughness: f32,
+          metallic: f32,
+
+          ao: f32,
+          roughness_min: f32,
+          roughness_max: f32,
+          metallic_min: f32,
+
+          metallic_max: f32,
+          emissiveIntensity: f32,
+          alphaCutoff: f32,
+          ior: f32,
+
+          clearcoatColor: vec4<f32>,
+
+          clearcoatWeight: f32,
+          clearcoatFactor: f32,
+          clearcoatRoughnessFactor: f32,
+          skinPower: f32,
+          
+          skinColor: vec4<f32>,
+          skinColorIns: f32,
+        };
+    #endif
     // #if USE_ARMC
         // @group(1) @binding(auto)
         // var maskMapSampler: sampler;
@@ -38,6 +73,11 @@ export let PBRLItShader: string = /*wgsl*/ `
     var emissiveMapSampler: sampler;
     @group(1) @binding(auto)
     var emissiveMap: texture_2d<f32>;
+
+    @group(1) @binding(auto)
+    var sssMapSampler: sampler;
+    @group(1) @binding(auto)
+    var sssMap: texture_2d<f32>;
 
     var<private> debugOut : vec4f = vec4f(0.0) ;
 
@@ -150,18 +190,24 @@ export let PBRLItShader: string = /*wgsl*/ `
 
         ORI_ShadingInput.EmissiveColor = vec4<f32>(materialUniform.emissiveColor.rgb * emissiveColor.rgb * materialUniform.emissiveIntensity,1.0);
 
+     
+
         var Normal = textureSample(normalMap,normalMapSampler,uv).rgb ;
-        // Normal.y = 1.0 - Normal.y ;
-        // let normal = unPackNormal(Normal,materialUniform.normalScale) ;  
-        // let normal = unPackNormal(Normal,1.0) ;  
 
         let normal = unPackRGNormal(Normal,1.0,1.0) ;  
         
         ORI_ShadingInput.Normal = normal ;
 
+        var sssColor = vec3f(pow(textureSample(sssMap, sssMapSampler, uv ).r,materialUniform.skinPower)) * materialUniform.skinColor.rgb ;
+        let sunLight = lightBuffer[0] ;
+        let ndl = 1.0 - clamp(dot(normalize(normal),-normalize(sunLight.direction)),0.0,1.0) * 0.5 + 0.5 ;//1.0 - saturate( dot(normalize(normal),normalize(sunLight.direction)) ) * 0.5 + 0.5 ;
+        ORI_ShadingInput.BaseColor = vec4f( ORI_ShadingInput.BaseColor.rgb + 0.5 * sssColor * (sunLight.intensity / LUMEN) * materialUniform.skinColorIns * ndl ,1.0) ;
         BxDFShading();
 
-    //   ORI_FragmentOutput.color = vec4<f32>(vec3<f32>( ORI_ShadingInput.BaseColor.rrr),1.0) ;
+        // ORI_ShadingInput.BaseColor = textureSample(sssMap, sssMapSampler, uv ).rrrr  ;
+        // ORI_ShadingInput.BaseColor.a = 1.0 ;
+        // ORI_FragmentOutput.color = ORI_ShadingInput.BaseColor ;
+        // ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(  ORI_ShadingInput.BaseColor.rgb + ndl * sssColor * (sunLight.intensity / LUMEN) * materialUniform.skinColorIns ),1.0) ;
     }
 `
 

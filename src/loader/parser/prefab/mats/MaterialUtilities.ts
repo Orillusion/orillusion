@@ -29,102 +29,108 @@ export class MaterialUtilities {
     public static applyMaterialTexture(mat: Material, textures: PrefabTextureData[]) {
         for (let ii = 0; ii < textures.length; ii++) {
             const texInfo = textures[ii];
-            let transformInfo = mat.shader[texInfo.property];
-            mat.setTexture(transformInfo, texInfo.texture);
+            if (texInfo.property in mat) {
+                mat[texInfo.property] = texInfo.texture;
+            } else if (texInfo.property in mat.shader) {
+                mat.shader[texInfo.property] = texInfo.texture;
+            } else {
+                mat.setTexture(texInfo.property, texInfo.texture);
+            }
         }
     }
 
     public static applyMaterialProperties(mat: Material, properties: KV[]) {
         for (let ii = 0; ii < properties.length; ii++) {
             const propertyInfo = properties[ii];
-            let transformInfo = mat.shader[propertyInfo.key];
-            if (transformInfo != null) {
-                switch (propertyInfo.type) {
-                    case ValueEnumType.color:
-                    case ValueEnumType.color32:
-                        {
-                            let value = propertyInfo.getValue<Color>();
-                            if (transformInfo in mat) {
-                                mat[transformInfo] = value;
-                            } else if (transformInfo in mat.shader) {
-                                mat.shader[transformInfo] = value;
-                            } else {
-                                mat.setColor(transformInfo, value);
-                            }
+            const key = propertyInfo.key;
+            // let transformInfo = mat.shader[propertyInfo.key];
+            // if (transformInfo != null) {
+            switch (propertyInfo.type) {
+                case ValueEnumType.color:
+                case ValueEnumType.color32:
+                    {
+                        let value = propertyInfo.getValue<Color>();
+                        if (key in mat) {
+                            mat[key] = value;
+                        } else if (key in mat.shader) {
+                            mat.shader[key] = value;
+                        } else {
+                            mat.setColor(key, value);
                         }
-                        break;
-                    case ValueEnumType.single:
-                    case ValueEnumType.float:
-                    case ValueEnumType.int:
-                    case ValueEnumType.int16:
-                    case ValueEnumType.int32:
-                    case ValueEnumType.int32:
-                    case ValueEnumType.uint:
-                    case ValueEnumType.uint32:
-                    case ValueEnumType.uint64:
-                        {
-                            let value = propertyInfo.getValue<number>();
-                            if (transformInfo in mat) {
-                                mat[transformInfo] = value;
-                            } else if (transformInfo in mat.shader) {
-                                mat.shader[transformInfo] = value;
-                            } else {
-                                mat.setFloat(transformInfo, value);
-                            }
+                    }
+                    break;
+                case ValueEnumType.single:
+                case ValueEnumType.float:
+                case ValueEnumType.int:
+                case ValueEnumType.int16:
+                case ValueEnumType.int32:
+                case ValueEnumType.int32:
+                case ValueEnumType.uint:
+                case ValueEnumType.uint32:
+                case ValueEnumType.uint64:
+                    {
+                        let value = propertyInfo.getValue<number>();
+                        if (key in mat) {
+                            mat[key] = value;
+                        } else if (key in mat.shader) {
+                            mat.shader[key] = value;
+                        } else {
+                            mat.setFloat(key, value);
                         }
-                        break;
-                    case ValueEnumType.singleArray:
-                        {
-                            let value = propertyInfo.getValue<number[]>()[0];
-                            if (transformInfo in mat) {
-                                mat[transformInfo] = value;
-                            } else if (transformInfo in mat.shader) {
-                                mat.shader[transformInfo] = value;
-                            } else {
-                                mat.setFloat(transformInfo, value);
-                            }
+                    }
+                    break;
+                case ValueEnumType.singleArray:
+                    {
+                        let value = propertyInfo.getValue<number[]>()[0];
+                        if (key in mat) {
+                            mat[key] = value;
+                        } else if (key in mat.shader) {
+                            mat.shader[key] = value;
+                        } else {
+                            mat.setFloat(key, value);
                         }
-                        break;
-                    case ValueEnumType.vector2:
-                    case ValueEnumType.vector2Int:
-                        {
-                            let value = propertyInfo.getValue<Vector2>();
-                            if (transformInfo in mat) {
-                                mat[transformInfo] = value;
-                            } else if (transformInfo in mat.shader) {
-                                mat.shader[transformInfo] = value;
-                            } else {
-                                mat.setVector2(transformInfo, value);
-                            }
+                    }
+                    break;
+                case ValueEnumType.vector2:
+                case ValueEnumType.vector2Int:
+                    {
+                        let value = propertyInfo.getValue<Vector2>();
+                        if (key in mat) {
+                            mat[key] = value;
+                        } else if (key in mat.shader) {
+                            mat.shader[key] = value;
+                        } else {
+                            mat.setVector2(key, value);
                         }
-                        break;
-                    case ValueEnumType.vector3:
-                        {
-                            let value = propertyInfo.getValue<Vector3>();
-                            if (transformInfo in mat) {
-                                mat[transformInfo] = value;
-                            } else if (transformInfo in mat.shader) {
-                                mat.shader[transformInfo] = value;
-                            } else {
-                                mat.setVector3(transformInfo, value);
-                            }
+                    }
+                    break;
+                case ValueEnumType.vector3:
+                    {
+                        let value = propertyInfo.getValue<Vector3>();
+                        if (key in mat) {
+                            mat[key] = value;
+                        } else if (key in mat.shader) {
+                            mat.shader[key] = value;
+                        } else {
+                            mat.setVector3(key, value);
                         }
-                        break;
-                    case ValueEnumType.vector4:
-                        {
-                            let value = propertyInfo.getValue<Vector4>();
-                            if (transformInfo in mat) {
-                                mat[transformInfo] = value;
-                            } else if (transformInfo in mat.shader) {
-                                mat.shader[transformInfo] = value;
-                            } else {
-                                mat.setVector4(transformInfo, value);
-                            }
+                    }
+                    break;
+                case ValueEnumType.vector4:
+                    {
+                        let value = propertyInfo.getValue<Vector4>();
+                        if (key in mat) {
+                            mat[key] = value;
+                        } else if (key in mat.shader) {
+                            mat.shader[key] = value;
+                        } else {
+                            mat.setVector4(key, value);
                         }
-                        break;
-                    default:
-                        break;
-                }
+                    }
+                    break;
+                default:
+                    break;
+                // }
             }
         }
     }
