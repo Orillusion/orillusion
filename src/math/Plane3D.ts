@@ -3,12 +3,12 @@ import { PlaneClassification } from "./PlaneClassification";
 
 /**
 * @language zh_CN
-* @class egret3d.Plane3D
+* @class Plane3D
 * @classdesc
 * Plane3D 类 3D空间中的平面表示数据
 * 由a,b,c,d4个分量组成 在三维空间中定义了一个平面 Ax + By + Cz + D = 0
 * @includeExample geom/Plane3D.ts
-* @version Egret 3.0
+* @version
 * @platform Web,Native
 */
 export class Plane3D {
@@ -19,7 +19,6 @@ export class Plane3D {
     /**
     * @language zh_CN
     * 平面中的a分量
-    * @version Egret 3.0
     * @platform Web,Native
     */
     public a: number;
@@ -31,7 +30,6 @@ export class Plane3D {
     /**
     * @language zh_CN
     * 平面中的b分量
-    * @version Egret 3.0
     * @platform Web,Native
     */
     public b: number;
@@ -43,7 +41,6 @@ export class Plane3D {
     /**
     * @language zh_CN
     * 平面中的c分量
-    * @version Egret 3.0
     * @platform Web,Native
     */
     public c: number;
@@ -55,7 +52,6 @@ export class Plane3D {
     /**
     * @language zh_CN
     * 平面中的d分量
-    * @version Egret 3.0
     * @platform Web,Native
     */
     public d: number;
@@ -92,7 +88,6 @@ export class Plane3D {
     * @param b
     * @param c
     * @param d
-    * @version Egret 3.0
     * @platform Web,Native
     */
     constructor(a: number = 0, b: number = 0, c: number = 0, d: number = 0) {
@@ -109,7 +104,6 @@ export class Plane3D {
     * @param b
     * @param c
     * @param d
-    * @version Egret 3.0
     * @platform Web,Native
     */
     public setTo(a: number = 0, b: number = 0, c: number = 0, d: number = 0) {
@@ -133,7 +127,6 @@ export class Plane3D {
     * @param p0 Vector3
     * @param p1 Vector3
     * @param p2 Vector3
-    * @version Egret 3.0
     * @platform Web,Native
     */
     public fromPoints(p0: Vector3, p1: Vector3, p2: Vector3) {
@@ -162,7 +155,6 @@ export class Plane3D {
     * 由一条normal向量和一个坐标创建一个3d平面
     * @param normal Vector3
     * @param point  Vector3
-    * @version Egret 3.0
     * @platform Web,Native
     */
     public fromNormalAndPoint(normal: Vector3, point: Vector3) {
@@ -181,7 +173,6 @@ export class Plane3D {
     * @language zh_CN
     * 单位化3d平面
     * @returns number 返回平面长度
-    * @version Egret 3.0
     * @platform Web,Native
     */
     public normalize(): number {
@@ -208,7 +199,6 @@ export class Plane3D {
     * 计算3d平面到点p的距离
     * @param p Vector3
     * @returns number 返回计算后的距离
-    * @version Egret 3.0
     * @platform Web,Native
     */
     public distance(p: Vector3): number {
@@ -230,7 +220,6 @@ export class Plane3D {
     * @param p Vector3
     * @param epsilon 相对偏移值
     * @returns number int Plane3.FRONT or Plane3D.BACK or Plane3D.INTERSECT
-    * @version Egret 3.0
     * @platform Web,Native
     */
     public classifyPoint(p: Vector3, epsilon: number = 0.01): number {
@@ -251,7 +240,6 @@ export class Plane3D {
     * @language zh_CN
     * 当前Plane3D以字符串形式返回
     * @returns string
-    * @version Egret 3.0
     * @platform Web,Native
     */
     public toString(): string {
