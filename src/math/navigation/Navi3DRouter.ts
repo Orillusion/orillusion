@@ -143,8 +143,11 @@ export class Navi3DRouter {
         Navi3DRouter.CALC_CROSS_POINT.copyFrom(segmentPt2);
         Navi3DRouter.CALC_CROSS_POINT.decrementBy(segmentPt1);
 
-        var scale: number = ((segmentPt1.z - linePoint.z) * lineDirection.x - (segmentPt1.x - linePoint.x) * lineDirection.z) /
-            (Navi3DRouter.CALC_CROSS_POINT.x * lineDirection.z - lineDirection.x * Navi3DRouter.CALC_CROSS_POINT.z);
+        let distance = Navi3DRouter.CALC_CROSS_POINT.x * lineDirection.z - lineDirection.x * Navi3DRouter.CALC_CROSS_POINT.z;
+        var scale: number = 0;
+        if (distance != 0) {
+            scale = ((segmentPt1.z - linePoint.z) * lineDirection.x - (segmentPt1.x - linePoint.x) * lineDirection.z) / distance;
+        }
 
         if (scale > 1) {
             scale = 1;
