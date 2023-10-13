@@ -115,6 +115,13 @@ export class Navi3DFunnel {
             this.optimusTerminusFat();
             this.optimusByRadius();
         }
+
+        //copy result
+        let list: Vector3[] = [];
+        for (let point of this._result) {
+            list.push(new Vector3().copyFrom(point));
+        }
+        this._result = list;
     }
 
     private optimusTerminusFat(): void {
@@ -189,8 +196,12 @@ export class Navi3DFunnel {
                     this._result.push(fatPoint);
                 }
                 else {
-                    Navi3DFunnel.CROSS_TEST_DIRECTION.setTo(toPoint.x - fromPoint.x, 0, toPoint.z - fromPoint.z);
-                    crossPoint = this._router.calcCrossEdge(curEdge, fromPoint, Navi3DFunnel.CROSS_TEST_DIRECTION);
+                    if (toPoint == fromPoint) {
+                        crossPoint = toPoint.clone();
+                    } else {
+                        Navi3DFunnel.CROSS_TEST_DIRECTION.setTo(toPoint.x - fromPoint.x, 0, toPoint.z - fromPoint.z);
+                        crossPoint = this._router.calcCrossEdge(curEdge, fromPoint, Navi3DFunnel.CROSS_TEST_DIRECTION);
+                    }
                     this._result.push(crossPoint);
                 }
             }
