@@ -15,10 +15,13 @@ import { PrefabAvatarParser } from "./PrefabAvatarParser";
 import { PrefabMaterialParser } from "./PrefabMaterialParser";
 import { PrefabMeshParser } from "./PrefabMeshParser";
 import { PrefabTextureParser } from "./PrefabTextureParser";
+import { LitSSSShader } from "./mats/shader/LitSSSShader";
+import { LitShader } from "./mats/shader/LitShader";
 import { PrefabAvatarData } from "./prefabData/PrefabAvatarData";
 import { PrefabNode } from "./prefabData/PrefabNode";
 
-
+LitShader;
+LitSSSShader;
 export class PrefabParser extends ParserBase {
     public static useWebp: boolean = true;
     static format: ParserFormat = ParserFormat.BIN;
