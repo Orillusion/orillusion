@@ -24,7 +24,7 @@ export class Navi3DMergeVertex {
             })
             if (samePointIndex > -1) {
                 redirectionIndex[i] = samePointIndex;
-                // console.log('发现可以合并的点：', i, samePointIndex);
+                // console.log('points merged：', i, samePointIndex);
                 mergePointCount++;
             } else {
                 sameVertexIndex.set(i, item);
@@ -38,6 +38,17 @@ export class Navi3DMergeVertex {
         let indices = geometry.getAttribute(VertexAttributeName.indices).data;
         for (const i of indices) {
             this.indices.push(redirectionIndex[i]);
+        }
+        return this;
+    }
+
+    parse(geometry: GeometryBase): this {
+        let vertex = geometry.getAttribute(VertexAttributeName.position).data;
+        this.makeOriginVertex(vertex);
+        this.indices = [];
+        let indices = geometry.getAttribute(VertexAttributeName.indices).data;
+        for (const i of indices) {
+            this.indices.push(i);
         }
         return this;
     }
