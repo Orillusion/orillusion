@@ -13,7 +13,7 @@ import { ShaderReflection } from "./value/ShaderReflectionInfo";
 import { UniformValue } from "./value/UniformValue";
 
 
-export class ShaderBase {
+export class ShaderPassBase {
     /**
      * Shader Unique instance id
      */
@@ -249,6 +249,10 @@ export class ShaderBase {
 
     public getUniform(name: string): UniformValue {
         return this.uniforms[name].data;
+    }
+
+    public getBuffer(name: string): GPUBufferBase {
+        return this._bufferDic[name].data;
     }
 
     protected noticeBufferChange(name: string) {

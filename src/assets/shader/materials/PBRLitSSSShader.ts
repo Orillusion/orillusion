@@ -1,7 +1,7 @@
 export let PBRLitSSSShader: string = /*wgsl*/ `
     #include "Common_vert"
     #include "Common_frag"
-    #include "BxDF_frag"
+    #include "BsDF_frag"
 
     @group(1) @binding(auto)
     var baseMapSampler: sampler;
@@ -46,6 +46,7 @@ export let PBRLitSSSShader: string = /*wgsl*/ `
           
           skinColor: vec4<f32>,
           skinColorIns: f32,
+          curveFactor: f32,
         };
     #endif
     // #if USE_ARMC
@@ -79,6 +80,11 @@ export let PBRLitSSSShader: string = /*wgsl*/ `
     @group(1) @binding(auto)
     var sssMap: texture_2d<f32>;
 
+    @group(1) @binding(auto)
+    var lutMapSampler: sampler;
+    @group(1) @binding(auto)
+    var lutMap: texture_2d<f32>;
+
     var<private> debugOut : vec4f = vec4f(0.0) ;
 
     fn vert(inputData:VertexAttributes) -> VertexOutput {
@@ -91,11 +97,6 @@ export let PBRLitSSSShader: string = /*wgsl*/ `
         var transformUV2 = materialUniform.transformUV2;
 
         var uv = transformUV1.zw * ORI_VertexVarying.fragUV0 + transformUV1.xy; 
-
-        // let z = linearTo01Depth(ORI_VertexVarying.fragCoord.z) ; 
-
-        // ORI_ShadingInput.BaseColor = textureSampleLevel(baseMap, baseMapSampler, uv , 4.0 ) ;
-
 
         #if USE_SRGB_ALBEDO
             ORI_ShadingInput.BaseColor = textureSample(baseMap, baseMapSampler, uv )  ;
@@ -200,14 +201,18 @@ export let PBRLitSSSShader: string = /*wgsl*/ `
 
         var sssColor = vec3f(pow(textureSample(sssMap, sssMapSampler, uv ).r,materialUniform.skinPower)) * materialUniform.skinColor.rgb ;
         let sunLight = lightBuffer[0] ;
+        let sunLightIntensity = (sunLight.intensity / LUMEN)  ;
         let ndl = 1.0 - clamp(dot(normalize(normal),-normalize(sunLight.direction)),0.0,1.0) * 0.5 + 0.5 ;//1.0 - saturate( dot(normalize(normal),normalize(sunLight.direction)) ) * 0.5 + 0.5 ;
-        ORI_ShadingInput.BaseColor = vec4f( ORI_ShadingInput.BaseColor.rgb + 0.5 * sssColor * (sunLight.intensity / LUMEN) * materialUniform.skinColorIns * ndl ,1.0) ;
-        BxDFShading();
+        ORI_ShadingInput.SSS += 0.5 * vec3f(sssColor * sunLightIntensity * materialUniform.skinColorIns * ndl * sunLight.lightColor.rgb ) ;
+     
+        var curve = clamp(materialUniform.curveFactor * (length(fwidth(ORI_ShadingInput.Normal.xyz)) / length(fwidth(ORI_VertexVarying.vWorldPos.xyz*100.0))),0.0,1.0);
+        var NDotL = dot(ORI_ShadingInput.Normal, -sunLight.direction );
+        var sssColor2 = textureSample(lutMap, lutMapSampler ,vec2f(NDotL * 0.5 + 0.5, materialUniform.curveFactor * sssColor.r)).rgb * sunLight.lightColor.rgb * sunLightIntensity ;
+        ORI_ShadingInput.SSS = sssColor2.rgb * ORI_ShadingInput.BaseColor.rgb ;
+     
+        BsDFShading();
 
-        // ORI_ShadingInput.BaseColor = textureSample(sssMap, sssMapSampler, uv ).rrrr  ;
-        // ORI_ShadingInput.BaseColor.a = 1.0 ;
-        // ORI_FragmentOutput.color = ORI_ShadingInput.BaseColor ;
-        // ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(  ORI_ShadingInput.BaseColor.rgb + ndl * sssColor * (sunLight.intensity / LUMEN) * materialUniform.skinColorIns ),1.0) ;
+        // ORI_FragmentOutput.color = vec4f(vec3f(0.5*ORI_ShadingInput.SSS),1.0)  ;
     }
 `
 

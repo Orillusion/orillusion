@@ -1,6 +1,7 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { GUIUtil } from "@samples/utils/GUIUtil";
-import { Engine3D, Object3D, Scene3D, CameraUtil, HoverCameraController, View3D, AtmosphericComponent, DirectLight, KelvinUtil, PrefabMeshParser, LitMaterial, MeshRenderer, PostProcessingComponent, GTAOPost, SSRPost, PrefabParser, AnimatorComponent, BloomPost } from "../../src";
+import { Engine3D, Object3D, Scene3D, CameraUtil, HoverCameraController, View3D, AtmosphericComponent, DirectLight, KelvinUtil, PrefabMeshParser, LitMaterial, MeshRenderer, PostProcessingComponent, GTAOPost, SSRPost, PrefabParser, AnimatorComponent, BloomPost, FXAAPost } from "../../src";
+import { Stats } from "@orillusion/stats";
 
 
 export class Sample_Prefab {
@@ -10,7 +11,7 @@ export class Sample_Prefab {
     async run() {
         //config settings
         Engine3D.setting.render.debug = false;
-        Engine3D.setting.shadow.shadowBound = 20;
+        Engine3D.setting.shadow.shadowBound = 10;
         Engine3D.setting.shadow.shadowSize = 4096;
         Engine3D.setting.shadow.type = "SOFT";
 
@@ -19,9 +20,10 @@ export class Sample_Prefab {
         GUIHelp.init(999);
 
         this.scene = new Scene3D();
+        this.scene.addComponent(Stats)
         let camera = CameraUtil.createCamera3DObject(this.scene);
-        // camera.enableCSM = true;
-        camera.perspective(60, Engine3D.aspect, 0.01, 2000.0);
+        camera.enableCSM = true;
+        camera.perspective(60, Engine3D.aspect, 0.01, 200.0);
 
         camera.object3D.addComponent(HoverCameraController).setCamera(-25, -5, 30);
 
@@ -30,15 +32,17 @@ export class Sample_Prefab {
         view.camera = camera;
 
         Engine3D.startRenderView(view);
-        await this.initScene();
 
         let post = this.scene.addComponent(PostProcessingComponent);
+        // let fxaa = post.addPost(FXAAPost);
         let gtao = post.addPost(GTAOPost);
         // let bloom = post.addPost(BloomPost);
         // GUIUtil.renderBloom(bloom);
         // post.addPost(SSRPost);
-        GUIUtil.renderDebug();
         GUIUtil.renderGTAO(gtao);
+        await this.initScene();
+
+        GUIUtil.renderDebug();
     }
 
     async initScene() {
@@ -79,9 +83,10 @@ export class Sample_Prefab {
 
         {
             PrefabParser.useWebp = false;
-            let node = await Engine3D.res.load("prefab/new/nvhai.o3d", PrefabParser) as Object3D;
+            let node = await Engine3D.res.load("prefab/new/SK_MINA_JACK.o3d", PrefabParser) as Object3D;
             let anim = node.getComponents(AnimatorComponent);
             GUIUtil.renderAnimator(anim[0]);
+            GUIUtil.renderBlendShape(node);
             this.scene.addChild(node);
             GUIUtil.renderTransform(node.transform, true, "nvhai");
         }

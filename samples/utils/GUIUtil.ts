@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, BloomPost, Color, DirectLight, Engine3D, GPUCullMode, GTAOPost, GlobalFog, GlobalIlluminationComponent, LitMaterial, Material, MorphTargetBlender, Object3D, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
+import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, BloomPost, Color, DirectLight, Engine3D, GPUCullMode, GTAOPost, GlobalFog, GlobalIlluminationComponent, LitMaterial, Material, MorphTargetBlender, Object3D, PointLight, SkinnedMeshRenderer2, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
@@ -372,18 +372,20 @@ export class GUIUtil {
 
     static renderDebug() {
         // if (Engine3D.setting.render.debug) {
-        let debugTextures = Engine3D.getRenderJob(Engine3D.views[0]).postRenderer.debugTextures;
 
-        let debugTextureObj = { normalRender: -1 };
-        for (let i = 0; i < debugTextures.length; i++) {
-            const tex = debugTextures[i];
-            debugTextureObj[tex.name] = i;
-        }
         GUIHelp.removeFolder(`RenderPerformance`);
         //debug
         let f = GUIHelp.addFolder('RenderPerformance');
         f.open();
-        GUIHelp.add(Engine3D.setting.render, 'debugQuad', debugTextureObj);
+        if (Engine3D.getRenderJob(Engine3D.views[0]).postRenderer) {
+            let debugTextures = Engine3D.getRenderJob(Engine3D.views[0]).postRenderer.debugTextures;
+            let debugTextureObj = { normalRender: -1 };
+            for (let i = 0; i < debugTextures.length; i++) {
+                const tex = debugTextures[i];
+                debugTextureObj[tex.name] = i;
+            }
+            GUIHelp.add(Engine3D.setting.render, 'debugQuad', debugTextureObj);
+        }
         let debugChanel = {
             PositionView: 0,
             ColorView: 1,
@@ -412,50 +414,50 @@ export class GUIUtil {
     }
     // }
 
-    public static renderMaterial(mat: Material, open: boolean = true, name?: string) {
-        name ||= 'Material';
-        GUIHelp.addFolder(name);
+    // public static renderMaterial(mat: Material, open: boolean = true, name?: string) {
+    //     name ||= 'Material';
+    //     GUIHelp.addFolder(name);
 
-        if (mat instanceof LitMaterial) {
-            GUIHelp.addColor(mat, 'baseColor').onChange((v) => {
-                mat.defaultPass.baseColor = v;
-            });
+    //     if (mat instanceof LitMaterial) {
+    //         GUIHelp.addColor(mat, 'baseColor').onChange((v) => {
+    //             mat.defaultPass.baseColor = v;
+    //         });
 
-            let blendMode = {
-                NONE: BlendMode.NONE,
-                NORMAL: BlendMode.NORMAL,
-                ADD: BlendMode.ADD,
-                ALPHA: BlendMode.ALPHA,
-            }
-            // change blend mode by click dropdown box
-            GUIHelp.add({ blendMode: mat.blendMode }, 'blendMode', blendMode).onChange((v) => {
-                mat.blendMode = BlendMode[BlendMode[parseInt(v)]];
-            });
+    //         let blendMode = {
+    //             NONE: BlendMode.NONE,
+    //             NORMAL: BlendMode.NORMAL,
+    //             ADD: BlendMode.ADD,
+    //             ALPHA: BlendMode.ALPHA,
+    //         }
+    //         // change blend mode by click dropdown box
+    //         GUIHelp.add({ blendMode: mat.blendMode }, 'blendMode', blendMode).onChange((v) => {
+    //             mat.blendMode = BlendMode[BlendMode[parseInt(v)]];
+    //         });
 
-            GUIHelp.add(mat, 'alphaCutoff', 0.0, 1.0, 0.0001).onChange((v) => {
-                mat.alphaCutoff = v;
-            });
+    //         GUIHelp.add(mat, 'alphaCutoff', 0.0, 1.0, 0.0001).onChange((v) => {
+    //             mat.alphaCutoff = v;
+    //         });
 
-            GUIHelp.add(mat, 'doubleSide').onChange((v) => {
-                mat.doubleSide = v;
-            });
+    //         GUIHelp.add(mat, 'doubleSide').onChange((v) => {
+    //             mat.doubleSide = v;
+    //         });
 
-            GUIHelp.add(mat, 'roughness').onChange((v) => {
-                mat.roughness = v;
-            });
+    //         GUIHelp.add(mat, 'roughness').onChange((v) => {
+    //             mat.roughness = v;
+    //         });
 
-            GUIHelp.add(mat, 'metallic').onChange((v) => {
-                mat.metallic = v;
-            });
+    //         GUIHelp.add(mat, 'metallic').onChange((v) => {
+    //             mat.metallic = v;
+    //         });
 
-            GUIHelp.add(mat, 'envIntensity').onChange((v) => {
-                mat.envIntensity = v;
-            });
-        }
+    //         GUIHelp.add(mat, 'envIntensity').onChange((v) => {
+    //             mat.envIntensity = v;
+    //         });
+    //     }
 
-        open && GUIHelp.open();
-        GUIHelp.endFolder();
-    }
+    //     open && GUIHelp.open();
+    //     GUIHelp.endFolder();
+    // }
 
     public static blendShape(obj: Object3D) {
         GUIHelp.addFolder('morph controller');
@@ -480,6 +482,38 @@ export class GUIUtil {
         GUIHelp.endFolder();
     }
 
+    public static renderBlendShape(obj: Object3D) {
+        GUIHelp.addFolder('morph controller');
+        // register MorphTargetBlender component
+        let blendShapeComponents = obj.getComponents(SkinnedMeshRenderer2);
+        let targetRenderers = null;
+        for (let ii = 0; ii < blendShapeComponents.length; ii++) {
+            if (blendShapeComponents[ii].geometry.blendShapeData) {
+                targetRenderers = blendShapeComponents[ii].geometry.blendShapeData.shapeNames;
+            }
+        }
+
+        if (targetRenderers) {
+            let influenceData = {};
+            // bind influenceData to gui
+            for (let i in targetRenderers) {
+                let key = targetRenderers[i];
+                influenceData[key] = 0.0;
+                GUIHelp.add(influenceData, key, 0, 1, 0.01).onChange((v) => {
+                    influenceData[key] = v;
+                    for (let index = 0; index < blendShapeComponents.length; index++) {
+                        for (let renderer of blendShapeComponents) {
+                            renderer.setMorphInfluence(key, v);
+                        }
+                    }
+                });
+            }
+        }
+
+        GUIHelp.open();
+        GUIHelp.endFolder();
+    }
+
     static renderAnimator(com: AnimatorComponent) {
         let anim = {}
         for (let i = 0; i < com.clips.length; i++) {
@@ -491,6 +525,7 @@ export class GUIUtil {
 
         GUIHelp.add({ anim: anim }, 'anim', anim).onChange((v) => {
             com.playAnim(v);
+            com.playBlendShape(v);
         });
         GUIHelp.endFolder();
 
@@ -499,8 +534,8 @@ export class GUIUtil {
 
     public static renderGTAO(post: GTAOPost) {
         GUIHelp.addFolder("GTAO");
-        GUIHelp.add(post, "maxDistance", 0.0, 50, 1);
-        GUIHelp.add(post, "maxPixel", 0.0, 50, 1);
+        GUIHelp.add(post, "maxDistance", 0.0, 149, 1);
+        GUIHelp.add(post, "maxPixel", 0.0, 150, 1);
         GUIHelp.add(post, "rayMarchSegment", 0.0, 50, 0.001);
         GUIHelp.add(post, "darkFactor", 0.0, 5, 0.001);
         GUIHelp.add(post, "blendColor");

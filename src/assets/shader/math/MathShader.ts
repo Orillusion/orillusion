@@ -2,7 +2,6 @@
  * @internal
  */
 export let MathShader = /* wgsl */ `
-var<private> PI: f32 = 3.14159265359;
 
 
 fn applyQuaternion(position:vec3<f32>, q:vec4<f32>) -> vec3<f32>{

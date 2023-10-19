@@ -1,17 +1,25 @@
-import { BlendMode, GPUCullMode, RegisterComponent, RegisterShader, Texture } from "../../../../..";
-import { Engine3D } from "../../../../../Engine3D";
-import { RenderShader } from "../../../../../gfx/graphics/webGpu/shader/RenderShader";
+import { Engine3D } from "../../../../..";
+import { GPUCullMode } from "../../../../../gfx/graphics/webGpu/WebGPUConst";
+import { Texture } from "../../../../../gfx/graphics/webGpu/core/texture/Texture";
+import { RenderShaderPass } from "../../../../../gfx/graphics/webGpu/shader/RenderShaderPass";
+import { BlendMode } from "../../../../../materials/BlendMode";
 import { Color } from "../../../../../math/Color";
 import { Vector4 } from "../../../../../math/Vector4";
+import { RegisterShader } from "../../../../../util/SerializeDecoration";
+import { Shader } from "./Shader";
 
 
 @RegisterShader
-export class LitShader extends RenderShader {
+export class LitShader extends Shader {
 
     constructor() {
-        super('PBRLItShader', 'PBRLItShader');
-        this.setShaderEntry(`VertMain`, `FragMain`)
-        let shaderState = this.shaderState;
+        super();
+
+        let colorShader = new RenderShaderPass('PBRLItShader', 'PBRLItShader');
+        colorShader.setShaderEntry(`VertMain`, `FragMain`)
+        this.addRenderPass(colorShader);
+
+        let shaderState = colorShader.shaderState;
         shaderState.acceptShadow = true;
         shaderState.castShadow = true;
         shaderState.receiveEnv = true;
@@ -50,6 +58,10 @@ export class LitShader extends RenderShader {
         this.setUniformFloat(`clearcoatRoughnessFactor`, 0.0);
         this.setUniformColor(`clearcoatColor`, new Color(1, 1, 1));
         this.setUniformFloat(`clearcoatWeight`, 0.0);
+
+        this._MainTex = Engine3D.res.grayTexture;
+        this._BumpMap = Engine3D.res.normalTexture;
+        this._MaskTex = Engine3D.res.maskTexture;
     }
 
     public set _MainTex(value: Texture) {
@@ -76,24 +88,25 @@ export class LitShader extends RenderShader {
         this.setUniformFloat("roughness", value);
     }
 
-
     public set _MainColor(value: Color) {
         this.setUniformColor("baseColor", value);
     }
 
-    public set _AlphaCutof(value: number) {
+    public set _AlphaCutoff(value: number) {
         this.setUniformFloat("alphaCutoff", value);
     }
 
     public set _DoubleSidedEnable(value: number) {
-        this.shaderState.cullMode = value ? GPUCullMode.none : this.shaderState.cullMode;
+        let subShader = this.getDefaultColorShader();
+        subShader.shaderState.cullMode = value ? GPUCullMode.none : subShader.shaderState.cullMode;
     }
 
     public set _SurfaceType(value: number) {
+        let subShader = this.getDefaultColorShader();
         if (value == 0) {
-            this.blendMode = BlendMode.NONE;
+            subShader.blendMode = BlendMode.NONE;
         } else {
-            this.blendMode = BlendMode.ALPHA;
+            subShader.blendMode = BlendMode.ALPHA;
         }
     }
 

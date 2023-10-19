@@ -5,6 +5,10 @@ import { ColorPassRenderer } from '../passRenderer/color/ColorPassRenderer';
 import { GBufferFrame } from '../frame/GBufferFrame';
 import { RendererJob } from './RendererJob';
 import { DDGIProbeRenderer } from '../passRenderer/ddgi/DDGIProbeRenderer';
+import { webGPUContext } from '../../graphics/webGpu/Context3D';
+import { RTResourceConfig } from '../config/RTResourceConfig';
+import { RTResourceMap } from '../frame/RTResourceMap';
+import { GPUTextureFormat } from '../../graphics/webGpu/WebGPUConst';
 /**
  * Forward+
  * Every time a forward rendering is performed, 
@@ -21,6 +25,7 @@ export class ForwardRenderJob extends RendererJob {
 
     public start(): void {
         super.start();
+
         let rtFrame = GBufferFrame.getGBufferFrame("ColorPassGBuffer");
         {
             let debugTextures = [];
@@ -31,6 +36,11 @@ export class ForwardRenderJob extends RendererJob {
             }
 
             colorPassRenderer.setRenderStates(rtFrame);
+
+            for (let i = 0; i < rtFrame.renderTargets.length; i++) {
+                const tex = rtFrame.renderTargets[i];
+                debugTextures.push(tex);
+            }
 
             if (Engine3D.setting.gi.enable) {
                 let lightEntries = GlobalBindGroup.getLightEntries(this.view.scene);

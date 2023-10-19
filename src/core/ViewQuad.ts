@@ -2,20 +2,16 @@ import { MeshRenderer } from '../components/renderer/MeshRenderer';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
 import { UniformNode } from '../gfx/graphics/webGpu/core/uniforms/UniformNode';
 import { WebGPUDescriptorCreator } from '../gfx/graphics/webGpu/descriptor/WebGPUDescriptorCreator';
-import { GPUCompareFunction } from '../gfx/graphics/webGpu/WebGPUConst';
 import { webGPUContext } from '../gfx/graphics/webGpu/Context3D';
 import { RTFrame } from '../gfx/renderJob/frame/RTFrame';
-import { BlendMode } from '../materials/BlendMode';
-import { Color } from '../math/Color';
 import { PlaneGeometry } from '../shape/PlaneGeometry';
-
 import { Object3D } from './entities/Object3D';
 import { RendererPassState } from '../gfx/renderJob/passRenderer/state/RendererPassState';
-import { Engine3D } from '../Engine3D';
 import { GPUContext } from '../gfx/renderJob/GPUContext';
-import { RendererType } from '../gfx/renderJob/passRenderer/state/RendererType';
+import { PassType } from '../gfx/renderJob/passRenderer/state/RendererType';
 import { View3D } from './View3D';
-import { Material, RenderShader } from '..';
+import { Material } from '../materials/Material';
+import { QuadShader } from '../loader/parser/prefab/mats/shader/QuadShader';
 /**
  * @internal
  * @group Entity
@@ -25,27 +21,18 @@ export class ViewQuad extends Object3D {
     height: number = 128;
     quadRenderer: MeshRenderer;
     material: Material;
-    uniforms: { [key: string]: UniformNode };
+    // uniforms: { [key: string]: UniformNode };
     rendererPassState: RendererPassState;
-    pass: RenderShader;
+    quadShader: QuadShader;
 
-    constructor(vs: string = 'QuadGlsl_vs', fs: string = 'QuadGlsl_fs', rtFrame: RTFrame, shaderUniforms?: { [uniName: string]: UniformNode }, multisample: number = 0, f: boolean = false) {
+    constructor(vs: string = 'QuadGlsl_vs', fs: string = 'QuadGlsl_fs', rtFrame: RTFrame, multisample: number = 0, f: boolean = false) {
         super();
 
-        let renderTexture = rtFrame ? rtFrame.attachments : [];
+        let renderTexture = rtFrame ? rtFrame.renderTargets : [];
 
         this.material = new Material();
-        this.pass = new RenderShader(vs, fs);
-        this.material.addPass(RendererType.COLOR, this.pass);
-
-        this.pass.blendMode = BlendMode.NONE;
-        let shaderState = this.pass.shaderState;
-        shaderState.frontFace = `cw`;
-        // shaderState.cullMode = `back`;
-        shaderState.depthWriteEnabled = false;
-        shaderState.depthCompare = GPUCompareFunction.always;
-        shaderState.multisample = multisample;
-        this.uniforms = this.pass.uniforms = shaderUniforms ? shaderUniforms : { color: new UniformNode(new Color()) };
+        this.quadShader = new QuadShader(vs, fs);
+        this.material.shader = this.quadShader;
 
         this.quadRenderer = this.addComponent(MeshRenderer);
         this.quadRenderer.material = this.material;
@@ -55,13 +42,6 @@ export class ViewQuad extends Object3D {
         // this.quadRenderer.renderOrder = 99999;
         this.quadRenderer.geometry = new PlaneGeometry(100, 100, 1, 1);
 
-        this.colorTexture = Engine3D.res.blackTexture;
-
-        this.pass.setUniformFloat(`x`, 0);
-        this.pass.setUniformFloat(`y`, 0);
-        this.pass.setUniformFloat(`width`, 100);
-        this.pass.setUniformFloat(`height`, 100);
-
         this.quadRenderer.material = this.material;
         this.quadRenderer[`__start`]();
         this.quadRenderer[`_enable`] = true;
@@ -69,22 +49,18 @@ export class ViewQuad extends Object3D {
         // this.createRendererPassState(renderTargets, depth);
         // this.rendererPassState = WebGPUDescriptorPool.createRendererPassState(renderTargets, shaderState.multisample>0 ? false : true);
         this.rendererPassState = WebGPUDescriptorCreator.createRendererPassState(rtFrame, `load`);
-        if (shaderState.multisample > 0) {
-            this.rendererPassState.multisample = shaderState.multisample;
+        if (multisample > 0) {
+            this.rendererPassState.multisample = this.quadShader.getDefaultColorShader().shaderState.multisample;
             this.rendererPassState.multiTexture = webGPUContext.device.createTexture({
                 size: {
                     width: webGPUContext.presentationSize[0],
                     height: webGPUContext.presentationSize[1],
                 },
-                sampleCount: shaderState.multisample,
+                sampleCount: multisample,
                 format: renderTexture.length > 0 ? renderTexture[0].format : webGPUContext.presentationFormat,
                 usage: GPUTextureUsage.RENDER_ATTACHMENT,
             })
         }
-    }
-
-    public set colorTexture(tex: Texture) {
-        this.material.getPass(RendererType.COLOR)[0].setTexture(`baseMap`, tex);
     }
 
     /**
@@ -101,8 +77,8 @@ export class ViewQuad extends Object3D {
         let camera = view.camera;
         let encoder = GPUContext.beginRenderPass(command, viewQuad.rendererPassState);
         GPUContext.bindCamera(encoder, camera);
-        viewQuad.quadRenderer.nodeUpdate(view, RendererType.COLOR, viewQuad.rendererPassState, null);
-        viewQuad.quadRenderer.renderPass2(view, RendererType.COLOR, viewQuad.rendererPassState, null, encoder);
+        viewQuad.quadRenderer.nodeUpdate(view, PassType.COLOR, viewQuad.rendererPassState, null);
+        viewQuad.quadRenderer.renderPass2(view, PassType.COLOR, viewQuad.rendererPassState, null, encoder);
         GPUContext.endPass(encoder);
     }
 
@@ -117,37 +93,13 @@ export class ViewQuad extends Object3D {
      */
     public renderToViewQuad(view: View3D, viewQuad: ViewQuad, command: GPUCommandEncoder, colorTexture: Texture) {
         let camera = view.camera;
-        viewQuad.colorTexture = colorTexture;
+
+        viewQuad.quadShader.setTexture('baseMap', colorTexture);
         let encoder = GPUContext.beginRenderPass(command, viewQuad.rendererPassState);
         GPUContext.bindCamera(encoder, camera);
 
-        // viewQuad.x = view.viewPort.x;
-        // viewQuad.y = view.viewPort.y;
-        // viewQuad.scaleX = view.viewPort.width;
-        // viewQuad.scaleY = view.viewPort.height;
-        // viewQuad.transform.updateWorldMatrix(true);
-        // encoder.setViewport(
-        //     view.viewPort.x * webGPUContext.presentationSize[0],
-        //     view.viewPort.y * webGPUContext.presentationSize[1],
-        //     view.viewPort.width * webGPUContext.presentationSize[0],
-        //     view.viewPort.height * webGPUContext.presentationSize[1],
-        //     0.0, 1.0);
-        // encoder.setScissorRect(
-        //     view.viewPort.x * webGPUContext.presentationSize[0],
-        //     view.viewPort.y * webGPUContext.presentationSize[0],
-        //     view.viewPort.width * webGPUContext.presentationSize[0],
-        //     view.viewPort.height * webGPUContext.presentationSize[1],
-        // );
-
-        // encoder.setScissorRect(view.viewPort.x, view.viewPort.y, 300, 150);
-        // encoder.setViewport(view.viewPort.x, view.viewPort.y, view.viewPort.width / (view.viewPort.width / view.viewPort.height), view.viewPort.height, 0.0, 1.0);
-        // encoder.setScissorRect(view.viewPort.x, view.viewPort.y, view.viewPort.width, view.viewPort.height);
-
-        // encoder.setViewport(camera.viewPort.x, camera.viewPort.y, camera.viewPort.width, camera.viewPort.height, 0.0, 1.0);
-        // encoder.setScissorRect(camera.viewPort.x, camera.viewPort.y, camera.viewPort.width, camera.viewPort.height);
-
-        viewQuad.quadRenderer.nodeUpdate(view, RendererType.COLOR, viewQuad.rendererPassState, null);
-        viewQuad.quadRenderer.renderPass2(view, RendererType.COLOR, viewQuad.rendererPassState, null, encoder);
+        viewQuad.quadRenderer.nodeUpdate(view, PassType.COLOR, viewQuad.rendererPassState, null);
+        viewQuad.quadRenderer.renderPass2(view, PassType.COLOR, viewQuad.rendererPassState, null, encoder);
         GPUContext.endPass(encoder);
     }
 }

@@ -4,11 +4,13 @@ import { View3D } from "../../../../core/View3D";
 import { ProfilerUtil } from "../../../../util/ProfilerUtil";
 import { GPUContext } from "../../GPUContext";
 import { EntityCollect } from "../../collect/EntityCollect";
+import { RTResourceConfig } from "../../config/RTResourceConfig";
+import { RTResourceMap } from "../../frame/RTResourceMap";
 import { OcclusionSystem } from "../../occlusion/OcclusionSystem";
 import { RenderContext } from "../RenderContext";
 import { RendererBase } from "../RendererBase";
 import { ClusterLightingBuffer } from "../cluster/ClusterLightingBuffer";
-import { RendererType } from "../state/RendererType";
+import { PassType } from "../state/RendererType";
 
 /**
  *  @internal
@@ -19,7 +21,7 @@ import { RendererType } from "../state/RendererType";
 export class ColorPassRenderer extends RendererBase {
     constructor() {
         super();
-        this.passType = RendererType.COLOR;
+        this.passType = PassType.COLOR;
     }
 
     public render(view: View3D, occlusionSystem: OcclusionSystem, clusterLightingBuffer?: ClusterLightingBuffer, maskTr: boolean = false) {
@@ -38,7 +40,7 @@ export class ColorPassRenderer extends RendererBase {
         {
             ProfilerUtil.start("ColorPass Draw Opaque");
 
-            this.renderContext.beginRenderPass();
+            this.renderContext.beginOpaqueRenderPass();
 
             let command = this.renderContext.command;
             let renderPassEncoder = this.renderContext.encoder;
@@ -83,7 +85,7 @@ export class ColorPassRenderer extends RendererBase {
         {
             ProfilerUtil.start("ColorPass Draw Transparent");
 
-            this.renderContext.beginRenderPass();
+            this.renderContext.beginTransparentRenderPass();
 
             let command = this.renderContext.command;
             let renderPassEncoder = this.renderContext.encoder;
@@ -114,8 +116,8 @@ export class ColorPassRenderer extends RendererBase {
     }
 
     public drawNodes(view: View3D, renderContext: RenderContext, nodes: RenderNode[], occlusionSystem: OcclusionSystem, clusterLightingBuffer: ClusterLightingBuffer) {
-        {
-            let viewRenderList = EntityCollect.instance.getRenderShaderCollect(view);
+        let viewRenderList = EntityCollect.instance.getRenderShaderCollect(view);
+        if (viewRenderList) {
             for (const renderList of viewRenderList) {
                 let nodeMap = renderList[1];
                 for (const iterator of nodeMap) {

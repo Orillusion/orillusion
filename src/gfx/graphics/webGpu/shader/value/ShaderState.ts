@@ -32,6 +32,7 @@ export class ShaderState {
     public splitTexture: boolean = false;
     public alphaCutoff: number;
     public useFragDepth: boolean = false;
+    public writeMasks: GPUColorWriteFlags[] = [];
 
     public setFromMapValues(values: Map<string, any>) {
         if (values.has('blendMode')) {

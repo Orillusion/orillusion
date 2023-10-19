@@ -1,12 +1,11 @@
-import { RendererType } from "../../..";
+import { PassType } from "../../..";
 import { Engine3D } from "../../../Engine3D";
 import { ShaderLib } from "../../../assets/shader/ShaderLib";
 import { GPUCompareFunction, GPUCullMode } from "../../../gfx/graphics/webGpu/WebGPUConst";
 import { Texture } from "../../../gfx/graphics/webGpu/core/texture/Texture";
-import { RenderShader } from "../../../gfx/graphics/webGpu/shader/RenderShader";
+import { RenderShaderPass } from "../../../gfx/graphics/webGpu/shader/RenderShaderPass";
 import { BlendMode } from "../../../materials/BlendMode";
 import { Material } from "../../../materials/Material";
-import { registerMaterial } from "../../../materials/MaterialRegister";
 import { Vector2 } from "../../../math/Vector2";
 import { Vector4 } from "../../../math/Vector4";
 import { GUISpace } from "../GUIConfig";
@@ -27,7 +26,7 @@ export class GUIMaterial extends Material {
         ShaderLib.register('GUI_shader_world', GUIShader.GUI_shader_world);
 
         let shaderKey: string = space == GUISpace.View ? 'GUI_shader_view' : 'GUI_shader_world';
-        let colorPass = new RenderShader(shaderKey, shaderKey);
+        let colorPass = new RenderShaderPass(shaderKey, shaderKey);
         colorPass.setShaderEntry(`VertMain`, `FragMain`);
 
         colorPass.setUniformVector2('screenSize', this._screenSize);

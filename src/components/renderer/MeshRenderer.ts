@@ -4,11 +4,11 @@ import { ClusterLightingBuffer } from '../../gfx/renderJob/passRenderer/cluster/
 import { GeometryBase } from '../../core/geometry/GeometryBase';
 import { RendererMask } from '../../gfx/renderJob/passRenderer/state/RendererMask';
 import { RendererPassState } from '../../gfx/renderJob/passRenderer/state/RendererPassState';
-import { RendererType } from '../../gfx/renderJob/passRenderer/state/RendererType';
+import { PassType } from '../../gfx/renderJob/passRenderer/state/RendererType';
 import { MorphTargetData } from '../anim/morphAnim/MorphTargetData';
 import { RenderNode } from './RenderNode';
 import { EditorInspector, RegisterComponent } from '../../util/SerializeDecoration';
-import { Material } from '../..';
+import { Color, Material, mergeFunctions } from '../..';
 
 /**
  * The mesh renderer component is a component used to render the mesh
@@ -74,6 +74,15 @@ export class MeshRenderer extends RenderNode {
         this.object3D.bound = this._geometry.bounds.clone();
         if (!this._readyPipeline) {
             this.initPipeline();
+
+            if (this._computes && this._computes) {
+                this.onCompute = mergeFunctions(this.onCompute, () => {
+                    for (let i = 0; i < this._computes.length; i++) {
+                        const compute = this._computes[i];
+                        compute.onUpdate();
+                    }
+                });
+            }
         }
     }
 
@@ -125,7 +134,7 @@ export class MeshRenderer extends RenderNode {
      * @param clusterLightingRender
      * @param probes
      */
-    public nodeUpdate(view: View3D, passType: RendererType, renderPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer) {
+    public nodeUpdate(view: View3D, passType: PassType, renderPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer) {
         if (this.morphData && this.morphData.enable) {
             for (let i = 0; i < this.materials.length; i++) {
                 const material = this.materials[i];
@@ -144,4 +153,8 @@ export class MeshRenderer extends RenderNode {
         super.destroy(force);
     }
 
+    // public onGraphic(view?: View3D) {
+    //     if (this._geometry)
+    //         view.graphic3D.drawMeshWireframe(this._geometry.instanceID, this._geometry, this.transform, Color.COLOR_RED);
+    // }
 }

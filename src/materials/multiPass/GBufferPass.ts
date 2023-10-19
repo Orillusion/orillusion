@@ -1,21 +1,21 @@
 import { Color } from '../../math/Color';
 import { BlendMode } from '../BlendMode';
 import { Engine3D } from '../../Engine3D';
-import { RenderShader } from '../../gfx/graphics/webGpu/shader/RenderShader';
+import { RenderShaderPass } from '../../gfx/graphics/webGpu/shader/RenderShaderPass';
+import { PassType } from '../..';
 
 /**
  * @internal
  * GBufferPass
  * @group Material
  */
-export class GBufferPass extends RenderShader {
+export class GBufferPass extends RenderShaderPass {
     transparency: number;
 
     constructor() {
         super(`gbuffer_vs`, `gbuffer_fs`);
         this.setShaderEntry(`VertMain`, `FragMain`)
-        let shaderState = this.shaderState;
-        // shaderState.cullMode = `none`;
+        this.passType = PassType.GI;
 
         this.setUniformColor(`baseColor`, new Color());
         this.setUniformColor(`emissiveColor`, new Color());

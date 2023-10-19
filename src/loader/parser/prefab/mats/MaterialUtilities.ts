@@ -9,6 +9,7 @@ export class MaterialUtilities {
 
     public static GetMaterial(shaderName: string) {
         let name = shaderName;
+        // let name = "UnLitShader";
         let list = name.split("/");
         name = list[list.length - 1];
 

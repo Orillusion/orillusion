@@ -77,9 +77,13 @@ export let PBRLItShader: string = /*wgsl*/ `
         #if USE_ALPHACUT 
             if( (ORI_ShadingInput.BaseColor.a - materialUniform.alphaCutoff) <= 0.0 ){
                 ORI_FragmentOutput.color = vec4<f32>(0.0,0.0,0.0,1.0);
-                ORI_FragmentOutput.worldPos = vec4<f32>(0.0,0.0,0.0,1.0);
-                ORI_FragmentOutput.worldNormal = vec4<f32>(0.0,0.0,0.0,1.0);
-                ORI_FragmentOutput.material = vec4<f32>(0.0,0.0,0.0,1.0);
+                
+                #if USEGBUFFER
+                    ORI_FragmentOutput.worldPos = vec4<f32>(0.0,0.0,0.0,1.0);
+                    ORI_FragmentOutput.worldNormal = vec4<f32>(0.0,0.0,0.0,1.0);
+                    ORI_FragmentOutput.material = vec4<f32>(0.0,0.0,0.0,1.0);
+                #endif
+
                 discard;
             }
         #endif
@@ -151,17 +155,12 @@ export let PBRLItShader: string = /*wgsl*/ `
         ORI_ShadingInput.EmissiveColor = vec4<f32>(materialUniform.emissiveColor.rgb * emissiveColor.rgb * materialUniform.emissiveIntensity,1.0);
 
         var Normal = textureSample(normalMap,normalMapSampler,uv).rgb ;
-        // Normal.y = 1.0 - Normal.y ;
-        // let normal = unPackNormal(Normal,materialUniform.normalScale) ;  
-        // let normal = unPackNormal(Normal,1.0) ;  
-
         let normal = unPackRGNormal(Normal,1.0,1.0) ;  
-        
         ORI_ShadingInput.Normal = normal ;
 
         BxDFShading();
 
-    //   ORI_FragmentOutput.color = vec4<f32>(vec3<f32>( ORI_ShadingInput.BaseColor.rrr),1.0) ;
+        // ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(normal.rgb),1.0) ;
     }
 `
 

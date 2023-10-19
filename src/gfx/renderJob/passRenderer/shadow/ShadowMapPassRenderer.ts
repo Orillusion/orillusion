@@ -15,7 +15,7 @@ import { ShadowLightsCollect } from "../../collect/ShadowLightsCollect";
 import { RTFrame } from "../../frame/RTFrame";
 import { OcclusionSystem } from "../../occlusion/OcclusionSystem";
 import { RendererPassState } from "../state/RendererPassState";
-import { RendererType } from "../state/RendererType";
+import { PassType } from "../state/RendererType";
 import { RendererBase } from "../RendererBase";
 import { ClusterLightingBuffer } from "../cluster/ClusterLightingBuffer";
 import { Reference } from "../../../../util/Reference";
@@ -35,7 +35,7 @@ export class ShadowMapPassRenderer extends RendererBase {
     constructor() {
         super();
         this.setShadowMap(Engine3D.setting.shadow.shadowSize, CSM.Cascades);
-        this.passType = RendererType.SHADOW;
+        this.passType = PassType.SHADOW;
     }
 
     setShadowMap(size: number, cascades: number) {

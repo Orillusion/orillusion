@@ -19,7 +19,7 @@ import { Time } from '../../../../util/Time';
 import { RTDescriptor } from '../../../graphics/webGpu/descriptor/RTDescriptor';
 import { WebGPUDescriptorCreator } from '../../../graphics/webGpu/descriptor/WebGPUDescriptorCreator';
 import { RendererPassState } from '../state/RendererPassState';
-import { RendererType } from '../state/RendererType';
+import { PassType } from '../state/RendererType';
 import { ILight } from '../../../../components/lights/ILight';
 import { Reference } from '../../../..';
 
@@ -43,7 +43,7 @@ export class PointLightShadowRenderer extends RendererBase {
     public shadowSize: number = 1024;
     constructor() {
         super();
-        this.passType = RendererType.POINT_SHADOW;
+        this.passType = PassType.POINT_SHADOW;
 
         // this.shadowSize = Engine3D.setting.shadow.pointShadowSize;
         this._shadowCameraDic = new Map<ILight, CubeShadowMapInfo>();

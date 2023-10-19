@@ -3,7 +3,7 @@ import { Object3D } from "../../core/entities/Object3D";
 import { MeshRenderer } from "./MeshRenderer";
 import { RendererMask } from "../../gfx/renderJob/passRenderer/state/RendererMask";
 import { StorageGPUBuffer } from "../../gfx/graphics/webGpu/core/buffer/StorageGPUBuffer";
-import { RendererType } from "../../gfx/renderJob/passRenderer/state/RendererType";
+import { PassType } from "../../gfx/renderJob/passRenderer/state/RendererType";
 import { RendererPassState } from "../../gfx/renderJob/passRenderer/state/RendererPassState";
 import { ClusterLightingBuffer } from "../../gfx/renderJob/passRenderer/cluster/ClusterLightingBuffer";
 import { AnimatorComponent, GeometryBase, Matrix4, RegisterComponent } from "../..";
@@ -36,7 +36,6 @@ export class SkinnedMeshRenderer2 extends MeshRenderer {
         this.skinJointsName = value.skinNames;
         let matrixList: Float32Array[] = [];
         for (let i = 0; i < value.bindPose.length; i++) {
-            // value.bindPose[i].transpose();
             matrixList.push(value.bindPose[i].rawData.slice(0, 16));
         }
         this.skinInverseBindMatrices = matrixList;
@@ -133,7 +132,7 @@ export class SkinnedMeshRenderer2 extends MeshRenderer {
      * @param clusterLightingRender
      * @param probes
      */
-    public nodeUpdate(view: View3D, passType: RendererType, renderPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer) {
+    public nodeUpdate(view: View3D, passType: PassType, renderPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer) {
         for (let i = 0; i < this.materials.length; i++) {
             const material = this.materials[i];
             let passes = material.getPass(passType);

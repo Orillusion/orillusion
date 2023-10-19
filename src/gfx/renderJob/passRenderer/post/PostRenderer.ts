@@ -7,7 +7,7 @@ import { GPUContext } from "../../GPUContext";
 import { RTFrame } from "../../frame/RTFrame";
 import { PostBase } from "../../post/PostBase";
 import { RendererBase } from "../RendererBase";
-import { RendererType } from "../state/RendererType";
+import { PassType } from "../state/RendererType";
 
 
 /**
@@ -20,7 +20,7 @@ export class PostRenderer extends RendererBase {
     constructor() {
         super();
 
-        this._rendererType = RendererType.POST;
+        this._rendererType = PassType.POST;
 
         this.postList = [];
 

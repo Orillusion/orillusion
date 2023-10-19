@@ -1,20 +1,29 @@
-import { GUIUtil } from "@samples/utils/GUIUtil";
-import { BlendMode, GPUCullMode, PBRLitSSSShader, RegisterComponent, RegisterShader, ShaderLib, ShaderUtil, Texture } from "../../../../..";
-import { Engine3D } from "../../../../../Engine3D";
-import { RenderShader } from "../../../../../gfx/graphics/webGpu/shader/RenderShader";
 import { Color } from "../../../../../math/Color";
 import { Vector4 } from "../../../../../math/Vector4";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
+import { RegisterShader } from "../../../../../util/SerializeDecoration";
+import { Shader } from "./Shader";
+import { PBRLitSSSShader } from "../../../../../assets/shader/materials/PBRLitSSSShader";
+import { ShaderLib } from "../../../../../assets/shader/ShaderLib";
+import { PreIntegratedLutCompute } from "../../../../../gfx/graphics/webGpu/compute/PreIntegratedLutCompute";
+import { Texture } from "../../../../../gfx/graphics/webGpu/core/texture/Texture";
+import { GPUCullMode } from "../../../../../gfx/graphics/webGpu/WebGPUConst";
+import { BlendMode } from "../../../../../materials/BlendMode";
+import { RenderShaderPass } from "../../../../../gfx/graphics/webGpu/shader/RenderShaderPass";
 
 
 @RegisterShader
-export class LitSSSShader extends RenderShader {
+export class LitSSSShader extends Shader {
 
     constructor() {
+        super();
+
         ShaderLib.register("PBRLitSSSShader", PBRLitSSSShader);
-        super('PBRLitSSSShader', 'PBRLitSSSShader');
-        this.setShaderEntry(`VertMain`, `FragMain`)
-        let shaderState = this.shaderState;
+        let colorShader = new RenderShaderPass('PBRLitSSSShader', 'PBRLitSSSShader');
+        colorShader.setShaderEntry(`VertMain`, `FragMain`)
+        this.addRenderPass(colorShader);
+
+        let shaderState = colorShader.shaderState;
         shaderState.acceptShadow = true;
         shaderState.castShadow = true;
         shaderState.receiveEnv = true;
@@ -28,10 +37,14 @@ export class LitSSSShader extends RenderShader {
         this.setDefine('USE_CUSTOMUNIFORM', true);
         this.setDefault();
         this.debug();
+
+        this.computes = [
+            new PreIntegratedLutCompute(this)
+        ]
     }
 
     public debug() {
-        GUIHelp.addFolder("skin");
+        GUIHelp.addFolder("face");
         GUIHelp.addColor({ SkinColor: new Color() }, "SkinColor").onChange((v) => {
             let newColor = new Color();
             newColor.copyFromArray(v);
@@ -49,6 +62,10 @@ export class LitSSSShader extends RenderShader {
         GUIHelp.add({ metallic: 1 }, "metallic", 0.0, 1.0).onChange((v) => {
             this._Metallic = v;
         });
+        GUIHelp.add({ curveFactor: 1 }, "curveFactor", 0.0, 10.0).onChange((v) => {
+            this.curveFactor = v;
+        });
+
         GUIHelp.endFolder();
     }
 
@@ -80,6 +97,7 @@ export class LitSSSShader extends RenderShader {
         this.setUniformColor(`skinColor`, new Color(1, 0, 0));
         this.setUniformFloat(`skinPower`, 3.4);
         this.setUniformFloat(`skinColorIns`, 0.5);
+        this.setUniformFloat(`curveFactor`, 1.0);
     }
 
     public set _MainTex(value: Texture) {
@@ -115,12 +133,13 @@ export class LitSSSShader extends RenderShader {
         this.setUniformColor("baseColor", value);
     }
 
-    public set _AlphaCutof(value: number) {
+    public set _AlphaCutoff(value: number) {
         this.setUniformFloat("alphaCutoff", value);
     }
 
     public set _DoubleSidedEnable(value: number) {
-        this.shaderState.cullMode = value ? GPUCullMode.none : this.shaderState.cullMode;
+        let shader = this.getDefaultColorShader();
+        shader.shaderState.cullMode = value ? GPUCullMode.none : shader.shaderState.cullMode;
     }
 
     public set _SkinColor(value: Color) {
@@ -135,13 +154,16 @@ export class LitSSSShader extends RenderShader {
         this.setUniformFloat("skinColorIns", value);
     }
 
-
+    public set curveFactor(value: number) {
+        this.setUniformFloat("curveFactor", value);
+    }
 
     public set _SurfaceType(value: number) {
+        let shader = this.getDefaultColorShader();
         if (value == 0) {
-            this.blendMode = BlendMode.NONE;
+            shader.blendMode = BlendMode.NONE;
         } else {
-            this.blendMode = BlendMode.ALPHA;
+            shader.blendMode = BlendMode.ALPHA;
         }
     }
 

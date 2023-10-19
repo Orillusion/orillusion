@@ -248,9 +248,9 @@ export class Graphic3D extends Object3D {
         this.mFillRender.fillShapeData(uuid, 'fill', color, [
             origin,
             new Vector3(origin.x + width, origin.y, origin.z),
-            new Vector3(origin.x + width, origin.y , origin.z + height),
-            new Vector3(origin.x + width, origin.y , origin.z + height),
-            new Vector3(origin.x, origin.y, origin.z  + height),
+            new Vector3(origin.x + width, origin.y, origin.z + height),
+            new Vector3(origin.x + width, origin.y, origin.z + height),
+            new Vector3(origin.x, origin.y, origin.z + height),
             origin
         ]);
     }
@@ -300,10 +300,11 @@ export class Graphic3D extends Object3D {
      * @param transform The Transform that needs to be bound
      * @param color The color of the wire frame
      */
-    public drawMeshWireframe(uuid: string, geometry: GeometryBase, transform: Transform, color: Color = Color.COLOR_WHITE) {
+    public drawMeshWireframe(uuid: string, geometry: GeometryBase, transform: Transform, color: Color = Color.COLOR_WHITE, forceUpdate: boolean = false) {
         if (geometry) this.createCustomShape(uuid, transform ? transform : this.transform).fillShapeData(
             geometry.genWireframe(),
-            color
+            color,
+            forceUpdate
         );
     }
 

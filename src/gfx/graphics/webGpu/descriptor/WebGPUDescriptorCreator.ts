@@ -24,16 +24,16 @@ export class WebGPUDescriptorCreator {
         rps.isOutTarget = rtFrame.isOutTarget;
         rps.depthCleanValue = rtFrame.depthCleanValue;
         rps.depthLoadOp = rtFrame.depthLoadOp;
-        if (rtFrame && rtFrame.attachments.length > 0) {
-            rps.renderTargets = rtFrame.attachments;
-            rps.rtTextureDescripts = rtFrame.rtDescriptors;
+        if (rtFrame && rtFrame.renderTargets.length > 0) {
+            rps.renderTargets = rtFrame.renderTargets;
+            rps.rtTextureDescriptors = rtFrame.rtDescriptors;
 
             rps.renderPassDescriptor = WebGPUDescriptorCreator.getRenderPassDescriptor(rps);
             rps.renderBundleEncoderDescriptor = WebGPUDescriptorCreator.getRenderBundleDescriptor(rps);
-            rps.outAttachments = [];
-            for (let i = 0; i < rtFrame.attachments.length; i++) {
-                const element = rtFrame.attachments[i];
-                rps.outAttachments[i] = {
+            rps.renderTargetTextures = [];
+            for (let i = 0; i < rtFrame.renderTargets.length; i++) {
+                const element = rtFrame.renderTargets[i];
+                rps.renderTargetTextures[i] = {
                     format: element.format,
                 };
                 if (element.name.indexOf(RTResourceConfig.colorBufferTex_NAME) != -1) {
@@ -44,7 +44,7 @@ export class WebGPUDescriptorCreator {
             rps.renderPassDescriptor = WebGPUDescriptorCreator.getRenderPassDescriptor(rps, loadOp);
             rps.renderBundleEncoderDescriptor = WebGPUDescriptorCreator.getRenderBundleDescriptor(rps);
             // if(!rps.customSize){
-            rps.outAttachments = [
+            rps.renderTargetTextures = [
                 {
                     format: webGPUContext.presentationFormat,
                 },
@@ -74,7 +74,7 @@ export class WebGPUDescriptorCreator {
             size = [renderPassState.renderTargets[0].width, renderPassState.renderTargets[0].height];
             for (let i = 0; i < renderPassState.renderTargets.length; i++) {
                 const texture = renderPassState.renderTargets[i];
-                const rtDesc = renderPassState.rtTextureDescripts[i];
+                const rtDesc = renderPassState.rtTextureDescriptors[i];
                 attachMentTexture.push({
                     view: texture.getGPUView(),
                     resolveTarget: undefined,

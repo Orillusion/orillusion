@@ -180,9 +180,9 @@ export class GTAOPost extends PostBase {
         this.gtaoCompute.setStorageBuffer('aoBuffer', this.aoBuffer);
         let rtFrame = GBufferFrame.getGBufferFrame("ColorPassGBuffer");
         //setting.usePosFloat32 ? RTResourceMap.getTexture(RTResourceConfig.positionBufferTex_NAME): 
-        let posTexture = rtFrame.attachments[1];
+        let posTexture = rtFrame.renderTargets[1];
         this.gtaoCompute.setSamplerTexture(`posTex`, posTexture);
-        this.gtaoCompute.setSamplerTexture(`normalTex`, rtFrame.attachments[2]);
+        this.gtaoCompute.setSamplerTexture(`normalTex`, rtFrame.renderTargets[2]);
         this.autoSetColorTexture('inTex', this.gtaoCompute);
         this.gtaoCompute.setStorageTexture(`outTex`, this.gtaoTexture);
 

@@ -68,6 +68,12 @@ export let ArrayItemIndex = function (array: any[], item: any) {
     return -1;
 }
 
+export let mergeFunctions = (...funcs) => {
+    return function (...args) {
+        funcs.forEach(func => func.apply(this, args));
+    };
+}
+
 
 /**
  * Constructor

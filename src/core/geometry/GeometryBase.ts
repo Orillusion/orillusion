@@ -8,7 +8,7 @@ import { GeometryIndicesBuffer } from "./GeometryIndicesBuffer";
 import { GeometryVertexType } from "./GeometryVertexType";
 import { VertexAttributeData } from "./VertexAttributeData";
 import { ArrayBufferData } from "../../gfx/graphics/webGpu/core/buffer/ArrayBufferData";
-import { BlendShapeData, Matrix4 } from "../..";
+import { BlendShapeData, Matrix4, VertexAttribute } from "../..";
 
 export type LODDescriptor = {
     indexStart: number;
@@ -43,6 +43,8 @@ export class GeometryBase {
     public skinNames: string[];
     public bindPose: Matrix4[];
     public blendShapeData: BlendShapeData;
+    public vertexDim: number;
+
     private _bounds: BoundingBox;
 
     private _attributeMap: Map<string, VertexAttributeData>;
@@ -50,6 +52,7 @@ export class GeometryBase {
     private _indicesBuffer: GeometryIndicesBuffer;
     private _vertexBuffer: GeometryVertexBuffer;
     private _onChange: boolean = true;
+    private _wireframeLines: Vector3[];
 
     constructor() {
         this.instanceID = UUID();
@@ -167,7 +170,7 @@ export class GeometryBase {
         }
     }
 
-    public setAttribute(attribute: string, data: ArrayBufferData) {
+    public setAttribute(attribute: VertexAttributeName | string, data: ArrayBufferData) {
         if (attribute == VertexAttributeName.indices) {
             this.setIndices(data);
         } else {
@@ -180,35 +183,64 @@ export class GeometryBase {
         }
     }
 
-    public getAttribute(attribute: string): VertexAttributeData {
+    public getAttribute(attribute: VertexAttributeName | string): VertexAttributeData {
         return this._attributeMap.get(attribute) as VertexAttributeData;
     }
 
-    public hasAttribute(attribute: string): boolean {
+    public hasAttribute(attribute: VertexAttributeName | string): boolean {
         return this._attributeMap.has(attribute);
     }
 
     public genWireframe(): Vector3[] {
-        let positionAttribute = this.getAttribute(`position`);
-        let indexAttribute = this.getAttribute(`indices`);
-        if (indexAttribute && positionAttribute && indexAttribute.data.length > 0) {
-            let vertexData = positionAttribute.data;
-            let lines = [];
-            for (let i = 0; i < indexAttribute.data.length / 3; i++) {
-                const i1 = indexAttribute.data[i * 3 + 0];
-                const i2 = indexAttribute.data[i * 3 + 1];
-                const i3 = indexAttribute.data[i * 3 + 2];
+        if (this._wireframeLines) return this._wireframeLines;
+        if (this.geometryType == GeometryVertexType.split || this.geometryType == GeometryVertexType.compose) {
+            let positionAttribute = this.getAttribute(VertexAttributeName.position);
+            let indexAttribute = this.getAttribute(VertexAttributeName.indices);
+            if (indexAttribute && positionAttribute && indexAttribute.data.length > 0) {
+                let vertexData = positionAttribute.data;
+                let lines = [];
+                for (let i = 0; i < indexAttribute.data.length / 3; i++) {
+                    const i1 = indexAttribute.data[i * 3 + 0];
+                    const i2 = indexAttribute.data[i * 3 + 1];
+                    const i3 = indexAttribute.data[i * 3 + 2];
 
-                let p1 = new Vector3(vertexData[i1 * 3 + 0], vertexData[i1 * 3 + 1], vertexData[i1 * 3 + 2]);
-                let p2 = new Vector3(vertexData[i2 * 3 + 0], vertexData[i2 * 3 + 1], vertexData[i2 * 3 + 2]);
-                let p3 = new Vector3(vertexData[i3 * 3 + 0], vertexData[i3 * 3 + 1], vertexData[i3 * 3 + 2]);
+                    let p1 = new Vector3(vertexData[i1 * 3 + 0], vertexData[i1 * 3 + 1], vertexData[i1 * 3 + 2]);
+                    let p2 = new Vector3(vertexData[i2 * 3 + 0], vertexData[i2 * 3 + 1], vertexData[i2 * 3 + 2]);
+                    let p3 = new Vector3(vertexData[i3 * 3 + 0], vertexData[i3 * 3 + 1], vertexData[i3 * 3 + 2]);
 
-                lines.push(p1, p2);
-                lines.push(p2, p3);
-                lines.push(p3, p1);
+                    lines.push(p1, p2);
+                    lines.push(p2, p3);
+                    lines.push(p3, p1);
+                }
+                this._wireframeLines = lines;
+                return lines;
             }
-            return lines;
+        } else if (this.geometryType == GeometryVertexType.compose_bin) {
+            let vertexAttribute = this.getAttribute(VertexAttributeName.all);
+            let strip = this.vertexDim;
+
+            let indexAttribute = this.getAttribute(VertexAttributeName.indices);
+            if (indexAttribute && vertexAttribute && indexAttribute.data.length > 0) {
+                let vertexData = vertexAttribute.data;
+                let lines = [];
+                for (let i = 0; i < indexAttribute.data.length / 3; i++) {
+                    const i1 = indexAttribute.data[i * 3 + 0]; // start by 0
+                    const i2 = indexAttribute.data[i * 3 + 1]; // start by 1
+                    const i3 = indexAttribute.data[i * 3 + 2]; // start by 2
+
+                    let p1 = new Vector3(vertexData[i1 * strip + 0], vertexData[i1 * strip + 1], vertexData[i1 * strip + 2]);
+                    let p2 = new Vector3(vertexData[i2 * strip + 0], vertexData[i2 * strip + 1], vertexData[i2 * strip + 2]);
+                    let p3 = new Vector3(vertexData[i3 * strip + 0], vertexData[i3 * strip + 1], vertexData[i3 * strip + 2]);
+
+                    lines.push(p1, p2);
+                    lines.push(p2, p3);
+                    lines.push(p3, p1);
+                }
+                this._wireframeLines = lines;
+                return lines;
+            }
         }
+
         return null;
     }
 

@@ -1,4 +1,4 @@
-import { Engine3D, ShaderLib, Vector4, Color, BlendMode, registerMaterial, Material, RenderShader, Texture } from "@orillusion/core";
+import { Engine3D, ShaderLib, Vector4, Color, BlendMode, registerMaterial, Material, RenderShaderPass, Texture } from "@orillusion/core";
 import { ChromaKeyShader } from "./ChromaKeyShader";
 
 /**
@@ -14,7 +14,7 @@ export class ChromaKeyMaterial extends Material {
         super();
 
         ShaderLib.register("ChromaKeyShader", ChromaKeyShader);
-        this.defaultPass = new RenderShader(
+        this.defaultPass = new RenderShaderPass(
             `ChromaKeyShader`,
             `ChromaKeyShader`
         );

@@ -169,8 +169,8 @@ export class SSRPost extends PostBase {
 
         let rtFrame = GBufferFrame.getGBufferFrame("ColorPassGBuffer");
         this.SSR_RayTraceCompute.setSamplerTexture("zBufferTexture", rtFrame.getPositionMap());
-        this.SSR_RayTraceCompute.setSamplerTexture(RTResourceConfig.normalBufferTex_NAME, rtFrame.attachments[2]);
-        this.SSR_RayTraceCompute.setSamplerTexture(RTResourceConfig.materialBufferTex_NAME, rtFrame.attachments[3]);
+        this.SSR_RayTraceCompute.setSamplerTexture(RTResourceConfig.normalBufferTex_NAME, rtFrame.renderTargets[2]);
+        this.SSR_RayTraceCompute.setSamplerTexture(RTResourceConfig.materialBufferTex_NAME, rtFrame.renderTargets[3]);
 
         if (EntityCollect.instance.sky instanceof SkyRenderer)
             this.SSR_RayTraceCompute.setSamplerTexture(`prefilterMap`, EntityCollect.instance.sky.map);

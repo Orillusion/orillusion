@@ -1,8 +1,8 @@
 import { VertexAttributeSize } from '../../../../../core/geometry/VertexAttributeSize';
 import { VertexFormat } from '../../../../../core/geometry/VertexFormat';
 import { ComputeShader } from '../ComputeShader';
-import { RenderShader } from '../RenderShader';
-import { ShaderBase } from '../ShaderBase';
+import { RenderShaderPass } from '../RenderShaderPass';
+import { ShaderPassBase } from '../ShaderPassBase';
 import { Preprocessor } from '../util/Preprocessor';
 import { ShaderValue } from './ShaderValue';
 
@@ -78,7 +78,7 @@ export class ShaderReflection {
         }
     }
 
-    public static parser2(wgsl: string, shaderBase: ShaderBase) {
+    public static parser2(wgsl: string, shaderBase: ShaderPassBase) {
         if (!shaderBase.shaderReflection) shaderBase.shaderReflection = new ShaderReflection();
         let shaderReflection = shaderBase.shaderReflection;
         if (wgsl.indexOf(`@vertex`) != -1) {
@@ -140,14 +140,14 @@ export class ShaderReflection {
         }
     }
 
-    public static final(shaderBase: ShaderBase) {
+    public static final(shaderBase: ShaderPassBase) {
         let shaderReflection = shaderBase.shaderReflection;
         this._shaderReflectionMap.set(shaderBase.shaderVariant, shaderReflection);
         this.combineShaderReflectionVarInfo(shaderReflection, shaderReflection.vs_variables);
         this.combineShaderReflectionVarInfo(shaderReflection, shaderReflection.fs_variables);
     }
 
-    public static getShaderReflection2(code: string, shaderBase: ShaderBase) {
+    public static getShaderReflection2(code: string, shaderBase: ShaderPassBase) {
         if (shaderBase.shaderVariant != undefined) {
             let preShader = Preprocessor.parse(code, shaderBase.defineValue);
             ShaderReflection.parser2(preShader, shaderBase);
@@ -188,7 +188,7 @@ export class ShaderReflection {
         return shaderVariant;
     }
 
-    public static genShaderVariant(shader: ShaderBase) {
+    public static genShaderVariant(shader: ShaderPassBase) {
         let shaderVariant = '';
         for (const key in shader.uniforms) {
             shaderVariant += key + ':';
@@ -209,7 +209,7 @@ export class ShaderReflection {
         return shaderVariant;
     }
 
-    public static genRenderShaderVariant(renderShader: RenderShader) {
+    public static genRenderShaderVariant(renderShader: RenderShaderPass) {
         let shaderVariant = `RenderShader(${renderShader.vsName},${renderShader.fsName})`;
 
         shaderVariant += '|';

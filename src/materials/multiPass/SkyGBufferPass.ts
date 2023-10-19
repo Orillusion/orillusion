@@ -1,14 +1,17 @@
-import { RenderShader, SkyGBuffer_pass } from '../..';
 import { GPUCompareFunction, GPUCullMode } from '../../gfx/graphics/webGpu/WebGPUConst';
+import { RenderShaderPass } from '../../gfx/graphics/webGpu/shader/RenderShaderPass';
+import { PassType } from '../../gfx/renderJob/passRenderer/state/RendererType';
 
 /**
  * @internal
  * @group Material
  */
-export class SkyGBufferPass extends RenderShader {
+export class SkyGBufferPass extends RenderShaderPass {
 
     constructor() {
         super(`sky_vs_frag_wgsl`, `SkyGBuffer_fs`);
+        this.passType = PassType.GI;
+
         this.setUniformFloat(`exposure`, 1.0);
         this.setUniformFloat(`roughness`, 0.0);
 

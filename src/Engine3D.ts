@@ -5,12 +5,15 @@ import { Time } from './util/Time';
 import { InputSystem } from './io/InputSystem';
 import { View3D } from './core/View3D';
 import { version } from '../package.json';
+
+import { GPUTextureFormat } from './gfx/graphics/webGpu/WebGPUConst';
 import { webGPUContext } from './gfx/graphics/webGpu/Context3D';
-import { FXAAPost } from './gfx/renderJob/post/FXAAPost';
+import { RTResourceConfig } from './gfx/renderJob/config/RTResourceConfig';
+import { RTResourceMap } from './gfx/renderJob/frame/RTResourceMap';
+
 import { ForwardRenderJob } from './gfx/renderJob/jobs/ForwardRenderJob';
 import { GlobalBindGroup } from './gfx/graphics/webGpu/core/bindGroups/GlobalBindGroup';
 import { Interpolator } from './math/TimeInterpolator';
-import { RTResourceMap } from './gfx/renderJob/frame/RTResourceMap';
 import { RendererJob } from './gfx/renderJob/jobs/RendererJob';
 import { Res } from './assets/Res';
 import { ShaderLib } from './assets/shader/ShaderLib';
@@ -346,8 +349,12 @@ export class Engine3D {
         this.views = [view];
         let renderJob = new ForwardRenderJob(view);
         this.renderJobs.set(view, renderJob);
-        renderJob.addPost(new FXAAPost());
-        renderJob.start();
+        let presentationSize = webGPUContext.presentationSize;
+        RTResourceMap.createRTTexture(RTResourceConfig.colorBufferTex_NAME, presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float, false);
+
+        // new FXAAPost()
+        // renderJob.addPost(new FXAAPost());
+        // renderJob.start();
         this.resume();
         return renderJob;
     }
@@ -365,8 +372,13 @@ export class Engine3D {
             const view = views[i];
             let renderJob = new ForwardRenderJob(view);
             this.renderJobs.set(view, renderJob);
-            renderJob.addPost(new FXAAPost());
-            renderJob.start();
+
+            let presentationSize = webGPUContext.presentationSize;
+            RTResourceMap.createRTTexture(RTResourceConfig.colorBufferTex_NAME, presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float, false);
+
+            // new FXAAPost()
+            // renderJob.addPost(new FXAAPost());
+            // renderJob.start();
         }
         this.resume();
     }
@@ -516,6 +528,9 @@ export class Engine3D {
         globalMatrixBindGroup.writeBuffer(Matrix4.useCount * 16);
 
         this.renderJobs.forEach((v, k) => {
+            if (!v.renderState) {
+                v.start();
+            }
             v.renderFrame();
         });
 

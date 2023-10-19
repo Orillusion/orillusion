@@ -1,5 +1,4 @@
-export class ColorLitShader {
-    public static Ori_AllShader: string = /*wgsl*/`
+export let ColorLitShader: string = /*wgsl*/`
         #include "Common_vert"
         #include "Common_frag"
         #include "BxDF_frag"
@@ -26,4 +25,3 @@ export class ColorLitShader {
             BxDFShading();
         }
     `
-}

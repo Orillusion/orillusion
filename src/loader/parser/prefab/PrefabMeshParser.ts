@@ -46,11 +46,13 @@ export class PrefabMeshParser extends ParserBase {
             let vertexBuffer = meshBytesArray.readBytesArray();
 
             let attCount = vertexBlock.readInt32();
+            let vertex_dim = 0;
             let attributes = [];
             for (let i = 0; i < attCount; i++) {
                 attributes[i] = {};
                 attributes[i].att = MeshVertexAttribute[vertexBlock.readUTF()];
                 attributes[i].dim = vertexBlock.readInt32();
+                vertex_dim += attributes[i].dim;
                 attributes[i].format = vertexBlock.readUTF();
             }
 
@@ -89,6 +91,7 @@ export class PrefabMeshParser extends ParserBase {
             }
 
             let geometry = new GeometryBase();
+            geometry.vertexDim = vertex_dim;
             geometry.geometryType = GeometryVertexType.compose_bin;
             geometry.setIndices(prefabMesh.indices);
             geometry.setAttribute(VertexAttributeName.all, prefabMesh.vertexBuffer);

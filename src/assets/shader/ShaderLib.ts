@@ -27,13 +27,24 @@ import { Irradiance_frag } from './lighting/Irradiance_frag';
 import { BRDF_frag } from './lighting/BRDF_frag';
 import { BxDF_frag } from './lighting/BxDF_frag';
 import { Clearcoat_frag } from './materials/program/Clearcoat_frag';
-import { LitShader } from './materials/LitShader';
+import { Lit_shader } from './materials/Lit_shader';
 import { PBRLItShader } from './materials/PBRLItShader';
 import { BxdfDebug_frag } from './materials/program/BxdfDebug_frag';
 import { Quad_depth2d_frag_wgsl, Quad_depthCube_frag_wgsl, Quad_frag_wgsl, Quad_vert_wgsl } from './quad/Quad_shader';
 import { ColorUtil } from './utils/ColorUtil';
 import { GenerayRandomDir } from './utils/GenerayRandomDir';
-import { ClusterLight, GBuffer_pass, LambertShader, MatrixShader, QuadGlsl_fs, QuadGlsl_vs, SkyGBuffer_pass, UnLit, ZPassShader_fs, ZPassShader_vs, castPointShadowMap_vert, directionShadowCastMap_frag, shadowCastMap_frag, shadowCastMap_vert } from '../..';
+import { MatrixShader } from './math/MatrixShader';
+import { ClusterLight } from './core/struct/ClusterLight';
+import { Hair_frag } from './lighting/Hair_frag';
+import { BsDF_frag } from './lighting/BsDF_frag';
+import { UnLit } from './materials/UnLit';
+import { Lambert_shader } from './materials/Lambert_shader';
+import { QuadGlsl_fs, QuadGlsl_vs } from './glsl/Quad_glsl';
+import { SkyGBuffer_pass } from './core/pass/SkyGBuffer_pass';
+import { GBuffer_pass } from './core/pass/GBuffer_pass';
+import { castPointShadowMap_vert, directionShadowCastMap_frag, shadowCastMap_frag, shadowCastMap_vert } from './core/pass/CastShadow_pass';
+import { ZPassShader_vs } from './core/pass/ZPassShader_vs';
+import { ZPassShader_fs } from './core/pass/ZPassShader_fs';
 
 /**
  * @internal
@@ -43,6 +54,7 @@ export class ShaderLib {
     public static init() {
         ShaderLib.register('MathShader', MathShader);
         ShaderLib.register('FastMathShader', FastMathShader);
+
         ShaderLib.register('MatrixShader', MatrixShader);
 
         ShaderLib.register('GlobalUniform', GlobalUniform);
@@ -77,11 +89,13 @@ export class ShaderLib {
         ShaderLib.register('ColorUtil_frag', ColorUtil);
         ShaderLib.register('ColorUtil', ColorUtil);
         ShaderLib.register('BRDF_frag', BRDF_frag);
+        ShaderLib.register('Hair_frag', Hair_frag);
         ShaderLib.register('BxDF_frag', BxDF_frag);
+        ShaderLib.register('BsDF_frag', BsDF_frag);
         ShaderLib.register('UnLit_frag', UnLit_frag);
         ShaderLib.register('UnLit', UnLit);
         ShaderLib.register('Clearcoat_frag', Clearcoat_frag);
-        ShaderLib.register('LitShader', LitShader);
+        ShaderLib.register('LitShader', Lit_shader);
         ShaderLib.register('PBRLItShader', PBRLItShader);
 
         ShaderLib.register('ClusterDebug_frag', ClusterDebug_frag);
@@ -94,7 +108,7 @@ export class ShaderLib {
         ShaderLib.register('sky_vs_frag_wgsl', CubeSky_Shader.sky_vs_frag_wgsl);
         ShaderLib.register('sky_fs_frag_wgsl', CubeSky_Shader.sky_fs_frag_wgsl);
 
-        ShaderLib.register("LambertShader", LambertShader);
+        ShaderLib.register("LambertShader", Lambert_shader);
 
         ShaderLib.register("QuadGlsl_vs", QuadGlsl_vs);
         ShaderLib.register("QuadGlsl_fs", QuadGlsl_fs);

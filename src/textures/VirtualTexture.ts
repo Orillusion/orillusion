@@ -11,9 +11,16 @@ import { UUID } from '../util/Global';
  */
 export class VirtualTexture extends Texture {
     public resolveTarget: GPUTextureView;
+    sampleCount: number;
     // storeOp: string = 'store';
     // loadOp: GPULoadOp = `load`;
     // clearValue: GPUColor = [0, 0, 0, 0];
+
+    public clone() {
+        let texture = new VirtualTexture(this.width, this.height, this.format, this.useMipmap, this.usage, this.numberLayer, this.sampleCount);
+        texture.name = "clone_" + texture.name;
+        return texture;
+    }
 
     /**
      * create virtual texture
@@ -23,10 +30,13 @@ export class VirtualTexture extends Texture {
      * @param useMipmap whether or not gen mipmap
      * @returns
      */
-    constructor(width: number, height: number, format: GPUTextureFormat = GPUTextureFormat.rgba8unorm, useMipMap: boolean = false, usage?: number, textureCount: number = 1, sampleCount: number = 0, clear: boolean = true) {
-        super(width, height, textureCount);
+    constructor(width: number, height: number, format: GPUTextureFormat = GPUTextureFormat.rgba8unorm, useMipMap: boolean = false, usage?: number, numberLayer: number = 1, sampleCount: number = 0, clear: boolean = true) {
+        super(width, height, numberLayer);
         let device = webGPUContext.device;
         this.name = UUID();
+
+        this.useMipmap = useMipMap;
+        this.sampleCount = sampleCount;
 
         if (usage != undefined) {
             this.usage = usage;
@@ -34,7 +44,7 @@ export class VirtualTexture extends Texture {
             this.usage = GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_SRC | GPUTextureUsage.COPY_DST;
         }
 
-        this.createTextureDescriptor(width, height, 1, format, this.usage, textureCount, sampleCount);
+        this.createTextureDescriptor(width, height, 1, format, this.usage, numberLayer, sampleCount);
 
         // this.loadOp = clear ? `clear` : `load`
         // this.loadOp = `clear`

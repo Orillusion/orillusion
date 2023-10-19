@@ -1,12 +1,11 @@
 
-import { LambertShader, Material, RendererType, RenderShader } from '..';
+import { Lambert_shader, Material, PassType, RenderShaderPass, Shader } from '..';
 import { ShaderLib } from '../assets/shader/ShaderLib';
 import { Engine3D } from '../Engine3D';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
 import { Color } from '../math/Color';
 import { Vector4 } from '../math/Vector4';
 
-import { registerMaterial } from "./MaterialRegister";
 
 /**
  * Lambert Mateiral
@@ -19,13 +18,14 @@ export class LambertMaterial extends Material {
      */
     constructor() {
         super();
-        let colorPass = new RenderShader(`LambertShader`, `LambertShader`);
+        let colorPass = new RenderShaderPass(`LambertShader`, `LambertShader`);
         colorPass.setShaderEntry(`VertMain`, `FragMain`)
-
+        colorPass.passType = PassType.COLOR;
         colorPass.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));
         colorPass.setUniformVector4(`transformUV2`, new Vector4(0, 0, 1, 1));
         colorPass.setUniformColor(`baseColor`, new Color(1, 1, 1, 1));
         colorPass.setUniformFloat(`alphaCutoff`, 0.5);
+
         let shaderState = colorPass.shaderState;
         shaderState.acceptShadow = false;
         shaderState.castShadow = false;
@@ -33,46 +33,38 @@ export class LambertMaterial extends Material {
         shaderState.acceptGI = false;
         shaderState.useLight = false;
 
-        // let shaderState = shader.shaderState;
-        // shaderState.acceptShadow = true;
-        // shaderState.castShadow = true;
-        // shaderState.receiveEnv = false;
-        // shaderState.acceptGI = false;
-        // shaderState.useLight = true;
-
-        // default value
-        // this.baseMap = Engine3D.res.whiteTexture;
-        // this.emissiveMap = Engine3D.res.blackTexture;
-        this.defaultPass = colorPass;
+        let newShader = new Shader();
+        newShader.addRenderPass(colorPass);
+        this.shader = newShader;
         this.baseMap = Engine3D.res.grayTexture;
     }
 
     /**
      * set base color map texture
      */
-    set baseMap(tex: Texture) {
-        this.defaultPass.setTexture(`baseMap`, tex);
+    public set baseMap(tex: Texture) {
+        this.shader.setTexture(`baseMap`, tex);
     }
 
     /**
      * get base color map texture
      */
-    get baseMap() {
-        return this.defaultPass.getTexture(`baseMap`);
+    public get baseMap() {
+        return this.shader.getTexture(`baseMap`);
     }
 
     /**
      * set base color (tint color)
      */
-    set baseColor(color: Color) {
-        this.defaultPass.setUniformColor(`baseColor`, color);
+    public set baseColor(color: Color) {
+        this.shader.setUniformColor(`baseColor`, color);
     }
 
     /**
      * get base color (tint color)
      */
-    get baseColor() {
-        return this.defaultPass.uniforms[`baseColor`].color;
+    public get baseColor() {
+        return this.shader.getUniformColor("baseColor");
     }
 
     /**
@@ -89,5 +81,4 @@ export class LambertMaterial extends Material {
     public set shadowMap(texture: Texture) {
         //not need shadowMap texture
     }
-
 }

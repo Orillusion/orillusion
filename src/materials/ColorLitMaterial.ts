@@ -1,15 +1,14 @@
-import { RenderShader } from '..';
+import { Material, RenderShaderPass, PassType, Shader } from '..';
 import { Engine3D } from '../Engine3D';
 import { ShaderLib } from '../assets/shader/ShaderLib';
 import { ColorLitShader } from '../assets/shader/materials/ColorLitShader';
 import { Color } from '../math/Color';
 
-import { PhysicMaterial } from './PhysicMaterial';
 /**
  * ColorLitMaterial
  * @group Material
  */
-export class ColorLitMaterial extends PhysicMaterial {
+export class ColorLitMaterial extends Material {
     static count = 0;
     /**
      * @constructor
@@ -17,9 +16,13 @@ export class ColorLitMaterial extends PhysicMaterial {
     constructor() {
         super();
 
-        ShaderLib.register("ColorLitShader", ColorLitShader.Ori_AllShader);
+        ShaderLib.register("ColorLitShader", ColorLitShader);
 
-        let renderShader = new RenderShader(`ColorLitShader`, `ColorLitShader`);
+        this.shader = new Shader()
+        let renderShader = new RenderShaderPass(`ColorLitShader`, `ColorLitShader`);
+        renderShader.passType = PassType.COLOR;
+        this.shader.addRenderPass(renderShader);
+
         renderShader.setDefine("USE_BRDF", true);
         renderShader.setShaderEntry(`VertMain`, `FragMain`)
         renderShader.setUniformColor(`baseColor`, new Color());

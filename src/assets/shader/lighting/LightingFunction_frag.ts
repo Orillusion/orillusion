@@ -47,6 +47,63 @@ fn directLighting( albedo:vec3<f32>, N:vec3<f32>, V:vec3<f32>,  roughness:f32 , 
     return color;
 }
 
+fn directDulLighting( albedo:vec3<f32>, N:vec3<f32>, V:vec3<f32>,  roughness:f32 , metallic:f32 , light:LightData , shadowBias:f32 ) -> vec3<f32> {
+  var color = vec3<f32>(0.0) ;
+  #if USE_LIGHT
+    var L = -normalize(light.direction.xyz) ;
+    let lightCC = pow( light.lightColor.rgb,vec3<f32>(2.2));
+    var lightColor = getHDRColor( lightCC.rgb , light.linear )  ;
+    var att = light.intensity / LUMEN ;
+    if(light.castShadow>=0){
+        #if USE_SHADOWMAPING
+          for (var j: i32 = 0; j < 8; j += 1) {
+              if(j == light.castShadow){
+                att *= shadowStrut.directShadowVisibility[j] ; 
+              }
+          }
+        #endif
+    }
+    #if USE_LAMBERT
+      color = vec3<f32>(1.0,1.0,1.0) ;
+    #endif 
+    
+    #if USE_BRDF
+      color = 0.85 * simpleBRDF(albedo,N,V,L,att,lightColor,0.85 * roughness,metallic) ;
+      color += 0.15 * simpleBRDF(albedo,N,V,L,att,lightColor,0.15 * roughness,metallic) ;
+    #endif 
+  #endif 
+  return color;
+}
+
+fn directHairLighting( albedo:vec3<f32>, N:vec3<f32>, V:vec3<f32>,  roughness:f32 , metallic:f32 , light:LightData , shadowBias:f32 ) -> vec3<f32> {
+  var color = vec3<f32>(0.0) ;
+  #if USE_LIGHT
+    var L = -normalize(light.direction.xyz) ;
+    let lightCC = pow( light.lightColor.rgb,vec3<f32>(2.2));
+    var lightColor = getHDRColor( lightCC.rgb , light.linear )  ;
+    var att = light.intensity / LUMEN ;
+    if(light.castShadow>=0){
+        #if USE_SHADOWMAPING
+          for (var j: i32 = 0; j < 8; j += 1) {
+              if(j == light.castShadow){
+                att *= shadowStrut.directShadowVisibility[j] ; 
+              }
+          }
+        #endif
+    }
+    #if USE_LAMBERT
+      color = vec3<f32>(1.0,1.0,1.0) ;
+    #endif 
+    
+    #if USE_BRDF
+      color = 0.5 * simpleBRDF(albedo,N,V,L,att,lightColor,0.85 ,metallic) ;
+      color += 0.5 * simpleBRDF(albedo,N,V,L,att,lightColor,0.15 ,metallic) ;
+    #endif 
+  #endif 
+  return color;
+}
+
+
 fn pointLighting( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, roughness:f32 , metallic:f32 ,light:LightData ) -> vec3<f32> {
     var color = vec3<f32>(0.0) ;
     let lightPos = light.position.xyz;

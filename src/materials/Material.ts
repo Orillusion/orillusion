@@ -1,14 +1,16 @@
-import { BlendMode, Color, Engine3D, GPUCompareFunction, StorageGPUBuffer, Texture, UniformGPUBuffer, Vector2, Vector3, Vector4 } from "..";
-import { RenderShader } from "../gfx/graphics/webGpu/shader/RenderShader";
-import { RendererType } from "../gfx/renderJob/passRenderer/state/RendererType";
+import { StorageGPUBuffer } from "../gfx/graphics/webGpu/core/buffer/StorageGPUBuffer";
+import { UniformGPUBuffer } from "../gfx/graphics/webGpu/core/buffer/UniformGPUBuffer";
+import { Texture } from "../gfx/graphics/webGpu/core/texture/Texture";
+import { RenderShaderPass } from "../gfx/graphics/webGpu/shader/RenderShaderPass";
+import { PassType } from "../gfx/renderJob/passRenderer/state/RendererType";
+import { Shader } from "../loader/parser/prefab/mats/shader/Shader";
+import { Color } from "../math/Color";
+import { Vector2 } from "../math/Vector2";
+import { Vector3 } from "../math/Vector3";
+import { Vector4 } from "../math/Vector4";
+import { BlendMode } from "./BlendMode";
 
 export class Material {
-
-    /**
-      *
-      * name of this material
-      */
-    public name: string;
 
     /**
      *
@@ -16,94 +18,72 @@ export class Material {
      */
     public instanceID: string;
 
+    /**
+      *
+      * name of this material
+      */
+    public name: string;
+
     public enable: boolean = true;
 
-    private _defaultPass: RenderShader;
+    private _defaultSubShader: RenderShaderPass;
 
-    private _renderPasses: Map<RendererType, RenderShader[]>;
-
-    private _depthCompare: GPUCompareFunction = GPUCompareFunction.less;
+    protected _shader: Shader;
 
     constructor() {
-        this._renderPasses = new Map<RendererType, RenderShader[]>();
     }
 
-    public get depthCompare(): GPUCompareFunction {
-        return this._depthCompare;
+    public set shader(shader: Shader) {
+        this._shader = shader;
+        this._defaultSubShader = shader.getDefaultShaders()[0];
     }
 
-    public set depthCompare(value: GPUCompareFunction) {
-        this._depthCompare = value;
-        this._defaultPass.depthCompare = value;
-    }
-
-    public get defaultPass(): RenderShader {
-        return this._defaultPass;
-    }
-
-    public set defaultPass(value: RenderShader) {
-        this._defaultPass = value;
-        this.addPass(RendererType.COLOR, value);
+    public get shader(): Shader {
+        return this._shader;
     }
 
     public get doubleSide(): boolean {
-        return this._defaultPass.doubleSide;
+        return this._defaultSubShader.doubleSide;
     }
 
     public set doubleSide(value: boolean) {
-        this._defaultPass.doubleSide = value;
+        this._defaultSubShader.doubleSide = value;
     }
 
     public get castShadow(): boolean {
-        let colorPass = this.defaultPass;
-        return colorPass.shaderState.castShadow;
+        return this._defaultSubShader.shaderState.castShadow;
     }
 
     public set castShadow(value: boolean) {
-        let colorPass = this.defaultPass;
-        colorPass.shaderState.castShadow = value;
+        this._defaultSubShader.shaderState.castShadow = value;
     }
 
     public get blendMode(): BlendMode {
-        let colorPass = this.defaultPass;
-        return colorPass.blendMode;
+        return this._defaultSubShader.blendMode;
     }
 
     public set blendMode(value: BlendMode) {
-        let colorPass = this.defaultPass;
-        colorPass.blendMode = value;
+        this._defaultSubShader.blendMode = value;
     }
 
 
     public get transparent(): boolean {
-        let colorPass = this.defaultPass;
-        return colorPass.shaderState.transparent;
+        return this._defaultSubShader.shaderState.transparent;
     }
 
     public set transparent(value: boolean) {
-        let colorPass = this.defaultPass;
-        colorPass.shaderState.transparent = value;
+        this._defaultSubShader.shaderState.transparent = value;
         if (value) {
-            colorPass.renderOrder = 3000;
+            this._defaultSubShader.renderOrder = 3000;
         }
     }
 
     public get cullMode(): GPUCullMode {
-        let colorPass = this.defaultPass;
-        return colorPass.cullMode;
+        return this._defaultSubShader.cullMode;
     }
 
     public set cullMode(value: GPUCullMode) {
-        let colorPass = this.defaultPass;
-        colorPass.cullMode = value;
-    }
-
-    /**
-     * @param passType 
-     * @returns 
-     */
-    public hasPass(passType: RendererType) {
-        return this._renderPasses.has(passType);
+        this._defaultSubShader.cullMode = value;
     }
 
     /**
@@ -111,44 +91,16 @@ export class Material {
      * @param passType 
      * @returns 
      */
-    public getPass(passType: RendererType) {
-        return this._renderPasses.get(passType);
+    public getPass(passType: PassType) {
+        return this._shader.getSubShaders(passType);
     }
 
     /**
      * get all color render pass
      * @returns 
      */
-    public getAllPass(): RenderShader[] {
-        return this._renderPasses.get(RendererType.COLOR);
-    }
-
-    public addPass(passType: RendererType, pass: RenderShader, index: number = -1): RenderShader[] {
-        if (!this._renderPasses.has(passType)) this._renderPasses.set(passType, []);
-
-        let passList = this._renderPasses.get(passType);
-        if (passType == RendererType.COLOR && passList.length == 0) {
-            this._defaultPass = pass;
-        }
-
-        let has = passList.indexOf(pass) != -1;
-        if (!has) {
-            if (index == -1) {
-                passList.push(pass);
-            } else {
-                passList.splice(index, -1, pass);
-            }
-        }
-        return passList;
-    }
-
-    public removePass(passType: RendererType, index: number) {
-        if (this._renderPasses.has(passType)) {
-            let list = this._renderPasses.get(passType);
-            if (index < list.length) {
-                list.splice(index, 1);
-            }
-        }
+    public getAllPass(): RenderShaderPass[] {
+        return this._shader.getSubShaders(PassType.COLOR);
     }
 
     /**
@@ -159,100 +111,47 @@ export class Material {
         return null;
     }
 
-    protected _shader: RenderShader;
-    public set shader(shader: RenderShader) {
-        this._shader = shader;
-        this.defaultPass = shader;
-    }
-
-    public get shader(): RenderShader {
-        return this._shader;
-    }
 
     destroy(force: boolean) {
-        for (const iterator of this._renderPasses) {
-            let passList = iterator[1];
-            for (const pass of passList) {
-                for (const textureName in pass.textures) {
-                    if (textureName.indexOf("defaultOri") == -1) {
-                        let texture = pass.textures[textureName];
-                        texture.destroy(force);
-                    }
-                }
-            }
-        }
+        this._shader.destroy();
+        this._shader = null;
+    }
+
+
+    public setDefine(define: string, value: boolean) {
+        this.shader.setDefine(define, value);
     }
 
     public setTexture(propertyName: string, texture: Texture) {
-        for (const iterator of this._renderPasses) {
-            let passList = iterator[1];
-            for (const pass of passList) {
-                pass.setTexture(propertyName, texture);
-            }
-        }
+        this._shader.setTexture(propertyName, texture);
     }
 
     public setStorageBuffer(propertyName: string, buffer: StorageGPUBuffer) {
-        for (const iterator of this._renderPasses) {
-            let passList = iterator[1];
-            for (const pass of passList) {
-                pass.setStorageBuffer(propertyName, buffer);
-            }
-        }
+        this._shader.setStorageBuffer(propertyName, buffer);
     }
 
     public setUniformBuffer(propertyName: string, buffer: UniformGPUBuffer) {
-        for (const iterator of this._renderPasses) {
-            let passList = iterator[1];
-            for (const pass of passList) {
-                pass.setUniformBuffer(propertyName, buffer);
-            }
-        }
+        this._shader.setStorageBuffer(propertyName, buffer);
     }
 
 
     public setFloat(propertyName: string, value: number) {
-        for (const iterator of this._renderPasses) {
-            let passList = iterator[1];
-            for (const pass of passList) {
-                pass.setUniform(propertyName, value);
-            }
-        }
+        this._shader.setUniformFloat(propertyName, value);
     }
 
     public setVector2(propertyName: string, value: Vector2) {
-        for (const iterator of this._renderPasses) {
-            let passList = iterator[1];
-            for (const pass of passList) {
-                pass.setUniformVector2(propertyName, value);
-            }
-        }
+        this._shader.setUniformVector2(propertyName, value);
     }
 
     public setVector3(propertyName: string, value: Vector3) {
-        for (const iterator of this._renderPasses) {
-            let passList = iterator[1];
-            for (const pass of passList) {
-                pass.setUniformVector3(propertyName, value);
-            }
-        }
+        this._shader.setUniformVector3(propertyName, value);
     }
 
     public setVector4(propertyName: string, value: Vector4) {
-        for (const iterator of this._renderPasses) {
-            let passList = iterator[1];
-            for (const pass of passList) {
-                pass.setUniformVector4(propertyName, value);
-            }
-        }
+        this._shader.setUniformVector4(propertyName, value);
     }
 
     public setColor(propertyName: string, value: Color) {
-        for (const iterator of this._renderPasses) {
-            let passList = iterator[1];
-            for (const pass of passList) {
-                pass.setUniformColor(propertyName, value);
-            }
-        }
+        this._shader.setUniformColor(propertyName, value);
     }
 }

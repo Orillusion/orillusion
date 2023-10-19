@@ -3,7 +3,7 @@ import { UniformGPUBuffer } from '../../../gfx/graphics/webGpu/core/buffer/Unifo
 import { MorphTarget_shader } from '../../../components/anim/morphAnim/MorphTarget_shader';
 import { ComputeShader } from '../../../gfx/graphics/webGpu/shader/ComputeShader';
 import { GPUContext } from '../../../gfx/renderJob/GPUContext';
-import { RenderShader } from '../../../gfx/graphics/webGpu/shader/RenderShader';
+import { RenderShaderPass } from '../../../gfx/graphics/webGpu/shader/RenderShaderPass';
 import { GeometryBase } from '../../../core/geometry/GeometryBase';
 import { VertexAttributeData } from '../../../core/geometry/VertexAttributeData';
 
@@ -100,7 +100,7 @@ export class MorphTargetData {
         this._normalAttrDataGroup.reset(this._collectMorphTargetData.mergedNormal);
     }
 
-    public applyRenderShader(renderShader: RenderShader) {
+    public applyRenderShader(renderShader: RenderShaderPass) {
         this.uploadMorphTargetBuffer();
         this.uploadConfigGBuffer();
         //

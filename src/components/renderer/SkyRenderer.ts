@@ -8,7 +8,7 @@ import { EntityCollect } from '../../gfx/renderJob/collect/EntityCollect';
 import { ClusterLightingBuffer } from '../../gfx/renderJob/passRenderer/cluster/ClusterLightingBuffer';
 import { RendererMask } from '../../gfx/renderJob/passRenderer/state/RendererMask';
 import { RendererPassState } from '../../gfx/renderJob/passRenderer/state/RendererPassState';
-import { RendererType } from '../../gfx/renderJob/passRenderer/state/RendererType';
+import { PassType } from '../../gfx/renderJob/passRenderer/state/RendererType';
 import { SkyMaterial } from '../../materials/SkyMaterial';
 import { Vector3 } from '../../math/Vector3';
 import { SphereGeometry } from '../../shape/SphereGeometry';
@@ -57,7 +57,7 @@ export class SkyRenderer extends MeshRenderer {
         }
     }
 
-    public renderPass2(view: View3D, passType: RendererType, rendererPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer, encoder: GPURenderPassEncoder, useBundle: boolean = false) {
+    public renderPass2(view: View3D, passType: PassType, rendererPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer, encoder: GPURenderPassEncoder, useBundle: boolean = false) {
         // this.transform.updateWorldMatrix();
         super.renderPass2(view, passType, rendererPassState, clusterLightingBuffer, encoder, useBundle);
         // this.transform.localPosition = Camera3D.mainCamera.transform.localPosition ;

@@ -63,7 +63,7 @@ class Sample_PBRMaterial {
                 if (material instanceof LitMaterial) {
                     material.metallic = 1;
                     material.roughness = 0.35;
-                    material.defaultPass.setDefine("USE_TANGENT", false);
+                    material.setDefine("USE_TANGENT", false);
                 }
             }
             model.transform.scaleX = 10;

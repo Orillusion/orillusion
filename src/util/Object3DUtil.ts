@@ -46,7 +46,7 @@ export class Object3DUtil {
         this.initHeap();
 
         let mat = new LitMaterial();
-        mat.baseColor = new Color(r, g, b, 1);
+        // mat.baseColor = new Color(r, g, b, 1);
 
         let obj = new Object3D();
         let renderer = obj.addComponent(MeshRenderer);
@@ -60,7 +60,7 @@ export class Object3DUtil {
         this.initHeap();
 
         let mat = new LitMaterial();
-        mat.baseColor = new Color(r, g, b, 1);
+        // mat.baseColor = new Color(r, g, b, 1);
 
         let obj = new Object3D();
         let renderer = obj.addComponent(MeshRenderer);

@@ -1,4 +1,4 @@
-import { RenderShader } from "../RenderShader";
+import { RenderShaderPass } from "../RenderShaderPass";
 
 export type VertexPart = {
     name: string;
@@ -21,10 +21,10 @@ export type FragmentPart = {
 
 export class ShaderUtil {
     public static renderShaderModulePool: Map<string, GPUShaderModule>;
-    public static renderShader: Map<string, RenderShader>;
+    public static renderShader: Map<string, RenderShaderPass>;
 
     public static init() {
         this.renderShaderModulePool = new Map<string, GPUShaderModule>();
-        this.renderShader = new Map<string, RenderShader>();
+        this.renderShader = new Map<string, RenderShaderPass>();
     }
 }

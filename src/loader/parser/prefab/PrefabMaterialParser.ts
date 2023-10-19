@@ -65,7 +65,7 @@ export class PrefabMaterialParser extends ParserBase {
 
             for (let i = 0; i < defines.length; i++) {
                 const define = defines[i];
-                mat.defaultPass.setDefine(define, true);
+                mat.shader.setDefine(define, true);
             }
 
             MaterialUtilities.applyMaterialTexture(mat, textures);
@@ -101,7 +101,7 @@ export class PrefabMaterialParser extends ParserBase {
 
 class Texture_transformer {
     public _MainTex(tex: PrefabTextureData, material: Material) {
-        material.defaultPass.setDefine("USE_SRGB_ALBEDO", true);
+        material.shader.setDefine("USE_SRGB_ALBEDO", true);
         return {
             property: "baseMap",
             value: tex.texture
@@ -123,7 +123,7 @@ class Texture_transformer {
     }
 
     public _OcclusionMap(tex: PrefabTextureData, mat: LitMaterial) {
-        mat.defaultPass.setDefine("USE_AOTEX", true);
+        mat.shader.setDefine("USE_AOTEX", true);
         mat.ao = 1.0;
         return {
             property: "aoMap",
@@ -162,8 +162,8 @@ class Material_transformer {
         let channel = kv.getValue<number>();
         let type = channel == 0 ? `USE_ROUGHNESS_A` : "USE_ALBEDO_A";
         let type2 = `USE_METALLIC_R`;
-        material.defaultPass.setDefine(type, true);
-        material.defaultPass.setDefine(type2, true);
+        material.shader.setDefine(type, true);
+        material.shader.setDefine(type2, true);
     }
 }
 

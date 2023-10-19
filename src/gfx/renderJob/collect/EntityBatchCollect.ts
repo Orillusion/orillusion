@@ -1,5 +1,5 @@
 import { RenderNode } from '../../../components/renderer/RenderNode';
-import { RendererType } from '../passRenderer/state/RendererType';
+import { PassType } from '../passRenderer/state/RendererType';
 import { RenderGroup } from './RenderGroup';
 /**
  * @internal
@@ -23,7 +23,7 @@ export class EntityBatchCollect {
         let key = g_key + s_key;
         if (!this.renderGroup.has(key)) {
             this.renderGroup.set(key, {
-                bundleMap: new Map<RendererType, GPURenderBundle>(),
+                bundleMap: new Map<PassType, GPURenderBundle>(),
                 key: key,
                 renderNodes: [],
             });

@@ -12,7 +12,7 @@ import { UniformNode } from "../core/uniforms/UniformNode";
 import { Texture } from "../core/texture/Texture";
 import { webGPUContext } from "../Context3D";
 import { ShaderConverter } from "./converter/ShaderConverter";
-import { ShaderBase } from "./ShaderBase";
+import { ShaderPassBase } from "./ShaderPassBase";
 import { ShaderStage } from "./ShaderStage";
 import { Preprocessor } from "./util/Preprocessor";
 import { ShaderReflection, ShaderReflectionVarInfo } from "./value/ShaderReflectionInfo";
@@ -26,8 +26,12 @@ import { CSM } from "../../../../core/csm/CSM";
 import { GPUCompareFunction, GPUCullMode } from "../WebGPUConst";
 import { UniformValue } from "./value/UniformValue";
 import { PipelinePool } from "../PipelinePool";
+import { PassType } from "../../../renderJob/passRenderer/state/RendererType";
+import { Vector4 } from "../../../../math/Vector4";
 
-export class RenderShader extends ShaderBase {
+export class RenderShaderPass extends ShaderPassBase {
+
+    public passType: PassType = PassType.COLOR;
 
     public useRz: boolean = false;
 
@@ -79,6 +83,7 @@ export class RenderShader extends ShaderBase {
     protected _textureGroup: number = -1;
     protected _textureChange: boolean = false;
     protected _groupsShaderReflectionVarInfos: ShaderReflectionVarInfo[][];
+    outBufferMask: Vector4;
 
     constructor(vs: string, fs: string) {
         super();
@@ -370,7 +375,7 @@ export class RenderShader extends ShaderBase {
         //*********************************/
         //******************/
 
-        if (renderPassState.outAttachments.length > 1) {
+        if (renderPassState.renderTargetTextures.length > 1) {
             this.defineValue[`USE_WORLDPOS`] = true;
             this.defineValue[`USEGBUFFER`] = true;
         } else {
@@ -692,7 +697,22 @@ export class RenderShader extends ShaderBase {
         let bufferMesh = geometry;
         let shaderState = this.shaderState;
 
-        let targets = renderPassState.outAttachments;
+        //create color state
+        let targets: GPUColorTargetState[] = [];
+        for (const tex of renderPassState.renderTargetTextures) {
+            targets.push({
+                format: tex.format,
+            });
+        }
+
+        //set color state
+        for (let i = 0; i < targets.length; i++) {
+            const rtTexState = targets[i];
+            if (shaderState.writeMasks && shaderState.writeMasks.length > 0) {
+                rtTexState.writeMask = shaderState.writeMasks[i];
+            }
+        }
+
         if (renderPassState.outColor != -1) {
             let target = targets[renderPassState.outColor];
             if (shaderState.blendMode != BlendMode.NONE) {
@@ -973,7 +993,7 @@ export class RenderShader extends ShaderBase {
      * @returns Returns the instance ID of the RenderShader
      */
     public static createShader(vs: string, fs: string): string {
-        let shader = new RenderShader(vs, fs);
+        let shader = new RenderShaderPass(vs, fs);
         ShaderUtil.renderShader.set(shader.instanceID, shader);
         return shader.instanceID;
     }

@@ -1,4 +1,5 @@
-import { RenderShader, Texture } from '../..';
+import { RenderShaderPass } from '../../gfx/graphics/webGpu/shader/RenderShaderPass';
+import { PassType } from '../../gfx/renderJob/passRenderer/state/RendererType';
 import { Vector3 } from '../../math/Vector3';
 
 /**
@@ -6,9 +7,10 @@ import { Vector3 } from '../../math/Vector3';
  * CastShadowMaterialPass
  * @group Material
  */
-export class CastShadowMaterialPass extends RenderShader {
+export class CastShadowMaterialPass extends RenderShaderPass {
     constructor() {
         super(`shadowCastMap_vert`, `directionShadowCastMap_frag`);
+        this.passType = PassType.SHADOW;
         this.setShaderEntry("main");
         this.setUniformFloat("cameraFar", 5000);
         this.setUniformVector3("lightWorldPos", Vector3.ZERO);
@@ -19,10 +21,5 @@ export class CastShadowMaterialPass extends RenderShader {
 
         this.setDefine(`USE_ALPHACUT`, true);
         // this.alphaCutoff = 0.5 ;
-    }
-
-    public setTexture(name: string, texture: Texture) {
-        // texture.visibility = GPUShaderStage.COMPUTE | GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT;
-        super.setTexture(name, texture);
     }
 }

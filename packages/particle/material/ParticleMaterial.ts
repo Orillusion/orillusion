@@ -1,4 +1,4 @@
-import { Engine3D, ShaderLib, Texture, GPUCompareFunction, BlendMode, Color, Vector4, RenderShader, Material, RendererType } from "@orillusion/core";
+import { Engine3D, ShaderLib, Texture, GPUCompareFunction, BlendMode, Color, Vector4, RenderShaderPass, Material, PassType } from "@orillusion/core";
 import { ParticleRenderShader } from "../shader/ParticleRenderShader";
 
 /**
@@ -10,7 +10,7 @@ export class ParticleMaterial extends Material {
         super();
         ShaderLib.register("ParticleRenderShader", ParticleRenderShader);
 
-        let colorPass = new RenderShader(`ParticleRenderShader`, `ParticleRenderShader`);
+        let colorPass = new RenderShaderPass(`ParticleRenderShader`, `ParticleRenderShader`);
         this.defaultPass = colorPass;
         colorPass.setShaderEntry(`VertMain`, `FragMain`)
 
@@ -45,7 +45,7 @@ export class ParticleMaterial extends Material {
     public get baseMap() {
         return this.defaultPass.getTexture(`baseMap`);
     }
-    
+
     public set envMap(texture: Texture) {
         //not need env texture
     }

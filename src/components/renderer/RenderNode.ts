@@ -13,7 +13,7 @@ import { RenderContext } from "../../gfx/renderJob/passRenderer/RenderContext";
 import { ClusterLightingBuffer } from "../../gfx/renderJob/passRenderer/cluster/ClusterLightingBuffer";
 import { RendererMask, RendererMaskUtil } from "../../gfx/renderJob/passRenderer/state/RendererMask";
 import { RendererPassState } from "../../gfx/renderJob/passRenderer/state/RendererPassState";
-import { RendererType } from "../../gfx/renderJob/passRenderer/state/RendererType";
+import { PassType } from "../../gfx/renderJob/passRenderer/state/RendererType";
 import { GetCountInstanceID, UUID } from "../../util/Global";
 import { Reference } from "../../util/Reference";
 import { ComponentBase } from "../ComponentBase";
@@ -23,6 +23,7 @@ import { OctreeEntity } from "../../core/tree/octree/OctreeEntity";
 import { Transform } from "../Transform";
 import { Material } from "../../materials/Material";
 import { RenderLayer } from "../../gfx/renderJob/config/RenderLayer";
+import { RenderShaderCompute, ComputeShader } from "../..";
 
 
 /**
@@ -51,7 +52,7 @@ export class RenderNode extends ComponentBase {
     protected _renderOrder: number = 0;
     public isRenderOrderChange?: boolean;
     public needSortOnCameraZ?: boolean;
-    private _octreeBinder: { octree: Octree, entity: OctreeEntity };
+    protected _octreeBinder: { octree: Octree, entity: OctreeEntity };
 
     public preInit: boolean = false;
     /**
@@ -60,13 +61,16 @@ export class RenderNode extends ComponentBase {
      *  The object is only visible when it has at least one common layer with the camera in use.
      * When using a ray projector, this attribute can also be used to filter out unwanted objects in ray intersection testing.
      */
-    private _renderLayer: RenderLayer = RenderLayer.None;
+    protected _renderLayer: RenderLayer = RenderLayer.None;
+    protected _computes: RenderShaderCompute[];
 
 
     public init() {
         this.renderOrder = 0;
         this.rendererMask = RendererMask.Default;
         this.instanceID = GetCountInstanceID().toString();
+
+        this._computes = [];
     }
 
     public attachSceneOctree(octree: Octree) {
@@ -169,10 +173,15 @@ export class RenderNode extends ComponentBase {
         for (let i = 0; i < this._materials.length; i++) {
             let mat = this._materials[i];
             Reference.getInstance().detached(mat, this)
+            if (mat.shader && mat.shader.computes)
+                this.removeComputes(mat.shader.computes);
         }
+
         for (let i = 0; i < value.length; i++) {
             let mat = value[i];
             Reference.getInstance().attached(mat, this)
+            if (mat.shader && mat.shader.computes)
+                this.addComputes(mat.shader.computes);
         }
 
         this._materials = value;
@@ -181,7 +190,7 @@ export class RenderNode extends ComponentBase {
 
         for (let i = 0; i < value.length; i++) {
             const element = value[i];
-            const passArray = element.getPass(RendererType.COLOR);
+            const passArray = element.getPass(PassType.COLOR);
             const pass = passArray[0];
             if (pass.shaderState.transparent) {
                 transparent = true;
@@ -196,7 +205,18 @@ export class RenderNode extends ComponentBase {
         }
     }
 
+    private addComputes(computes: RenderShaderCompute[]) {
+        this._computes.push(...computes);
+    }
 
+    private removeComputes(computes: RenderShaderCompute[]) {
+        for (const com of computes) {
+            let index = this._computes.indexOf(com);
+            if (index != -1) {
+                this._computes.splice(index, 1);
+            }
+        }
+    }
 
     public addRendererMask(tag: RendererMask) {
         this._rendererMask = RendererMaskUtil.addMask(this._rendererMask, tag);
@@ -238,7 +258,7 @@ export class RenderNode extends ComponentBase {
             let index = 0;
             for (let j = 0; j < this._materials.length; j++) {
                 const material = this._materials[j];
-                let passList = material.getPass(RendererType.COLOR);
+                let passList = material.getPass(PassType.COLOR);
                 for (let i = 0; i < passList.length; i++) {
                     const pass = passList[i];
                     // let shader = RenderShader.getShader(pass.instanceID);
@@ -255,7 +275,7 @@ export class RenderNode extends ComponentBase {
             let sort = 0;
             for (let i = 0; i < this.materials.length; i++) {
                 const element = this.materials[i];
-                const passArray = element.getPass(RendererType.COLOR);
+                const passArray = element.getPass(PassType.COLOR);
                 const pass = passArray[0];
                 if (pass.renderOrder >= 3000) {
                     sort = sort > pass.renderOrder ? sort : pass.renderOrder;
@@ -277,7 +297,7 @@ export class RenderNode extends ComponentBase {
         if (this.castGI) {
             for (let i = 0; i < this.materials.length; i++) {
                 const mat = this.materials[i];
-                PassGenerate.createGIPass(this, mat);
+                PassGenerate.createGIPass(this, mat.shader);
             }
         }
 
@@ -285,7 +305,7 @@ export class RenderNode extends ComponentBase {
         for (let i = 0; i < this.materials.length; i++) {
             const mat = this.materials[i];
             if (mat.castShadow) {
-                PassGenerate.createShadowPass(this, mat);
+                PassGenerate.createShadowPass(this, mat.shader);
             }
         }
         // }
@@ -294,7 +314,7 @@ export class RenderNode extends ComponentBase {
             for (let i = 0; i < this.materials.length; i++) {
                 const mat = this.materials[i];
                 if (mat.castShadow) {
-                    PassGenerate.createShadowPass(this, mat);
+                    PassGenerate.createShadowPass(this, mat.shader);
                 }
             }
         }
@@ -304,12 +324,12 @@ export class RenderNode extends ComponentBase {
         if (!ignoreDepthPass && Engine3D.setting.render.zPrePass) {
             for (let i = 0; i < this.materials.length; i++) {
                 const mat = this.materials[i];
-                PassGenerate.createDepthPass(this, mat);
+                PassGenerate.createDepthPass(this, mat.shader);
             }
         } else {
             for (let i = 0; i < this.materials.length; i++) {
                 const mat = this.materials[i];
-                mat.removePass(RendererType.DEPTH, 0);
+                mat.shader.removeShaderByIndex(PassType.DEPTH, 0);
             }
         }
     }
@@ -342,7 +362,7 @@ export class RenderNode extends ComponentBase {
         this._castReflection = value;
     }
 
-    public renderPass(view: View3D, passType: RendererType, renderContext: RenderContext) {
+    public renderPass(view: View3D, passType: PassType, renderContext: RenderContext) {
         let renderNode = this;
         let worldMatrix = renderNode.transform._worldMatrix;
         for (let i = 0; i < renderNode.materials.length; i++) {
@@ -370,22 +390,23 @@ export class RenderNode extends ComponentBase {
                     if (renderShader.shaderState.splitTexture) {
                         renderContext.endRenderPass();
                         RTResourceMap.WriteSplitColorTexture(renderNode.instanceID);
-                        renderContext.beginRenderPass();
+                        renderContext.beginOpaqueRenderPass();
 
                         GPUContext.bindCamera(renderContext.encoder, view.camera);
                         GPUContext.bindGeometryBuffer(renderContext.encoder, renderNode._geometry);
                     }
                     GPUContext.bindPipeline(renderContext.encoder, renderShader);
                     let subGeometries = renderNode._geometry.subGeometries;
-                    // for (let k = 0; k < subGeometries.length; k++) {
-                    const subGeometry = subGeometries[i];
-                    let lodInfos = subGeometry.lodLevels;
-                    let lodInfo = lodInfos[renderNode.lodLevel];
+                    for (let k = 0; k < subGeometries.length; k++) {
+                        const subGeometry = subGeometries[k];
+                        let lodInfos = subGeometry.lodLevels;
+                        let lodInfo = lodInfos[renderNode.lodLevel];
 
-                    if (renderNode.instanceCount > 0) {
-                        GPUContext.drawIndexed(renderContext.encoder, lodInfo.indexCount, renderNode.instanceCount, lodInfo.indexStart, 0, 0);
-                    } else {
-                        GPUContext.drawIndexed(renderContext.encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
+                        if (renderNode.instanceCount > 0) {
+                            GPUContext.drawIndexed(renderContext.encoder, lodInfo.indexCount, renderNode.instanceCount, lodInfo.indexStart, 0, 0);
+                        } else {
+                            GPUContext.drawIndexed(renderContext.encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
+                        }
                     }
                 }
             }
@@ -398,7 +419,7 @@ export class RenderNode extends ComponentBase {
      * @param encoder
      * @returns
      */
-    public renderPass2(view: View3D, passType: RendererType, rendererPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer, encoder: GPURenderPassEncoder, useBundle: boolean = false) {
+    public renderPass2(view: View3D, passType: PassType, rendererPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer, encoder: GPURenderPassEncoder, useBundle: boolean = false) {
         if (!this.enable)
             return;
         // this.nodeUpdate(view, passType, rendererPassState, clusterLightingBuffer);
@@ -430,10 +451,12 @@ export class RenderNode extends ComponentBase {
                     if (matPass.pipeline) {
                         GPUContext.bindPipeline(encoder, matPass);
                         let subGeometries = node._geometry.subGeometries;
-                        const subGeometry = subGeometries[i];
-                        let lodInfos = subGeometry.lodLevels;
-                        let lodInfo = lodInfos[node.lodLevel];
-                        GPUContext.drawIndexed(encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
+                        for (let k = 0; k < subGeometries.length; k++) {
+                            const subGeometry = subGeometries[k];
+                            let lodInfos = subGeometry.lodLevels;
+                            let lodInfo = lodInfos[node.lodLevel];
+                            GPUContext.drawIndexed(encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
+                        }
                     }
                 }
             }
@@ -443,7 +466,7 @@ export class RenderNode extends ComponentBase {
 
     }
 
-    public recordRenderPass2(view: View3D, passType: RendererType, rendererPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer, encoder: GPURenderPassEncoder, useBundle: boolean = false) {
+    public recordRenderPass2(view: View3D, passType: PassType, rendererPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer, encoder: GPURenderPassEncoder, useBundle: boolean = false) {
         if (!this.enable) return;
         // this.nodeUpdate(view, passType, rendererPassState, clusterLightingBuffer);
 
@@ -474,7 +497,7 @@ export class RenderNode extends ComponentBase {
         }
     }
 
-    public nodeUpdate(view: View3D, passType: RendererType, renderPassState: RendererPassState, clusterLightingBuffer?: ClusterLightingBuffer) {
+    public nodeUpdate(view: View3D, passType: PassType, renderPassState: RendererPassState, clusterLightingBuffer?: ClusterLightingBuffer) {
         this.preInit = true;
         let node = this;
         let envMap = view.scene.envMap;

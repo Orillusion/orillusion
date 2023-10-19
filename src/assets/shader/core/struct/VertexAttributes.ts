@@ -2,7 +2,7 @@ import { SkeletonAnimation_shader } from "../../anim/SkeletonAnimation_shader";
 import { MorphTarget_shader } from "../../../../components/anim/morphAnim/MorphTarget_shader";
 
 export let VertexAttributes: string = /*wgsl*/ `
-
+    var<private> PI: f32 = 3.14159265359;
     #if USE_METAHUMAN
         ${MorphTarget_shader.getMorphTargetShaderBinding(3, 0)}
         ${SkeletonAnimation_shader.groupBindingAndFunctions(3, 2)} 
@@ -107,7 +107,7 @@ export let VertexAttributes: string = /*wgsl*/ `
     var vertexNormal = vertex.normal;
 
     #if USE_METAHUMAN
-        // ${MorphTarget_shader.getMorphTargetCalcVertex()}    
+        ${MorphTarget_shader.getMorphTargetCalcVertex()}    
         #if USE_JOINT_VEC8
             let skeletonNormal = getSkeletonWorldMatrix_8(vertex.joints0, vertex.weights0, vertex.joints1, vertex.weights1);
             ORI_MATRIX_M *= skeletonNormal ;
@@ -130,12 +130,12 @@ export let VertexAttributes: string = /*wgsl*/ `
             #endif
         #endif
     #endif
-
-    #if USE_TANGENT
-        ORI_VertexOut.varying_Tangent = vertex.TANGENT ;
-    #endif
-
+    
     ORI_NORMALMATRIX = transpose(inverse( mat3x3<f32>(ORI_MATRIX_M[0].xyz,ORI_MATRIX_M[1].xyz,ORI_MATRIX_M[2].xyz) ));
+   
+    #if USE_TANGENT
+        ORI_VertexOut.varying_Tangent = vec4f(normalize(ORI_NORMALMATRIX * vertex.TANGENT.xyz),vertex.TANGENT.w)  ;
+    #endif
 
     var worldPos = (ORI_MATRIX_M * vec4<f32>(vertexPosition.xyz, 1.0));
     var viewPosition = ORI_MATRIX_V * worldPos;
@@ -145,7 +145,7 @@ export let VertexAttributes: string = /*wgsl*/ `
 
     ORI_VertexOut.varying_UV0 = vertex.uv.xy ;
 
-     ORI_VertexOut.varying_UV1 = vertex.TEXCOORD_1.xy;
+    ORI_VertexOut.varying_UV1 = vertex.TEXCOORD_1.xy;
 
     ORI_VertexOut.varying_ViewPos = viewPosition ;
     ORI_VertexOut.varying_Clip = clipPosition ;

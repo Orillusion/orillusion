@@ -104,7 +104,7 @@ class Context3D {
             format: this.presentationFormat,
             usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
             alphaMode: 'premultiplied',
-            colorSpace: `display-p3`,
+            colorSpace: `srgb`,
         });
 
         // resize canvas size, aspect

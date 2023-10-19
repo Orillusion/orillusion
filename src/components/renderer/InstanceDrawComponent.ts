@@ -7,7 +7,7 @@ import { RenderNode } from "./RenderNode";
 import { StorageGPUBuffer } from "../../gfx/graphics/webGpu/core/buffer/StorageGPUBuffer";
 import { View3D } from "../../core/View3D";
 import { RendererPassState } from "../../gfx/renderJob/passRenderer/state/RendererPassState";
-import { RendererType } from "../../gfx/renderJob/passRenderer/state/RendererType";
+import { PassType } from "../../gfx/renderJob/passRenderer/state/RendererType";
 import { ClusterLightingBuffer } from "../../gfx/renderJob/passRenderer/cluster/ClusterLightingBuffer";
 
 export class InstanceDrawComponent extends RenderNode {
@@ -63,7 +63,7 @@ export class InstanceDrawComponent extends RenderNode {
 
     }
 
-    public nodeUpdate(view: View3D, passType: RendererType, renderPassState: RendererPassState, clusterLightingBuffer?: ClusterLightingBuffer): void {
+    public nodeUpdate(view: View3D, passType: PassType, renderPassState: RendererPassState, clusterLightingBuffer?: ClusterLightingBuffer): void {
         this._keyRenderGroup.forEach((v, k) => {
             let instanceMatrixBuffer = this._keyBufferGroup.get(k);
             let renderNode = v[0];
@@ -84,7 +84,7 @@ export class InstanceDrawComponent extends RenderNode {
     }
 
 
-    public renderPass(view: View3D, passType: RendererType, renderContext: RenderContext) {
+    public renderPass(view: View3D, passType: PassType, renderContext: RenderContext) {
         this._keyRenderGroup.forEach((v, k) => {
             let renderNode = v[0];
             renderNode.instanceCount = v.length;
@@ -92,7 +92,7 @@ export class InstanceDrawComponent extends RenderNode {
         })
     }
 
-    public renderItem(view: View3D, passType: RendererType, renderNode: RenderNode, renderContext: RenderContext) {
+    public renderItem(view: View3D, passType: PassType, renderNode: RenderNode, renderContext: RenderContext) {
         let worldMatrix = renderNode.transform._worldMatrix;
 
         for (let i = 0; i < renderNode.materials.length; i++) {
@@ -114,7 +114,7 @@ export class InstanceDrawComponent extends RenderNode {
                 if (renderShader.shaderState.splitTexture) {
                     renderContext.endRenderPass();
                     RTResourceMap.WriteSplitColorTexture(renderNode.instanceID);
-                    renderContext.beginRenderPass();
+                    renderContext.beginOpaqueRenderPass();
 
                     GPUContext.bindCamera(renderContext.encoder, view.camera);
                     GPUContext.bindGeometryBuffer(renderContext.encoder, renderNode.geometry);

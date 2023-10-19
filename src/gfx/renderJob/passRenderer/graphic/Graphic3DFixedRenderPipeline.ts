@@ -56,7 +56,8 @@ export class Graphic3DFixedRenderPipeline {
             }
 
             let remainLength = this.mDataBuffer.length - this.mOffset;
-            this.mDataBuffer.set(data.slice(0, remainLength), this.mOffset);
+            // this.mDataBuffer.set(data.slice(0, remainLength), this.mOffset);
+            this.mDataBuffer.set(data, this.mOffset,);
             this.mOffset += remainLength;
             data = data.slice(remainLength);
         }
@@ -86,7 +87,7 @@ export class Graphic3DFixedRenderPipeline {
         const device = webGPUContext.device;
 
         if (!this.mRenderPipeline) {
-            let targets = rendererPassState.outAttachments;
+            let targets = rendererPassState.renderTargetTextures;
             if (rendererPassState.outColor != -1) {
                 let target = targets[rendererPassState.outColor];
                 target.blend = BlendFactor.getBlend(BlendMode.ALPHA);

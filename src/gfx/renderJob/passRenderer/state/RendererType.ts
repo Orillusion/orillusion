@@ -1,7 +1,7 @@
 /**
  * @internal
  */
-export enum RendererType {
+export enum PassType {
     COLOR = 1 << 0,
     NORMAL = 1 << 1,
     POSITION = 1 << 2,

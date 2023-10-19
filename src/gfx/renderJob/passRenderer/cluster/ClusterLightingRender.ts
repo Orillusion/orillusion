@@ -6,7 +6,7 @@ import { EntityCollect } from '../../collect/EntityCollect';
 import { GPUContext } from '../../GPUContext';
 import { OcclusionSystem } from '../../occlusion/OcclusionSystem';
 import { RendererBase } from '../RendererBase';
-import { RendererType } from '../state/RendererType';
+import { PassType } from '../state/RendererType';
 import { ILight } from '../../../../components/lights/ILight';
 import { ClusterLightingBuffer } from './ClusterLightingBuffer';
 import { ClusterBoundsSource_cs } from '../../../../assets/shader/cluster/ClusterBoundsSource_cs';
@@ -33,7 +33,7 @@ export class ClusterLightingRender extends RendererBase {
     constructor(view: View3D) {
         super();
 
-        this.passType = RendererType.Cluster;
+        this.passType = PassType.Cluster;
         this.initCompute(view);
     }
 
@@ -67,40 +67,40 @@ export class ClusterLightingRender extends RendererBase {
 
         this.resize = true;
 
-        GUIHelp.addButton("clusterBuffer", () => {
-            let od = this.clusterLightingBuffer.clusterBuffer.readBuffer();
-            console.log(od);
-            let byteLength = 2 * 4;
-            for (let i = 0; i < numClusters; i++) {
-                const element = new Float32Array(od.buffer, i * byteLength * 4, byteLength);
-                let p0 = new Vector3(element[0], element[1], element[2], element[3]);
-                let p1 = new Vector3(element[4], element[5], element[6], element[7]);
-                view.graphic3D.drawBox(i + "-box", p0, p1, Color.random());
-            }
-        });
+        // GUIHelp.addButton("clusterBuffer", () => {
+        //     let od = this.clusterLightingBuffer.clusterBuffer.readBuffer();
+        //     console.log(od);
+        //     let byteLength = 2 * 4;
+        //     for (let i = 0; i < numClusters; i++) {
+        //         const element = new Float32Array(od.buffer, i * byteLength * 4, byteLength);
+        //         let p0 = new Vector3(element[0], element[1], element[2], element[3]);
+        //         let p1 = new Vector3(element[4], element[5], element[6], element[7]);
+        //         view.graphic3D.drawBox(i + "-box", p0, p1, Color.random());
+        //     }
+        // });
 
-        GUIHelp.addButton("assignTable", () => {
-            let od = this.clusterLightingBuffer.assignTableBuffer.readBuffer();
-            for (let i = 0; i < od.length / 4; i++) {
-                const count = od[i * 4 + 0];
-                const start = od[i * 4 + 1];
-                const e1 = od[i * 4 + 2];
-                const e2 = od[i * 4 + 3];
-                if (count >= 1) {
-                    console.log(count);
-                }
+        // GUIHelp.addButton("assignTable", () => {
+        //     let od = this.clusterLightingBuffer.assignTableBuffer.readBuffer();
+        //     for (let i = 0; i < od.length / 4; i++) {
+        //         const count = od[i * 4 + 0];
+        //         const start = od[i * 4 + 1];
+        //         const e1 = od[i * 4 + 2];
+        //         const e2 = od[i * 4 + 3];
+        //         if (count >= 1) {
+        //             console.log(count);
+        //         }
 
-                if ((start + count) > start + 1) {
-                    console.log(count, start, e1, e2);
-                }
-            }
-            console.log(od);
-        });
+        //         if ((start + count) > start + 1) {
+        //             console.log(count, start, e1, e2);
+        //         }
+        //     }
+        //     console.log(od);
+        // });
 
-        GUIHelp.addButton("clustersUniformBuffer", () => {
-            let od = this.clusterLightingBuffer.clustersUniformBuffer.readBuffer();
-            console.log(od);
-        });
+        // GUIHelp.addButton("clustersUniformBuffer", () => {
+        //     let od = this.clusterLightingBuffer.clustersUniformBuffer.readBuffer();
+        //     console.log(od);
+        // });
     }
 
     render(view: View3D, occlusionSystem: OcclusionSystem) {

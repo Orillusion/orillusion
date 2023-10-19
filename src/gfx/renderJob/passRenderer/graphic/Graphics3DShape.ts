@@ -99,7 +99,7 @@ export class Graphics3DShape {
         this.fillShapeData(points, color);
     }
 
-    public fillShapeData(points: Vector3[], colors: Color | Color[]) {
+    public fillShapeData(points: Vector3[], colors: Color | Color[], forceUpdate: boolean = false) {
         if (!this.shapeData) {
             this.shapeData = new Float32Array(GraphicConfig.ShapeVertexSize * points.length);
         } else if (this.count + GraphicConfig.ShapeVertexSize * points.length >= this.shapeData.length) {
@@ -108,25 +108,27 @@ export class Graphics3DShape {
             this.shapeData = tmp;
         }
 
-        const shapeData = this.shapeData;
-        for (let i = 0; i < points.length; ++i) {
-            const point = points[i];
-            shapeData[this.count++] = point.x;
-            shapeData[this.count++] = point.y;
-            shapeData[this.count++] = point.z;
-            shapeData[this.count++] = this.transformIndex;
+        if (forceUpdate || this.dirtyData == false) {
+            const shapeData = this.shapeData;
+            for (let i = 0; i < points.length; ++i) {
+                const point = points[i];
+                shapeData[this.count++] = point.x;
+                shapeData[this.count++] = point.y;
+                shapeData[this.count++] = point.z;
+                shapeData[this.count++] = this.transformIndex;
 
-            if (colors instanceof Color) {
-                shapeData[this.count++] = colors.r;
-                shapeData[this.count++] = colors.g;
-                shapeData[this.count++] = colors.b;
-                shapeData[this.count++] = colors.a;
-            } else {
-                const color = colors[i];
-                shapeData[this.count++] = color.r;
-                shapeData[this.count++] = color.g;
-                shapeData[this.count++] = color.b;
-                shapeData[this.count++] = color.a;
+                if (colors instanceof Color) {
+                    shapeData[this.count++] = colors.r;
+                    shapeData[this.count++] = colors.g;
+                    shapeData[this.count++] = colors.b;
+                    shapeData[this.count++] = colors.a;
+                } else {
+                    const color = colors[i];
+                    shapeData[this.count++] = color.r;
+                    shapeData[this.count++] = color.g;
+                    shapeData[this.count++] = color.b;
+                    shapeData[this.count++] = color.a;
+                }
             }
         }
 

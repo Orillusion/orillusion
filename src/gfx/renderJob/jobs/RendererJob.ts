@@ -74,6 +74,7 @@ export class RendererJob {
      */
     public pauseRender: boolean = false;
     public pickFire: PickFire;
+    public renderState: boolean = false;
     protected _view: View3D;
 
     /**
@@ -124,6 +125,7 @@ export class RendererJob {
      * start render task
      */
     public start() {
+        this.renderState = true;
     }
 
     // public get guiCanvas(): UICanvas {
@@ -162,7 +164,10 @@ export class RendererJob {
      * @param post
      */
     public addPost(post: PostBase): PostBase | PostBase[] {
-        if (!this.postRenderer) this.enablePost(GBufferFrame.getGBufferFrame('ColorPassGBuffer'));
+        if (!this.postRenderer) {
+            GBufferFrame.bufferTexture = true;
+            this.enablePost(GBufferFrame.getGBufferFrame('ColorPassGBuffer'));
+        }
 
         if (post instanceof PostBase) {
             this.postRenderer.attachPost(this.view, post);
