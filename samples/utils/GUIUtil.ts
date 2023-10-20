@@ -82,7 +82,6 @@ export class GUIUtil {
         GUIHelp.add(bloom, 'upSampleBlurSigma', 0.01, 1, 0.001);
         GUIHelp.add(bloom, 'luminanceThreshole', 0.001, 10.0, 0.001);
         GUIHelp.add(bloom, 'bloomIntensity', 0.001, 10.0, 0.001);
-        GUIHelp.add(bloom, 'useACESToneMapping');
         open && GUIHelp.open();
         GUIHelp.endFolder();
     }
