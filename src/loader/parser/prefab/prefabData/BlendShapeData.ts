@@ -1,4 +1,3 @@
-import { Vector3 } from "../../../..";
 import { BytesArray } from "../../../../util/BytesArray";
 import { BlendShapePropertyData } from "./BlendShapePropertyData";
 
