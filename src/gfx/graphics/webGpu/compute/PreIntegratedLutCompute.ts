@@ -4,7 +4,7 @@ import { GPUContext } from '../../../renderJob/GPUContext';
 import { RenderShaderCompute } from './RenderShaderCompute';
 import { PreIntegratedLut } from '../../../../assets/shader/compute/PreIntegratedLut';
 import { MaterialDataUniformGPUBuffer } from '../core/buffer/MaterialDataUniformGPUBuffer';
-import { Shader } from '../../../../loader/parser/prefab/mats/shader/Shader';
+import { Shader } from '../shader/Shader';
 /**
  * @internal
  * @group GFX

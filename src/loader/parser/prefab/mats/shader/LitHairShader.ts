@@ -6,7 +6,7 @@ import { BlendMode } from "../../../../../materials/BlendMode";
 import { Color } from "../../../../../math/Color";
 import { Vector4 } from "../../../../../math/Vector4";
 import { RegisterShader } from "../../../../../util/SerializeDecoration";
-import { Shader } from "./Shader";
+import { Shader } from "../../../../../gfx/graphics/webGpu/shader/Shader";
 import { Hair_shader_op, Hair_shader_tr, RenderShaderPass, PassType } from "../../../../..";
 
 

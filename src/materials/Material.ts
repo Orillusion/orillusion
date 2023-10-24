@@ -3,7 +3,7 @@ import { UniformGPUBuffer } from "../gfx/graphics/webGpu/core/buffer/UniformGPUB
 import { Texture } from "../gfx/graphics/webGpu/core/texture/Texture";
 import { RenderShaderPass } from "../gfx/graphics/webGpu/shader/RenderShaderPass";
 import { PassType } from "../gfx/renderJob/passRenderer/state/RendererType";
-import { Shader } from "../loader/parser/prefab/mats/shader/Shader";
+import { Shader } from "../gfx/graphics/webGpu/shader/Shader";
 import { Color } from "../math/Color";
 import { Vector2 } from "../math/Vector2";
 import { Vector3 } from "../math/Vector3";
@@ -66,6 +66,14 @@ export class Material {
         this._defaultSubShader.blendMode = value;
     }
 
+    public get depthCompare(): GPUCompareFunction {
+        return this._defaultSubShader.depthCompare;
+    }
+
+    public set depthCompare(value: GPUCompareFunction) {
+        this._defaultSubShader.depthCompare = value;
+    }
+
 
     public get transparent(): boolean {
         return this._defaultSubShader.shaderState.transparent;
@@ -108,7 +116,9 @@ export class Material {
      * @returns Material
      */
     public clone() {
-        return null;
+        let newMat = new Material();
+        newMat.shader = this.shader.clone();
+        return newMat;
     }
 
 

@@ -2,7 +2,7 @@ import { ShaderLib } from '../assets/shader/ShaderLib';
 import { Engine3D } from '../Engine3D';
 import { GlassShader } from '../assets/shader/materials/GlassShader';
 import { Material } from './Material';
-import { Shader } from '../loader/parser/prefab/mats/shader/Shader';
+import { Shader } from '../gfx/graphics/webGpu/shader/Shader';
 import { RenderShaderPass } from '../gfx/graphics/webGpu/shader/RenderShaderPass';
 import { PassType } from '../gfx/renderJob/passRenderer/state/RendererType';
 

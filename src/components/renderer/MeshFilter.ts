@@ -1,4 +1,4 @@
-import { GeometryBase } from '../..';
+import { GeometryBase, Object3D } from '../..';
 import { Engine3D } from '../../Engine3D';
 import { RegisterComponent } from '../../util/SerializeDecoration';
 import { MeshRenderer } from './MeshRenderer';
@@ -17,6 +17,10 @@ export class MeshFilter extends MeshRenderer {
         return null;
     }
     public set geometry(value: GeometryBase) {
+
+    }
+
+    public cloneTo(obj: Object3D): void {
 
     }
 

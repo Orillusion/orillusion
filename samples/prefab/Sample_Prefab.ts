@@ -83,12 +83,15 @@ export class Sample_Prefab {
 
         {
             PrefabParser.useWebp = false;
+            // let node = await Engine3D.res.load("prefab/new/Prop.o3d", PrefabParser) as Object3D;
             let node = await Engine3D.res.load("prefab/new/SK_MINA_JACK.o3d", PrefabParser) as Object3D;
-            let anim = node.getComponents(AnimatorComponent);
-            GUIUtil.renderAnimator(anim[0]);
-            GUIUtil.renderBlendShape(node);
+
+            // let node2 = node.clone();
+            // let anim = node.getComponents(AnimatorComponent);
+            // GUIUtil.renderAnimator(anim[0]);
+            // GUIUtil.renderBlendShape(node);
             this.scene.addChild(node);
-            GUIUtil.renderTransform(node.transform, true, "nvhai");
+            // GUIUtil.renderTransform(node.transform, true, "nvhai");
         }
 
         // {

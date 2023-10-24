@@ -52,11 +52,6 @@ export let PBRLItShader: string = /*wgsl*/ `
 
         var uv = transformUV1.zw * ORI_VertexVarying.fragUV0 + transformUV1.xy; 
 
-        // let z = linearTo01Depth(ORI_VertexVarying.fragCoord.z) ; 
-
-        // ORI_ShadingInput.BaseColor = textureSampleLevel(baseMap, baseMapSampler, uv , 4.0 ) ;
-
-
         #if USE_SRGB_ALBEDO
             ORI_ShadingInput.BaseColor = textureSample(baseMap, baseMapSampler, uv )  ;
             ORI_ShadingInput.BaseColor = gammaToLiner(ORI_ShadingInput.BaseColor.rgb)  ;
@@ -70,7 +65,6 @@ export let PBRLItShader: string = /*wgsl*/ `
        
         #if USE_ALPHA_A
             ORI_ShadingInput.BaseColor.a =  ORI_ShadingInput.BaseColor.a * (maskTex.a) ;
-            // ORI_ShadingInput.BaseColor =  vec4f(ORI_ShadingInput.BaseColor.rgb/ORI_ShadingInput.BaseColor.a,ORI_ShadingInput.BaseColor.a) ;
         #endif
 
         #if USE_ALPHACUT 
@@ -90,8 +84,6 @@ export let PBRLItShader: string = /*wgsl*/ `
         #if USE_SHADOWMAPING
             useShadow();
         #endif
-
-        // maskTex =vec4f( gammaToLiner(maskTex.rgb), maskTex.a );
 
         var roughnessChannel:f32 = 1.0 ;
         #if USE_ROUGHNESS_A
@@ -125,7 +117,6 @@ export let PBRLItShader: string = /*wgsl*/ `
         #endif    
 
         ORI_ShadingInput.Metallic = metallicChannel * materialUniform.metallic ;
-        // ORI_ShadingInput.Metallic = materialUniform.metallic ;
    
         var aoChannel:f32 = 1.0 ;
         #if USE_AOTEX
@@ -143,19 +134,15 @@ export let PBRLItShader: string = /*wgsl*/ `
             #endif  
         #endif
 
-        // ORI_ShadingInput.BaseColor.a = maskTex.a ;
-
         ORI_ShadingInput.AmbientOcclusion = aoChannel ;
-
         ORI_ShadingInput.Specular = 1.0 ;
-
 
         #if USE_EMISSIVEMAP
             var emissiveMapColor = textureSample(emissiveMap, emissiveMapSampler , ORI_VertexVarying.fragUV0.xy) ;
-            let emissiveColor = getHDRColor(materialUniform.emissiveColor.rgb,materialUniform.emissiveIntensity);
-            ORI_ShadingInput.EmissiveColor = vec4<f32>(gammaToLiner(emissiveMapColor.rgb) * emissiveColor.rgb ,emissiveMapColor.w);
+            let emissiveColor = materialUniform.emissiveColor.rgb * emissiveMapColor.rgb * materialUniform.emissiveIntensity ;
+            ORI_ShadingInput.EmissiveColor = vec4<f32>(emissiveColor.rgb,1.0);
         #else
-            let emissiveColor = getHDRColor(materialUniform.emissiveColor.rgb,materialUniform.emissiveIntensity);
+            let emissiveColor = materialUniform.emissiveColor.rgb * materialUniform.emissiveIntensity ;
             ORI_ShadingInput.EmissiveColor = vec4<f32>(emissiveColor,1.0);
         #endif
 

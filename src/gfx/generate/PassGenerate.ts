@@ -2,7 +2,7 @@ import { RenderNode } from '../../components/renderer/RenderNode';
 import { RendererMaskUtil, RendererMask } from '../renderJob/passRenderer/state/RendererMask';
 import { PassType } from '../renderJob/passRenderer/state/RendererType';
 import { GLTFType } from '../../loader/parser/gltf/GLTFType';
-import { Shader } from '../../loader/parser/prefab/mats/shader/Shader';
+import { Shader } from '../graphics/webGpu/shader/Shader';
 import { SkyGBufferPass } from '../../materials/multiPass/SkyGBufferPass';
 import { GBufferPass } from '../../materials/multiPass/GBufferPass';
 import { VertexAttributeName } from '../../core/geometry/VertexAttributeName';

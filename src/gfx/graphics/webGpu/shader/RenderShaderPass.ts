@@ -938,14 +938,16 @@ export class RenderShaderPass extends ShaderPassBase {
                 } else {
                     texture.destroy(false);
                     let table = Reference.getInstance().getReference(texture);
-                    let list = [];
-                    table.forEach((v, k) => {
-                        if (`name` in v) {
-                            list.push(v[`name`]);
-                        } else {
-                            list.push(`NaN`);
-                        }
-                    });
+                    if (table) {
+                        let list = [];
+                        table.forEach((v, k) => {
+                            if (`name` in v) {
+                                list.push(v[`name`]);
+                            } else {
+                                list.push(`NaN`);
+                            }
+                        });
+                    }
                 }
             }
         }

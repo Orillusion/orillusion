@@ -53,6 +53,7 @@ class Sample_ConduitGeometry2 {
         animation.speed = 0.5;
         animation.appendClip(this.animClip);
     }
+
     async loadCurveData() {
         // load external curve data
         let json: any = await Engine3D.res.loadJSON('json/anim_0.json');
@@ -70,12 +71,13 @@ class Sample_ConduitGeometry2 {
         this.material = new LitMaterial();
         this.material.depthCompare = 'always';
         this.material.blendMode = BlendMode.ADD;
-        this.material.baseColor = new Color(0, 1, 0.5, 1.0);
+        // this.material.baseColor = new Color(0, 1, 0.5, 1.0);
         this.material.transparent = true;
 
         let texture = new BitmapTexture2D();
         texture.addressModeU = "repeat";
         texture.addressModeV = "repeat";
+        // await texture.load('textures/grid.jpg');
         await texture.load('textures/cell.png');
         this.material.baseMap = texture;
     }

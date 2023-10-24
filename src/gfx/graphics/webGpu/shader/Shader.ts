@@ -1,17 +1,17 @@
-import { RenderShaderCompute } from "../../../../../gfx/graphics/webGpu/compute/RenderShaderCompute";
-import { GPUBufferBase } from "../../../../../gfx/graphics/webGpu/core/buffer/GPUBufferBase";
-import { StorageGPUBuffer } from "../../../../../gfx/graphics/webGpu/core/buffer/StorageGPUBuffer";
-import { StructStorageGPUBuffer } from "../../../../../gfx/graphics/webGpu/core/buffer/StructStorageGPUBuffer";
-import { UniformGPUBuffer } from "../../../../../gfx/graphics/webGpu/core/buffer/UniformGPUBuffer";
-import { Texture } from "../../../../../gfx/graphics/webGpu/core/texture/Texture";
-import { RenderShaderPass } from "../../../../../gfx/graphics/webGpu/shader/RenderShaderPass";
-import { UniformValue } from "../../../../../gfx/graphics/webGpu/shader/value/UniformValue";
-import { PassType } from "../../../../../gfx/renderJob/passRenderer/state/RendererType";
-import { Color } from "../../../../../math/Color";
-import { Vector2 } from "../../../../../math/Vector2";
-import { Vector3 } from "../../../../../math/Vector3";
-import { Vector4 } from "../../../../../math/Vector4";
-import { Struct } from "../../../../../util/struct/Struct";
+import { RenderShaderCompute } from "../compute/RenderShaderCompute";
+import { GPUBufferBase } from "../core/buffer/GPUBufferBase";
+import { StorageGPUBuffer } from "../core/buffer/StorageGPUBuffer";
+import { StructStorageGPUBuffer } from "../core/buffer/StructStorageGPUBuffer";
+import { UniformGPUBuffer } from "../core/buffer/UniformGPUBuffer";
+import { Texture } from "../core/texture/Texture";
+import { RenderShaderPass } from "./RenderShaderPass";
+import { UniformValue } from "./value/UniformValue";
+import { PassType } from "../../../renderJob/passRenderer/state/RendererType";
+import { Color } from "../../../../math/Color";
+import { Vector2 } from "../../../../math/Vector2";
+import { Vector3 } from "../../../../math/Vector3";
+import { Vector4 } from "../../../../math/Vector4";
+import { Struct } from "../../../../util/struct/Struct";
 
 export class Shader {
 
@@ -170,6 +170,10 @@ export class Shader {
                 rd.setTexture(arg0, arg1);
             }
         }
+
+        if (arg0 == "emissiveMap") {
+            this.setDefine("USE_EMISSIVEMAP", true);
+        }
     }
 
     public getTexture(arg0: string): Texture {
@@ -222,5 +226,14 @@ export class Shader {
 
     public destroy() {
         this.getDefaultColorShader().destroy();
+    }
+
+    public clone() {
+        let newShader = new Shader();
+        let sourceShaderPassList = this.getDefaultShaders();
+        for (const shadePass of sourceShaderPassList) {
+            newShader.addRenderPass(shadePass);
+        }
+        return newShader;
     }
 }

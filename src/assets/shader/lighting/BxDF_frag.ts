@@ -134,8 +134,7 @@ export let BxDF_frag: string = /*wgsl*/ `
       #endif
       
       var color = specColor + indirectResult ;
-      // color = color * 0.5 ;
-      // color += fragData.Emissive.xyz ;
+      color += fragData.Emissive.xyz ;
 
       var clearCoatColor = vec3<f32>(0.0);
       #if USE_CLEARCOAT
@@ -148,9 +147,9 @@ export let BxDF_frag: string = /*wgsl*/ `
       #endif
       
       var retColor = (LinearToGammaSpace(color.rgb));
-      retColor += fragData.Emissive.xyz ;
+      // retColor += fragData.Emissive.xyz ;
       // ORI_FragmentOutput.color = vec4<f32>( irradiance * min(fragData.Albedo.rgb,vec3f(1.0)) ,fragData.Albedo.a) ;
-      ORI_FragmentOutput.color = vec4<f32>( retColor.rgb ,fragData.Albedo.a) ;
+      ORI_FragmentOutput.color = vec4<f32>( retColor.rgb * fragData.Albedo.a ,fragData.Albedo.a) ;
   }
 
   `

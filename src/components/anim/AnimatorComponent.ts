@@ -26,6 +26,7 @@ export class AnimatorComponent extends ComponentBase {
     private _skeletonStart: boolean = true;
     private _blendShapeStart: boolean = true;
     root: Object3D;
+    private _avatarName: string;
 
     public init(param?: any): void {
         this.propertyCache = new Map<RenderNode, { [name: string]: any }>();
@@ -49,7 +50,6 @@ export class AnimatorComponent extends ComponentBase {
         } else {
             console.warn(`not has anim ${anim}`);
         }
-
     }
 
     playBlendShape(shapeName: string, time: number = 0, speed: number = 1) {
@@ -64,6 +64,7 @@ export class AnimatorComponent extends ComponentBase {
     }
 
     public set avatar(name: string) {
+        this._avatarName = name;
         this.inverseBindMatrices = [];
 
         this._avatar = Engine3D.res.getObj(name) as PrefabAvatarData;
@@ -129,6 +130,12 @@ export class AnimatorComponent extends ComponentBase {
 
     public get clips(): PropertyAnimationClip[] {
         return this._clips;
+    }
+
+    public cloneTo(obj: Object3D): void {
+        let animatorComponent = obj.addComponent(AnimatorComponent);
+        animatorComponent.avatar = this._avatarName;
+        animatorComponent.clips = this._clips;
     }
 
     private updateTime() {

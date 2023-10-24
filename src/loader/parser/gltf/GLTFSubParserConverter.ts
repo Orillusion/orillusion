@@ -226,14 +226,9 @@ export class GLTFSubParserConverter {
                     }
 
                     if (emissiveFactor && (emissiveFactor[0] > 0 || emissiveFactor[1] > 0 || emissiveFactor[2] > 0)) {
-                        // if (physicMaterial.emissiveMap) {
-                        //     if (physicMaterial.emissiveMap == Engine3D.res.blackTexture) {
-                        //         physicMaterial.emissiveMap = Engine3D.res.whiteTexture;
-                        //     }
-                        // }
-                        // let emissiveFactorA = emissiveFactor[3] ? emissiveFactor[3] : 1.0;
-                        // physicMaterial.emissiveColor = new Color(emissiveFactor[0], emissiveFactor[1], emissiveFactor[2], emissiveFactorA);
-                        // physicMaterial.emissiveIntensity = 1;
+                        if (!physicMaterial.shader.getTexture("emissiveMap")) {
+                            physicMaterial.shader.setTexture("emissiveMap", Engine3D.res.whiteTexture);
+                        }
                         physicMaterial.setUniformColor("emissiveColor", new Color(emissiveFactor[0], emissiveFactor[1], emissiveFactor[2], emissiveFactor[3]));
                     }
                 }

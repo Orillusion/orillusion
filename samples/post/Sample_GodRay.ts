@@ -39,7 +39,7 @@ class Sample_GodRay {
 		postProcessing.addPost(GodRayPost);
 		postProcessing.addPost(BloomPost);
 
-		GUIUtil.renderAtomosphericSky(sky, false);
+		GUIUtil.renderAtmosphericSky(sky, false);
 	}
 	async initScene() {
 		{
@@ -77,7 +77,6 @@ class Sample_GodRay {
 		mat.maskMap = Engine3D.res.createTexture(32, 32, 255.0, 10.0, 0.0, 1);
 		mat.emissiveMap = Engine3D.res.blackTexture;
 		mat.roughness = 0.5;
-		mat.roughness_max = 0.1;
 		mat.metallic = 0.2;
 		{
 			let sphereGeometry = new SphereGeometry(20, 50, 50);

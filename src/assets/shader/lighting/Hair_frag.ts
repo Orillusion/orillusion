@@ -299,7 +299,7 @@ export let Hair_frag: string = /*wgsl*/ `
     
     //***********indirect-ambient part********* 
     var kdLast = (1.0 - fragData.F0.r) * (1.0 - fragData.Metallic);    
-    var iblDiffuseResult = irradiance * 2.0 * kdLast * fragData.Albedo.rgb * (vec3(1.0) - kS) ;
+    var iblDiffuseResult = irradiance * kdLast * fragData.Albedo.rgb * (vec3(1.0) - kS) ;
     //irradiance
     //***********indirect-ambient part********* 
     var indirectResult = (iblSpecularResult + iblDiffuseResult * max(sunLight.quadratic,0.05) ) * fragData.Ao ;

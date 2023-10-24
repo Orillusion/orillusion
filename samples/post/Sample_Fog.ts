@@ -28,7 +28,7 @@ class Sample_Fog {
         Engine3D.startRenderView(view);
 
         GUIHelp.init();
-        GUIUtil.renderAtomosphericSky(sky, false);
+        GUIUtil.renderAtmosphericSky(sky, false);
         let postProcessing = this.scene.addComponent(PostProcessingComponent);
         let fXAAPost = postProcessing.addPost(FXAAPost);
         let fog = postProcessing.addPost(GlobalFog);

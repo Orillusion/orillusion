@@ -6,7 +6,7 @@ import { StorageGPUBuffer } from "../../gfx/graphics/webGpu/core/buffer/StorageG
 import { PassType } from "../../gfx/renderJob/passRenderer/state/RendererType";
 import { RendererPassState } from "../../gfx/renderJob/passRenderer/state/RendererPassState";
 import { ClusterLightingBuffer } from "../../gfx/renderJob/passRenderer/cluster/ClusterLightingBuffer";
-import { AnimatorComponent, GeometryBase, Matrix4, RegisterComponent } from "../..";
+import { AnimatorComponent, GeometryBase, LitMaterial, Matrix4, RegisterComponent } from "../..";
 
 /**
  * Skin Mesh Renderer Component
@@ -113,8 +113,12 @@ export class SkinnedMeshRenderer2 extends MeshRenderer {
 
     public cloneTo(obj: Object3D) {
         let skinnedMesh = obj.addComponent(SkinnedMeshRenderer2);
+        let newMats = [];
+        for (const mat of this.materials) {
+            newMats.push(mat.clone());
+        }
+        skinnedMesh.materials = newMats;
         skinnedMesh.geometry = this.geometry;
-        skinnedMesh.material = this.material.clone();
         skinnedMesh.castShadow = this.castShadow;
         skinnedMesh.castGI = this.castGI;
         skinnedMesh.receiveShadow = this.receiveShadow;

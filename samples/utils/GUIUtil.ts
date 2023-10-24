@@ -15,7 +15,7 @@ export class GUIUtil {
     }
 
     //render AtmosphericComponent
-    public static renderAtomosphericSky(component: AtmosphericComponent, open: boolean = true, name?: string) {
+    public static renderAtmosphericSky(component: AtmosphericComponent, open: boolean = true, name?: string) {
         name ||= 'AtmosphericSky';
         GUIHelp.addFolder(name);
         GUIHelp.add(component, 'sunX', 0, 1, 0.01);
