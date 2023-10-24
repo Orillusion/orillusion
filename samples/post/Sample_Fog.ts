@@ -1,4 +1,4 @@
-import { AtmosphericComponent, BoxGeometry, CameraUtil, CylinderGeometry, DirectLight, Engine3D, GlobalFog, HoverCameraController, KelvinUtil, LitMaterial, MeshRenderer, Object3D, PlaneGeometry, PostProcessingComponent, Scene3D, View3D, webGPUContext } from '@orillusion/core';
+import { AtmosphericComponent, BoxGeometry, CameraUtil, CylinderGeometry, DirectLight, Engine3D, FXAAPost, GlobalFog, HoverCameraController, KelvinUtil, LitMaterial, MeshRenderer, Object3D, PlaneGeometry, PostProcessingComponent, Scene3D, View3D, webGPUContext } from '@orillusion/core';
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { GUIUtil } from '@samples/utils/GUIUtil';
 
@@ -30,6 +30,7 @@ class Sample_Fog {
         GUIHelp.init();
         GUIUtil.renderAtomosphericSky(sky, false);
         let postProcessing = this.scene.addComponent(PostProcessingComponent);
+        let fXAAPost = postProcessing.addPost(FXAAPost);
         let fog = postProcessing.addPost(GlobalFog);
         GUIUtil.renderGlobalFog(fog, true);
     }

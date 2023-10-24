@@ -1,5 +1,5 @@
 import { createExampleScene, createSceneParam } from "@samples/utils/ExampleScene";
-import { Object3D, Scene3D, Engine3D, GlobalIlluminationComponent, Object3DUtil, GTAOPost, PostProcessingComponent, TAAPost, BloomPost } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, GlobalIlluminationComponent, Object3DUtil, GTAOPost, PostProcessingComponent, TAAPost, BloomPost, FXAAPost } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 
@@ -55,10 +55,11 @@ class Sample_GI {
         // GUIUtil.renderAtomosphericSky(exampleScene.atmosphericSky);
         GUIUtil.renderDirLight(exampleScene.light);
 
-        let postProcessing = this.scene.addComponent(PostProcessingComponent);
-        postProcessing.addPost(TAAPost);
-        postProcessing.addPost(GTAOPost);
-        postProcessing.addPost(BloomPost);
+        // let postProcessing = this.scene.addComponent(PostProcessingComponent);
+        // postProcessing.addPost(FXAAPost);
+        // postProcessing.addPost(TAAPost);
+        // postProcessing.addPost(GTAOPost);
+        // postProcessing.addPost(BloomPost);
 
     }
 

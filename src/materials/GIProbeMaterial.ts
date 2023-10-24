@@ -24,10 +24,11 @@ export class GIProbeMaterial extends Material {
         super();
         ShaderLib.register("GIProbeShader", GIProbeShader);
 
-        this.shader = new Shader();
+        let newShader = new Shader();
+
         let colorShader = new RenderShaderPass('GIProbeShader', 'GIProbeShader');
         colorShader.passType = PassType.COLOR;
-        this.shader.addRenderPass(colorShader);
+        newShader.addRenderPass(colorShader);
 
         colorShader.setDefine('USE_BRDF', true);
         colorShader.setShaderEntry(`VertMain`, `FragMain`);
@@ -39,9 +40,11 @@ export class GIProbeMaterial extends Material {
         shaderState.acceptGI = false;
         shaderState.useLight = false;
 
-        this.shader.setTexture("baseMap", Engine3D.res.whiteTexture);
-        this.shader.setTexture("normalMap", Engine3D.res.normalTexture);
-        this.shader.setTexture("emissiveMap", Engine3D.res.blackTexture);
+        newShader.setTexture("baseMap", Engine3D.res.whiteTexture);
+        newShader.setTexture("normalMap", Engine3D.res.normalTexture);
+        newShader.setTexture("emissiveMap", Engine3D.res.blackTexture);
+
+        this.shader = newShader;
     }
 
 }

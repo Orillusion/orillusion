@@ -59,19 +59,18 @@ export let PBRLItShader: string = /*wgsl*/ `
 
         #if USE_SRGB_ALBEDO
             ORI_ShadingInput.BaseColor = textureSample(baseMap, baseMapSampler, uv )  ;
-            ORI_ShadingInput.BaseColor = vec4f(ORI_ShadingInput.BaseColor.rgb/ORI_ShadingInput.BaseColor.a,ORI_ShadingInput.BaseColor.a)  ;
-            ORI_ShadingInput.BaseColor = vec4<f32>(gammaToLiner(ORI_ShadingInput.BaseColor.rgb) * materialUniform.baseColor.rgb, ORI_ShadingInput.BaseColor.w * materialUniform.baseColor.a)  ;
+            ORI_ShadingInput.BaseColor = gammaToLiner(ORI_ShadingInput.BaseColor.rgb)  ;
+            ORI_ShadingInput.BaseColor = vec4<f32>( ORI_ShadingInput.BaseColor * materialUniform.baseColor.rgb, ORI_ShadingInput.BaseColor.w * materialUniform.baseColor.a)  ;
         #else
             ORI_ShadingInput.BaseColor = textureSample(baseMap, baseMapSampler, uv )  ;
-            ORI_ShadingInput.BaseColor = vec4f(ORI_ShadingInput.BaseColor.rgb/ORI_ShadingInput.BaseColor.a,ORI_ShadingInput.BaseColor.a)  ;
-            ORI_ShadingInput.BaseColor = vec4<f32>(gammaToLiner(ORI_ShadingInput.BaseColor.rgb) * materialUniform.baseColor.rgb, ORI_ShadingInput.BaseColor.w * materialUniform.baseColor.a)  ;
+            ORI_ShadingInput.BaseColor = vec4f(gammaToLiner(ORI_ShadingInput.BaseColor.rgb) * materialUniform.baseColor.rgb,ORI_ShadingInput.BaseColor.a)  ;
         #endif
 
         var maskTex = textureSample(maskMap, maskMapSampler, uv ) ;
        
         #if USE_ALPHA_A
             ORI_ShadingInput.BaseColor.a =  ORI_ShadingInput.BaseColor.a * (maskTex.a) ;
-            ORI_ShadingInput.BaseColor =  vec4f(ORI_ShadingInput.BaseColor.rgb/ORI_ShadingInput.BaseColor.a,ORI_ShadingInput.BaseColor.a) ;
+            // ORI_ShadingInput.BaseColor =  vec4f(ORI_ShadingInput.BaseColor.rgb/ORI_ShadingInput.BaseColor.a,ORI_ShadingInput.BaseColor.a) ;
         #endif
 
         #if USE_ALPHACUT 
@@ -124,7 +123,9 @@ export let PBRLItShader: string = /*wgsl*/ `
         #else if USE_METALLIC_B
             metallicChannel = maskTex.b ;
         #endif    
-        ORI_ShadingInput.Metallic = metallicChannel * metallicChannel * materialUniform.metallic ;
+
+        ORI_ShadingInput.Metallic = metallicChannel * materialUniform.metallic ;
+        // ORI_ShadingInput.Metallic = materialUniform.metallic ;
    
         var aoChannel:f32 = 1.0 ;
         #if USE_AOTEX
@@ -148,11 +149,16 @@ export let PBRLItShader: string = /*wgsl*/ `
 
         ORI_ShadingInput.Specular = 1.0 ;
 
-        var emissiveColor = textureSample(emissiveMap, emissiveMapSampler , ORI_VertexVarying.fragUV0.xy) ;
 
-        emissiveColor = vec4<f32>(gammaToLiner(emissiveColor.rgb),emissiveColor.w);
+        #if USE_EMISSIVEMAP
+            var emissiveMapColor = textureSample(emissiveMap, emissiveMapSampler , ORI_VertexVarying.fragUV0.xy) ;
+            let emissiveColor = getHDRColor(materialUniform.emissiveColor.rgb,materialUniform.emissiveIntensity);
+            ORI_ShadingInput.EmissiveColor = vec4<f32>(gammaToLiner(emissiveMapColor.rgb) * emissiveColor.rgb ,emissiveMapColor.w);
+        #else
+            let emissiveColor = getHDRColor(materialUniform.emissiveColor.rgb,materialUniform.emissiveIntensity);
+            ORI_ShadingInput.EmissiveColor = vec4<f32>(emissiveColor,1.0);
+        #endif
 
-        ORI_ShadingInput.EmissiveColor = vec4<f32>(materialUniform.emissiveColor.rgb * emissiveColor.rgb * materialUniform.emissiveIntensity,1.0);
 
         var Normal = textureSample(normalMap,normalMapSampler,uv).rgb ;
         let normal = unPackRGNormal(Normal,1.0,1.0) ;  

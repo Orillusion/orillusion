@@ -75,8 +75,7 @@ export class PointLightShadowRenderer extends RendererBase {
                 rendererPassStates[i] = rendererPassState;
                 depths[i] = depthTexture;
 
-                Engine3D.getRenderJob(view).postRenderer.setDebugTexture([depthTexture]);
-                Engine3D.getRenderJob(view).debug();
+                Engine3D.getRenderJob(view).postRenderer?.setDebugTexture([depthTexture]);
             }
             cubeShadowMapInfo = {
                 cubeCamera: camera,

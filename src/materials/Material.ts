@@ -135,23 +135,59 @@ export class Material {
     }
 
 
-    public setFloat(propertyName: string, value: number) {
+    public setUniformFloat(propertyName: string, value: number) {
         this._shader.setUniformFloat(propertyName, value);
     }
 
-    public setVector2(propertyName: string, value: Vector2) {
+    public setUniformVector2(propertyName: string, value: Vector2) {
         this._shader.setUniformVector2(propertyName, value);
     }
 
-    public setVector3(propertyName: string, value: Vector3) {
+    public setUniformVector3(propertyName: string, value: Vector3) {
         this._shader.setUniformVector3(propertyName, value);
     }
 
-    public setVector4(propertyName: string, value: Vector4) {
+    public setUniformVector4(propertyName: string, value: Vector4) {
         this._shader.setUniformVector4(propertyName, value);
     }
 
-    public setColor(propertyName: string, value: Color) {
+    public setUniformColor(propertyName: string, value: Color) {
         this._shader.setUniformColor(propertyName, value);
+    }
+
+    public getUniformFloat(str: string) {
+        return this._shader.getUniform(str).data;
+    }
+
+    public getUniformV2(str: string): Vector2 {
+        return this._shader.getUniformVector2(str);
+    }
+
+    public getUniformV3(str: string): Vector3 {
+        return this._shader.getUniformVector3(str);
+    }
+
+    public getUniformV4(str: string): Vector4 {
+        return this._shader.getUniformVector4(str);
+    }
+
+    public getUniformColor(str: string) {
+        return this._shader.getUniformColor(str);
+    }
+
+    public getTexture(str: string) {
+        return this._shader.getTexture(str);
+    }
+
+    public getStorageBuffer(str: string) {
+        return this._shader.getStorageBuffer(str);
+    }
+
+    public getStructStorageBuffer(str: string) {
+        return this._shader.getStructStorageBuffer(str);
+    }
+
+    public getUniformBuffer(str: string) {
+        return this._shader.getUniformBuffer(str);
     }
 }

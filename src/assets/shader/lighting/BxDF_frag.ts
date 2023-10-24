@@ -110,9 +110,9 @@ export let BxDF_frag: string = /*wgsl*/ `
       //***********indirect-specular part********* 
       
       //***********indirect-ambient part********* 
-      // var kdLast = (1.0 - fragData.F0.r) * (1.0 - fragData.Metallic);    
+      var kdLast = (1.0 - 0.04) * (1.0 - fragData.Metallic);    
       //  Dim the edges, there should be more specular reflection at the edges
-      var iblDiffuseResult = irradiance * kD * fragData.Albedo.rgb ;
+      var iblDiffuseResult = irradiance * vec3f(kdLast) * fragData.Albedo.rgb ;
       //irradiance
       //***********indirect-ambient part********* 
       var indirectResult = (iblSpecularResult + iblDiffuseResult) * fragData.Ao * max(sunLight.quadratic,0.05);
@@ -135,7 +135,7 @@ export let BxDF_frag: string = /*wgsl*/ `
       
       var color = specColor + indirectResult ;
       // color = color * 0.5 ;
-      color += fragData.Emissive.xyz ;
+      // color += fragData.Emissive.xyz ;
 
       var clearCoatColor = vec3<f32>(0.0);
       #if USE_CLEARCOAT
@@ -147,7 +147,9 @@ export let BxDF_frag: string = /*wgsl*/ `
         color = vec3<f32>(clearCoatLayer.rgb/fragData.Albedo.a) ; 
       #endif
       
-      let retColor = (LinearToGammaSpace(color.rgb) * fragData.Albedo.a);
+      var retColor = (LinearToGammaSpace(color.rgb));
+      retColor += fragData.Emissive.xyz ;
+      // ORI_FragmentOutput.color = vec4<f32>( irradiance * min(fragData.Albedo.rgb,vec3f(1.0)) ,fragData.Albedo.a) ;
       ORI_FragmentOutput.color = vec4<f32>( retColor.rgb ,fragData.Albedo.a) ;
   }
 

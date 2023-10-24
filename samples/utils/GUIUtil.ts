@@ -7,7 +7,9 @@ export class GUIUtil {
     public static renderShadowSetting(open: boolean = true) {
         GUIHelp.addFolder('ShadowSetting');
         let setting = Engine3D.setting.shadow;
+
         GUIHelp.add(setting, 'shadowBound', 0, 2048, 1);
+        GUIHelp.add(setting, 'shadowBias', 0.0001, 0.2, 0.00001);
         open && GUIHelp.open();
         GUIHelp.endFolder();
     }

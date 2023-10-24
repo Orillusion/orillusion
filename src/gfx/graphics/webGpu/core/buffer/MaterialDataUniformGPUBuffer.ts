@@ -31,7 +31,7 @@ export class MaterialDataUniformGPUBuffer extends GPUBufferBase {
         }
         len = Math.floor(len / 256 + 1) * 256;
 
-        this.createBuffer(GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST, len / 4);
+        this.createBuffer(GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST, len / 4, null, "MaterialDataUniformGPUBuffer");
         for (const key in uniformNodes) {
             const node = uniformNodes[key];
             if (!node) console.error(key, "is empty");

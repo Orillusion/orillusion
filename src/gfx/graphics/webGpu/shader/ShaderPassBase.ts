@@ -251,6 +251,26 @@ export class ShaderPassBase {
         return this.uniforms[name].data;
     }
 
+    public getUniformFloat(name: string): number {
+        return this.uniforms[name].data;
+    }
+
+    public getUniformVector2(name: string): Vector2 {
+        return this.uniforms[name].data;
+    }
+
+    public getUniformVector3(name: string): Vector3 {
+        return this.uniforms[name].data;
+    }
+
+    public getUniformVector4(name: string): Vector4 {
+        return this.uniforms[name].data;
+    }
+
+    public getUniformColor(name: string): Color {
+        return this.uniforms[name].color;
+    }
+
     public getBuffer(name: string): GPUBufferBase {
         return this._bufferDic[name].data;
     }

@@ -120,8 +120,9 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
           isOutSideArea = 0.0;
           var uvOnePixel = 1.0 / vec2<f32>(globalUniform.shadowMapSize);
           var totalWeight = 0.0;
-          var NoL = abs(dot(normalize(ORI_VertexVarying.vWorldNormal), normalize(light.direction)));
-          var bias = shadowBias / max(NoL, 0.000001);
+          var NoL = (dot(normalize(ORI_VertexVarying.vWorldNormal), normalize(-light.direction)));
+          let v = max(NoL, 0.0) ;
+          var bias = shadowBias / v;
           for (var y = -1; y <= 1; y++) {
             for (var x = -1; x <= 1; x++) {
               var offset = vec2<f32>(f32(x), f32(y)) * uvOnePixel;
@@ -129,7 +130,7 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
               // visibility += textureSampleCompare(shadowMap, shadowMapSampler, varying_shadowUV + offset, depthTexIndex, shadowPos.z - bias);
               var depth = textureSampleLevel(shadowMap, shadowMapSampler, varying_shadowUV + offset, depthTexIndex, 0);
               if ((shadowPos.z - bias ) < depth) {
-                visibility += 1.0 ;//* dot(offsetDir, dir.xyz);
+                visibility += 1.0 ;
               }
               totalWeight += 1.0;
             }

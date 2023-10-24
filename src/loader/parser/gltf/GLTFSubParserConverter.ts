@@ -187,22 +187,22 @@ export class GLTFSubParserConverter {
                     }
 
                     if (`alphaCutoff` in primitive.material && alphaCutoff > 0 && alphaCutoff < 1) {
-                        physicMaterial.setFloat("alphaCutoff", alphaCutoff);
+                        physicMaterial.setUniformFloat("alphaCutoff", alphaCutoff);
                         physicMaterial.blendMode = BlendMode.NORMAL;
                         physicMaterial.transparent = true;
                         // physicMaterial.depthWriteEnabled = false;
                     }
 
                     if (primitive.material.transformUV1) {
-                        physicMaterial.setVector4("uvTransform_1", primitive.material.transformUV1);
+                        physicMaterial.setUniformVector4("uvTransform_1", primitive.material.transformUV1);
                     }
                     if (primitive.material.transformUV2) {
-                        physicMaterial.setVector4("uvTransform_2", primitive.material.transformUV2);
+                        physicMaterial.setUniformVector4("uvTransform_2", primitive.material.transformUV2);
                     }
-                    physicMaterial.setColor("baseColor", new Color(baseColorFactor[0], baseColorFactor[1], baseColorFactor[2], baseColorFactor[3]));
-                    physicMaterial.setFloat("roughness", roughnessFactor);
-                    physicMaterial.setFloat("metallic", metallicFactor);
-                    physicMaterial.setFloat("ao", 1);
+                    physicMaterial.setUniformColor("baseColor", new Color(baseColorFactor[0], baseColorFactor[1], baseColorFactor[2], baseColorFactor[3]));
+                    physicMaterial.setUniformFloat("roughness", roughnessFactor);
+                    physicMaterial.setUniformFloat("metallic", metallicFactor);
+                    physicMaterial.setUniformFloat("ao", 1);
                     physicMaterial.doubleSide = doubleSided;
 
                     if (baseColorTexture) {
@@ -234,7 +234,7 @@ export class GLTFSubParserConverter {
                         // let emissiveFactorA = emissiveFactor[3] ? emissiveFactor[3] : 1.0;
                         // physicMaterial.emissiveColor = new Color(emissiveFactor[0], emissiveFactor[1], emissiveFactor[2], emissiveFactorA);
                         // physicMaterial.emissiveIntensity = 1;
-                        physicMaterial.setColor("emissiveColor", new Color(emissiveFactor[0], emissiveFactor[1], emissiveFactor[2], emissiveFactor[3]));
+                        physicMaterial.setUniformColor("emissiveColor", new Color(emissiveFactor[0], emissiveFactor[1], emissiveFactor[2], emissiveFactor[3]));
                     }
                 }
             }

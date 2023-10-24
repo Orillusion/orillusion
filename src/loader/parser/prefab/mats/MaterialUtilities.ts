@@ -56,7 +56,7 @@ export class MaterialUtilities {
                         } else if (key in mat.shader) {
                             mat.shader[key] = value;
                         } else {
-                            mat.setColor(key, value);
+                            mat.setUniformColor(key, value);
                         }
                     }
                     break;
@@ -76,7 +76,7 @@ export class MaterialUtilities {
                         } else if (key in mat.shader) {
                             mat.shader[key] = value;
                         } else {
-                            mat.setFloat(key, value);
+                            mat.setUniformFloat(key, value);
                         }
                     }
                     break;
@@ -88,7 +88,7 @@ export class MaterialUtilities {
                         } else if (key in mat.shader) {
                             mat.shader[key] = value;
                         } else {
-                            mat.setFloat(key, value);
+                            mat.setUniformFloat(key, value);
                         }
                     }
                     break;
@@ -101,7 +101,7 @@ export class MaterialUtilities {
                         } else if (key in mat.shader) {
                             mat.shader[key] = value;
                         } else {
-                            mat.setVector2(key, value);
+                            mat.setUniformVector2(key, value);
                         }
                     }
                     break;
@@ -113,7 +113,7 @@ export class MaterialUtilities {
                         } else if (key in mat.shader) {
                             mat.shader[key] = value;
                         } else {
-                            mat.setVector3(key, value);
+                            mat.setUniformVector3(key, value);
                         }
                     }
                     break;
@@ -125,7 +125,7 @@ export class MaterialUtilities {
                         } else if (key in mat.shader) {
                             mat.shader[key] = value;
                         } else {
-                            mat.setVector4(key, value);
+                            mat.setUniformVector4(key, value);
                         }
                     }
                     break;

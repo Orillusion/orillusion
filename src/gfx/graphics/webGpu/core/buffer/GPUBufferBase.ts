@@ -382,7 +382,7 @@ export class GPUBufferBase {
         }
     }
 
-    protected createBuffer(usage: GPUBufferUsageFlags, size: number, data?: ArrayBufferData) {
+    protected createBuffer(usage: GPUBufferUsageFlags, size: number, data?: ArrayBufferData, debugLabel?: string) {
         let device = webGPUContext.device;
         this.byteSize = size * 4;
         this.usage = usage;
@@ -390,6 +390,7 @@ export class GPUBufferBase {
             this.destroy();
         }
         this.buffer = device.createBuffer({
+            label: debugLabel,
             size: this.byteSize,
             usage: usage,
             mappedAtCreation: false,
@@ -424,6 +425,7 @@ export class GPUBufferBase {
 
         let device = webGPUContext.device;
         this.buffer = device.createBuffer({
+            label: "StructStorageGPUBuffer",
             size: totalLength,
             // size: totalLength * 4,
             usage: usage,

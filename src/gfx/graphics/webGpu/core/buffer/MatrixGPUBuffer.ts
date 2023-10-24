@@ -17,7 +17,7 @@ export class MatrixGPUBuffer extends GPUBufferBase {
         super();
         this.bufferType = GPUBufferType.StorageGPUBuffer;
         this.size = size;
-        this.createBuffer(GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST | usage, size, data);
+        this.createBuffer(GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST | usage, size, data, "MatrixGPUBuffer");
     }
 
     public writeBufferByHeap(mapAsyncArray: Float32Array, len: number) {

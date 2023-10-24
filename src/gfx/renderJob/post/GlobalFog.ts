@@ -59,6 +59,7 @@ export class GlobalFog extends PostBase {
         shader.setUniform("dirHeightLine", globalFog.dirHeightLine);
         shader.setUniform("skyFactor", globalFog.skyFactor);
         shader.setUniform("skyRoughness", globalFog.skyRoughness);
+        shader.setUniform("overrideSkyFactor", globalFog.overrideSkyFactor);
         shader.setUniform("isSkyHDR", 0);
 
         let ptex = rtFrame.getPositionMap();

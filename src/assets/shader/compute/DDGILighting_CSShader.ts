@@ -1,6 +1,7 @@
 import { CSM } from "../../../core/csm/CSM";
 
 export let DDGILighting_shader = /*wgsl*/`
+var<private> PI: f32 = 3.14159265359;
 
 #include "GlobalUniform"
 #include "MathShader"

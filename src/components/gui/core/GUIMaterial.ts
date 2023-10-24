@@ -1,4 +1,4 @@
-import { PassType } from "../../..";
+import { PassType, Shader } from "../../..";
 import { Engine3D } from "../../../Engine3D";
 import { ShaderLib } from "../../../assets/shader/ShaderLib";
 import { GPUCompareFunction, GPUCullMode } from "../../../gfx/graphics/webGpu/WebGPUConst";
@@ -25,8 +25,11 @@ export class GUIMaterial extends Material {
         ShaderLib.register('GUI_shader_view', GUIShader.GUI_shader_view);
         ShaderLib.register('GUI_shader_world', GUIShader.GUI_shader_world);
 
+        let newShader = new Shader();
+
         let shaderKey: string = space == GUISpace.View ? 'GUI_shader_view' : 'GUI_shader_world';
         let colorPass = new RenderShaderPass(shaderKey, shaderKey);
+        colorPass.passType = PassType.COLOR;
         colorPass.setShaderEntry(`VertMain`, `FragMain`);
 
         colorPass.setUniformVector2('screenSize', this._screenSize);
@@ -43,47 +46,46 @@ export class GUIMaterial extends Material {
         colorPass.blendMode = BlendMode.ALPHA;
         colorPass.depthCompare = space == GUISpace.View ? GPUCompareFunction.always : GPUCompareFunction.less_equal;
         colorPass.cullMode = GPUCullMode.back;
-
+        newShader.addRenderPass(colorPass);
         // colorPass.transparent = true;
         // colorPass.receiveEnv = false;
 
-        this.defaultPass = colorPass;
-
+        this.shader = newShader;
     }
 
     /**
     * Write effective vertex count (vertex index < vertexCount)
     */
     public setLimitVertex(vertexCount: number) {
-        this.defaultPass.setUniformFloat('limitVertex', vertexCount);
+        this.shader.setUniformFloat('limitVertex', vertexCount);
     }
 
     public setGUISolution(value: Vector2, pixelRatio: number) {
-        this.defaultPass.setUniformVector2('guiSolution', value);
-        this.defaultPass.setUniformFloat('pixelRatio', pixelRatio);
+        this.shader.setUniformVector2('guiSolution', value);
+        this.shader.setUniformFloat('pixelRatio', pixelRatio);
     }
 
     public setScissorRect(left: number, bottom: number, right: number, top: number) {
         this._scissorRect ||= new Vector4();
         this._scissorRect.set(left, bottom, right, top);
-        this.defaultPass.setUniformVector4('scissorRect', this._scissorRect);
+        this.shader.setUniformVector4('scissorRect', this._scissorRect);
     }
 
     public setScissorEnable(value: boolean) {
         if (this._scissorEnable != value) {
             this._scissorEnable = value;
             if (value) {
-                this.defaultPass.setDefine("SCISSOR_ENABLE", true);
+                this.shader.setDefine("SCISSOR_ENABLE", true);
             } else {
-                this.defaultPass.deleteDefine('SCISSOR_ENABLE');
+                this.shader.deleteDefine('SCISSOR_ENABLE');
             }
-            this.defaultPass.noticeValueChange();
+            this.shader.noticeValueChange();
         }
     }
 
     public setScissorCorner(radius: number, fadeOut: number) {
-        this.defaultPass.setUniformFloat('scissorCornerRadius', radius);
-        this.defaultPass.setUniformFloat('scissorFadeOutSize', fadeOut);
+        this.shader.setUniformFloat('scissorCornerRadius', radius);
+        this.shader.setUniformFloat('scissorFadeOutSize', fadeOut);
     }
 
     /**
@@ -91,7 +93,7 @@ export class GUIMaterial extends Material {
      */
     public setScreenSize(width: number, height: number): this {
         this._screenSize.set(width, height);
-        this.defaultPass.setUniformVector2('screenSize', this._screenSize);
+        this.shader.setUniformVector2('screenSize', this._screenSize);
         return this;
     }
 
@@ -101,7 +103,7 @@ export class GUIMaterial extends Material {
     public setTextures(list: Texture[]) {
         for (let i = 0; i < 7; i++) {
             let texture = list[i] || Engine3D.res.whiteTexture;
-            this.defaultPass.setTexture(`tex_${i}`, texture);
+            this.shader.setTexture(`tex_${i}`, texture);
             this.setVideoTextureDefine(i, texture.isVideoTexture);
         }
     }
@@ -111,16 +113,16 @@ export class GUIMaterial extends Material {
         let changed = false;
         if (isVideoTexture != this._videoTextureFlags[i]) {
             if (isVideoTexture) {
-                this.defaultPass.setDefine(`VideoTexture${i}`, true);
+                this.shader.setDefine(`VideoTexture${i}`, true);
             } else {
-                this.defaultPass.deleteDefine(`VideoTexture${i}`);
+                this.shader.deleteDefine(`VideoTexture${i}`);
             }
             this._videoTextureFlags[i] = isVideoTexture;
             changed = true;
         }
 
         if (changed) {
-            this.defaultPass.noticeValueChange();
+            this.shader.noticeValueChange();
         }
 
     }

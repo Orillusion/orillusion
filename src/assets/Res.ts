@@ -500,7 +500,7 @@ export class Res {
      */
     public initDefault() {
         this.normalTexture = this.createTexture(32, 32, 255 * 0.5, 255 * 0.5, 255.0, 255.0, 'default-normalTexture');
-        this.maskTexture = this.createTexture(32, 32, 255, 255 * 0.5, 0.0, 255.0, 'default-maskTexture');
+        this.maskTexture = this.createTexture(32, 32, 255, 255 * 0.5, 255.0, 255.0, 'default-maskTexture');
         this.whiteTexture = this.createTexture(32, 32, 255, 255, 255, 255, 'default-whiteTexture');
         this.blackTexture = this.createTexture(32, 32, 0, 0, 0, 255.0, 'default-blackTexture');
         this.redTexture = this.createTexture(32, 32, 255, 0, 0, 255.0, 'default-redTexture');

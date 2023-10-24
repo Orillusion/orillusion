@@ -26,6 +26,7 @@ export class IndicesGPUBuffer extends GPUBufferBase {
             this.destroy();
         }
         this.buffer = device.createBuffer({
+            label: "IndicesGPUBuffer",
             size: this.byteSize,
             usage: usage,
             mappedAtCreation: false,

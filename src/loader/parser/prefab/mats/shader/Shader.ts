@@ -14,9 +14,7 @@ import { Vector4 } from "../../../../../math/Vector4";
 import { Struct } from "../../../../../util/struct/Struct";
 
 export class Shader {
-    destroy() {
-        throw new Error("Method not implemented.");
-    }
+
     public computes: RenderShaderCompute[];
 
     public passShader: Map<PassType, RenderShaderPass[]>;
@@ -86,6 +84,14 @@ export class Shader {
         }
     }
 
+    public deleteDefine(arg0: string) {
+        for (const pass of this.passShader) {
+            for (const rd of pass[1]) {
+                rd.deleteDefine(arg0);
+            }
+        }
+    }
+
     public setUniform(arg0: string, arg1: UniformValue) {
         for (const pass of this.passShader) {
             for (const rd of pass[1]) {
@@ -138,8 +144,24 @@ export class Shader {
         return this.getDefaultColorShader().getUniform(arg0);
     }
 
+    public getUniformFloat(arg0: string): number {
+        return this.getDefaultColorShader().getUniformFloat(arg0);
+    }
+
+    public getUniformVector2(arg0: string): Vector2 {
+        return this.getDefaultColorShader().getUniformVector2(arg0);
+    }
+
+    public getUniformVector3(arg0: string): Vector3 {
+        return this.getDefaultColorShader().getUniformVector3(arg0);
+    }
+
+    public getUniformVector4(arg0: string): Vector4 {
+        return this.getDefaultColorShader().getUniformVector4(arg0);
+    }
+
     public getUniformColor(arg0: string): Color {
-        return this.getDefaultColorShader().getUniform(arg0);
+        return this.getDefaultColorShader().getUniformColor(arg0);
     }
 
     public setTexture(arg0: string, arg1: Texture) {
@@ -188,5 +210,17 @@ export class Shader {
 
     public getStructStorageBuffer(arg0: string): GPUBufferBase {
         return this.getDefaultColorShader().getBuffer(arg0);
+    }
+
+    public noticeValueChange() {
+        for (const pass of this.passShader) {
+            for (const rd of pass[1]) {
+                rd.noticeValueChange();
+            }
+        }
+    }
+
+    public destroy() {
+        this.getDefaultColorShader().destroy();
     }
 }

@@ -39,7 +39,7 @@ export class LitShader extends Shader {
         this.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));
         this.setUniformVector4(`transformUV2`, new Vector4(0, 0, 1, 1));
         this.setUniformColor(`baseColor`, new Color());
-        this.setUniformColor(`emissiveColor`, new Color(1, 1, 1));
+        this.setUniformColor(`emissiveColor`, new Color(0, 0, 0));
         this.setUniformVector4(`materialF0`, new Vector4(0.04, 0.04, 0.04, 1));
         this.setUniformColor(`specularColor`, new Color(0.04, 0.04, 0.04));
         this.setUniformFloat(`envIntensity`, 1);

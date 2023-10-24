@@ -67,6 +67,7 @@ class Sample_PropertyAnimation {
     }
 
     private displayGUI() {
+        GUIUtil.renderShadowSetting(true);
         // restart the animation clip
         GUIHelp.addFolder('Property Animation');
         GUIHelp.addButton('Restart', () => {

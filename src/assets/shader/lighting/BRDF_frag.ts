@@ -225,7 +225,8 @@ export let BRDF_frag: string = /*wgsl*/ `
         let F = FresnelSchlick(Context.VoH, vec3<f32>(F0));
         let specular = ( D * G * F ) / (4.0 * Context.NoV * Context.NoL + 0.001);
         
-        let kS = exp2( (-5.55473 * Context.HoL - 6.98316) * Context.HoL );
+        // let kS = exp2( (-5.55473 * Context.HoL - 6.98316) * Context.HoL );
+        let kS = F ;
         var kd = 1.0 - kS ;
         kd *= 1.0 - metallic ;
 

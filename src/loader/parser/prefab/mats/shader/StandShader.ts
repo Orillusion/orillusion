@@ -36,14 +36,14 @@ export class StandShader extends Shader {
         this.setUniformFloat(`shadowBias`, 0.00035);
         this.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));
         this.setUniformVector4(`transformUV2`, new Vector4(0, 0, 1, 1));
-        this.setUniformColor(`baseColor`, new Color());
-        this.setUniformColor(`emissiveColor`, new Color(1, 1, 1));
+        this.setUniformColor(`baseColor`, new Color(0.75, 0.75, 0.75, 1.0));
+        this.setUniformColor(`emissiveColor`, new Color(0, 0, 0));
         this.setUniformVector4(`materialF0`, new Vector4(0.04, 0.04, 0.04, 1));
         this.setUniformColor(`specularColor`, new Color(0.04, 0.04, 0.04));
         this.setUniformFloat(`envIntensity`, 1);
         this.setUniformFloat(`normalScale`, 1);
         this.setUniformFloat(`roughness`, 1.0);
-        this.setUniformFloat(`metallic`, 0.0);
+        this.setUniformFloat(`metallic`, 1.0);
         this.setUniformFloat(`ao`, 1.0);
         this.setUniformFloat(`roughness_min`, 0.0);
         this.setUniformFloat(`roughness_max`, 1.0);
@@ -57,7 +57,7 @@ export class StandShader extends Shader {
         this.setUniformColor(`clearcoatColor`, new Color(1, 1, 1));
         this.setUniformFloat(`clearcoatWeight`, 0.0);
 
-        this.baseMap = Engine3D.res.grayTexture;
+        this.baseMap = Engine3D.res.whiteTexture;
         this.normalMap = Engine3D.res.normalTexture;
         this.maskMap = Engine3D.res.maskTexture;
     }

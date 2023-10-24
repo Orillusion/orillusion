@@ -43,7 +43,8 @@ export class GlobalUniformGroup {
         this.usage = GPUBufferUsage.UNIFORM | GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST;
         // ... + 8(shadow matrix) + 8(csm matrix) + 4(csm bias) + 4(csm scattering exp...)
         this.uniformGPUBuffer = new UniformGPUBuffer(32 * 4 * 4 + (3 * 4 * 4) + 8 * 16 + CSM.Cascades * 16 + 4 + 4);
-        this.uniformGPUBuffer.visibility = GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT | GPUShaderStage.COMPUTE
+        this.uniformGPUBuffer.visibility = GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT | GPUShaderStage.COMPUTE;
+
         this.matrixBindGroup = matrixBindGroup;
 
         this.createBindGroup();
@@ -110,21 +111,19 @@ export class GlobalUniformGroup {
         }
         this.uniformGPUBuffer.setFloat32Array(`csmShadowBias`, this.csmShadowBias);
         this.uniformGPUBuffer.setFloat32Array(`csmMatrix`, this.csmMatrixRaw);
-
         this.uniformGPUBuffer.setVector3(`CameraPos`, camera.transform.worldPosition);
         this.uniformGPUBuffer.setFloat(`frame`, Time.frame);
         this.uniformGPUBuffer.setFloat(`time`, Time.frame);
         this.uniformGPUBuffer.setFloat(`delta`, Time.delta);
+        // this.uniformGPUBuffer.setFloat(`shadowBias`, Engine3D.setting.shadow.shadowBias);
         this.uniformGPUBuffer.setFloat(`shadowBias`, camera.getShadowBias(shadowMapSize));
         this.uniformGPUBuffer.setFloat(`skyExposure`, Engine3D.setting.sky.skyExposure);
         this.uniformGPUBuffer.setFloat(`renderPassState`, Engine3D.setting.render.renderPassState);
         this.uniformGPUBuffer.setFloat(`quadScale`, Engine3D.setting.render.quadScale);
         this.uniformGPUBuffer.setFloat(`hdrExposure`, Engine3D.setting.render.hdrExposure);
-
         this.uniformGPUBuffer.setInt32(`renderState_left`, Engine3D.setting.render.renderState_left);
         this.uniformGPUBuffer.setInt32(`renderState_right`, Engine3D.setting.render.renderState_right);
         this.uniformGPUBuffer.setFloat(`renderState_split`, Engine3D.setting.render.renderState_split);
-
         let mouseX = Engine3D.inputSystem.mouseX * webGPUContext.pixelRatio;
         let mouseY = Engine3D.inputSystem.mouseY * webGPUContext.pixelRatio;
         this.uniformGPUBuffer.setFloat(`mouseX`, mouseX);
@@ -133,20 +132,16 @@ export class GlobalUniformGroup {
         this.uniformGPUBuffer.setFloat(`windowHeight`, webGPUContext.windowHeight);
         this.uniformGPUBuffer.setFloat(`near`, camera.near);
         this.uniformGPUBuffer.setFloat(`far`, camera.far);
-
         this.uniformGPUBuffer.setFloat(`pointShadowBias`, Engine3D.setting.shadow.pointShadowBias);
         this.uniformGPUBuffer.setFloat(`shadowMapSize`, shadowMapSize);
         this.uniformGPUBuffer.setFloat(`shadowSoft`, Engine3D.setting.shadow.shadowSoft);
         this.uniformGPUBuffer.setFloat(`enableCSM`, camera.enableCSM ? 1 : 0);
-
         this.uniformGPUBuffer.setFloat(`csmMargin`, Engine3D.setting.shadow.csmMargin);
-
         this.uniformGPUBuffer.setInt32(`nDirShadowStart`, this.dirShadowStart);
         this.uniformGPUBuffer.setInt32(`nDirShadowEnd`, this.dirShadowEnd);
         this.uniformGPUBuffer.setInt32(`nPointShadowStart`, this.pointShadowStart);
         this.uniformGPUBuffer.setInt32(`nPointShadowEnd`, this.pointShadowEnd);
         this.uniformGPUBuffer.setFloat32Array(`shadowLights`, this.shadowLights);
-
         this.uniformGPUBuffer.apply();
     }
 
@@ -167,7 +162,7 @@ export class GlobalUniformGroup {
         this.uniformGPUBuffer.setFloat(`frame`, Time.frame);
         this.uniformGPUBuffer.setFloat(`time`, Time.frame);
         this.uniformGPUBuffer.setFloat(`delta`, Time.delta);
-        this.uniformGPUBuffer.setFloat(`shadowBias`, 0.0001);
+        this.uniformGPUBuffer.setFloat(`shadowBias`, Engine3D.setting.shadow.shadowBias);
         this.uniformGPUBuffer.setFloat(`skyExposure`, Engine3D.setting.sky.skyExposure);
         this.uniformGPUBuffer.setFloat(`renderPassState`, Engine3D.setting.render.renderPassState);
         this.uniformGPUBuffer.setFloat(`quadScale`, Engine3D.setting.render.quadScale);

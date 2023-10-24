@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Engine3D, View3D, Scene3D, CameraUtil, AtmosphericComponent, webGPUContext, HoverCameraController, Object3D, DirectLight, KelvinUtil, PlaneGeometry, VertexAttributeName, LitMaterial, MeshRenderer, Vector4, Vector3, Matrix3, PostProcessingComponent, TAAPost, BitmapTexture2D, GlobalFog, Color } from "@orillusion/core";
+import { Engine3D, View3D, Scene3D, CameraUtil, AtmosphericComponent, webGPUContext, HoverCameraController, Object3D, DirectLight, KelvinUtil, PlaneGeometry, VertexAttributeName, LitMaterial, MeshRenderer, Vector4, Vector3, Matrix3, PostProcessingComponent, TAAPost, BitmapTexture2D, GlobalFog, Color, FXAAPost } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { GrassComponent, TerrainGeometry } from "@orillusion/effect";
 
@@ -29,6 +29,7 @@ class Sample_Terrain {
         Engine3D.startRenderView(this.view);
 
         this.post = this.view.scene.addComponent(PostProcessingComponent);
+        let fxaa = this.post.addPost(FXAAPost);
         let fog = this.post.addPost(GlobalFog);
         fog.start = 2000;
         fog.end = 0;

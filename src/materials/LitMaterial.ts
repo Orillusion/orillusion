@@ -61,6 +61,40 @@ export class LitMaterial extends Material {
         return this.shader.getTexture(`baseMap`);
     }
 
+    public set maskMap(texture: Texture) {
+        this.shader.setTexture(`maskMap`, texture);
+    }
+
+    public get maskMap() {
+        return this.shader.getTexture(`maskMap`);
+    }
+
+
+    public set normalMap(texture: Texture) {
+        this.shader.setTexture(`normalMap`, texture);
+    }
+
+    public get normalMap() {
+        return this.shader.getTexture(`normalMap`);
+    }
+
+    public set emissiveMap(texture: Texture) {
+        this.shader.setTexture(`emissiveMap`, texture);
+        this.setDefine("USE_EMISSIVEMAP", true);
+    }
+
+    public get emissiveMap() {
+        return this.shader.getTexture(`emissiveMap`);
+    }
+
+    public set aoMap(texture: Texture) {
+        this.shader.setTexture(`aoMap`, texture);
+    }
+
+    public get aoMap() {
+        return this.shader.getTexture(`aoMap`);
+    }
+
     /**
      * set base color (tint color)
      */
@@ -89,5 +123,21 @@ export class LitMaterial extends Material {
 
     public set metallic(value: number) {
         this.shader.setUniformFloat("metallic", value);
+    }
+
+    public get emissiveColor(): Color {
+        return this.shader.getUniformColor("emissiveColor");
+    }
+
+    public set emissiveColor(value: Color) {
+        this.shader.setUniformColor("emissiveColor", value);
+    }
+
+    public get emissiveIntensity(): number {
+        return this.shader.getUniformFloat("emissiveIntensity");
+    }
+
+    public set emissiveIntensity(value: number) {
+        this.shader.setUniformFloat("emissiveIntensity", value);
     }
 }
