@@ -8,7 +8,8 @@ import { GeometryIndicesBuffer } from "./GeometryIndicesBuffer";
 import { GeometryVertexType } from "./GeometryVertexType";
 import { VertexAttributeData } from "./VertexAttributeData";
 import { ArrayBufferData } from "../../gfx/graphics/webGpu/core/buffer/ArrayBufferData";
-import { BlendShapeData, Matrix4, VertexAttribute } from "../..";
+import { BlendShapeData } from "../../loader/parser/prefab/prefabData/BlendShapeData";
+import { Matrix4 } from "../../math/Matrix4";
 
 export type LODDescriptor = {
     indexStart: number;

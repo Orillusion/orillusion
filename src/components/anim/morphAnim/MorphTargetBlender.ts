@@ -7,6 +7,8 @@ import { ComponentBase } from "../../ComponentBase";
 import { MorphTargetFrame } from "./MorphTargetFrame";
 import { SkinnedMeshRenderer2 } from "../../renderer/SkinnedMeshRenderer2";
 import { RendererMask, RendererMaskUtil } from "../../../gfx/renderJob/passRenderer/state/RendererMask";
+import { Ctor } from "../../../util/Global";
+import { MeshRenderer } from "../../renderer/MeshRenderer";
 
 export class MorphTargetBlender extends ComponentBase {
     private _targetRenderers: { [key: string]: SkinnedMeshRenderer2[] } = {};
@@ -15,7 +17,10 @@ export class MorphTargetBlender extends ComponentBase {
     private _quaternion: Quaternion = new Quaternion();
 
     public init(param?: any): void {
-        let meshRenders: SkinnedMeshRenderer2[] = this.fetchMorphRenderers(this.object3D);
+        let meshRenders: SkinnedMeshRenderer2[] = this.fetchMorphRenderers(this.object3D, SkinnedMeshRenderer2);
+        let meshRenders2: MeshRenderer[] = this.fetchMorphRenderers(this.object3D, MeshRenderer);
+        meshRenders.push(...meshRenders2 as any);
+
         for (const renderer of meshRenders) {
             let hasMorphTarget = RendererMaskUtil.hasMask(renderer.rendererMask, RendererMask.MorphTarget);
             if (hasMorphTarget) {
@@ -85,9 +90,9 @@ export class MorphTargetBlender extends ComponentBase {
         }
     }
 
-    private fetchMorphRenderers(obj: Object3D): SkinnedMeshRenderer2[] {
-        let sourceRenders: SkinnedMeshRenderer2[] = obj.getComponentsInChild(SkinnedMeshRenderer2);
-        let result: SkinnedMeshRenderer2[] = [];
+    private fetchMorphRenderers<T extends MeshRenderer>(obj: Object3D, c: Ctor<T>): T[] {
+        let sourceRenders: T[] = obj.getComponentsInChild(c);
+        let result: T[] = [];
         for (let renderer of sourceRenders) {
             if (renderer.hasMask(RendererMask.MorphTarget)) {
                 result.push(renderer);

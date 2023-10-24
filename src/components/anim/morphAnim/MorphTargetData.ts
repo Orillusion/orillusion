@@ -148,11 +148,13 @@ export class MorphTargetData {
         let vertexCount: number = posAttrList[0].data.length / 3;
 
         this._blendTarget = {};
-        for (let i = 0; i < geometry.blendShapeData.shapeIndexs.length; i++) {
-            let index = geometry.blendShapeData.shapeIndexs[i];
-            let shapeNames = geometry.blendShapeData.shapeNames[i].split(".");
-            let shapeName = shapeNames[shapeNames.length - 1];
-            this._blendTarget[shapeName] = (value) => this.updateInfluence(index, value);
+        if (geometry.blendShapeData) {
+            for (let i = 0; i < geometry.blendShapeData.shapeIndexs.length; i++) {
+                let index = geometry.blendShapeData.shapeIndexs[i];
+                let shapeNames = geometry.blendShapeData.shapeNames[i].split(".");
+                let shapeName = shapeNames[shapeNames.length - 1];
+                this._blendTarget[shapeName] = (value) => this.updateInfluence(index, value);
+            }
         }
 
         //position
