@@ -13,17 +13,6 @@ export class PrefabTextureParser extends ParserBase {
     public static async parserTexture(bytesStream: BytesArray, prefabParser: PrefabParser, loaderFunctions: LoaderFunctions) {
         let preTextureCount = bytesStream.readInt32();
 
-        // for (let i = 0; i < preTextureCount; i++) {
-        //     const texName = bytesStream.readUTF();
-        //     let tex = await Engine3D.res.loadTexture(this.baseUrl + texName, null, true) as BitmapTexture2D;
-        //     this.texDic[tex.name] = tex;
-        // }
-
-        // let textureList = await Engine3D.res.loadBitmapTextures(textures, 1);
-        // for (const tex of textureList) {
-        //     this.texDic[tex.name] = tex;
-        // }
-
         let textures = [];
         for (let i = 0; i < preTextureCount; i++) {
             let texName = bytesStream.readUTF();
@@ -37,15 +26,8 @@ export class PrefabTextureParser extends ParserBase {
 
         }
 
-        // for (let i = 0; i < textures.length; i++) {
-        //     const texName = textures[i];
-        //     let tex = await Engine3D.res.loadTexture(texName, null, true) as BitmapTexture2D;
-        //     Engine3D.res.addTexture(tex.name, tex);
-        // }
-
-        let textureList = await Engine3D.res.loadBitmapTextures(textures, 1, loaderFunctions, true);
+        let textureList = await Engine3D.res.loadBitmapTextures(textures, Engine3D.setting.loader.numConcurrent, loaderFunctions, true);
         for (const tex of textureList) {
-            // this.texDic[tex.name] = tex;
             Engine3D.res.addTexture(tex.name, tex);
         }
     }

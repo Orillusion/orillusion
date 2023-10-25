@@ -1,5 +1,6 @@
 import { GlobalIlluminationSetting } from "./GlobalIlluminationSetting";
 import { LightSetting } from "./LightSetting";
+import { LoaderSetting } from "./LoaderSetting";
 import { MaterialSetting } from "./MaterialSetting";
 import { OcclusionQuerySetting } from "./OcclusionQuerySetting";
 import { PickSetting } from "./PickSetting";
@@ -48,4 +49,9 @@ export type EngineSetting = {
      * @internal
      */
     material: MaterialSetting;
+
+    /**
+     * loader setting
+     */
+    loader: LoaderSetting;
 }
