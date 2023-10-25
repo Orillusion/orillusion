@@ -59,11 +59,6 @@ class Sample_GTAO {
 	async initScene() {
 		{
 			let mat = new LitMaterial();
-			mat.baseMap = Engine3D.res.redTexture;
-			mat.normalMap = Engine3D.res.normalTexture;
-			mat.aoMap = Engine3D.res.whiteTexture;
-			mat.maskMap = Engine3D.res.createTexture(32, 32, 255.0, 255.0, 0.0, 1);
-			mat.emissiveMap = Engine3D.res.blackTexture;
 			mat.roughness = 1.0;
 			mat.metallic = 0.0;
 
@@ -107,8 +102,6 @@ class Sample_GTAO {
 					mat.baseColor = new Color(1.0, 0.464, 0.0);
 					mat.normalMap = Engine3D.res.normalTexture;
 					mat.aoMap = Engine3D.res.whiteTexture;
-					mat.maskMap = Engine3D.res.createTexture(32, 32, 255.0, 255.0, 0.0, 1);
-					mat.emissiveMap = Engine3D.res.blackTexture;
 					mat.roughness = 1.0;
 					mat.metallic = 0.0;
 

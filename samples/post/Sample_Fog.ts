@@ -50,7 +50,6 @@ class Sample_Fog {
 
         {
             let mat = new LitMaterial();
-            mat.maskMap = Engine3D.res.createTexture(32, 32, 255.0, 255.0, 0.0, 1);
             mat.roughness = 0.5;
             mat.metallic = 0.5;
 
@@ -66,7 +65,6 @@ class Sample_Fog {
 
     private createPlane(scene: Scene3D) {
         let mat = new LitMaterial();
-        mat.maskMap = Engine3D.res.createTexture(32, 32, 255.0, 255.0, 0.0, 1);
         mat.roughness = 1.0;
         mat.metallic = 0.0;
 
