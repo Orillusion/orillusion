@@ -124,7 +124,10 @@ export class GUIGeometry extends GeometryBase {
             indexStart: 0,
             indexCount: this._faceIndexes.length,
             vertexStart: 0,
+            vertexCount: 0,
+            firstStart: 0,
             index: 0,
+            topology: 0,
         });
         return this;
     }

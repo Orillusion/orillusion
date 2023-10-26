@@ -29,7 +29,7 @@ export class PostRenderer extends RendererBase {
 
     public initRenderer() {
         ShaderLib.register("FullQuad_vert_wgsl", FullQuad_vert_wgsl);
-        this.finalQuadView = new ViewQuad(`Quad_vert_wgsl`, `Quad_frag_wgsl`, new RTFrame([], []), null, null, false);
+        this.finalQuadView = new ViewQuad(`Quad_vert_wgsl`, `Quad_frag_wgsl`, new RTFrame([], []), 0, false);
     }
 
     public attachPost(view: View3D, post: PostBase) {

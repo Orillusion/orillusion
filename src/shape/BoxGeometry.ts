@@ -196,7 +196,10 @@ export class BoxGeometry extends GeometryBase {
             indexStart: 0,
             indexCount: indices_arr.length,
             vertexStart: 0,
+            vertexCount: 0,
+            firstStart: 0,
             index: 0,
+            topology: 0,
         });
     }
 

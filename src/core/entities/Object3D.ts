@@ -549,17 +549,17 @@ function DecorateObject3D(ctor: any, _?: any) {
 
         public get materialColor(): Color {
             let component = this.getComponent(MeshRenderer);
-            return component?.material?.defaultPass.baseColor;
+            return component?.material?.shader.getDefaultColorShader().baseColor;
         }
 
         public set materialColor(color: Color) {
             let material = this.getComponent(MeshRenderer)?.material;
-            material && (material.defaultPass.baseColor = color);
+            material && (material.shader.getDefaultColorShader().baseColor = color);
         }
 
         public notifyMaterialColorChange(materialIndex: number, key: string) {
             let materials = this.getComponent(MeshRenderer).materials;
-            materials?.[materialIndex]?.defaultPass.uniforms[key].onChange();
+            materials?.[materialIndex]?.shader.getDefaultColorShader().uniforms[key].onChange();
         }
     };
 }
