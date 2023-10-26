@@ -47,7 +47,6 @@ export class GeometryBase {
     public vertexDim: number;
 
     private _bounds: BoundingBox;
-
     private _attributeMap: Map<string, VertexAttributeData>;
     private _attributes: string[];
     private _indicesBuffer: GeometryIndicesBuffer;

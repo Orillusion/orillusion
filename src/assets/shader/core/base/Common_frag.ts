@@ -8,8 +8,11 @@ export let Common_frag: string = /*wgsl*/ `
   var<private> ORI_VertexVarying: FragmentVarying;
   var<private> ORI_ShadingInput: ShadingInput;
   var<private> viewDir:vec3<f32>;
+  var<private> modelIndex:u32;
   @fragment
   fn FragMain( vertex_varying:FragmentVarying ) -> FragmentOutput {
+    modelIndex = u32(round(vertex_varying.index)) ; 
+
     ORI_VertexVarying = vertex_varying;
     ORI_FragmentOutput.color = vec4<f32>(1.0, 0.0, 0.0, 1.0);
     viewDir = normalize(globalUniform.CameraPos.xyz - ORI_VertexVarying.vWorldPos.xyz) ;

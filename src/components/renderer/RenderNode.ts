@@ -428,6 +428,7 @@ export class RenderNode extends ComponentBase {
         let worldMatrix = node.object3D.transform._worldMatrix;
         for (let i = 0; i < this.materials.length; i++) {
             const material = this.materials[i];
+            // material.applyUniform();
             let passes = material.getPass(passType);
             if (!passes || passes.length == 0)
                 return;

@@ -52,11 +52,6 @@ export class MaterialDataUniformGPUBuffer extends GPUBufferBase {
      */
     public apply() {
         if (this.uniformNodes.length == 0) return;
-        // if (this.uniformNodes.length > 0 && this.uniformNodes[0].type == "IrradianceVolumeData") {
-        //     if (this.uniformNodes[0].data["isVolumeFrameChange"]) {
-        //         this._onChange = true;
-        //     }
-        // }
         if (!this._onChange) return;
 
         for (const key in this.uniformNodes) {

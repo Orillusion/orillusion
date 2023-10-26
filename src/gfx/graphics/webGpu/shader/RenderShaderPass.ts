@@ -25,9 +25,9 @@ import { Reference } from "../../../../util/Reference";
 import { CSM } from "../../../../core/csm/CSM";
 import { GPUCompareFunction, GPUCullMode } from "../WebGPUConst";
 import { UniformValue } from "./value/UniformValue";
-import { PipelinePool } from "../PipelinePool";
 import { PassType } from "../../../renderJob/passRenderer/state/RendererType";
 import { Vector4 } from "../../../../math/Vector4";
+import { PipelinePool } from "../PipelinePool";
 
 export class RenderShaderPass extends ShaderPassBase {
 
@@ -65,10 +65,7 @@ export class RenderShaderPass extends ShaderPassBase {
      */
     public bindGroupLayouts: GPUBindGroupLayout[];
 
-    /**
-     * Uniform data for materials
-     */
-    public materialDataUniformBuffer: MaterialDataUniformGPUBuffer;
+
 
     public envMap: Texture;
 
@@ -116,7 +113,6 @@ export class RenderShaderPass extends ShaderPassBase {
         this._bufferDic.set(`global`, this.materialDataUniformBuffer);
         this._bufferDic.set(`materialUniform`, this.materialDataUniformBuffer);
     }
-
 
     /**
      * Blend mode
@@ -773,13 +769,13 @@ export class RenderShaderPass extends ShaderPassBase {
             }
         }
 
-        // let pipeline = PipelinePool.getSharePipeline(this.shaderVariant);
-        // if (pipeline) {
-        // this.pipeline = pipeline;
-        // } else {
-        this.pipeline = GPUContext.createPipeline(renderPipelineDescriptor as GPURenderPipelineDescriptor);
-        // PipelinePool.setSharePipeline(this.shaderVariant, this.pipeline);
-        // }
+        let pipeline = PipelinePool.getSharePipeline(this.shaderVariant);
+        if (pipeline) {
+            this.pipeline = pipeline;
+        } else {
+            this.pipeline = GPUContext.createPipeline(renderPipelineDescriptor as GPURenderPipelineDescriptor);
+            PipelinePool.setSharePipeline(this.shaderVariant, this.pipeline);
+        }
     }
 
     private createGroupLayouts() {

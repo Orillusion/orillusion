@@ -147,6 +147,9 @@ export class PlaneGeometry extends GeometryBase {
             indexCount: indices_arr.length,
             vertexStart: 0,
             index: 0,
+            vertexCount: 0,
+            firstStart: 0,
+            topology: 0
         });
     }
 

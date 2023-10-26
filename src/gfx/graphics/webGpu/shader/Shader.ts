@@ -15,6 +15,7 @@ import { Struct } from "../../../../util/struct/Struct";
 
 export class Shader {
 
+
     public computes: RenderShaderCompute[];
 
     public passShader: Map<PassType, RenderShaderPass[]>;
@@ -170,10 +171,7 @@ export class Shader {
                 rd.setTexture(arg0, arg1);
             }
         }
-
-        if (arg0 == "emissiveMap") {
-            this.setDefine("USE_EMISSIVEMAP", true);
-        }
+        this.setDefine(`USE_${arg0.toLocaleUpperCase()}`, true);
     }
 
     public getTexture(arg0: string): Texture {
@@ -235,5 +233,13 @@ export class Shader {
             newShader.addRenderPass(shadePass);
         }
         return newShader;
+    }
+
+    applyUniform() {
+        for (const pass of this.passShader) {
+            for (const rd of pass[1]) {
+                rd.applyUniform();
+            }
+        }
     }
 }

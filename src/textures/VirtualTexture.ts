@@ -30,7 +30,7 @@ export class VirtualTexture extends Texture {
      * @param useMipmap whether or not gen mipmap
      * @returns
      */
-    constructor(width: number, height: number, format: GPUTextureFormat = GPUTextureFormat.rgba8unorm, useMipMap: boolean = false, usage?: number, numberLayer: number = 1, sampleCount: number = 0, clear: boolean = true) {
+    constructor(width: number, height: number, format: GPUTextureFormat = GPUTextureFormat.rgba8unorm, useMipMap: boolean = false, usage?: GPUFlagsConstant, numberLayer: number = 1, sampleCount: number = 0, clear: boolean = true) {
         super(width, height, numberLayer);
         let device = webGPUContext.device;
         this.name = UUID();

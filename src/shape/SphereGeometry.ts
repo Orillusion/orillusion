@@ -157,6 +157,9 @@ export class SphereGeometry extends GeometryBase {
             indexCount: indice_arr.length,
             vertexStart: 0,
             index: 0,
+            vertexCount: 0,
+            firstStart: 0,
+            topology: 0
         });
 
         this.bounds = new BoundingBox(Vector3.ZERO, new Vector3(this.radius * 2, this.radius * 2, this.radius * 2))

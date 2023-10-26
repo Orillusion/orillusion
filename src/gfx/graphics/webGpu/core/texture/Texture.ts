@@ -52,7 +52,7 @@ export class Texture implements GPUSamplerDescriptor {
     /**
      * GPUTextureUsage
      */
-    public usage: number;
+    public usage: GPUFlagsConstant;
 
     /**
      * texture width

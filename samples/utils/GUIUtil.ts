@@ -4,6 +4,7 @@ import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
 
+
     public static renderShadowSetting(open: boolean = true) {
         GUIHelp.addFolder('ShadowSetting');
         let setting = Engine3D.setting.shadow;
@@ -413,52 +414,44 @@ export class GUIUtil {
         GUIHelp.add(Engine3D.setting.render, 'drawOpMax', 0.0, 10000, 1);
         GUIHelp.endFolder();
     }
-    // }
 
-    // public static renderMaterial(mat: Material, open: boolean = true, name?: string) {
-    //     name ||= 'Material';
-    //     GUIHelp.addFolder(name);
+    static renderLitMaterial(mat: LitMaterial) {
+        GUIHelp.addFolder(mat.name);
+        GUIHelp.addColor(mat, 'baseColor').onChange((v) => {
+            let color = mat.baseColor;
+            color.copyFromArray(v);
+            mat.baseColor = color;
+        });
 
-    //     if (mat instanceof LitMaterial) {
-    //         GUIHelp.addColor(mat, 'baseColor').onChange((v) => {
-    //             mat.defaultPass.baseColor = v;
-    //         });
+        let blendMode = {
+            NONE: BlendMode.NONE,
+            NORMAL: BlendMode.NORMAL,
+            ADD: BlendMode.ADD,
+            ALPHA: BlendMode.ALPHA,
+        }
+        // change blend mode by click dropdown box
+        GUIHelp.add({ blendMode: mat.blendMode }, 'blendMode', blendMode).onChange((v) => {
+            mat.blendMode = BlendMode[BlendMode[parseInt(v)]];
+        });
 
-    //         let blendMode = {
-    //             NONE: BlendMode.NONE,
-    //             NORMAL: BlendMode.NORMAL,
-    //             ADD: BlendMode.ADD,
-    //             ALPHA: BlendMode.ALPHA,
-    //         }
-    //         // change blend mode by click dropdown box
-    //         GUIHelp.add({ blendMode: mat.blendMode }, 'blendMode', blendMode).onChange((v) => {
-    //             mat.blendMode = BlendMode[BlendMode[parseInt(v)]];
-    //         });
+        GUIHelp.add(mat, 'alphaCutoff', 0.0, 1.0, 0.0001).onChange((v) => {
+            mat.alphaCutoff = v;
+        });
 
-    //         GUIHelp.add(mat, 'alphaCutoff', 0.0, 1.0, 0.0001).onChange((v) => {
-    //             mat.alphaCutoff = v;
-    //         });
+        GUIHelp.add(mat, 'doubleSide').onChange((v) => {
+            mat.doubleSide = v;
+        });
 
-    //         GUIHelp.add(mat, 'doubleSide').onChange((v) => {
-    //             mat.doubleSide = v;
-    //         });
+        GUIHelp.add(mat, 'roughness', 0.0, 1.0, 0.0001).onChange((v) => {
+            mat.roughness = v;
+        });
 
-    //         GUIHelp.add(mat, 'roughness').onChange((v) => {
-    //             mat.roughness = v;
-    //         });
+        GUIHelp.add(mat, 'metallic', 0.0, 1.0, 0.0001).onChange((v) => {
+            mat.metallic = v;
+        });
 
-    //         GUIHelp.add(mat, 'metallic').onChange((v) => {
-    //             mat.metallic = v;
-    //         });
-
-    //         GUIHelp.add(mat, 'envIntensity').onChange((v) => {
-    //             mat.envIntensity = v;
-    //         });
-    //     }
-
-    //     open && GUIHelp.open();
-    //     GUIHelp.endFolder();
-    // }
+        GUIHelp.endFolder();
+    }
 
     public static blendShape(obj: Object3D) {
         GUIHelp.addFolder('morph controller');

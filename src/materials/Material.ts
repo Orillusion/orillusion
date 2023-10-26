@@ -200,4 +200,8 @@ export class Material {
     public getUniformBuffer(str: string) {
         return this._shader.getUniformBuffer(str);
     }
+
+    public applyUniform() {
+        this._shader.applyUniform();
+    }
 }
