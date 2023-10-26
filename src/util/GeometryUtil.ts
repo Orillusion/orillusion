@@ -13,7 +13,7 @@ export class GeometryUtil {
         let targetGeo = target || new GeometryBase();
 
         let posLen = geometries.getAttribute(VertexAttributeName.position).data.length / 3;
-        let meshIndexList = new Uint32Array(posLen * num);
+        let meshIndexList = new Float32Array(posLen * num);
         for (const iterator of geometries.vertexAttributeMap) {
             let attName = iterator[1].attribute;
             if (attName == VertexAttributeName.indices) continue;
@@ -33,14 +33,11 @@ export class GeometryUtil {
 
         let indexArray = geometries.getAttribute(VertexAttributeName.indices).data as Int16Array;
         let indexLen = indexArray.length;
-        let faceLen = indexArray.length / 3;
-
         let newIndexArray = new Uint32Array(indexArray.length * num);
         for (let i = 0; i < num; i++) {
             for (let j = 0; j < indexLen; j++) {
-                let skipFace = i * faceLen;
+                let skipFace = i * posLen;
                 let index = i * indexLen;
-
                 const ii = indexArray[j] + skipFace;
                 newIndexArray[index + j] = ii;
             }

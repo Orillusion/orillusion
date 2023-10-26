@@ -31,21 +31,35 @@ export let VertexAttributeIndexShader: string = /*wgsl*/ `
         normal:vec3<f32>,
     }
 
+    struct GraphicNodeStruct{
+        matrixIndex:f32,
+        texIndex:f32,
+    }
+
     var<private> ORI_VertexOut: VertexOutput ;
     var<private> worldMatrix: mat4x4<f32> ;
+    var<private> graphicNode: GraphicNodeStruct ;
 
     fn ORI_Vert(vertex:VertexAttributes){
         var vertexPosition = vertex.position;
-        var vertexNormal = vec3<f32>(0.0,0.0,-1.0);
+        var vertexNormal = vertex.normal;
 
         ORI_VertexOut.index = f32(vertex.vIndex) ;
-        let transform = transformBuffer[u32(vertex.vIndex)];
+        graphicNode = graphicBuffer[u32(round(vertex.vIndex))];
+        let node_Matrix_M = models.matrix[u32(round(graphicNode.matrixIndex))];
 
         #if USE_TANGENT
             ORI_VertexOut.varying_Tangent = vertex.TANGENT ;
         #endif
 
-        worldMatrix = transform.matrix * ORI_MATRIX_M ;
+        ORI_MATRIX_M = node_Matrix_M * ORI_MATRIX_M ;
+
+        #if USE_BILLBOARD
+            let billboardMatrix: mat3x3<f32> = calculateBillboardMatrix(globalUniform.CameraPos.xyz,ORI_MATRIX_M[3].xyz,globalUniform.cameraWorldMatrix[1].xyz);
+            vertexPosition = billboardMatrix * vertexPosition.xyz;
+        #endif
+
+        worldMatrix = ORI_MATRIX_M ;
 
         let nMat = mat3x3<f32>(ORI_MATRIX_M[0].xyz,ORI_MATRIX_M[1].xyz,ORI_MATRIX_M[2].xyz) ;
         ORI_NORMALMATRIX = transpose(inverse( nMat ));
@@ -60,8 +74,6 @@ export let VertexAttributeIndexShader: string = /*wgsl*/ `
 
         var viewPosition = ORI_MATRIX_V * worldPos;
         var clipPosition = ORI_MATRIX_P * viewPosition ;
-
-      
 
         ORI_VertexOut.varying_UV0 = vertex.uv.xy ;
         ORI_VertexOut.varying_UV1 = vertex.TEXCOORD_1.xy;

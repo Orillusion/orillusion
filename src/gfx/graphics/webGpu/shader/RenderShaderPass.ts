@@ -144,6 +144,20 @@ export class RenderShaderPass extends ShaderPassBase {
     }
 
     /**
+     * depthWriteEnabled mode
+     */
+    public get depthWriteEnabled(): boolean {
+        return this.shaderState.depthWriteEnabled;
+    }
+
+    public set depthWriteEnabled(value: boolean) {
+        if (this.shaderState.depthWriteEnabled != value) {
+            this._valueChange = true;
+        }
+        this.shaderState.depthWriteEnabled = value;
+    }
+
+    /**
      * get render face cull mode
      */
     public get cullMode(): GPUCullMode {

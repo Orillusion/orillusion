@@ -14,7 +14,6 @@ import { zSorterUtil } from '../../../util/ZSorterUtil';
 import { RenderLayerUtil, RenderLayer } from '../config/RenderLayer';
 import { Probe } from '../passRenderer/ddgi/Probe';
 import { Graphic3DBatchRenderer } from '../passRenderer/graphic/Graphic3DBatchRenderer';
-import { GraphicMesh } from '../passRenderer/graphic/new/Graphic3DMesh';
 import { RendererMask } from '../passRenderer/state/RendererMask';
 import { CollectInfo } from './CollectInfo';
 import { EntityBatchCollect } from './EntityBatchCollect';
@@ -36,7 +35,6 @@ export class EntityCollect {
     private _octreeRenderNodes: Map<Scene3D, Octree>;
 
     private _graphics: Graphic3DBatchRenderer[];
-    private _graphicMeshs: Set<Graphic3DMeshRenderer>;
 
     private _op_renderGroup: Map<Scene3D, EntityBatchCollect>;
     private _tr_renderGroup: Map<Scene3D, EntityBatchCollect>;
@@ -74,8 +72,6 @@ export class EntityCollect {
 
         this._graphics = [];
 
-        this._graphicMeshs = new Set<Graphic3DMeshRenderer>();
-
         this._op_renderGroup = new Map<Scene3D, EntityBatchCollect>();
         this._tr_renderGroup = new Map<Scene3D, EntityBatchCollect>();
 
@@ -111,10 +107,6 @@ export class EntityCollect {
         } else if (renderNode instanceof Graphic3DBatchRenderer) {
             if (this._graphics.indexOf(renderNode) == -1) {
                 this._graphics.push(renderNode);
-            }
-        } else if (renderNode instanceof Graphic3DMeshRenderer) {
-            if (!this._graphicMeshs.has(renderNode)) {
-                this._graphicMeshs.add(renderNode);
             }
         } else if (!RenderLayerUtil.hasMask(renderNode.renderLayer, RenderLayer.None)) {
             this.removeRenderNode(root, renderNode);
@@ -304,9 +296,4 @@ export class EntityCollect {
         let viewList = this._renderShaderCollect.renderShaderUpdateList.get(view);
         return viewList;
     }
-
-    public getGraphicMesh(view: View3D): Set<Graphic3DMeshRenderer> {
-        return this._graphicMeshs;
-    }
-
 }

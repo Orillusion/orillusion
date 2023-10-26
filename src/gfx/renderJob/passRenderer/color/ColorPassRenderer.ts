@@ -107,12 +107,12 @@ export class ColorPassRenderer extends RendererBase {
                 graphic3DRenderNode.renderPass2(view, this._rendererType, this.splitRendererPassState, clusterLightingBuffer, renderPassEncoder);
             }
 
-            let graphicsMesh = EntityCollect.instance.getGraphicMesh(view);
-            for (const iterator of graphicsMesh) {
-                let meshGroup = iterator;
-                meshGroup.nodeUpdate(view, this._rendererType, this.splitRendererPassState, clusterLightingBuffer);
-                meshGroup.renderPass2(view, this._rendererType, this.splitRendererPassState, clusterLightingBuffer, renderPassEncoder);
-            }
+            // let graphicsMesh = EntityCollect.instance.getGraphicMesh(view);
+            // for (const iterator of graphicsMesh) {
+            //     let meshGroup = iterator;
+            //     meshGroup.nodeUpdate(view, this._rendererType, this.splitRendererPassState, clusterLightingBuffer);
+            //     meshGroup.renderPass2(view, this._rendererType, this.splitRendererPassState, clusterLightingBuffer, renderPassEncoder);
+            // }
 
             this.renderContext.endRenderPass();
 

@@ -8,6 +8,8 @@ export let UnLitTextureArray: string = /*wgsl*/ `
     #include "VertexAttributeIndexShader"
     #include "GlobalUniform"
     #include "Inline_vert"
+    #include "EnvMap_frag"
+    #include "ColorUtil_frag"
 
     const DEGREES_TO_RADIANS : f32 = 3.1415926 / 180.0 ;
     const PI : f32 = 3.1415926 ;
@@ -20,14 +22,6 @@ export let UnLitTextureArray: string = /*wgsl*/ `
             alphaCutoff: f32,
         };
     #endif
-    
-    struct TransformStruct{
-        matrix: mat4x4<f32>,
-        index:f32,
-        index2:f32,
-        index3:f32,
-        index4:f32,
-    }
 
     @group(1) @binding(0)
     var baseMapSampler: sampler;
@@ -35,7 +29,7 @@ export let UnLitTextureArray: string = /*wgsl*/ `
     var baseMap: texture_2d_array<f32>;
 
     @group(2) @binding(5)
-    var<storage,read> transformBuffer : array<TransformStruct>;
+    var<storage,read> graphicBuffer : array<GraphicNodeStruct>;
     
     @vertex
     fn VertMain( vertex:VertexAttributes ) -> VertexOutput {
@@ -43,7 +37,6 @@ export let UnLitTextureArray: string = /*wgsl*/ `
         vert(vertex);
         return ORI_VertexOut ;
     }
-
 
     fn vert(inputData:VertexAttributes) -> VertexOutput {
         ORI_Vert(inputData) ;
@@ -54,16 +47,30 @@ export let UnLitTextureArray: string = /*wgsl*/ `
         var transformUV1 = materialUniform.transformUV1;
         var transformUV2 = materialUniform.transformUV2;
 
-        let transform = transformBuffer[u32(round(ORI_VertexVarying.index))];
+        // var irradiance = vec3<f32>(0.0) ;
+        // let MAX_REFLECTION_LOD  = f32(textureNumLevels(prefilterMap)) ;
+        // irradiance += (globalUniform.skyExposure * textureSampleLevel(prefilterMap, prefilterMapSampler, ORI_VertexVarying.vWorldNormal.xyz, 0.8 * (MAX_REFLECTION_LOD) ).rgb);
+
+        graphicNode = graphicBuffer[u32(round(ORI_VertexVarying.index))];
 
         var uv = transformUV1.zw * ORI_VertexVarying.fragUV0 + transformUV1.xy; 
-        let color = textureSample(baseMap,baseMapSampler,uv, u32(transform.index) );
-        
+        let color = textureSample(baseMap,baseMapSampler,uv, u32(round(graphicNode.texIndex)) );
+        // let color = textureSample(baseMap,baseMapSampler,uv, u32(round(ORI_VertexVarying.index)));
+
+        // ORI_ViewDir = normalize( globalUniform.CameraPos.xyz - ORI_VertexVarying.vWorldPos.xyz);
+        // let att = dot( ORI_ViewDir , ORI_VertexVarying.vWorldNormal.xyz );
+
+        // irradiance = LinearToGammaSpace(irradiance.rgb) * color.rgb ;//* att ;
+
         if(color.w < 0.5){
             discard ;
         }
+
+        // let outColor = vec4f( color.rgb * (att * 0.5 + 0.5 ) , 1.0 ) * materialUniform.baseColor ;
+        let outColor = vec4f( color.rgb , 1.0 ) * materialUniform.baseColor ;
         
-        ORI_ShadingInput.BaseColor = color * materialUniform.baseColor ;
+        // ORI_ShadingInput.BaseColor = color  ;
+        ORI_ShadingInput.BaseColor = vec4f(outColor.xyz,1.0)  ;
         UnLit();
     }
 `

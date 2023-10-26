@@ -301,4 +301,13 @@ fn dir_to_faceId(pt:vec3<f32>) -> i32 {
       comp -= comp.xxyz * bitMsk;
       return comp;
     }
+
+    fn calculateBillboardMatrix(eye:vec3f,pos:vec3f,up:vec3f) -> mat3x3<f32> {
+      
+      let zAxis: vec3f = -normalize(pos.xyz - eye);
+      var xAxis: vec3f = cross(up,zAxis);
+      xAxis = normalize(cross(zAxis,xAxis));
+      let yAxis = normalize(cross(zAxis, xAxis));
+      return mat3x3<f32>(xAxis, yAxis, zAxis);
+    }
 `;

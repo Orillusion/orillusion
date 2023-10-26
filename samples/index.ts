@@ -21,6 +21,7 @@
 //     document.body.appendChild(menu)
 
 import { Sample_InsMaterial } from "./material/Sample_InsMaterial";
+import { Sample_InsMaterial_1 } from "./material/Sample_InsMaterial_1";
 
 
 //     // change sessionStorage.target on click, and reload iframe
@@ -73,3 +74,4 @@ import { Sample_InsMaterial } from "./material/Sample_InsMaterial";
 // }
 
 new Sample_InsMaterial().run();
+// new Sample_InsMaterial_1().run();

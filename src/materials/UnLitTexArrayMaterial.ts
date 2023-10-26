@@ -44,12 +44,12 @@ export class UnLitTexArrayMaterial extends Material {
         return this.shader.getUniformColor("baseColor");
     }
 
-    /**
-     * set environment texture, usually referring to cubemap
-     */
-    public set envMap(texture: Texture) {
-        //not need env texture
-    }
+    // /**
+    //  * set environment texture, usually referring to cubemap
+    //  */
+    // public set envMap(texture: Texture) {
+    //     //not need env texture
+    // }
 
     /**
      * @internal
