@@ -36,6 +36,8 @@ export class VideoMaterial extends Material {
         shaderState.castShadow = false;
         shaderState.useZ = false;
 
+        newShader.addRenderPass(colorPass);
+        this.shader = newShader;
         // default value
         colorPass.setTexture(`baseMap`, Engine3D.res.whiteTexture);
     }

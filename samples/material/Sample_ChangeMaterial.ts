@@ -96,6 +96,8 @@ class Sample_ChangeMaterial {
             GUIHelp.addButton("change-mat3", () => {
                 mr.material = mat3;
             });
+
+            GUIHelp.open();
         }
     }
 

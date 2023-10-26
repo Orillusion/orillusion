@@ -12,6 +12,7 @@ class Sample_GI {
 
         Engine3D.setting.gi.enable = true;
         Engine3D.setting.gi.debug = true;
+        Engine3D.setting.render.debug = true;
 
         Engine3D.setting.gi.probeYCount = 3;
         Engine3D.setting.gi.probeXCount = 6;
@@ -50,16 +51,19 @@ class Sample_GI {
         exampleScene.camera.enableCSM = true;
         Engine3D.startRenderViews([exampleScene.view]);
         let job = Engine3D.getRenderJob(exampleScene.view);
+
+        let postProcessing = this.scene.addComponent(PostProcessingComponent);
+        // postProcessing.addPost(FXAAPost);
+        // postProcessing.addPost(TAAPost);
+        // postProcessing.addPost(GTAOPost);
+        postProcessing.addPost(BloomPost);
         await this.initScene();
         this.addGIProbes();
         // GUIUtil.renderAtomosphericSky(exampleScene.atmosphericSky);
         GUIUtil.renderDirLight(exampleScene.light);
 
-        // let postProcessing = this.scene.addComponent(PostProcessingComponent);
-        // postProcessing.addPost(FXAAPost);
-        // postProcessing.addPost(TAAPost);
-        // postProcessing.addPost(GTAOPost);
-        // postProcessing.addPost(BloomPost);
+        GUIUtil.renderDebug();
+
 
     }
 

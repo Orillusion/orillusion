@@ -65,8 +65,8 @@ class Sample_PixelPick {
 
             let mat = new LitMaterial();
             mat.roughness = i / 10;
-            mat.metallic_max = 1.0;
-            mat.metallic_min = 0.0;
+            // mat.metallic_max = 1.0;
+            // mat.metallic_min = 0.0;
             mat.metallic = 0.6;
 
             let renderer = obj.addComponent(MeshRenderer);
