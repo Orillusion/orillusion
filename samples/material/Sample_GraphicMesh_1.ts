@@ -3,7 +3,7 @@ import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCam
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { Stats } from "@orillusion/stats";
 
-export class Sample_InsMaterial_1 {
+export class Sample_GraphicMesh_1 {
     lightObj3D: Object3D;
     scene: Scene3D;
     parts: Object3D[];

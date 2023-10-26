@@ -21,7 +21,8 @@ import { WebGPUDescriptorCreator } from '../../../graphics/webGpu/descriptor/Web
 import { RendererPassState } from '../state/RendererPassState';
 import { PassType } from '../state/RendererType';
 import { ILight } from '../../../../components/lights/ILight';
-import { Reference } from '../../../..';
+import { ShadowTexture } from '../../../../textures/ShadowTexture';
+import { Reference } from '../../../../util/Reference';
 
 type CubeShadowMapInfo = {
     cubeCamera: CubeCamera,
@@ -60,11 +61,11 @@ export class PointLightShadowRenderer extends RendererBase {
         } else {
             let camera = new PointShadowCubeCamera(view.camera.near, view.camera.far, 90, true);
             camera.label = lightBase.name;
-            let depths: VirtualTexture[] = [];
+            let depths: ShadowTexture[] = [];
             let rendererPassStates: RendererPassState[] = [];
             for (let i = 0; i < 6; i++) {
 
-                let depthTexture = new VirtualTexture(this.shadowSize, this.shadowSize, this.cubeArrayTexture.format, false);
+                let depthTexture = new ShadowTexture(this.shadowSize, this.shadowSize, this.cubeArrayTexture.format, false);
                 let rtFrame = new RTFrame([this.colorTexture], [new RTDescriptor()]);
                 depthTexture.name = `shadowDepthTexture_` + lightBase.name + i + "_face";
                 rtFrame.depthTexture = depthTexture;

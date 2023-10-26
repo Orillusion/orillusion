@@ -3,7 +3,7 @@ import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCam
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { Stats } from "@orillusion/stats";
 
-export class Sample_InsMaterial {
+export class Sample_GraphicMesh_3 {
     lightObj3D: Object3D;
     scene: Scene3D;
     parts: Object3D[];
@@ -66,30 +66,41 @@ export class Sample_InsMaterial {
 
         let texts = [];
 
-        texts.push(await Engine3D.res.loadTexture("textures/128/star_0031.png") as BitmapTexture2D);
-        // texts.push(Engine3D.res.yellowTexture);
+        PrefabParser.useWebp = false;
+        let node = await Engine3D.res.loadGltf("gltfs/glb/beer.glb") as Object3D;
+        let geo = node.getComponents(MeshRenderer)[0].geometry;
+
+        // texts.push(await Engine3D.res.loadTexture("textures/128/star_0031.png") as BitmapTexture2D);
+        texts.push(Engine3D.res.yellowTexture);
 
         let bitmapTexture2DArray = new BitmapTexture2DArray(texts[0].width, texts[0].height, texts.length);
         bitmapTexture2DArray.setTextures(texts);
+
+        let mat = new UnLitTexArrayMaterial();
+        mat.baseMap = bitmapTexture2DArray;
+        mat.name = "LitMaterial";
 
         GUIHelp.add(this, "cafe", 0.0, 100.0);
         GUIHelp.add(this, "frame", 0.0, 100.0);
         {
             this.width = 100;
-            this.height = 100;
+            this.height = 20;
             // let geometry = new BoxGeometry(1, 1, 1);
-            let geo = new PlaneGeometry(1, 1, 1, 1, Vector3.Z_AXIS);
+            // let geometry = new PlaneGeometry(1, 1, 1, 1, Vector3.Z_AXIS);
             let mr = Graphic3DMesh.draw(this.scene, geo, bitmapTexture2DArray, this.width * this.height);
             this.parts = mr.object3Ds;
 
-            mr.material.useBillboard = true;
-            mr.material.blendMode = BlendMode.ADD;
-            mr.material.transparent = true;
-            mr.material.depthWriteEnabled = false;
+            // mr.material.blendMode = BlendMode.ADD;
+            // mr.material.transparent = true;
+            // mr.material.depthWriteEnabled = false;
 
             for (let i = 0; i < this.width * this.height; i++) {
                 const element = this.parts[i];
+                // mr.setTextureID(i, i % texts.length);
+                // mr.setTextureID(i, 52);
+                // mr.setTextureID(i, 35);
                 mr.setTextureID(i, 0);
+                // mr.setTextureID(i, 18);
 
                 let size = Math.random() * 5.0 + 1.0;
                 element.transform.scaleX = size;
@@ -110,6 +121,7 @@ export class Sample_InsMaterial {
                 tmp.scaleBy(r);
 
                 let tr = Math.sin(i * (Time.frame * 0.0001) * this.frame * 0.01) + 1.0;
+                tr *= 0.1;
                 element.transform.scaleX = tr;
                 element.transform.scaleY = tr;
                 element.transform.scaleZ = tr;

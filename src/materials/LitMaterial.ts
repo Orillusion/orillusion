@@ -147,4 +147,12 @@ export class LitMaterial extends Material {
     public set emissiveIntensity(value: number) {
         this.shader.setUniformFloat("emissiveIntensity", value);
     }
+
+    public get ao(): number {
+        return this.shader.getUniform(`ao`);
+    }
+
+    public set ao(value: number) {
+        this.shader.setUniform(`ao`, value);
+    }
 }

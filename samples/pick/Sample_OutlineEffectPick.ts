@@ -1,7 +1,7 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { createExampleScene } from "@samples/utils/ExampleScene";
-import { Object3D, Scene3D, Color, Engine3D, OutlinePost, SphereGeometry, LitMaterial, MeshRenderer, ColliderComponent, PointerEvent3D, outlinePostManager } from "@orillusion/core";
+import { Object3D, Scene3D, Color, Engine3D, OutlinePost, SphereGeometry, LitMaterial, MeshRenderer, ColliderComponent, PointerEvent3D, outlinePostManager, FXAAPost } from "@orillusion/core";
 
 class Sample_OutlineEffectPick {
     lightObj: Object3D;
@@ -32,6 +32,7 @@ class Sample_OutlineEffectPick {
         GUIUtil.renderDirLight(exampleScene.light, false);
 
         let job = Engine3D.startRenderView(exampleScene.view);
+        // job.addPost(new FXAAPost());
         job.addPost(new OutlinePost());
 
         this.initPickObject(this.scene);

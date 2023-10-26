@@ -2,7 +2,7 @@ import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { MaterialStateComponent } from "@samples/pick/MaterialStateComponent";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { createExampleScene } from "@samples/utils/ExampleScene";
-import { Scene3D, Engine3D, MeshRenderer, ColliderComponent, PointerEvent3D, SphereGeometry, Object3D, LitMaterial, Color } from "@orillusion/core";
+import { Scene3D, Engine3D, MeshRenderer, ColliderComponent, PointerEvent3D, SphereGeometry, Object3D, LitMaterial, Color, FXAAPost, PostProcessingComponent, BloomPost } from "@orillusion/core";
 
 class Sample_PixelPick {
     scene: Scene3D;
@@ -17,6 +17,9 @@ class Sample_PixelPick {
         this.scene = exampleScene.scene;
 
         Engine3D.startRenderView(exampleScene.view);
+
+        let postProcessing = this.scene.getOrAddComponent(PostProcessingComponent);
+        let bloomPost = postProcessing.addPost(BloomPost);
 
         GUIHelp.init();
         GUIUtil.renderDirLight(exampleScene.light, false);
@@ -65,8 +68,6 @@ class Sample_PixelPick {
 
             let mat = new LitMaterial();
             mat.roughness = i / 10;
-            mat.metallic_max = 1.0;
-            mat.metallic_min = 0.0;
             mat.metallic = 0.6;
 
             let renderer = obj.addComponent(MeshRenderer);

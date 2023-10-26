@@ -3,7 +3,6 @@ import { BoxGeometry, DEGREES_TO_RADIANS, Engine3D, LitMaterial, Matrix4, MeshFi
 import { PropertyAnimationClip } from "../../math/AnimationCurveClip";
 import { RegisterComponent } from "../../util/SerializeDecoration";
 import { ComponentBase } from "../ComponentBase";
-import { GUIUtil } from "@samples/utils/GUIUtil";
 
 @RegisterComponent
 export class AnimatorComponent extends ComponentBase {

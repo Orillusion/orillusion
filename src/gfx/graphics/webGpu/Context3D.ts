@@ -1,8 +1,10 @@
+import { CEventDispatcher } from '../../../event/CEventDispatcher';
+import { CResizeEvent } from '../../../event/CResizeEvent';
 import { CanvasConfig } from './CanvasConfig';
 /**
  * @internal
  */
-class Context3D {
+class Context3D extends CEventDispatcher {
     public adapter: GPUAdapter;
     public device: GPUDevice;
     public context: GPUCanvasContext;
@@ -15,6 +17,7 @@ class Context3D {
     public canvasConfig: CanvasConfig;
     public super: number = 1.0;
     private _pixelRatio: number = 1.0;
+    canResize: boolean = true;
     // initSize: number[];
     public get pixelRatio() {
         return this._pixelRatio;
@@ -34,7 +37,6 @@ class Context3D {
 
             // check if external canvas has initial with and height style
             const _width = this.canvas.clientWidth, _height = this.canvas.clientHeight
-            this.resize(this.canvas.clientWidth, this.canvas.clientHeight)
             // set a initial style if size changed
             if (_width != this.canvas.clientWidth)
                 this.canvas.style.width = _width + 'px'
@@ -106,26 +108,23 @@ class Context3D {
             alphaMode: 'premultiplied',
             colorSpace: `srgb`,
         });
-
-        // resize canvas size, aspect
-        this.resize(this.canvas.clientWidth, this.canvas.clientHeight)
-        let timer: any
-        const resizeObserver = new ResizeObserver(() => {
-            clearTimeout(timer)
-            timer = setTimeout(() => {
-                this.resize(this.canvas.clientWidth, this.canvas.clientHeight)
-            }, 50)
-        });
-        resizeObserver.observe(this.canvas);
+        this.updateSize();
         return true;
     }
 
-    public resize(width: number, height: number) {
-        this.canvas.width = this.windowWidth = Math.floor(width * this.pixelRatio * this.super)
-        this.canvas.height = this.windowHeight = Math.floor(height * this.pixelRatio * this.super)
-        this.presentationSize[0] = this.windowWidth;
-        this.presentationSize[1] = this.windowHeight;
-        this.aspect = this.windowWidth / this.windowHeight;
+    public updateSize() {
+        let w = Math.floor(this.canvas.clientWidth * this.pixelRatio * this.super);
+        let h = Math.floor(this.canvas.clientHeight * this.pixelRatio * this.super);
+        if (w != this.windowWidth || h != this.windowHeight) {
+            // if (this.canvas.width != this.windowWidth || this.canvas.height != this.windowHeight) {
+            this.canvas.width = this.windowWidth = w;
+            this.canvas.height = this.windowHeight = h;
+            this.presentationSize[0] = this.windowWidth;
+            this.presentationSize[1] = this.windowHeight;
+            this.aspect = this.windowWidth / this.windowHeight;
+            if (this.canResize)
+                this.dispatchEvent(new CResizeEvent(CResizeEvent.RESIZE, { width: this.windowWidth, height: this.windowHeight }));
+        }
     }
 }
 

@@ -36,7 +36,7 @@ export class PassGenerate {
             const colorPass = colorPassList[jj];
 
             let giPassList = shader.getSubShaders(PassType.GI);
-            if (!giPassList || giPassList.length < jj) {
+            if (!giPassList || giPassList.length == 0 || giPassList.length < jj) {
                 let pass = new GBufferPass();
                 pass.setTexture('baseMap', colorPass.getTexture("baseMap"));
                 pass.setTexture('normalMap', colorPass.getTexture("normalMap"));

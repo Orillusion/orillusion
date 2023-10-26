@@ -28,7 +28,6 @@ export class View3D extends CEventListener {
         super();
         this.canvasList = [];
         this._viewPort = new Vector4(x, y, width, height);
-        this.enablePick = true;
         this.graphic3D = new Graphic3D();
     }
 

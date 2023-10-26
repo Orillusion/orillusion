@@ -347,7 +347,10 @@ export class OBJParser extends ParserBase {
           indexStart: 0,
           indexCount: geoData.indeice_arr.length,
           vertexStart: 0,
+          vertexCount: 0,
+          firstStart: 0,
           index: 0,
+          topology: 0,
         });
 
         let mat = new LitMaterial();

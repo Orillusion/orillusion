@@ -3,13 +3,12 @@ import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCam
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { Stats } from "@orillusion/stats";
 
-export class Sample_InsMaterial_0 {
+export class Sample_GraphicMesh_2 {
     lightObj3D: Object3D;
     scene: Scene3D;
     parts: Object3D[];
     width: number;
     height: number;
-
     cafe: number = 47;
     frame: number = 16;
 
@@ -133,6 +132,8 @@ export class Sample_InsMaterial_0 {
         mat.baseMap = bitmapTexture2DArray;
         mat.name = "LitMaterial";
 
+        GUIHelp.add(this, "cafe", 0.0, 100.0);
+        GUIHelp.add(this, "frame", 0.0, 100.0);
         {
             this.width = 200;
             this.height = 100;
@@ -152,8 +153,6 @@ export class Sample_InsMaterial_0 {
                 // mr.setTextureID(i, i % texts.length);
                 // mr.setTextureID(i, 52);
                 mr.setTextureID(i, 35);
-
-
                 // mr.setTextureID(i, 39);
                 // mr.setTextureID(i, 18);
             }
@@ -167,7 +166,14 @@ export class Sample_InsMaterial_0 {
                 const element = this.parts[i];
 
                 let tmp = this.sphericalFibonacci(i, this.parts.length);
-                tmp.scaleBy(Math.sin((i + Time.frame * 0.01)) * 50);
+                let r = Math.sin((i + Time.frame * 0.01 * this.frame * 0.01)) * this.cafe;
+                tmp.scaleBy(r);
+
+                let tr = 1.0 - (r / this.cafe);
+
+                element.transform.scaleX = tr;
+                element.transform.scaleY = tr;
+                element.transform.scaleZ = tr;
 
                 element.transform.localPosition = tmp;
             }

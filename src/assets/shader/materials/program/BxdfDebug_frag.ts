@@ -6,7 +6,7 @@ export let BxdfDebug_frag: string = /*wgsl*/ `
         }
 
         fn debugMeshID(){
-            let meshIDColor = u32(ORI_VertexVarying.vWorldPos.w ) ;
+            let meshIDColor = u32(round(ORI_VertexVarying.vWorldPos.w) ) ;
             let color = colorSet[ meshIDColor % 9u] ;
             ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(color.rgb),1.0);
         }

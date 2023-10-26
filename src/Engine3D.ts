@@ -23,6 +23,9 @@ import { ShadowLightsCollect } from './gfx/renderJob/collect/ShadowLightsCollect
 import { GUIConfig } from './components/gui/GUIConfig';
 import { WasmMatrix } from '@orillusion/wasm-matrix/WasmMatrix';
 import { Matrix4 } from './math/Matrix4';
+import { FXAAPost } from './gfx/renderJob/post/FXAAPost';
+import { PostProcessingComponent } from './components/post/PostProcessingComponent';
+import { Texture } from './gfx/graphics/webGpu/core/texture/Texture';
 
 /** 
  * Orillusion 3D Engine
@@ -286,6 +289,9 @@ export class Engine3D {
             materialChannelDebug: false,
             materialDebug: false
         },
+        loader: {
+            numConcurrent: 20,
+        }
     };
 
 
@@ -348,11 +354,15 @@ export class Engine3D {
         let renderJob = new ForwardRenderJob(view);
         this.renderJobs.set(view, renderJob);
         let presentationSize = webGPUContext.presentationSize;
-        RTResourceMap.createRTTexture(RTResourceConfig.colorBufferTex_NAME, presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float, false);
+        // RTResourceMap.createRTTexture(RTResourceConfig.colorBufferTex_NAME, presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float, false);
 
-        // new FXAAPost()
-        // renderJob.addPost(new FXAAPost());
-        // renderJob.start();
+        if (this.setting.pick.mode == `pixel`) {
+            let postProcessing = view.scene.getOrAddComponent(PostProcessingComponent);
+            postProcessing.addPost(FXAAPost);
+            view.enablePick = true;
+        } else {
+        }
+
         this.resume();
         return renderJob;
     }
@@ -370,13 +380,15 @@ export class Engine3D {
             const view = views[i];
             let renderJob = new ForwardRenderJob(view);
             this.renderJobs.set(view, renderJob);
-
             let presentationSize = webGPUContext.presentationSize;
-            RTResourceMap.createRTTexture(RTResourceConfig.colorBufferTex_NAME, presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float, false);
 
-            // new FXAAPost()
-            // renderJob.addPost(new FXAAPost());
-            // renderJob.start();
+            if (this.setting.pick.mode == `pixel`) {
+                view.enablePick = true;
+                let postProcessing = view.scene.addComponent(PostProcessingComponent);
+                postProcessing.addPost(FXAAPost);
+            } else {
+                RTResourceMap.createRTTexture(RTResourceConfig.colorBufferTex_NAME, presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float, false);
+            }
         }
         this.resume();
     }
@@ -412,6 +424,9 @@ export class Engine3D {
      * @internal
      */
     private static render(time) {
+        webGPUContext.updateSize();
+        Texture.destroyTexture();
+
         this._deltaTime = time - this._time;
         this._time = time;
 
@@ -546,6 +561,7 @@ export class Engine3D {
         }
 
         if (this._lateRender) this._lateRender();
+
     }
 
 

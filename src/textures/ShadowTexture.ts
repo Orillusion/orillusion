@@ -10,7 +10,7 @@ import { CResizeEvent } from '..';
  * Render what we want to render onto a texture instead of rendering it onto the screen as we usually do
  * @group Texture
  */
-export class VirtualTexture extends Texture {
+export class ShadowTexture extends Texture {
     public resolveTarget: GPUTextureView;
     sampleCount: number;
     // storeOp: string = 'store';
@@ -18,7 +18,7 @@ export class VirtualTexture extends Texture {
     // clearValue: GPUColor = [0, 0, 0, 0];
 
     public clone() {
-        let texture = new VirtualTexture(this.width, this.height, this.format, this.useMipmap, this.usage, this.numberLayer, this.sampleCount);
+        let texture = new ShadowTexture(this.width, this.height, this.format, this.useMipmap, this.usage, this.numberLayer, this.sampleCount);
         texture.name = "clone_" + texture.name;
         return texture;
     }
@@ -47,20 +47,20 @@ export class VirtualTexture extends Texture {
             this.usage = usage | GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_SRC | GPUTextureUsage.COPY_DST;
         }
 
-        if (this.usage & GPUTextureUsage.RENDER_ATTACHMENT || this.format == GPUTextureFormat.depth24plus || this.format == GPUTextureFormat.depth32float) {
-            webGPUContext.addEventListener(CResizeEvent.RESIZE, (e) => {
-                let { width, height } = e.data;
-                this.resize(width, height);
-            }, this);
-        }
+        // if (this.usage & GPUTextureUsage.RENDER_ATTACHMENT || this.format == GPUTextureFormat.depth24plus || this.format == GPUTextureFormat.depth32float) {
+        //     webGPUContext.addEventListener(CResizeEvent.RESIZE, (e) => {
+        //         let { width, height } = e.data;
+        //         this.resize(width, height);
+        //     }, this);
+        // }
         this.resize(width, height);
     }
 
     public resize(width, height) {
         let device = webGPUContext.device;
         if (this.gpuTexture) {
-            Texture.delayDestroyTexture(this.gpuTexture);
             this.gpuTexture = null;
+            // Texture.delayDestroyTexture(this.gpuTexture);
             this.view = null;
         }
 
