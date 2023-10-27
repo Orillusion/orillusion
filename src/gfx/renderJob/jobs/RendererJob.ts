@@ -17,6 +17,7 @@ import { PostBase } from '../post/PostBase';
 import { RendererBase } from '../passRenderer/RendererBase';
 import { Ctor } from '../../../util/Global';
 import { DDGIProbeRenderer } from '../passRenderer/ddgi/DDGIProbeRenderer';
+import { Texture } from '../../graphics/webGpu/core/texture/Texture';
 
 /**
  * render jobs 
@@ -231,6 +232,7 @@ export class RendererJob {
         if (this.postRenderer && this.postRenderer.postList.length > 0) {
             this.postRenderer.render(view);
         }
+
     }
 
     public debug() {

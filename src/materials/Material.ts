@@ -94,6 +94,18 @@ export class Material {
         this._defaultSubShader.cullMode = value;
     }
 
+    public get depthWriteEnabled(): boolean {
+        return this._defaultSubShader.depthWriteEnabled;
+    }
+
+    public set depthWriteEnabled(value: boolean) {
+        this._defaultSubShader.depthWriteEnabled = value;
+    }
+
+    public set useBillboard(value: boolean) {
+        this._defaultSubShader.setDefine("USE_BILLBOARD", value);
+    }
+
     /**
      * get render pass by renderType
      * @param passType 
@@ -199,5 +211,9 @@ export class Material {
 
     public getUniformBuffer(str: string) {
         return this._shader.getUniformBuffer(str);
+    }
+
+    public applyUniform() {
+        this._shader.applyUniform();
     }
 }

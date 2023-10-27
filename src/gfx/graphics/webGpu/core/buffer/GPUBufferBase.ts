@@ -309,10 +309,6 @@ export class GPUBufferBase {
         // this.applyMapAsync();
     }
 
-    public applyMapAsync() {
-        this.mapAsyncWrite(new Float32Array(this.memory.shareDataBuffer), this.memory.shareDataBuffer.byteLength / 4);
-    }
-
     public mapAsyncWrite(mapAsyncArray: Float32Array, len: number) {
         // Upload data using mapAsync and a queue of staging buffers.
         let bytesLen = len;

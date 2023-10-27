@@ -21,6 +21,7 @@ import { ClusterLightingBuffer } from "../cluster/ClusterLightingBuffer";
 import { Reference } from "../../../../util/Reference";
 import { Texture } from "../../../graphics/webGpu/core/texture/Texture";
 import { CSM } from "../../../../core/csm/CSM";
+import { ShadowTexture } from "../../../../textures/ShadowTexture";
 
 /**
  * @internal
@@ -45,7 +46,7 @@ export class ShadowMapPassRenderer extends RendererBase {
 
         for (let i = 0; i < 8; i++) {
             let rtFrame = new RTFrame([], []);
-            const tex = new VirtualTexture(size, size, GPUTextureFormat.depth32float, false);
+            const tex = new ShadowTexture(size, size, GPUTextureFormat.depth32float, false);
             tex.name = `shadowDepthTexture_${i}`;
             rtFrame.depthTexture = tex;
             rtFrame.label = "shadowRender";

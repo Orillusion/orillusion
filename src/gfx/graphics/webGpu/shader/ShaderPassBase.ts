@@ -11,6 +11,7 @@ import { UniformGPUBuffer } from "../core/buffer/UniformGPUBuffer";
 import { UniformNode } from "../core/uniforms/UniformNode";
 import { ShaderReflection } from "./value/ShaderReflectionInfo";
 import { UniformValue } from "./value/UniformValue";
+import { MaterialDataUniformGPUBuffer } from "../core/buffer/MaterialDataUniformGPUBuffer";
 
 
 export class ShaderPassBase {
@@ -58,6 +59,11 @@ export class ShaderPassBase {
      * Uniforms data collection
      */
     public uniforms: { [name: string]: UniformNode };
+
+    /**
+       * Uniform data for materials
+       */
+    public materialDataUniformBuffer: MaterialDataUniformGPUBuffer;
 
     protected _bufferDic: Map<string, GPUBufferBase>;
     protected _shaderChange: boolean = true;
@@ -277,6 +283,12 @@ export class ShaderPassBase {
 
     protected noticeBufferChange(name: string) {
 
+    }
+
+    public applyUniform() {
+        if (this.materialDataUniformBuffer && this._valueChange) {
+            this.materialDataUniformBuffer.apply();
+        }
     }
 
     /**

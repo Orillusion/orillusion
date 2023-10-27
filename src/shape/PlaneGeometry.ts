@@ -149,7 +149,7 @@ export class PlaneGeometry extends GeometryBase {
             vertexCount: 0,
             firstStart: 0,
             index: 0,
-            topology: 0,
+            topology: 0
         });
     }
 

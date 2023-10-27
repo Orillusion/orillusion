@@ -20,7 +20,6 @@
     menu.innerHTML = list
     document.body.appendChild(menu)
 
-
     // change sessionStorage.target on click, and reload iframe
     menu.addEventListener('click', (e: Event) => {
         const button = e.target as HTMLElement
@@ -69,32 +68,3 @@
         document.body.appendChild(iframe)
     }
 }
-
-// new Sample_PointLight().run();
-// new Sample_LoadGLB4().run();
-
-// import { Sample_Grass } from "./ext/Sample_Grass";
-// console.log("a");
-// new Sample_Grass().run();
-
-// new Sample_drawCallShareGeometry().run();
-
-// import { Sample_InitEngine } from "./base/Sample_InitEngine";
-// import { Sample_PointLight } from "./lights/Sample_PointLight";
-// new Sample_InitEngine().run();
-// // new Sample_PointLight().run();
-
-// import { Sample_MorphTarget } from "./animation/Sample_MorphTarget";
-// import { Sample_Hair } from "./prefab/Sample_Hair";
-// import { Sample_Prefab } from "./prefab/Sample_Prefab";
-// import { Sample_SSS } from "./prefab/Sample_SSS";
-// import { Sample_Worker } from "./prefab/Sample_Worker";
-// new Sample_Prefab().run();
-
-// new Sample_MorphTarget().run();
-
-// new Sample_Worker().run();
-// new Sample_SSS().run();
-
-
-// new Sample_Hair().run();

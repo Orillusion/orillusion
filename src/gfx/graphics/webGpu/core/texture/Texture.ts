@@ -52,7 +52,7 @@ export class Texture implements GPUSamplerDescriptor {
     /**
      * GPUTextureUsage
      */
-    public usage: number;
+    public usage: GPUFlagsConstant;
 
     /**
      * texture width
@@ -543,4 +543,16 @@ export class Texture implements GPUSamplerDescriptor {
         }
     }
 
+    private static _texs: GPUTexture[] = [];
+    public static delayDestroyTexture(tex: GPUTexture) {
+        this._texs.push(tex);
+    }
+
+    public static destroyTexture() {
+        if (this._texs.length > 0) {
+            while (this._texs.length > 0) {
+                this._texs.shift().destroy();
+            }
+        }
+    }
 }

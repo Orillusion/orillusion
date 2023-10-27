@@ -80,7 +80,6 @@ export class LitMaterial extends Material {
 
     public set emissiveMap(texture: Texture) {
         this.shader.setTexture(`emissiveMap`, texture);
-        this.setDefine("USE_EMISSIVEMAP", true);
     }
 
     public get emissiveMap() {
@@ -93,6 +92,14 @@ export class LitMaterial extends Material {
 
     public get aoMap() {
         return this.shader.getTexture(`aoMap`);
+    }
+
+    public set alphaCutoff(value: number) {
+        this.shader.setUniform(`alphaCutoff`, value);
+    }
+
+    public get alphaCutoff() {
+        return this.shader.getUniform(`alphaCutoff`);
     }
 
     /**
@@ -110,7 +117,7 @@ export class LitMaterial extends Material {
     }
 
     public get roughness(): number {
-        return this.shader.getUniform("roughness").data;
+        return this.shader.getUniformFloat("roughness");
     }
 
     public set roughness(value: number) {
@@ -118,7 +125,7 @@ export class LitMaterial extends Material {
     }
 
     public get metallic(): number {
-        return this.shader.getUniform("metallic").data;
+        return this.shader.getUniformFloat("metallic");
     }
 
     public set metallic(value: number) {

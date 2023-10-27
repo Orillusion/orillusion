@@ -3,6 +3,7 @@ import { RTResourceConfig } from '../../../renderJob/config/RTResourceConfig';
 import { GPUTextureFormat } from '../WebGPUConst';
 import { webGPUContext } from '../Context3D';
 import { RendererPassState } from '../../../renderJob/passRenderer/state/RendererPassState';
+import { CResizeEvent } from '../../../../event/CResizeEvent';
 /**
  * @internal
  * @author sirxu
@@ -24,6 +25,7 @@ export class WebGPUDescriptorCreator {
         rps.isOutTarget = rtFrame.isOutTarget;
         rps.depthCleanValue = rtFrame.depthCleanValue;
         rps.depthLoadOp = rtFrame.depthLoadOp;
+
         if (rtFrame && rtFrame.renderTargets.length > 0) {
             rps.renderTargets = rtFrame.renderTargets;
             rps.rtTextureDescriptors = rtFrame.rtDescriptors;
@@ -40,6 +42,7 @@ export class WebGPUDescriptorCreator {
                     rps.outColor = i;
                 }
             }
+
         } else {
             rps.renderPassDescriptor = WebGPUDescriptorCreator.getRenderPassDescriptor(rps, loadOp);
             rps.renderBundleEncoderDescriptor = WebGPUDescriptorCreator.getRenderBundleDescriptor(rps);
