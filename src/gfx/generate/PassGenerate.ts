@@ -96,7 +96,7 @@ export class PassGenerate {
             }
 
             let castPointShadowPassList = shader.getSubShaders(PassType.POINT_SHADOW);
-            if (!castPointShadowPassList) {
+            if (!castPointShadowPassList || castPointShadowPassList.length < (i + 1)) {
                 let castPointShadowPass = new CastPointShadowMaterialPass();
                 castPointShadowPass.setTexture(`baseMap`, colorPass.getTexture(`baseMap`));
                 castPointShadowPass.setUniform(`alphaCutoff`, colorPass.getUniform(`alphaCutoff`));

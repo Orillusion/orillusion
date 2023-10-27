@@ -302,7 +302,7 @@ fn dir_to_faceId(pt:vec3<f32>) -> i32 {
       return comp;
     }
 
-    fn calculateBillboardMatrix(eye:vec3f,pos:vec3f,up:vec3f) -> mat3x3<f32> {
+    fn calculateBillboardMatrix2(eye:vec3f,pos:vec3f,up:vec3f) -> mat3x3<f32> {
       
       let zAxis: vec3f = -normalize(pos.xyz - eye);
       var xAxis: vec3f = cross(up,zAxis);

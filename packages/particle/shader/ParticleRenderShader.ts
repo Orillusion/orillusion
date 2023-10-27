@@ -101,7 +101,18 @@ export let ParticleRenderShader = /* wgsl */ `
         return v + ((uv * q.w) + uuv) * 2.0;
     }
 
-  
+    fn calculateBillboardMatrix(pos: vec3<f32>, worldMatrix: mat4x4<f32>) -> mat3x3<f32> {
+        let dir: vec3<f32> = normalize(globalUniform.cameraWorldMatrix[3].xyz - pos.xyz);
+        let mat3 = mat3x3<f32> (
+            worldMatrix[0].xyz,
+            worldMatrix[1].xyz,
+            worldMatrix[2].xyz
+         );
+         let v3Look: vec3<f32> = normalize(dir * mat3);
+         let v3Right: vec3<f32> = normalize(cross(vec3<f32>( 0.0 , 1.0 , 0.0 ) * mat3, v3Look));
+         let v3Up: vec3<f32> = cross(v3Look, v3Right);
+         return mat3x3<f32>(v3Right, v3Up, v3Look);
+    }
 
     fn makeAxleRotationMatrix(axis: vec3<f32>, angle: f32) -> mat4x4<f32> {
         var x = axis.x;

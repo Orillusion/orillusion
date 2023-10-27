@@ -55,7 +55,7 @@ export let VertexAttributeIndexShader: string = /*wgsl*/ `
         ORI_MATRIX_M = node_Matrix_M * ORI_MATRIX_M ;
 
         #if USE_BILLBOARD
-            let billboardMatrix: mat3x3<f32> = calculateBillboardMatrix(globalUniform.CameraPos.xyz,ORI_MATRIX_M[3].xyz,globalUniform.cameraWorldMatrix[1].xyz);
+            let billboardMatrix: mat3x3<f32> = calculateBillboardMatrix2(globalUniform.CameraPos.xyz,ORI_MATRIX_M[3].xyz,globalUniform.cameraWorldMatrix[1].xyz);
             vertexPosition = billboardMatrix * vertexPosition.xyz;
         #endif
 
