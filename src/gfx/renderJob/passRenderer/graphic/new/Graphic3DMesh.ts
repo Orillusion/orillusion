@@ -4,10 +4,6 @@ import { GeometryBase } from "../../../../../core/geometry/GeometryBase";
 import { BitmapTexture2DArray } from "../../../../../textures/BitmapTexture2DArray";
 import { Graphic3DMeshRenderer } from "./Graphic3DMeshRenderer";
 
-export interface MaterialUniform {
-    index: number;
-}
-
 export class Graphic3DMesh {
     public static meshMap: Map<GeometryBase, Graphic3DMeshRenderer> = new Map<GeometryBase, Graphic3DMeshRenderer>();
     public static meshDrawGroup: Map<string, Graphic3DMeshRenderer> = new Map<string, Graphic3DMeshRenderer>();
