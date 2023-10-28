@@ -1,6 +1,5 @@
-import { View3D } from "../../../../..";
 import { MeshRenderer } from "../../../../../components/renderer/MeshRenderer";
-import { RenderNode } from "../../../../../components/renderer/RenderNode";
+import { View3D } from "../../../../../core/View3D";
 import { Object3D } from "../../../../../core/entities/Object3D";
 import { GeometryBase } from "../../../../../core/geometry/GeometryBase";
 import { UnLitTexArrayMaterial } from "../../../../../materials/UnLitTexArrayMaterial";
