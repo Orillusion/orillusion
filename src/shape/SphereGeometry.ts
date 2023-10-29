@@ -103,7 +103,7 @@ export class SphereGeometry extends GeometryBase {
                 normal_arr[ni++] = z * normLen;
 
                 uv_arr[ui++] = i / _segmentsW;
-                uv_arr[ui++] = j / _segmentsH;
+                uv_arr[ui++] = 1.0 - j / _segmentsH;
 
                 if (i > 0 && j > 0) {
                     var a: number = (_segmentsW + 1) * j + i;
