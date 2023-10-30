@@ -355,12 +355,16 @@ export class Engine3D {
         this.renderJobs.set(view, renderJob);
         let presentationSize = webGPUContext.presentationSize;
         // RTResourceMap.createRTTexture(RTResourceConfig.colorBufferTex_NAME, presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float, false);
-
+        
         if (this.setting.pick.mode == `pixel`) {
             let postProcessing = view.scene.getOrAddComponent(PostProcessingComponent);
             postProcessing.addPost(FXAAPost);
-            view.enablePick = true;
+            
         } else {
+        }
+
+        if (this.setting.pick.mode == `pixel` || this.setting.pick.mode == `bound`) {
+            view.enablePick = true;
         }
 
         this.resume();
@@ -383,11 +387,14 @@ export class Engine3D {
             let presentationSize = webGPUContext.presentationSize;
 
             if (this.setting.pick.mode == `pixel`) {
-                view.enablePick = true;
                 let postProcessing = view.scene.addComponent(PostProcessingComponent);
                 postProcessing.addPost(FXAAPost);
             } else {
                 RTResourceMap.createRTTexture(RTResourceConfig.colorBufferTex_NAME, presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float, false);
+            }
+
+            if (this.setting.pick.mode == `pixel` || this.setting.pick.mode == `bound`) {
+                view.enablePick = true;
             }
         }
         this.resume();
