@@ -1,6 +1,7 @@
-import { SkyShader } from "..";
 import { Engine3D } from "../Engine3D";
 import { Texture } from "../gfx/graphics/webGpu/core/texture/Texture";
+import { PassType } from "../gfx/renderJob/passRenderer/state/RendererType";
+import { SkyShader } from "../loader/parser/prefab/mats/shader/SkyShader";
 import { Vector3 } from "../math/Vector3";
 import { Material } from "./Material";
 
@@ -16,7 +17,7 @@ export class SkyMaterial extends Material {
         this.shader = new SkyShader();
         this.shader.setUniformVector3(`eyesPos`, new Vector3());
         this.shader.setUniformFloat(`exposure`, 1.0);
-        this.shader.setUniformFloat(`roughness`, 0.0);
+        this.shader.setUniformFloat(`roughness`, 0.5);
     }
 
     /**

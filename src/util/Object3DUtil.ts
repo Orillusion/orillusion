@@ -48,7 +48,7 @@ export class Object3DUtil {
         let mat = new LitMaterial();
         mat.roughness = 0.5;
         mat.metallic = 0.1;
-        mat.baseColor = new Color(1, 1, 1, 1);
+        mat.baseColor = new Color(r, g, b, 1);
 
         let obj = new Object3D();
         let renderer = obj.addComponent(MeshRenderer);

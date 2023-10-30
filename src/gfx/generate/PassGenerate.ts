@@ -17,14 +17,17 @@ import { DepthMaterialPass } from '../../materials/multiPass/DepthMaterialPass';
 export class PassGenerate {
     public static createGIPass(renderNode: RenderNode, shader: Shader) {
         if (RendererMaskUtil.hasMask(renderNode.rendererMask, RendererMask.Sky)) {
-            let colorPass = shader.getSubShaders(PassType.COLOR)[0];
-            let pass = new SkyGBufferPass();
-            pass.setTexture(`baseMap`, colorPass.getTexture('baseMap'));
+            let pass0 = shader.passShader.get(PassType.GI);
+            if (!pass0) {
+                let colorPass = shader.getSubShaders(PassType.COLOR)[0];
+                let pass = new SkyGBufferPass();
+                pass.setTexture(`baseMap`, colorPass.getTexture('baseMap'));
+                pass.cullMode = colorPass.cullMode;
+                pass.frontFace = colorPass.frontFace;
+                shader.addRenderPass(pass, 0);
+                pass.preCompile(renderNode.geometry);
+            }
 
-            pass.cullMode = colorPass.cullMode;
-            pass.frontFace = colorPass.frontFace;
-            shader.addRenderPass(pass, 0);
-            pass.preCompile(renderNode.geometry);
         } else {
             this.castGBufferPass(renderNode, shader);
         }

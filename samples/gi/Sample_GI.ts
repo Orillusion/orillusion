@@ -60,11 +60,11 @@ class Sample_GI {
         await this.initScene();
         this.addGIProbes();
         // GUIUtil.renderAtomosphericSky(exampleScene.atmosphericSky);
-        GUIUtil.renderDirLight(exampleScene.light);
+        GUIUtil.renderDirLight(exampleScene.light, false);
 
         GUIUtil.renderDebug();
 
-
+        GUIUtil.renderAtmosphericSky(exampleScene.atmosphericSky);
     }
 
     private giComponent: GlobalIlluminationComponent;
@@ -78,7 +78,7 @@ class Sample_GI {
     async initScene() {
         {
             let floorHeight = 20;
-            let floor = Object3DUtil.GetSingleCube(1000, floorHeight, 1000, 0.6, 0.6, 0.6);
+            let floor = Object3DUtil.GetSingleCube(1000, floorHeight, 1000, 0.5, 0.5, 0.5);
             floor.y = -floorHeight;
             this.scene.addChild(floor);
         }
