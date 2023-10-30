@@ -53,8 +53,5 @@
         "typescript": "^5.0.4",
         "vite": "^4.3.9",
         "xvfb-maybe": "^0.2.1"
-    },
-    "dependencies": {
-        "wgpu-matrix": "^2.5.0"
     }
 }
