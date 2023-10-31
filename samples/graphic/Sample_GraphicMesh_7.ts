@@ -50,6 +50,7 @@ export class Sample_GraphicMesh_7 {
 
         let post = this.scene.addComponent(PostProcessingComponent);
         let bloom = post.addPost(BloomPost);
+        bloom.bloomIntensity = 10.0
         GUIUtil.renderBloom(bloom);
 
         await this.initScene();
