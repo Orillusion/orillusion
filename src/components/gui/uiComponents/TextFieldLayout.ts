@@ -217,17 +217,18 @@ export class TextFieldLayout {
     let parseText = (): void => {
       let curLine: TextFieldLine = null;
       let totalLength: number = text.length;
-      let autoWrap = false;
       for (let i = 0; i < totalLength; i++) {
-        if (curLine == null) curLine = makeLine();
+        curLine ||= makeLine();
         let char = text.charAt(i);
-        if (char == '\n' || autoWrap) {
-          //换行符
+        if (char == '\n' || char == '\t') {
+          //wrap symbol
           curLine = null;
-          autoWrap = false;
         } else {
           makeQuad(char, curLine);
-          autoWrap = curLine.width + unitSize >= maxTextWidthReal;
+          let autoWrap = curLine.width + halfUnitSize >= maxTextWidthReal;
+          if (autoWrap) {
+            curLine = makeLine();
+          }
         }
       }
     };
