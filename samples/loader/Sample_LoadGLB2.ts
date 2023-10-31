@@ -9,8 +9,10 @@ export class Sample_LoadGLB2 {
     scene: Scene3D;
 
     async run() {
-        await Engine3D.init();
+        Engine3D.setting.render.debug = true;
         Engine3D.setting.shadow.autoUpdate = true;
+
+        await Engine3D.init();
         let exampleScene = createExampleScene();
         exampleScene.atmosphericSky.displaySun = false;
         exampleScene.atmosphericSky.sunRadiance = 1;
@@ -22,7 +24,8 @@ export class Sample_LoadGLB2 {
         await this.initScene();
 
         GUIHelp.init();
-        GUIUtil.renderAtomosphericSky(exampleScene.atmosphericSky);
+        GUIUtil.renderAtmosphericSky(exampleScene.atmosphericSky);
+        GUIUtil.renderDebug();
     }
 
     async initScene() {

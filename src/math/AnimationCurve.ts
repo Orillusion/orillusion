@@ -1,62 +1,7 @@
 import { PingPong, RepeatSE } from './MathUtil';
-
-/**
- * Time Warp Mode
- * @PingPong value min -> max -> min
- * @Repeat value = value % repeatSpace
- * @Clamp value = max(min( value ,  1 ) , 0 )
- */
-export enum WrapTimeMode {
-    PingPong = 0,
-    Repeat = 1,
-    Clamp = 2,
-}
-
-/**
- * @group Math
- */
-export class Keyframe {
-    public serializedVersion: string = '2';
-    public time: number;
-    public value: number;
-    public inSlope: number = 0;
-    public outSlope: number = 0;
-    public tangentMode: number = 0;
-
-    constructor(time: number = 0, value: number = 0) {
-        this.time = time;
-        this.value = value;
-    }
-
-    public unSerialized(data: any) {
-        this.serializedVersion = data['serializedVersion'];
-        this.time = data['time'];
-        this.value = data['value'];
-        this.tangentMode = data['tangentMode'];
-        this.inSlope = data['inSlope'] == 'Infinity' ? NaN : data['inSlope'];
-        this.outSlope = data['outSlope'] == 'Infinity' ? NaN : data['outSlope'];
-    }
-
-    public unSerialized2(data: any) {
-        this.serializedVersion = data['serializedVersion'];
-        this.time = data['time'];
-        this.value = data['value'];
-        this.tangentMode = data['tangentMode'];
-        this.inSlope = data['inTangent'] == 'Infinity' ? NaN : data['inTangent'];
-        this.outSlope = data['outTangent'] == 'Infinity' ? NaN : data['outTangent'];
-    }
-}
-
-/**
- * @internal
- * @group Math
- */
-export class FrameCache {
-    public index: number; //= lhsIndex;
-    public time: number; // = lhs.time + timeOffset;
-    public timeEnd: number; // = rhs.time + timeOffset;
-    public coeff: number[] = []; //= lhsIndex;
-}
+import { FrameCache } from './enum/FrameCache';
+import { WrapTimeMode } from './enum/WrapTimeMode';
+import { Keyframe } from './enum/Keyframe';
 
 /**
  * Animation Cureve 
@@ -288,7 +233,11 @@ export class AnimationCurve {
     private calcTotalTime() {
         let maxTime = 0;
         for (let curve of this.curve) {
-            maxTime = Math.max(maxTime, curve.time);
+            if (curve) {
+                maxTime = Math.max(maxTime, curve.time);
+            } else {
+                console.error(curve);
+            }
         }
         this._totalTime = maxTime;
     }

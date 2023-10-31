@@ -68,19 +68,3 @@
         document.body.appendChild(iframe)
     }
 }
-
-// new Sample_PointLight().run();
-// new Sample_LoadGLB4().run();
-
-// import { Sample_Grass } from "./ext/Sample_Grass";
-// console.log("a");
-// new Sample_Grass().run();
-
-// new Sample_drawCallShareGeometry().run();
-
-// import { Sample_InitEngine } from "./base/Sample_InitEngine";
-// import { Sample_PointLight } from "./lights/Sample_PointLight";
-// new Sample_InitEngine().run();
-// // new Sample_PointLight().run();
-
-

@@ -1,4 +1,4 @@
-import { AtmosphericComponent, Engine3D, GTAOPost, HDRBloomPost, LitMaterial, MeshRenderer, Object3D, PlaneGeometry, PostProcessingComponent, Scene3D, SkyRenderer, TAAPost } from "@orillusion/core";
+import { AtmosphericComponent, BloomPost, Engine3D, GTAOPost, LitMaterial, MeshRenderer, Object3D, PlaneGeometry, PostProcessingComponent, Scene3D, SkyRenderer, TAAPost } from "@orillusion/core";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { createExampleScene } from "@samples/utils/ExampleScene";
 import { GUIUtil } from "@samples/utils/GUIUtil";
@@ -27,7 +27,7 @@ export class Sample_LoadGLB {
         let post = this.scene.addComponent(PostProcessingComponent);
         let gtao = post.addPost(GTAOPost);
         // let taa = post.addPost(TAAPost);
-        let hdr = post.addPost(HDRBloomPost);
+        let hdr = post.addPost(BloomPost);
 
         GUIUtil.renderBloom(hdr);
         GUIUtil.renderDirLight(ex.light);

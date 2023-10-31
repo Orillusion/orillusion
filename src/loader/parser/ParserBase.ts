@@ -1,12 +1,13 @@
 import { Texture } from '../../gfx/graphics/webGpu/core/texture/Texture';
 import { LoaderFunctions } from '../LoaderFunctions';
+import { ParserFormat } from './ParserFormat';
 
 /**
  * @internal
  * @group Loader
  */
 export class ParserBase {
-    static format: string = 'bin';
+    static format: ParserFormat = ParserFormat.BIN;
     public baseUrl: string;
     public initUrl: string;
     public loaderFunctions?: LoaderFunctions;

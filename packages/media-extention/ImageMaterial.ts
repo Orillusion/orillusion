@@ -1,4 +1,4 @@
-import { Engine3D, ShaderLib, Vector4, Color, Texture, Material, RenderShader } from "@orillusion/core";
+import { Engine3D, ShaderLib, Vector4, Color, Texture, Material, RenderShaderPass } from "@orillusion/core";
 import ImageMaterialShader from "./ImageMaterialShader.wgsl?raw";
 
 
@@ -15,7 +15,7 @@ export class ImageMaterial extends Material {
     constructor() {
         super();
         ShaderLib.register("ImageMaterialShader", ImageMaterialShader);
-        this.defaultPass = new RenderShader(`ImageMaterialShader`, `ImageMaterialShader`);
+        this.defaultPass = new RenderShaderPass(`ImageMaterialShader`, `ImageMaterialShader`);
         this.defaultPass.setShaderEntry(`VertMain`, `FragMain`)
         this.defaultPass.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));
         this.defaultPass.setUniformVector4(`transformUV2`, new Vector4(0, 0, 1, 1));

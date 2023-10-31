@@ -1090,6 +1090,41 @@ export class Vector3 {
             return dotProduct / d;
         }
     }
+
+    public static pointInsideTriangle(pt: Vector3, pt0: Vector3, pt1: Vector3, pt2: Vector3): boolean {
+        Vector3.HELP_0.setTo(pt.x, pt.z, 0);
+        Vector3.HELP_1.setTo(pt0.x, pt0.z, 0);
+        Vector3.HELP_2.setTo(pt1.x, pt1.z, 0);
+        Vector3.HELP_3.setTo(pt2.x, pt2.z, 0);
+
+        return Vector3.pointInsideTriangle2d();
+    }
+
+    private static pointInsideTriangle2d(): boolean {
+        if (Vector3.productXY(Vector3.HELP_1, Vector3.HELP_2, Vector3.HELP_3) >= 0) {
+            return (Vector3.productXY(Vector3.HELP_1, Vector3.HELP_2, Vector3.HELP_0) >= 0)
+                && (Vector3.productXY(Vector3.HELP_2, Vector3.HELP_3, Vector3.HELP_0)) >= 0
+                && (Vector3.productXY(Vector3.HELP_3, Vector3.HELP_1, Vector3.HELP_0) >= 0);
+        }
+        else {
+            return (Vector3.productXY(Vector3.HELP_1, Vector3.HELP_2, Vector3.HELP_0) <= 0)
+                && (Vector3.productXY(Vector3.HELP_2, Vector3.HELP_3, Vector3.HELP_0)) <= 0
+                && (Vector3.productXY(Vector3.HELP_3, Vector3.HELP_1, Vector3.HELP_0) <= 0);
+        }
+    }
+
+    private static productXY(p1: { x: number, y: number }, p2: { x: number, y: number }, p3: { x: number, y: number }): number {
+        var val: number = (p1.x - p3.x) * (p2.y - p3.y) - (p1.y - p3.y) * (p2.x - p3.x);
+        if (val > -0.00001 && val < 0.00001)
+            val = 0;
+        return val;
+    }
+
+    static serialize(position: Vector3): Vector3 {
+        let v = new Vector3(position.x, position.y, position.z, position.w);
+        return v;
+    }
+
 }
 
 

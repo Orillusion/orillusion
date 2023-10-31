@@ -4,7 +4,7 @@ import { ProfilerUtil } from "../../util/ProfilerUtil";
 import { webGPUContext } from "../graphics/webGpu/Context3D";
 import { GlobalBindGroup } from "../graphics/webGpu/core/bindGroups/GlobalBindGroup";
 import { ComputeShader } from "../graphics/webGpu/shader/ComputeShader";
-import { RenderShader } from "../graphics/webGpu/shader/RenderShader";
+import { RenderShaderPass } from "../graphics/webGpu/shader/RenderShaderPass";
 import { RendererPassState } from "./passRenderer/state/RendererPassState";
 
 /**
@@ -13,7 +13,7 @@ import { RendererPassState } from "./passRenderer/state/RendererPassState";
 export class GPUContext {
     public static lastGeometry: GeometryBase;
     public static lastPipeline: GPURenderPipeline;
-    public static lastShader: RenderShader;
+    public static lastShader: RenderShaderPass;
     public static drawCount: number = 0;
     public static renderPassCount: number = 0;
     public static geometryCount: number = 0;
@@ -25,10 +25,10 @@ export class GPUContext {
     /**
      * renderPipeline before render need bind pipeline
      * @param encoder current GPURenderPassEncoder {@link GPURenderPassEncoder } {@link GPURenderBundleEncoder }
-     * @param renderShader render pass shader {@link RenderShader }
+     * @param renderShader render pass shader {@link RenderShaderPass }
      * @returns 
      */
-    public static bindPipeline(encoder: GPURenderPassEncoder | GPURenderBundleEncoder, renderShader: RenderShader) {
+    public static bindPipeline(encoder: GPURenderPassEncoder | GPURenderBundleEncoder, renderShader: RenderShaderPass) {
         if (GPUContext.lastShader != renderShader) {
             GPUContext.lastShader = renderShader;
         } else {

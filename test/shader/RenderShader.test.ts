@@ -1,5 +1,5 @@
 import { test, expect, end, delay } from '../util'
-import { Engine3D, RenderShader, ShaderLib } from '@orillusion/core';
+import { Engine3D, RenderShaderPass, ShaderLib } from '@orillusion/core';
 
 const a = Engine3D;
 
@@ -55,7 +55,7 @@ await test('RenderShader', async () => {
 
     expect(ShaderLib.getShader('TestShader')).toEqual(shaderCode);
 
-    let renderShader = new RenderShader('TestShader', 'TestShader');
+    let renderShader = new RenderShaderPass('TestShader', 'TestShader');
     renderShader.setShaderEntry('vsMain', 'fsMain');
 
     expect(renderShader.vsEntryPoint).toEqual('vsMain');

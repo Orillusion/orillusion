@@ -1,6 +1,6 @@
 import { Texture } from '../core/texture/Texture';
 import { webGPUContext } from '../Context3D';
-import { ShaderBase } from './ShaderBase';
+import { ShaderPassBase } from './ShaderPassBase';
 import { ShaderReflection, ShaderReflectionVarInfo } from './value/ShaderReflectionInfo';
 import { Preprocessor } from './util/Preprocessor';
 import { Reference, Struct } from '../../../..';
@@ -13,7 +13,7 @@ import { UniformGPUBuffer } from '../core/buffer/UniformGPUBuffer';
  * @author sirxu
  * compute shader kernel
  */
-export class ComputeShader extends ShaderBase {
+export class ComputeShader extends ShaderPassBase {
     /**
      * Compute shader entry point name
      */

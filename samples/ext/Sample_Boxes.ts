@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Engine3D, View3D, Scene3D, CameraUtil, AtmosphericComponent, webGPUContext, HoverCameraController, Object3D, DirectLight, KelvinUtil, PlaneGeometry, VertexAttributeName, LitMaterial, MeshRenderer, Vector4, Vector3, Matrix3, PostProcessingComponent, TAAPost, BitmapTexture2D, GlobalFog, Color, BoxGeometry, UnLitMaterial, PointLight, GTAOPost, HDRBloomPost } from "@orillusion/core";
+import { Engine3D, View3D, Scene3D, CameraUtil, AtmosphericComponent, webGPUContext, HoverCameraController, Object3D, DirectLight, KelvinUtil, PlaneGeometry, VertexAttributeName, LitMaterial, MeshRenderer, Vector4, Vector3, Matrix3, PostProcessingComponent, TAAPost, BitmapTexture2D, GlobalFog, Color, BoxGeometry, UnLitMaterial, PointLight, GTAOPost, BloomPost } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { GrassComponent, TerrainGeometry } from "@orillusion/effect";
 
@@ -32,7 +32,7 @@ class Sample_Boxes {
 
         this.post = this.view.scene.addComponent(PostProcessingComponent);
         this.post.addPost(GTAOPost);
-        this.post.addPost(HDRBloomPost);
+        this.post.addPost(BloomPost);
         let fog = this.post.addPost(GlobalFog);
         fog.start = 91.0862;
         fog.end = 487.5528;

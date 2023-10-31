@@ -1,11 +1,13 @@
 
-import { Camera3D } from '../../..';
+import { Graphic3DMeshRenderer } from '../../..';
 import { Engine3D } from '../../../Engine3D';
 import { ILight } from '../../../components/lights/ILight';
 import { RenderNode } from '../../../components/renderer/RenderNode';
+import { Camera3D } from '../../../core/Camera3D';
 import { Scene3D } from '../../../core/Scene3D';
 import { View3D } from '../../../core/View3D';
 import { BoundingBox } from '../../../core/bound/BoundingBox';
+import { GeometryBase } from '../../../core/geometry/GeometryBase';
 import { Octree } from '../../../core/tree/octree/Octree';
 import { Vector3 } from '../../../math/Vector3';
 import { zSorterUtil } from '../../../util/ZSorterUtil';
@@ -291,7 +293,7 @@ export class EntityCollect {
     }
 
     public getRenderShaderCollect(view: View3D) {
-        let viewList = this._renderShaderCollect.renderShaderUpdateList.get(view) || [];
+        let viewList = this._renderShaderCollect.renderShaderUpdateList.get(view);
         return viewList;
     }
 }

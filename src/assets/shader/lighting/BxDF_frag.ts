@@ -17,22 +17,25 @@ export let BxDF_frag: string = /*wgsl*/ `
  
   //ORI_ShadingInput
   fn initFragData() {
-      fragData.Albedo = ORI_ShadingInput.BaseColor * ORI_ShadingInput.BaseColor.a ;
-      fragData.Ao = ORI_ShadingInput.AmbientOcclusion ; 
-      fragData.Roughness = clamp(ORI_ShadingInput.Roughness,0.003,1.0) ; 
+      fragData.Albedo = ORI_ShadingInput.BaseColor ;
+      fragData.Ao = clamp( pow(ORI_ShadingInput.AmbientOcclusion,materialUniform.ao) , 0.0 , 1.0 ) ; 
+      fragData.Roughness = clamp((ORI_ShadingInput.Roughness),0.003,1.0) ; 
       fragData.Metallic = ORI_ShadingInput.Metallic ; 
       fragData.Emissive = ORI_ShadingInput.EmissiveColor.rgb ; 
       fragData.N = ORI_ShadingInput.Normal;
       let viewDir = normalize(globalUniform.CameraPos.xyz - ORI_VertexVarying.vWorldPos.xyz) ;
       fragData.V = viewDir ;
-    //   fragData.V = normalize(globalUniform.cameraWorldMatrix[3].xyz - ORI_VertexVarying.vWorldPos.xyz) ;
 
+      #if USE_TANGENT
+        fragData.T = ORI_VertexVarying.TANGENT.xyz * ORI_VertexVarying.TANGENT.w ;
+      #endif
+ 
       let R = 2.0 * dot( fragData.V , fragData.N ) * fragData.N - fragData.V ;
       fragData.R = R ;//reflect( fragData.V , fragData.N ) ;
 
       fragData.NoV = saturate(dot(fragData.N, fragData.V)) ;
 
-      fragData.F0 = mix(vec3<f32>(materialUniform.materialF0.rgb), fragData.Albedo.rgb, fragData.Metallic);
+      fragData.F0 = mix(vec3<f32>(materialUniform.specularColor.rgb), fragData.Albedo.rgb, fragData.Metallic);
       
       fragData.F = computeFresnelSchlick(fragData.NoV, fragData.F0);
       fragData.KD = vec3<f32>(fragData.F) ;
@@ -60,9 +63,6 @@ export let BxDF_frag: string = /*wgsl*/ `
       irradiance = LinearToGammaSpace(irradiance.rgb);
       fragData.Irradiance = irradiance.rgb ;
 
-      #if USE_TANGENT
-        fragData.TangentChannel = vec3<f32>(ORI_VertexVarying.TANGENT.w);// ORI_VertexVarying.TANGENT.xyz * ORI_VertexVarying.TANGENT.w ;
-      #endif
 
       //***********lighting-PBR part********* 
       var specColor = vec3<f32>(0.0) ;
@@ -72,66 +72,65 @@ export let BxDF_frag: string = /*wgsl*/ `
       let end = max(start + count , 0.0);
       for(var i:i32 = i32(start) ; i < i32(end); i += 1 )
       {
-        let light = getLight(i32(i));
-
-        switch (light.lightType) {
-          case PointLightType: {
-            specColor += pointLighting( fragData.Albedo.rgb,ORI_VertexVarying.vWorldPos.xyz,fragData.N,fragData.V,fragData.Roughness,fragData.Metallic,light) ;
+          let light = getLight(i32(i));
+          switch (light.lightType) {
+            case PointLightType: {
+              specColor += pointLighting( fragData.Albedo.rgb,ORI_VertexVarying.vWorldPos.xyz,fragData.N,fragData.V,fragData.Roughness,fragData.Metallic,light) ;
+            }
+            case DirectLightType: {
+              specColor += directLighting( fragData.Albedo.rgb ,fragData.N,fragData.V,fragData.Roughness ,fragData.Metallic, light , globalUniform.shadowBias) ;
+            }
+            case SpotLightType: {
+              specColor += spotLighting( fragData.Albedo.rgb,ORI_VertexVarying.vWorldPos.xyz,fragData.N,fragData.V,fragData.Roughness,fragData.Metallic , light ) ;
+            }
+            default: {
+            }
           }
-          case DirectLightType: {
-            specColor += directLighting( fragData.Albedo.rgb ,fragData.N,fragData.V,fragData.Roughness ,fragData.Metallic, light , globalUniform.shadowBias) ;
-          }
-          case SpotLightType: {
-            specColor += spotLighting( fragData.Albedo.rgb,ORI_VertexVarying.vWorldPos.xyz,fragData.N,fragData.V,fragData.Roughness,fragData.Metallic , light ) ;
-          }
-          default: {
-          }
-        }
       }
+
       fragData.LightChannel = specColor ;
 
-
+      let sunLight = lightBuffer[0] ;
       //***********lighting-PBR part********* 
       var F = FresnelSchlickRoughness(fragData.NoV, fragData.F0, fragData.Roughness);
       var kS = F;
       var kD = vec3(1.0) - kS;
       kD = kD * (1.0 - fragData.Metallic);
-      let env =  materialUniform.envIntensity * approximateSpecularIBL( F , fragData.Roughness , fragData.R , fragData.NoV ) ;
-      fragData.EnvColor = env ;
+      let envIBL =  materialUniform.envIntensity * approximateSpecularIBL( F , fragData.Roughness , fragData.R , fragData.NoV ) ;
+      fragData.EnvColor = envIBL ;
       //***********indirect-specular part********* 
       
-      var surfaceReduction = 1.0/(fragData.Roughness*fragData.Roughness+1.0);   //Reduce the reflection coefficient of non-metallic materials     
-      var oneMinusReflectivity = oneMinusReflectivity(fragData.Metallic , materialUniform.materialF0.r );// materialUniform.materialF0.a - materialUniform.materialF0.a * fragData.Metallic ;
+      var surfaceReduction = 1.0/(fragData.Roughness*fragData.Roughness+1.0);   
+      var oneMinusReflectivity = oneMinusReflectivity(fragData.Metallic , materialUniform.materialF0.r );
       var grazingTerm = clamp((1.0 - fragData.Roughness ) + (1.0 - oneMinusReflectivity),0.0,1.0);
       var t = pow5(fragData.NoV);
-      var fresnelLerp = FresnelLerp(fragData.NoV,fragData.F0.rgb,vec3<f32>(grazingTerm)) ;   //Controlling Fresnel and metallic reflections
-      var iblSpecularResult = surfaceReduction*env*fresnelLerp ;
+      var fresnelLerp = FresnelLerp(fragData.NoV,fragData.F0.rgb,vec3<f32>(grazingTerm)) ;   
+      var iblSpecularResult = surfaceReduction * fragData.EnvColor * fresnelLerp + envIBL;
+      iblSpecularResult *= max(sunLight.quadratic,0.05) ;
       //***********indirect-specular part********* 
       
       //***********indirect-ambient part********* 
-      var kdLast = (1.0 - fragData.F0.r) * (1.0 - fragData.Metallic);     //Dim the edges, there should be more specular reflection at the edges
-      var iblDiffuseResult = irradiance * kdLast * fragData.Albedo.rgb ;
+      var kdLast = (1.0 - 0.04) * (1.0 - fragData.Metallic);    
+      //  Dim the edges, there should be more specular reflection at the edges
+      var iblDiffuseResult = irradiance * vec3f(kdLast) * fragData.Albedo.rgb ;
+      //irradiance
       //***********indirect-ambient part********* 
-      let sunLight = lightBuffer[0] ;
-      var indirectResult = (iblSpecularResult + iblDiffuseResult) * fragData.Ao * max(sunLight.quadratic,0.05) ;
-      // let test = indirectResult ;
+      var indirectResult = (iblSpecularResult + iblDiffuseResult) * fragData.Ao * max(sunLight.quadratic,0.05);
+      // debugOut = vec4f(iblDiffuseResult,1.0);
 
       ORI_FragmentOutput.color = vec4<f32>(0.0);
 
       // Using stripped down, 'pure log', formula. Parameterized by grey points and dynamic range covered.
       #if USEGBUFFER
           var normal_rgba8unorm = (ORI_VertexVarying.vWorldNormal + 1.0) * 0.5;
-          normal_rgba8unorm = clamp(normal_rgba8unorm, vec3<f32>(0.0), vec3<f32>(1.0));
+          ORI_FragmentOutput.worldNormal = vec4<f32>(normal_rgba8unorm,1.0);
+          ORI_FragmentOutput.material = vec4<f32>(1.0,fragData.Roughness,fragData.Metallic,1.0);
       #endif
       
       // ORI_FragmentOutput.color = vec4<f32>(ORI_FragmentOutput.color.xyz,fragData.Albedo.a) ;
       #if USE_WORLDPOS
           ORI_FragmentOutput.worldPos = vec4<f32>(ORI_VertexVarying.vWorldPos.xyzw);
-      #endif
-
-      #if USEGBUFFER
-          ORI_FragmentOutput.worldNormal = vec4<f32>(normal_rgba8unorm,1.0);
-          ORI_FragmentOutput.material = vec4<f32>(1.0,fragData.Roughness,fragData.Metallic,1.0);
+          // ORI_FragmentOutput.worldPos = vec4<f32>(0.0,0.0,1.0,1.0);
       #endif
       
       var color = specColor + indirectResult ;
@@ -147,10 +146,10 @@ export let BxDF_frag: string = /*wgsl*/ `
         color = vec3<f32>(clearCoatLayer.rgb/fragData.Albedo.a) ; 
       #endif
       
-      ORI_FragmentOutput.color = vec4<f32>(LinearToGammaSpace(color.rgb),fragData.Albedo.a) ;
-
-      // var iblSpecularResult = surfaceReduction*env*fresnelLerp ;
-      // ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(test),fragData.Albedo.a) ;
+      var retColor = (LinearToGammaSpace(color.rgb));
+      // retColor += fragData.Emissive.xyz ;
+      // ORI_FragmentOutput.color = vec4<f32>( irradiance * min(fragData.Albedo.rgb,vec3f(1.0)) ,fragData.Albedo.a) ;
+      ORI_FragmentOutput.color = vec4<f32>( retColor.rgb * fragData.Albedo.a ,fragData.Albedo.a) ;
   }
 
   `

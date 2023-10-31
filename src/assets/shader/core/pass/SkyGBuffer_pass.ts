@@ -2,8 +2,9 @@ export let SkyGBuffer_pass: string = /*wgsl*/ `
 #include "GlobalUniform"
 
 struct uniformData {
+    eyesPos: vec3<f32>,
     exposure: f32,
-    roughness: f32
+    roughness: f32,
 };
 
 struct FragmentOutput {
@@ -21,14 +22,10 @@ var baseMap: texture_cube<f32>;
 var<uniform> global: uniformData;
 
 fn LinearToGammaSpace(linRGB: vec3<f32>) -> vec3<f32> {
-    var linRGB1: vec3<f32>;
-    linRGB1 = linRGB;
-    linRGB1 = max(linRGB1, vec3<f32>(0.0, 0.0, 0.0));
-    linRGB1.x = pow(linRGB1.x, 0.4166666567325592);
-    linRGB1.y = pow(linRGB1.y, 0.4166666567325592);
-    linRGB1.z = pow(linRGB1.z, 0.4166666567325592);
+    var linRGB1 = max(linRGB, vec3<f32>(0.0));
+    linRGB1 = pow(linRGB1, vec3<f32>(0.4166666567325592));
     return max(((1.0549999475479126 * linRGB1) - vec3<f32>(0.054999999701976776)), vec3<f32>(0.0));
-}
+  }
 
 @fragment
 fn main(@location(0) fragUV: vec2<f32>, @location(1) vWorldPos: vec4<f32>, @location(2) vWorldNormal: vec3<f32>) -> FragmentOutput {

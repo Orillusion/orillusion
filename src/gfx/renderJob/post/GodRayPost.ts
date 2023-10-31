@@ -87,8 +87,8 @@ export class GodRayPost extends PostBase {
 
         let rtFrame = GBufferFrame.getGBufferFrame("ColorPassGBuffer");
 
-        this.godRayCompute.setSamplerTexture(`posTex`, rtFrame.attachments[1]);
-        this.godRayCompute.setSamplerTexture(`normalTex`, rtFrame.attachments[2]);
+        this.godRayCompute.setSamplerTexture(`posTex`, rtFrame.renderTargets[1]);
+        this.godRayCompute.setSamplerTexture(`normalTex`, rtFrame.renderTargets[2]);
         this.autoSetColorTexture('inTex', this.godRayCompute);
         this.godRayCompute.setStorageTexture(`outTex`, this.godRayTexture);
 

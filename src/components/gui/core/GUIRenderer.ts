@@ -3,7 +3,7 @@ import { View3D } from "../../../core/View3D";
 import { ClusterLightingBuffer } from "../../../gfx/renderJob/passRenderer/cluster/ClusterLightingBuffer";
 import { RendererMask } from "../../../gfx/renderJob/passRenderer/state/RendererMask";
 import { RendererPassState } from "../../../gfx/renderJob/passRenderer/state/RendererPassState";
-import { RendererType } from "../../../gfx/renderJob/passRenderer/state/RendererType";
+import { PassType } from "../../../gfx/renderJob/passRenderer/state/RendererType";
 import { MeshRenderer } from "../../renderer/MeshRenderer";
 import { GUIGeometry } from "./GUIGeometry";
 
@@ -48,7 +48,7 @@ export class GUIRenderer extends MeshRenderer {
      * @param renderPassState
      * @param clusterLightingBuffer
      */
-    public nodeUpdate(view: View3D, rendererType: RendererType, renderPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer) {
+    public nodeUpdate(view: View3D, rendererType: PassType, renderPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer) {
         for (let i = 0; i < this.materials.length; i++) {
             const material = this.materials[i];
             let passes = material.getPass(rendererType);

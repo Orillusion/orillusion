@@ -3,6 +3,7 @@ import { View3D } from '../../core/View3D';
 import { clamp, DEGREES_TO_RADIANS, RADIANS_TO_DEGREES } from '../../math/MathUtil';
 import { Vector3 } from '../../math/Vector3';
 import { UUID } from '../../util/Global';
+import { RegisterComponent } from '../../util/SerializeDecoration';
 import { LightBase } from './LightBase';
 import { LightType } from './LightData';
 
@@ -12,6 +13,7 @@ import { LightType } from './LightData';
  * Similar to a desk lamp, chandelier, or flashlight, this light source can produce shadows.
  * @group Lights
  */
+@RegisterComponent
 export class SpotLight extends LightBase {
     constructor() {
         super();

@@ -308,6 +308,7 @@ export class Entity extends CEventDispatcher {
             }
             this.components.forEach((v, k) => {
                 v.enable = false;
+                v.beforeDestroy();
                 v.destroy();
             });
             this.components.clear();
@@ -319,8 +320,8 @@ export class Entity extends CEventDispatcher {
                 while (v.length > 0) {
                     const element = v.shift();
                     element[`__start`]();
+                    ComponentCollect.waitStartComponent.delete(element.object3D);
                 }
-                ComponentCollect.waitStartComponent.delete(k);
             });
         }
     }

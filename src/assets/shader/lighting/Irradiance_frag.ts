@@ -1,10 +1,5 @@
 export let Irradiance_frag: string = /*wgsl*/ `
 #include "IrradianceVolumeData_frag"
-    fn pow3(  x : f32 ) -> f32
-    {
-        return x*x*x;
-    }
-
     struct IrradianceField {
         probeStartPosition: vec4<f32>,
         probeCounts:vec4<f32>,
@@ -23,7 +18,7 @@ export let Irradiance_frag: string = /*wgsl*/ `
     @group(1) @binding(auto)
     var irradianceDepthMap: texture_2d<f32>;
     @group(2) @binding(7)
-    var<storage,read> irradianceData : IrradianceVolumeData ;
+    var<uniform> irradianceData : IrradianceVolumeData ;
 
     var<private> irradianceFieldSurface: IrradianceField;
     var<private> energyPreservation: f32 = 0.85;

@@ -13,22 +13,7 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
       directShadowVisibility: array<f32, 8>,
       pointShadows: array<f32, 8>,
     }
-
-    var<private>shadowStrut: ShadowStruct;
-
-    struct ShadowBuffer{
-      nDirShadowStart: i32,
-      nDirShadowEnd: i32,
-      nPointShadowStart: i32,
-      nPointShadowEnd: i32,
-      shadowLights:array<u32,16>
-    }
-
-    #if DEBUG_CLUSTER
-        @group(2) @binding(6) var<storage,read> shadowBuffer: ShadowBuffer;
-    #else
-        @group(2) @binding(5) var<storage,read> shadowBuffer: ShadowBuffer;
-    #endif
+    var<private> shadowStrut: ShadowStruct ;
 
     fn useShadow(){
         shadowStrut.directShadowVisibility = array<f32, 8>( 1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0) ;
@@ -51,9 +36,9 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
       #if USE_SHADOWMAPING
         let enableCSM:bool = globalUniform.enableCSM > 0.5;
         for (var i: i32 = 0; i < dirCount ; i = i + 1) {
-          if( i >= shadowBuffer.nDirShadowStart && i < shadowBuffer.nDirShadowEnd ){
-            let ldx = shadowBuffer.shadowLights[i];
-            var light = lightBuffer[ldx];
+          if( i >= globalUniform.nDirShadowStart && i < globalUniform.nDirShadowEnd ){
+            let ldx = globalUniform.shadowLights[u32(i) / 4u][u32(i) % 4u];
+            let light = lightBuffer[u32(ldx)] ;
             var shadowIndex = i32(light.castShadow);
             var visibility = 1.0;
             var shadowMatrix:mat4x4<f32>;
@@ -96,7 +81,7 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
                 if(validCount == 0){
                   visibility = 1.0;
                 }else{
-                  visibility = visibility / totalWeight;
+                  visibility = visibility / totalWeight ;
                 }
               }else{
                 shadowMatrix = globalUniform.shadowMatrix[shadowIndex];
@@ -135,8 +120,9 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
           isOutSideArea = 0.0;
           var uvOnePixel = 1.0 / vec2<f32>(globalUniform.shadowMapSize);
           var totalWeight = 0.0;
-          var NoL = abs(dot(normalize(ORI_VertexVarying.vWorldNormal), normalize(light.direction)));
-          var bias = shadowBias / max(NoL, 0.000001);
+          var NoL = (dot(normalize(ORI_VertexVarying.vWorldNormal), normalize(-light.direction)));
+          let v = max(NoL, 0.0) ;
+          var bias = shadowBias / v;
           for (var y = -1; y <= 1; y++) {
             for (var x = -1; x <= 1; x++) {
               var offset = vec2<f32>(f32(x), f32(y)) * uvOnePixel;
@@ -144,7 +130,7 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
               // visibility += textureSampleCompare(shadowMap, shadowMapSampler, varying_shadowUV + offset, depthTexIndex, shadowPos.z - bias);
               var depth = textureSampleLevel(shadowMap, shadowMapSampler, varying_shadowUV + offset, depthTexIndex, 0);
               if ((shadowPos.z - bias ) < depth) {
-                visibility += 1.0 ;//* dot(offsetDir, dir.xyz);
+                visibility += 1.0 ;
               }
               totalWeight += 1.0;
             }
@@ -161,76 +147,75 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
       let offset = 0.1;
 
       for (var i: i32 = 0; i < pointCount ; i = i + 1) {
-        if( i >= shadowBuffer.nPointShadowStart && i < shadowBuffer.nPointShadowEnd ){
-          let ldx = shadowBuffer.shadowLights[i];
-          let light = lightBuffer[ldx] ;
+        if( i >= globalUniform.nPointShadowStart && i < globalUniform.nPointShadowEnd ){
+          let ldx = globalUniform.shadowLights[u32(i) / 4u][u32(i) % 4u];
+          let light = lightBuffer[u32(ldx)] ;
 
           #if USE_SHADOWMAPING
-          let lightPos = light.position.xyz;
-          var shadow = 0.0;
-          let frgToLight = worldPos - lightPos.xyz;
-          var dir: vec3<f32> = normalize(frgToLight);
-          var len = length(frgToLight);
-          var bias = max(shadowBias * globalUniform.far * (1.0 - dot(ORI_ShadingInput.Normal, dir)), 0.005);
+              let lightPos = light.position.xyz;
+              var shadow = 0.0;
+              let frgToLight = worldPos - lightPos.xyz;
+              var dir: vec3<f32> = normalize(frgToLight);
+              var len = length(frgToLight);
+              var bias = max(shadowBias * globalUniform.far * (1.0 - dot(ORI_ShadingInput.Normal, dir)), 0.005);
   
           #if USE_PCF_SHADOW
-          let samples = 4.0;
-          for (var x: f32 = -offset; x < offset; x += offset / (samples * 0.5)) {
-            for (var y: f32 = -offset; y < offset; y += offset / (samples * 0.5)) {
-              for (var z: f32 = -offset; z < offset; z += offset / (samples * 0.5)) {
-                let offsetDir = normalize(dir.xyz + vec3<f32>(x, y, z));
+              let samples = 4.0;
+              for (var x: f32 = -offset; x < offset; x += offset / (samples * 0.5)) {
+                for (var y: f32 = -offset; y < offset; y += offset / (samples * 0.5)) {
+                  for (var z: f32 = -offset; z < offset; z += offset / (samples * 0.5)) {
+                    let offsetDir = normalize(dir.xyz + vec3<f32>(x, y, z));
+                    var depth = textureSampleLevel(pointShadowMap, pointShadowMapSampler, offsetDir, light.castShadow, 0);
+                    depth *= globalUniform.far;
+                    if ((len - bias) > depth) {
+                      shadow += 1.0 * dot(offsetDir, dir.xyz);
+                    }
+                  }
+                }
+              }
+              shadow = min(max(shadow / (samples * samples * samples), 0.0), 1.0);
+          #endif
+  
+          #if USE_SOFT_SHADOW
+              let vDis = length(globalUniform.CameraPos.xyz - worldPos.xyz);
+              let sampleRadies = globalUniform.shadowSoft;
+              let samples = 20;
+              for (var j: i32 = 0; j < samples; j += 1) {
+                let offsetDir = normalize(dir.xyz + sampleOffsetDir[j] * sampleRadies);
                 var depth = textureSampleLevel(pointShadowMap, pointShadowMapSampler, offsetDir, light.castShadow, 0);
                 depth *= globalUniform.far;
                 if ((len - bias) > depth) {
                   shadow += 1.0 * dot(offsetDir, dir.xyz);
                 }
               }
-            }
-          }
-          shadow = min(max(shadow / (samples * samples * samples), 0.0), 1.0);
-          #endif
-  
-          #if USE_SOFT_SHADOW
-          let vDis = length(globalUniform.CameraPos.xyz - worldPos.xyz);
-          let sampleRadies = globalUniform.shadowSoft;
-          let samples = 20;
-          for (var j: i32 = 0; j < samples; j += 1) {
-            let offsetDir = normalize(dir.xyz + sampleOffsetDir[j] * sampleRadies);
-            var depth = textureSampleLevel(pointShadowMap, pointShadowMapSampler, offsetDir, light.castShadow, 0);
-            depth *= globalUniform.far;
-            if ((len - bias) > depth) {
-              shadow += 1.0 * dot(offsetDir, dir.xyz);
-            }
-          }
-          shadow = min(max(shadow / f32(samples), 0.0), 1.0);
+              shadow = min(max(shadow / f32(samples), 0.0), 1.0);
           #endif
   
           #if USE_HARD_SHADOW
-          var depth = textureSampleLevel(pointShadowMap, pointShadowMapSampler, dir.xyz, light.castShadow, 0);
-          depth *= globalUniform.far;
-          if ((len - bias) > depth) {
-            shadow = 1.0;
-          }
-          #endif
-  
-          for (var j = 0; j < pointCount ; j+=1 ) {
-              if(i32(light.castShadow) == j){
-                shadowStrut.pointShadows[j] = 1.0 - shadow ;
+              var depth = textureSampleLevel(pointShadowMap, pointShadowMapSampler, dir.xyz, light.castShadow, 0);
+              depth *= globalUniform.far;
+              if ((len - bias) > depth) {
+                shadow = 1.0;
               }
-          }
+          #endif
+              for (var j = 0; j < pointCount ; j+=1 ) {
+                  if(i32(light.castShadow) == j){
+                    shadowStrut.pointShadows[j] = 1.0 - shadow ;
+                  }
+              }
           #endif
         }
         }
     }
 
     #if USE_SOFT_SHADOW
-    var<private>sampleOffsetDir : array<vec3<f32>, 20> = array<vec3<f32>, 20>(
-      vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, -1.0, 1.0), vec3<f32>(-1.0, -1.0, 1.0), vec3<f32>(-1.0, 1.0, 1.0),
-      vec3<f32>(1.0, 1.0, -1.0), vec3<f32>(1.0, -1.0, -1.0), vec3<f32>(-1.0, -1.0, -1.0), vec3<f32>(-1.0, 1.0, -1.0),
-      vec3<f32>(1.0, 1.0, 0.0), vec3<f32>(1.0, -1.0, 0.0), vec3<f32>(-1.0, -1.0, 0.0), vec3<f32>(-1.0, 1.0, 0.0),
-      vec3<f32>(1.0, 0.0, 1.0), vec3<f32>(-1.0, 0.0, 1.0), vec3<f32>(1.0, 0.0, -1.0), vec3<f32>(-1.0, 0.0, -1.0),
-      vec3<f32>(0.0, 1.0, 1.0), vec3<f32>(0.0, -1.0, 1.0), vec3<f32>(0.0, -1.0, -1.0), vec3<f32>(0.0, 1.0, -1.0),
-    );
+      var<private>sampleOffsetDir : array<vec3<f32>, 20> = array<vec3<f32>, 20>(
+        vec3<f32>(1.0, 1.0, 1.0), vec3<f32>(1.0, -1.0, 1.0), vec3<f32>(-1.0, -1.0, 1.0), vec3<f32>(-1.0, 1.0, 1.0),
+        vec3<f32>(1.0, 1.0, -1.0), vec3<f32>(1.0, -1.0, -1.0), vec3<f32>(-1.0, -1.0, -1.0), vec3<f32>(-1.0, 1.0, -1.0),
+        vec3<f32>(1.0, 1.0, 0.0), vec3<f32>(1.0, -1.0, 0.0), vec3<f32>(-1.0, -1.0, 0.0), vec3<f32>(-1.0, 1.0, 0.0),
+        vec3<f32>(1.0, 0.0, 1.0), vec3<f32>(-1.0, 0.0, 1.0), vec3<f32>(1.0, 0.0, -1.0), vec3<f32>(-1.0, 0.0, -1.0),
+        vec3<f32>(0.0, 1.0, 1.0), vec3<f32>(0.0, -1.0, 1.0), vec3<f32>(0.0, -1.0, -1.0), vec3<f32>(0.0, 1.0, -1.0),
+      );
     #endif
 `
 

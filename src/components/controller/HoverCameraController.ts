@@ -96,6 +96,8 @@ export class HoverCameraController extends ComponentBase {
      * @internal
      */
     private _targetPos: Object3D;
+    private _flowTarget: Object3D;
+    private _flowOffset: Vector3;
 
     private _mouseLeftDown: boolean = false;
     private _mouseRightDown: boolean = false;
@@ -122,7 +124,16 @@ export class HoverCameraController extends ComponentBase {
         Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_MOVE, this.onMouseMove, this);
         Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_UP, this.onMouseUp, this);
         Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_WHEEL, this.onMouseWheel, this);
+    }
 
+    public flowTarget(target: Object3D, offset: Vector3 = Vector3.ZERO) {
+        this._flowTarget = target;
+        this._flowOffset ||= new Vector3();
+        this._flowOffset.copyFrom(offset);
+    }
+
+    public getFlowTarget(): Object3D {
+        return this._flowTarget;
     }
 
     /**
@@ -227,6 +238,12 @@ export class HoverCameraController extends ComponentBase {
         if (!this.enable)
             return;
 
+        if (this._flowTarget) {
+            Vector3.HELP_0.copyFrom(this._flowTarget.transform.worldPosition);
+            Vector3.HELP_0.add(this._flowOffset, Vector3.HELP_0);
+            this.target = Vector3.HELP_0;
+        }
+
         let dt = clamp(Time.delta, 0.0, 0.016);
         if (this.smooth) {
             this._currentPos.x += (this._targetPos.x - this._currentPos.x) * dt * this.dragSmooth;
@@ -271,5 +288,6 @@ export class HoverCameraController extends ComponentBase {
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_WHEEL, this.onMouseWheel, this);
         super.destroy(force);
         this.camera = null;
+        this._flowTarget = null;
     }
 }

@@ -112,7 +112,7 @@ export let ParticleRenderShader = /* wgsl */ `
          let v3Right: vec3<f32> = normalize(cross(vec3<f32>( 0.0 , 1.0 , 0.0 ) * mat3, v3Look));
          let v3Up: vec3<f32> = cross(v3Look, v3Right);
          return mat3x3<f32>(v3Right, v3Up, v3Look);
-   }
+    }
 
     fn makeAxleRotationMatrix(axis: vec3<f32>, angle: f32) -> mat4x4<f32> {
         var x = axis.x;

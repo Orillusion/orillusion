@@ -1,44 +1,45 @@
 import { RenderNode } from '../../components/renderer/RenderNode';
-// import { CastPointShadowMaterialPass } from '../../materials/multiPass/CastPointShadowMaterialPass';
-// import { CastShadowMaterialPass } from '../../materials/multiPass/CastShadowMaterialPass';
-// import { DepthMaterialPass } from '../../materials/multiPass/DepthMaterialPass';
-// import { GBufferPass } from '../../materials/multiPass/GBufferPass';
-// import { SkyGBufferPass } from '../../materials/multiPass/SkyGBufferPass';
 import { RendererMaskUtil, RendererMask } from '../renderJob/passRenderer/state/RendererMask';
-import { RendererType } from '../renderJob/passRenderer/state/RendererType';
+import { PassType } from '../renderJob/passRenderer/state/RendererType';
 import { GLTFType } from '../../loader/parser/gltf/GLTFType';
-import { CastPointShadowMaterialPass, CastShadowMaterialPass, DepthMaterialPass, GBufferPass, Material, RendererPassState, SkyGBufferPass } from '../..';
+import { Shader } from '../graphics/webGpu/shader/Shader';
+import { SkyGBufferPass } from '../../materials/multiPass/SkyGBufferPass';
+import { GBufferPass } from '../../materials/multiPass/GBufferPass';
+import { VertexAttributeName } from '../../core/geometry/VertexAttributeName';
+import { CastShadowMaterialPass } from '../../materials/multiPass/CastShadowMaterialPass';
+import { CastPointShadowMaterialPass } from '../../materials/multiPass/CastPointShadowMaterialPass';
+import { DepthMaterialPass } from '../../materials/multiPass/DepthMaterialPass';
 
 /**
  * @internal
  * @group GFX
  */
 export class PassGenerate {
-    public static createGIPass(renderNode: RenderNode, material: Material) {
+    public static createGIPass(renderNode: RenderNode, shader: Shader) {
         if (RendererMaskUtil.hasMask(renderNode.rendererMask, RendererMask.Sky)) {
-            let colorPass = material.getPass(RendererType.COLOR)[0];
-            let pass = new SkyGBufferPass();
-            pass.setTexture(`baseMap`, colorPass.getTexture('baseMap'));
+            let pass0 = shader.passShader.get(PassType.GI);
+            if (!pass0) {
+                let colorPass = shader.getSubShaders(PassType.COLOR)[0];
+                let pass = new SkyGBufferPass();
+                pass.setTexture(`baseMap`, colorPass.getTexture('baseMap'));
+                pass.cullMode = colorPass.cullMode;
+                pass.frontFace = colorPass.frontFace;
+                shader.addRenderPass(pass, 0);
+                pass.preCompile(renderNode.geometry);
+            }
 
-            pass.cullMode = colorPass.cullMode;
-            pass.frontFace = colorPass.frontFace;
-
-            material.addPass(RendererType.GI, pass, 0);
-            pass.preCompile(renderNode.geometry);
         } else {
-            this.castGBufferPass(renderNode, material);
+            this.castGBufferPass(renderNode, shader);
         }
     }
 
-    public static castGBufferPass(renderNode: RenderNode, material: Material) {
-        // for (let i = 0; i < renderNode.materials.length; i++) {
-        //     const mat = renderNode.materials[i];
-        let colorPassList = material.getPass(RendererType.COLOR);
+    public static castGBufferPass(renderNode: RenderNode, shader: Shader) {
+        let colorPassList = shader.getDefaultShaders();
         for (let jj = 0; jj < colorPassList.length; jj++) {
             const colorPass = colorPassList[jj];
 
-            let giPassList = material.getPass(RendererType.GI);
-            if (!giPassList || giPassList.length < jj) {
+            let giPassList = shader.getSubShaders(PassType.GI);
+            if (!giPassList || giPassList.length == 0 || giPassList.length < jj) {
                 let pass = new GBufferPass();
                 pass.setTexture('baseMap', colorPass.getTexture("baseMap"));
                 pass.setTexture('normalMap', colorPass.getTexture("normalMap"));
@@ -53,23 +54,22 @@ export class PassGenerate {
                 pass.cullMode = colorPass.cullMode;
                 pass.frontFace = colorPass.frontFace;
                 pass.preCompile(renderNode.geometry);
-                material.addPass(RendererType.GI, pass);
+                shader.addRenderPass(pass);
             }
         }
-        // }
     }
 
-    public static createShadowPass(renderNode: RenderNode, material: Material) {
+    public static createShadowPass(renderNode: RenderNode, shader: Shader) {
         let use_skeleton = RendererMaskUtil.hasMask(renderNode.rendererMask, RendererMask.SkinnedMesh);
-        let useTangent = renderNode.geometry.hasAttribute('TANGENT');
+        let useTangent = renderNode.geometry.hasAttribute(VertexAttributeName.TANGENT);
         let useMorphTargets = renderNode.geometry.hasAttribute(GLTFType.MORPH_POSITION_PREFIX + '0');
         let useMorphNormals = renderNode.geometry.hasAttribute(GLTFType.MORPH_NORMAL_PREFIX + '0');
 
-        let colorPassList = material.getPass(RendererType.COLOR);
+        let colorPassList = shader.getSubShaders(PassType.COLOR);
         for (let i = 0; i < colorPassList.length; i++) {
             const colorPass = colorPassList[i];
-            let shadowPassList = material.getPass(RendererType.SHADOW);
-            if (!shadowPassList || shadowPassList.length < i) {
+            let shadowPassList = shader.getSubShaders(PassType.SHADOW);
+            if (!shadowPassList || shadowPassList.length < (i + 1)) {
                 let shadowPass = new CastShadowMaterialPass();
                 shadowPass.setTexture(`baseMap`, colorPass.getTexture(`baseMap`));
                 shadowPass.setUniform(`alphaCutoff`, colorPass.getUniform(`alphaCutoff`));
@@ -95,11 +95,11 @@ export class PassGenerate {
                     shadowPass.shaderState.cullMode = `back`;
                 }
                 shadowPass.preCompile(renderNode.geometry);
-                material.addPass(RendererType.SHADOW, shadowPass);
+                shader.addRenderPass(shadowPass);
             }
 
-            let castPointShadowPassList = material.getPass(RendererType.POINT_SHADOW);
-            if (!castPointShadowPassList) {
+            let castPointShadowPassList = shader.getSubShaders(PassType.POINT_SHADOW);
+            if (!castPointShadowPassList || castPointShadowPassList.length < (i + 1)) {
                 let castPointShadowPass = new CastPointShadowMaterialPass();
                 castPointShadowPass.setTexture(`baseMap`, colorPass.getTexture(`baseMap`));
                 castPointShadowPass.setUniform(`alphaCutoff`, colorPass.getUniform(`alphaCutoff`));
@@ -121,53 +121,13 @@ export class PassGenerate {
                     castPointShadowPass.shaderState.cullMode = `front`;
                     castPointShadowPass.preCompile(renderNode.geometry);
                 }
-                material.addPass(RendererType.POINT_SHADOW, castPointShadowPass);
+                shader.addRenderPass(castPointShadowPass);
             }
         }
     }
 
-    public static createReflectionPass(renderNode: RenderNode, material: Material) {
-        // let reflectionPass = material.renderShader.getPassShader(RendererType.REFLECTION);
-        // if (!reflectionPass) {
-        //     reflectionPass = new ColorLitMaterial();
-        //     let baseMat = renderNode.materials[0];
-        //     reflectionPass.baseMap = baseMat.baseMap;
-        //     let useTangent = renderNode.geometry.hasVertexAttribute('TANGENT');
-        //     let useMorphTargets = renderNode.geometry.hasVertexAttribute(GLTFType.MORPH_POSITION_PREFIX + '0');
-        //     let useMorphNormals = renderNode.geometry.hasVertexAttribute(GLTFType.MORPH_NORMAL_PREFIX + '0');
-
-        //     let use_skeleton = RendererMaskUtil.hasMask(renderNode.rendererMask, RendererMask.SkinnedMesh);
-
-        //     let shader = reflectionPass.getShader();
-        //     shader.shaderState.cullMode = baseMat.getShader().cullMode;
-        //     shader.shaderState.frontFace = baseMat.getShader().frontFace;
-
-        //     for (let j = 0; j < 1; j++) {
-        //         const renderShader = reflectionPass.getShader();
-
-        //         if (!useTangent) {
-        //             renderShader.setDefine(`USE_TANGENT`, useTangent);
-        //         }
-        //         if (use_skeleton) {
-        //             renderShader.setDefine(`USE_SKELETON`, use_skeleton);
-        //         }
-        //         if (useMorphTargets) {
-        //             renderShader.setDefine(`USE_MORPHTARGETS`, useMorphTargets);
-        //         }
-        //         if (useMorphNormals) {
-        //             renderShader.setDefine(`USE_MORPHNORMALS`, useMorphNormals);
-        //         }
-
-        //         renderShader.preCompile(renderNode.geometry, reflectionPass);
-        //     }
-
-        //     material.renderShader.setPassShader(RendererType.REFLECTION, reflectionPass);
-        // }
-        // material.addPass(RendererType.REFLECTION, reflectionPass, 0);
-    }
-
-    public static createDepthPass(renderNode: RenderNode, material: Material) {
-        let colorListPass = material.getPass(RendererType.COLOR);
+    public static createDepthPass(renderNode: RenderNode, shader: Shader) {
+        let colorListPass = shader.getSubShaders(PassType.COLOR);
         let useTangent = renderNode.geometry.hasAttribute('TANGENT');
         let useMorphTargets = renderNode.geometry.hasAttribute(GLTFType.MORPH_POSITION_PREFIX + '0');
         let useMorphNormals = renderNode.geometry.hasAttribute(GLTFType.MORPH_NORMAL_PREFIX + '0');
@@ -175,7 +135,7 @@ export class PassGenerate {
 
         for (let i = 0; i < colorListPass.length; i++) {
             const colorPass = colorListPass[i];
-            let depthPassList = material.getPass(RendererType.DEPTH);
+            let depthPassList = shader.getSubShaders(PassType.DEPTH);
             if (!depthPassList && colorPass.shaderState.useZ) {
                 if (!depthPassList || depthPassList.length < i) {
                     let depthPass = new DepthMaterialPass();
@@ -195,7 +155,7 @@ export class PassGenerate {
                     depthPass.cullMode = colorPass.cullMode;
                     depthPass.frontFace = colorPass.frontFace;
                     depthPass.preCompile(renderNode.geometry);
-                    material.addPass(RendererType.DEPTH, depthPass);
+                    shader.addRenderPass(depthPass);
                 }
             }
         }

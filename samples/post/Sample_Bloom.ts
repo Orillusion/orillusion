@@ -2,7 +2,7 @@ import {
 	View3D, DirectLight, Engine3D,
 	PostProcessingComponent, LitMaterial, HoverCameraController,
 	KelvinUtil, MeshRenderer, Object3D, PlaneGeometry, Scene3D, SphereGeometry,
-	CameraUtil, webGPUContext, BoxGeometry, TAAPost, AtmosphericComponent, GTAOPost, Color, HDRBloomPost
+	CameraUtil, webGPUContext, BoxGeometry, TAAPost, AtmosphericComponent, GTAOPost, Color, BloomPost
 } from '@orillusion/core';
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { GUI } from '@orillusion/debug/dat.gui.module';
@@ -36,12 +36,7 @@ class Sample_Bloom {
 		Engine3D.startRenderView(view);
 
 		let postProcessing = this.scene.addComponent(PostProcessingComponent);
-		let post = postProcessing.addPost(HDRBloomPost);
-		post.blurX = 5;
-		post.blurY = 5;
-		post.luminosityThreshold = 1.1;
-		post.strength = 1.0;
-
+		let post = postProcessing.addPost(BloomPost);
 		GUIHelp.init();
 		GUIUtil.renderBloom(post, true);
 	}
@@ -61,13 +56,8 @@ class Sample_Bloom {
 
 		{
 			let mat = new LitMaterial();
-			mat.baseMap = Engine3D.res.grayTexture;
-			mat.normalMap = Engine3D.res.normalTexture;
-			mat.aoMap = Engine3D.res.whiteTexture;
-			mat.maskMap = Engine3D.res.createTexture(32, 32, 255.0, 255.0, 0.0, 1);
-			mat.emissiveMap = Engine3D.res.blackTexture;
-			mat.roughness = 1.5;
-			mat.metallic = 0.0;
+			mat.roughness = 1.0;
+			mat.metallic = 0.1;
 
 			let floor = new Object3D();
 			let mr = floor.addComponent(MeshRenderer);
@@ -105,9 +95,8 @@ class Sample_Bloom {
 			{
 				{
 					let litMat = new LitMaterial();
-					litMat.emissiveMap = Engine3D.res.whiteTexture;
 					litMat.emissiveColor = new Color(0.0, 0.0, 1.0);
-					litMat.emissiveIntensity = 5.0;
+					litMat.emissiveIntensity = 1.8;
 					let sp = new Object3D();
 					let mr = sp.addComponent(MeshRenderer);
 					mr.geometry = new SphereGeometry(15, 30, 30);
@@ -120,9 +109,8 @@ class Sample_Bloom {
 
 				{
 					let litMat = new LitMaterial();
-					litMat.emissiveMap = Engine3D.res.whiteTexture;
 					litMat.emissiveColor = new Color(1.0, 1.0, 0.0);
-					litMat.emissiveIntensity = 5;
+					litMat.emissiveIntensity = 1.2;
 					let sp = new Object3D();
 					let mr = sp.addComponent(MeshRenderer);
 					mr.geometry = new SphereGeometry(15, 30, 30);

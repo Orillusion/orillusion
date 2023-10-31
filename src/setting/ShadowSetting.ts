@@ -47,6 +47,10 @@ export type ShadowSetting = {
      */
     shadowSize: number;
     /**
+     * shadow depth offset bias 
+     */
+    shadowBias: number;
+    /**
      * Shadow softness
      */
     shadowSoft: number;

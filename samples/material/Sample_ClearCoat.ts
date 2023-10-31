@@ -16,17 +16,6 @@ class Sample_ClearCoat {
 
         //config settings
         Engine3D.setting.shadow.shadowBound = 300;
-        Engine3D.setting.render.postProcessing.bloom = {
-            enable: true,
-            blurX: 4,
-            blurY: 4,
-            exposure: 1,
-            luminosityThreshold: 0.8,
-            strength: 0.86,
-            radius: 4,
-            debug: false
-        };
-
 
         this.scene = new Scene3D();
         let camera = CameraUtil.createCamera3DObject(this.scene);

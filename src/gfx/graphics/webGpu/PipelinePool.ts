@@ -1,4 +1,4 @@
-import { PoolNode, RenderShader } from "../../..";
+import { PoolNode, RenderShaderPass } from "../../..";
 
 export class PipelinePool {
     private static pipelineMap: Map<string, GPURenderPipeline> = new Map<string, GPURenderPipeline>();

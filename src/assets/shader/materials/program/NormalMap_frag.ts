@@ -1,18 +1,19 @@
 export let NormalMap_frag: string = /*wgsl*/ `
+
     fn perturbNormal(  worldPos:vec3<f32>,  surf_norm:vec3<f32>,  mapN:vec3<f32> , normalScale:f32 , face:f32 ) -> vec3<f32> {
         var q0 = vec3<f32>( dpdx( worldPos.x ), dpdx( worldPos.y ), dpdx( worldPos.z ) );
         var q1 = vec3<f32>( dpdy( worldPos.x ), dpdy( worldPos.y ), dpdy( worldPos.z ) );
         var st0 = dpdx( ORI_VertexVarying.fragUV0.xy );
         var st1 = dpdy( ORI_VertexVarying.fragUV0.xy );
         var N = surf_norm;
-        var q1perp = cross( q1, N );
         var q0perp = cross( N, q0 );
+        var q1perp = cross( q1, N );
 
-        #if USE_TANGENT
-            var T = ORI_VertexVarying.TANGENT.xyz ;
-        #else
+        // #if USE_TANGENT
+        //     var T = ORI_VertexVarying.TANGENT.xyz ;
+        // #else
             var T = q1perp * st0.x + q0perp * st1.x;
-        #endif
+        // #endif
         
         var B = q1perp * st0.y + q0perp * st1.y;
 
@@ -21,9 +22,10 @@ export let NormalMap_frag: string = /*wgsl*/ `
         if( det != 0.0 ){
             scale = inverseSqrt( det ) ;
         }
-        #if USE_TANGENT
-            scale = scale * ORI_VertexVarying.TANGENT.w ;
-        #endif
+
+        // #if USE_TANGENT
+        //     scale = scale * ORI_VertexVarying.TANGENT.w ;
+        // #endif
 
         scale *= normalScale;
         return normalize( (T * ( -mapN.x * scale ) + B * ( mapN.y * scale ) + N * mapN.z ) * face ) ;
@@ -51,7 +53,7 @@ export let NormalMap_frag: string = /*wgsl*/ `
             n.y = 1.0 - n.y ; 
             #endif
             
-            var mapNormal: vec3<f32> = unpackNormalMap(n) ;
+            var mapNormal: vec3<f32> = n ;//unpackNormalMap(n) ;
             return perturbNormal(ORI_VertexVarying.vWorldPos.xyz , ORI_VertexVarying.vWorldNormal.xyz , mapNormal , height , face  ) ;
         #endif
     }

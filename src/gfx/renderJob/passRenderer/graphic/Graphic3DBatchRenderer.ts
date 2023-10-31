@@ -5,7 +5,7 @@ import { Color } from "../../../../math/Color";
 import { Vector3 } from "../../../../math/Vector3";
 import { RendererMask } from "../state/RendererMask";
 import { RendererPassState } from "../state/RendererPassState";
-import { RendererType } from "../state/RendererType";
+import { PassType } from "../state/RendererType";
 import { ClusterLightingRender } from "../cluster/ClusterLightingRender";
 import { Graphic3DFixedRenderPipeline } from "./Graphic3DFixedRenderPipeline";
 import { GraphicConfig } from "./GraphicConfig";
@@ -82,7 +82,7 @@ export class Graphic3DBatchRenderer extends RenderNode {
         this._readyPipeline = true;
     }
 
-    public nodeUpdate(view: View3D, passType: RendererType, renderPassState: RendererPassState, clusterLightingBuffer?: ClusterLightingBuffer) {
+    public nodeUpdate(view: View3D, passType: PassType, renderPassState: RendererPassState, clusterLightingBuffer?: ClusterLightingBuffer) {
         // if(!this.enable || passType != RendererType.COLOR ) return ;
         if (this.mDirtyData) {
             this.mRenderPipeline.reset();
@@ -94,7 +94,7 @@ export class Graphic3DBatchRenderer extends RenderNode {
         return;
     }
 
-    public renderPass2(view: View3D, passType: RendererType, rendererPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer, encoder: GPURenderPassEncoder, useBundle: boolean = false) {
+    public renderPass2(view: View3D, passType: PassType, rendererPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer, encoder: GPURenderPassEncoder, useBundle: boolean = false) {
         // if(!this.enable || passType != RendererType.COLOR ) return ;
         this.mRenderPipeline.render(rendererPassState, encoder);
     }

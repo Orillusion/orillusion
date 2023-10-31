@@ -8,8 +8,11 @@ export let Common_frag: string = /*wgsl*/ `
   var<private> ORI_VertexVarying: FragmentVarying;
   var<private> ORI_ShadingInput: ShadingInput;
   var<private> viewDir:vec3<f32>;
+  var<private> modelIndex:u32;
   @fragment
   fn FragMain( vertex_varying:FragmentVarying ) -> FragmentOutput {
+    modelIndex = u32(round(vertex_varying.index)) ; 
+
     ORI_VertexVarying = vertex_varying;
     ORI_FragmentOutput.color = vec4<f32>(1.0, 0.0, 0.0, 1.0);
     viewDir = normalize(globalUniform.CameraPos.xyz - ORI_VertexVarying.vWorldPos.xyz) ;
@@ -26,9 +29,6 @@ export let Common_frag: string = /*wgsl*/ `
       debugFragmentOut();
     #endif
 
-    // var d1 = logDepth( ORI_VertexVarying.fragCoord.w , globalUniform.far);
-    // ORI_FragmentOutput.out_depth = d1 ;
-
     #if USE_OUTDEPTH
       #if USE_LOGDEPTH
         ORI_FragmentOutput.out_depth = log2Depth(ORI_VertexVarying.fragCoord.z,globalUniform.near,globalUniform.far) ;
@@ -36,10 +36,6 @@ export let Common_frag: string = /*wgsl*/ `
         ORI_FragmentOutput.out_depth = ORI_ShadingInput.FragDepth ;
       #endif
     #endif
-
-    // var d1 = log2(ORI_VertexVarying.fragCoord.w + 1.0) * 2.0 / (log(f + 1.0) / 0.6931471805599453) * 0.5 ;
-    // 2.0 / (Math.log(camera.far + 1.0) / Math.LN2)
-    // ORI_FragmentOutput.out_depth = d1 ;
 
     return ORI_FragmentOutput ;
   }

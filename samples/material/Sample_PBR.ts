@@ -11,6 +11,7 @@ class Sample_PBR {
     async run() {
         await Engine3D.init({});
 
+        Engine3D.setting.render.debug = true;
         Engine3D.setting.shadow.shadowBound = 5;
 
         GUIHelp.init();
@@ -27,6 +28,8 @@ class Sample_PBR {
         view.camera = camera;
 
         Engine3D.startRenderView(view);
+
+        GUIUtil.renderDebug();
 
         await this.initScene();
         sky.relativeTransform = this.lightObj3D.transform;

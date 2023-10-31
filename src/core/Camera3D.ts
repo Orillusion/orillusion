@@ -127,7 +127,7 @@ export class Camera3D extends ComponentBase {
     public getShadowBias(depthTexSize: number): number {
         let sizeOnePixel = 2.0 * this.getShadowWorldExtents() / depthTexSize;
         let depth = this.far - this.near;
-        return sizeOnePixel / depth;
+        return sizeOnePixel / depth - Engine3D.setting.shadow.shadowBias * 0.01;
     }
 
     public getShadowWorldExtents(): number {

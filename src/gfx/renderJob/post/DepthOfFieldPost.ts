@@ -129,8 +129,8 @@ export class DepthOfFieldPost extends PostBase {
             blurCompute.setUniformBuffer('blurSetting', blurSetting);
             let rtFrame = GBufferFrame.getGBufferFrame("ColorPassGBuffer");
 
-            blurCompute.setSamplerTexture(RTResourceConfig.positionBufferTex_NAME, rtFrame.attachments[1]);
-            blurCompute.setSamplerTexture(RTResourceConfig.normalBufferTex_NAME, rtFrame.attachments[2]);
+            blurCompute.setSamplerTexture(RTResourceConfig.positionBufferTex_NAME, rtFrame.renderTargets[1]);
+            blurCompute.setSamplerTexture(RTResourceConfig.normalBufferTex_NAME, rtFrame.renderTargets[2]);
 
             let input = i % 2 == 0 ? this.blurTexture1 : this.blurTexture2;
             let output = i % 2 == 1 ? this.blurTexture1 : this.blurTexture2;

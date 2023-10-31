@@ -1,7 +1,8 @@
 import { LoaderBase } from './LoaderBase';
 import { LoaderFunctions } from './LoaderFunctions';
 import { ParserBase } from './parser/ParserBase';
-import { Ctor } from "../util/Global";
+import { Ctor, Parser } from "../util/Global";
+import { ParserFormat } from './parser/ParserFormat';
 
 /**
  * @internal
@@ -16,9 +17,9 @@ export class FileLoader extends LoaderBase {
      * @see LoaderFunctions
      * @returns
      */
-    public async load<T extends ParserBase>(url: string, c: Ctor<T>, loaderFunctions?: LoaderFunctions, userData?: any): Promise<T> {
-        switch (c[`format`]) {
-            case `bin`:
+    public async load<T extends ParserBase>(url: string, c: Parser<T>, loaderFunctions?: LoaderFunctions, userData?: any): Promise<T> {
+        switch (c.format) {
+            case ParserFormat.BIN:
                 {
                     return new Promise(async (succ, fail) => {
                         this.loadBinData(url, loaderFunctions).then(async (data) => {
@@ -37,8 +38,7 @@ export class FileLoader extends LoaderBase {
                         })
                     });
                 }
-                break;
-            case `json`:
+            case ParserFormat.JSON:
                 {
                     return new Promise((succ, fail) => {
                         this.loadJson(url, loaderFunctions)
@@ -56,8 +56,7 @@ export class FileLoader extends LoaderBase {
                             });
                     });
                 }
-                break;
-            case `text`:
+            case ParserFormat.TEXT:
                 {
                     return new Promise((succ, fail) => {
                         this.loadTxt(url, loaderFunctions)
@@ -79,7 +78,6 @@ export class FileLoader extends LoaderBase {
                             });
                     });
                 }
-                break;
             default:
                 break;
         }

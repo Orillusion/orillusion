@@ -309,10 +309,6 @@ export class GPUBufferBase {
         // this.applyMapAsync();
     }
 
-    public applyMapAsync() {
-        this.mapAsyncWrite(new Float32Array(this.memory.shareDataBuffer), this.memory.shareDataBuffer.byteLength / 4);
-    }
-
     public mapAsyncWrite(mapAsyncArray: Float32Array, len: number) {
         // Upload data using mapAsync and a queue of staging buffers.
         let bytesLen = len;
@@ -382,7 +378,7 @@ export class GPUBufferBase {
         }
     }
 
-    protected createBuffer(usage: GPUBufferUsageFlags, size: number, data?: ArrayBufferData) {
+    protected createBuffer(usage: GPUBufferUsageFlags, size: number, data?: ArrayBufferData, debugLabel?: string) {
         let device = webGPUContext.device;
         this.byteSize = size * 4;
         this.usage = usage;
@@ -390,6 +386,7 @@ export class GPUBufferBase {
             this.destroy();
         }
         this.buffer = device.createBuffer({
+            label: debugLabel,
             size: this.byteSize,
             usage: usage,
             mappedAtCreation: false,
@@ -424,6 +421,7 @@ export class GPUBufferBase {
 
         let device = webGPUContext.device;
         this.buffer = device.createBuffer({
+            label: "StructStorageGPUBuffer",
             size: totalLength,
             // size: totalLength * 4,
             usage: usage,

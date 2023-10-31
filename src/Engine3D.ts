@@ -5,12 +5,15 @@ import { Time } from './util/Time';
 import { InputSystem } from './io/InputSystem';
 import { View3D } from './core/View3D';
 import { version } from '../package.json';
+
+import { GPUTextureFormat } from './gfx/graphics/webGpu/WebGPUConst';
 import { webGPUContext } from './gfx/graphics/webGpu/Context3D';
-import { FXAAPost } from './gfx/renderJob/post/FXAAPost';
+import { RTResourceConfig } from './gfx/renderJob/config/RTResourceConfig';
+import { RTResourceMap } from './gfx/renderJob/frame/RTResourceMap';
+
 import { ForwardRenderJob } from './gfx/renderJob/jobs/ForwardRenderJob';
 import { GlobalBindGroup } from './gfx/graphics/webGpu/core/bindGroups/GlobalBindGroup';
 import { Interpolator } from './math/TimeInterpolator';
-import { RTResourceMap } from './gfx/renderJob/frame/RTResourceMap';
 import { RendererJob } from './gfx/renderJob/jobs/RendererJob';
 import { Res } from './assets/Res';
 import { ShaderLib } from './assets/shader/ShaderLib';
@@ -19,7 +22,10 @@ import { ComponentCollect } from './gfx/renderJob/collect/ComponentCollect';
 import { ShadowLightsCollect } from './gfx/renderJob/collect/ShadowLightsCollect';
 import { GUIConfig } from './components/gui/GUIConfig';
 import { WasmMatrix } from '@orillusion/wasm-matrix/WasmMatrix';
-import { Matrix4 } from '.';
+import { Matrix4 } from './math/Matrix4';
+import { FXAAPost } from './gfx/renderJob/post/FXAAPost';
+import { PostProcessingComponent } from './components/post/PostProcessingComponent';
+import { Texture } from './gfx/graphics/webGpu/core/texture/Texture';
 
 /** 
  * Orillusion 3D Engine
@@ -136,6 +142,15 @@ export class Engine3D {
             useLogDepth: false,
             gi: false,
             postProcessing: {
+                bloom: {
+                    downSampleStep: 5,
+                    downSampleBlurSize: 5,
+                    downSampleBlurSigma: 1.0,
+                    upSampleBlurSize: 5,
+                    upSampleBlurSigma: 1.0,
+                    luminanceThreshole: 1.0,
+                    bloomIntensity: 1.0,
+                },
                 globalFog: {
                     debug: false,
                     enable: false,
@@ -148,7 +163,7 @@ export class Engine3D {
                     skyFactor: 0.5,
                     skyRoughness: 0.4,
                     overrideSkyFactor: 0.8,
-                    fogColor: new Color(112 / 255, 61 / 255, 139 / 255, 1),
+                    fogColor: new Color(96 / 255, 117 / 255, 133 / 255, 1),
                     falloff: 0.7,
                     rayLength: 200.0,
                     scatteringExponent: 2.7,
@@ -203,16 +218,6 @@ export class Engine3D {
                     mixThreshold: 0.1,
                     debug: true,
                 },
-                bloom: {
-                    enable: false,
-                    blurX: 4,
-                    blurY: 4,
-                    strength: 0.25,
-                    exposure: 1,
-                    radius: 1.3,
-                    luminosityThreshold: 0.98,
-                    debug: false,
-                },
                 fxaa: {
                     enable: false,
                 },
@@ -229,12 +234,10 @@ export class Engine3D {
             enable: true,
             type: 'HARD',
             pointShadowBias: 0.002,
-            // shadowQuality: 2.5,
             shadowSize: 1024,
             pointShadowSize: 1024,
             shadowSoft: 0.005,
-            // shadowNear: 1,
-            // shadowFar: 2000,
+            shadowBias: 0.0001,
             needUpdate: true,
             autoUpdate: true,
             updateFrameRate: 2,
@@ -286,6 +289,9 @@ export class Engine3D {
             materialChannelDebug: false,
             materialDebug: false
         },
+        loader: {
+            numConcurrent: 20,
+        }
     };
 
 
@@ -327,6 +333,8 @@ export class Engine3D {
 
         this.res = new Res();
 
+        this.res.initDefault();
+
         this._beforeRender = descriptor.beforeRender;
         this._renderLoop = descriptor.renderLoop;
         this._lateRender = descriptor.lateRender;
@@ -345,8 +353,20 @@ export class Engine3D {
         this.views = [view];
         let renderJob = new ForwardRenderJob(view);
         this.renderJobs.set(view, renderJob);
-        renderJob.addPost(new FXAAPost());
-        renderJob.start();
+        let presentationSize = webGPUContext.presentationSize;
+        // RTResourceMap.createRTTexture(RTResourceConfig.colorBufferTex_NAME, presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float, false);
+        
+        if (this.setting.pick.mode == `pixel`) {
+            let postProcessing = view.scene.getOrAddComponent(PostProcessingComponent);
+            postProcessing.addPost(FXAAPost);
+            
+        } else {
+        }
+
+        if (this.setting.pick.mode == `pixel` || this.setting.pick.mode == `bound`) {
+            view.enablePick = true;
+        }
+
         this.resume();
         return renderJob;
     }
@@ -364,8 +384,18 @@ export class Engine3D {
             const view = views[i];
             let renderJob = new ForwardRenderJob(view);
             this.renderJobs.set(view, renderJob);
-            renderJob.addPost(new FXAAPost());
-            renderJob.start();
+            let presentationSize = webGPUContext.presentationSize;
+
+            if (this.setting.pick.mode == `pixel`) {
+                let postProcessing = view.scene.addComponent(PostProcessingComponent);
+                postProcessing.addPost(FXAAPost);
+            } else {
+                RTResourceMap.createRTTexture(RTResourceConfig.colorBufferTex_NAME, presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float, false);
+            }
+
+            if (this.setting.pick.mode == `pixel` || this.setting.pick.mode == `bound`) {
+                view.enablePick = true;
+            }
         }
         this.resume();
     }
@@ -401,6 +431,9 @@ export class Engine3D {
      * @internal
      */
     private static render(time) {
+        webGPUContext.updateSize();
+        Texture.destroyTexture();
+
         this._deltaTime = time - this._time;
         this._time = time;
 
@@ -489,6 +522,18 @@ export class Engine3D {
             }
         }
 
+        for (const iterator of ComponentCollect.graphicComponent) {
+            let k = iterator[0];
+            let v = iterator[1];
+            for (const iterator2 of v) {
+                let f = iterator2[0];
+                let c = iterator2[1];
+                if (k && f.enable) {
+                    c(k);
+                };
+            }
+        }
+
         if (this._renderLoop) {
             this._renderLoop();
         }
@@ -503,6 +548,9 @@ export class Engine3D {
         globalMatrixBindGroup.writeBuffer(Matrix4.useCount * 16);
 
         this.renderJobs.forEach((v, k) => {
+            if (!v.renderState) {
+                v.start();
+            }
             v.renderFrame();
         });
 
@@ -520,6 +568,7 @@ export class Engine3D {
         }
 
         if (this._lateRender) this._lateRender();
+
     }
 
 

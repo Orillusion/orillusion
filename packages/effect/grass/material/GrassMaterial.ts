@@ -1,4 +1,4 @@
-import { BlendMode, Color, GPUAddressMode, Material, RenderShader, RendererType, ShaderLib, Texture, Vector2, Vector3, Vector4 } from "@orillusion/core";
+import { BlendMode, Color, GPUAddressMode, Material, RenderShaderPass, PassType, Shader, ShaderLib, Texture, Vector2, Vector3, Vector4 } from "@orillusion/core";
 import { GrassShader } from "../shader/GrassShader";
 import { GrassVertexAttributeShader } from "../shader/GrassVertexAttributeShader";
 import { GrassCastShadowShader } from "../shader/GrassCastShadowShader";
@@ -7,11 +7,12 @@ export class GrassMaterial extends Material {
     constructor() {
         super();
 
+        let newShader = new Shader();
         ShaderLib.register("GrassVertexAttributeShader", GrassVertexAttributeShader);
         ShaderLib.register("GrassShader", GrassShader);
 
-        let colorPass = new RenderShader(`GrassShader`, `GrassShader`);
-        this.defaultPass = colorPass;
+        let colorPass = new RenderShaderPass(`GrassShader`, `GrassShader`);
+        colorPass.passType = PassType.COLOR;
         colorPass.setShaderEntry(`VertMain`, `FragMain`)
         colorPass.setDefine("TRANSFORMVERTEX", true);
         let shaderState = colorPass.shaderState;
@@ -21,17 +22,18 @@ export class GrassMaterial extends Material {
         shaderState.useLight = true;
         shaderState.castShadow = false;
         shaderState.blendMode = BlendMode.NONE;
+        newShader.addRenderPass(colorPass);
 
         ShaderLib.register("GrassCastShadowShader", GrassCastShadowShader);
 
-        let shadowPass = new RenderShader(`GrassCastShadowShader`, `GrassCastShadowShader`);
+        let shadowPass = new RenderShaderPass(`GrassCastShadowShader`, `GrassCastShadowShader`);
+        shadowPass.passType = PassType.SHADOW
         shadowPass.setDefine("USE_ALPHACUT", true);
         shadowPass.setDefine("TRANSFORMVERTEX", true);
         shadowPass.setShaderEntry(`VertMain`)
         shadowPass.shaderState.blendMode = BlendMode.NONE;
         shadowPass.shaderState.receiveEnv = false;
-        this.addPass(RendererType.SHADOW, shadowPass);
-
+        newShader.addRenderPass(shadowPass);
 
         colorPass.setUniformColor("baseColor", new Color(0.0, 1.0, 0.0, 1.0));
         colorPass.setUniformColor("grassBottomColor", new Color(3 / 255, 16 / 255, 3 / 255));
@@ -67,159 +69,118 @@ export class GrassMaterial extends Material {
         // this.baseMap = Engine3D.res.whiteTexture;
         colorPass.doubleSide = true;
         shadowPass.doubleSide = true;
+
+        this.shader = newShader;
     }
 
     public set baseMap(texture: Texture) {
-        // texture.visibility = GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT;
-        let shadowPass = this.getPass(RendererType.SHADOW)[0];
-
-        this.defaultPass.setTexture(`baseMap`, texture);
-        shadowPass.setTexture(`baseMap`, texture);
+        this.shader.setTexture(`baseMap`, texture);
     }
 
     public get baseMap(): Texture {
-        return this.defaultPass.getTexture(`baseMap`);
+        return this.shader.getTexture(`baseMap`);
     }
 
     public set windMap(texture: Texture) {
         // texture.visibility = GPUShaderStage.VERTEX;
         texture.addressModeU = GPUAddressMode.repeat;
         texture.addressModeV = GPUAddressMode.repeat;
-        this.defaultPass.setTexture("windMap", texture);
-        let shadowPass = this.getPass(RendererType.SHADOW)[0];
-
-        shadowPass.setTexture("windMap", texture);
+        this.shader.setTexture("windMap", texture);
     }
 
     public set windBound(v: Vector4) {
-        this.defaultPass.setUniformVector4("windBound", v);
-        let shadowPass = this.getPass(RendererType.SHADOW)[0];
-
-        this.defaultPass.setUniformVector4("windBound", v);
-        shadowPass.setUniformVector4("windBound", v);
+        this.shader.setUniformVector4("windBound", v);
     }
 
     public get windBound(): Vector4 {
-        return this.defaultPass.uniforms["windBound"].vector4;
+        return this.shader.getUniform("windBound").data;
     }
 
     public set grassBaseColor(v: Color) {
-        this.defaultPass.setUniformColor("grassBottomColor", v);
-        let shadowPass = this.getPass(RendererType.SHADOW)[0];
-        shadowPass.setUniformColor("grassBottomColor", v);
+        this.shader.setUniformColor("grassBottomColor", v);
     }
 
     public get grassBaseColor(): Color {
-        return this.defaultPass.uniforms["grassBottomColor"].color;
+        return this.shader.getUniformColor("grassBottomColor");
     }
 
     public set grassTopColor(v: Color) {
-        this.defaultPass.setUniformColor("grassTopColor", v);
-        let shadowPass = this.getPass(RendererType.SHADOW)[0];
-
-        shadowPass.setUniformColor("grassTopColor", v);
+        this.shader.setUniformColor("grassTopColor", v);
     }
 
     public get grassTopColor(): Color {
-        return this.defaultPass.uniforms["grassTopColor"].color;
+        return this.shader.getUniformColor("grassTopColor");
     }
 
     public set windDirection(v: Vector2) {
-        this.defaultPass.setUniformVector2("windDirection", v);
-        let shadowPass = this.getPass(RendererType.SHADOW)[0];
-
-        shadowPass.setUniformVector2("windDirection", v);
+        this.shader.setUniformVector2("windDirection", v);
     }
 
     public get windDirection(): Vector2 {
-        return this.defaultPass.uniforms["windDirection"].vector2;
+        return this.shader.getUniform("windDirection").data;
     }
 
     public set windPower(v: number) {
-        this.defaultPass.setUniformFloat("windPower", v);
-        let shadowPass = this.getPass(RendererType.SHADOW)[0];
-
-        shadowPass.setUniformFloat("windPower", v);
+        this.shader.setUniformFloat("windPower", v);
     }
 
     public get windPower(): number {
-        return this.defaultPass.uniforms["windPower"].data;
+        return this.shader.getUniform("windPower").data;
     }
 
     public set windSpeed(v: number) {
-        this.defaultPass.setUniformFloat("windSpeed", v);
-        let shadowPass = this.getPass(RendererType.SHADOW)[0];
-
-        shadowPass.setUniformFloat("windSpeed", v);
+        this.shader.setUniformFloat("windSpeed", v);
     }
 
     public get windSpeed(): number {
-        return this.defaultPass.uniforms["windSpeed"].data;
+        return this.shader.getUniform("windSpeed").data;
     }
 
     public set grassHeight(v: number) {
-        this.defaultPass.setUniformFloat("grassHeight", v);
-        let shadowPass = this.getPass(RendererType.SHADOW)[0];
-
-        shadowPass.setUniformFloat("grassHeight", v);
+        this.shader.setUniformFloat("grassHeight", v);
     }
 
     public get grassHeight(): number {
-        return this.defaultPass.uniforms["grassHeight"].data;
+        return this.shader.getUniform("grassHeight").data;
     }
 
     public set curvature(v: number) {
-        this.defaultPass.setUniformFloat("curvature", v);
-        let shadowPass = this.getPass(RendererType.SHADOW)[0];
-
-        shadowPass.setUniformFloat("curvature", v);
+        this.shader.setUniformFloat("curvature", v);
     }
 
     public get curvature(): number {
-        return this.defaultPass.uniforms["curvature"].data;
+        return this.shader.getUniform("curvature").data;
     }
 
     public set roughness(v: number) {
-        this.defaultPass.setUniformFloat("roughness", v);
-        let shadowPass = this.getPass(RendererType.SHADOW)[0];
-
-        shadowPass.setUniformFloat("roughness", v);
+        this.shader.setUniformFloat("roughness", v);
     }
 
     public get roughness(): number {
-        return this.defaultPass.uniforms["roughness"].data;
+        return this.shader.getUniform("roughness").data;
     }
 
     public set translucent(v: number) {
-        this.defaultPass.setUniformFloat("translucent", v);
-        let shadowPass = this.getPass(RendererType.SHADOW)[0];
-
-        shadowPass.setUniformFloat("translucent", v);
+        this.shader.setUniformFloat("translucent", v);
     }
 
     public get translucent(): number {
-        return this.defaultPass.uniforms["translucent"].data;
+        return this.shader.getUniform("translucent").data;
     }
 
     public set soft(v: number) {
-        this.defaultPass.setUniformFloat("soft", v);
-        let shadowPass = this.getPass(RendererType.SHADOW)[0];
-
-        shadowPass.setUniformFloat("soft", v);
+        this.shader.setUniformFloat("soft", v);
     }
 
     public get soft(): number {
-        return this.defaultPass.uniforms["soft"].data;
+        return this.shader.getUniform("soft").data;
     }
 
     public set specular(v: number) {
-        this.defaultPass.setUniformFloat("specular", v);
-        let shadowPass = this.getPass(RendererType.SHADOW)[0];
-
-        shadowPass.setUniformFloat("specular", v);
+        this.shader.setUniformFloat("specular", v);
     }
 
     public get specular(): number {
-        return this.defaultPass.uniforms["specular"].data;
+        return this.shader.getUniform("specular").data;
     }
 }

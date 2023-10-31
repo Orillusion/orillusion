@@ -1,10 +1,10 @@
-import { BloomSetting } from "./post/BloomSetting";
 import { DepthOfViewSetting } from "./post/DepthOfViewSetting";
 import { GlobalFogSetting } from "./post/GlobalFogSetting";
 import { GTAOSetting } from "./post/GTAOSetting";
 import { OutlineSetting } from "./post/OutlineSetting";
 import { SSRSetting } from "./post/SSRSetting";
 import { TAASetting } from "./post/TAASetting";
+import { BloomSetting } from "./post/BloomSetting";
 
 export type RenderSetting = {
     debug: boolean;
@@ -30,7 +30,7 @@ export type RenderSetting = {
      */
     postProcessing: {
         enable?: boolean;
-        bloom?: BloomSetting;
+        bloom?: BloomSetting,
         ssao?: {
             debug: any;
             enable: boolean;

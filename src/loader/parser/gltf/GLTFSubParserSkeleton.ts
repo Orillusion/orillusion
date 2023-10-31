@@ -46,37 +46,48 @@ export class GLTFSubParserSkeleton {
             }
             count++;
             let joint = skeleton.getJointByName(node.name);
-            switch (property) {
-                case 'scale':
-                    for (var nFrame: number = 0; nFrame < numFrame; nFrame++) {
-                        var srcOffset = nFrame * outputAccessor.numComponents;
-                        var dstOffset = skeletonPoseLength * nFrame + 12 * joint.index;
-                        bufferData[dstOffset + 0] = outputAccessor.data[srcOffset + 0]; // x
-                        bufferData[dstOffset + 1] = outputAccessor.data[srcOffset + 1]; // y
-                        bufferData[dstOffset + 2] = outputAccessor.data[srcOffset + 2]; // z
-                        bufferData[dstOffset + 3] = 1;
-                    }
-                    break;
-                case 'rotation':
-                    for (var nFrame: number = 0; nFrame < numFrame; nFrame++) {
-                        var srcOffset = nFrame * outputAccessor.numComponents;
-                        var dstOffset = skeletonPoseLength * nFrame + 12 * joint.index + 4;
-                        bufferData[dstOffset + 0] = outputAccessor.data[srcOffset + 0]; // x
-                        bufferData[dstOffset + 1] = outputAccessor.data[srcOffset + 1]; // y
-                        bufferData[dstOffset + 2] = outputAccessor.data[srcOffset + 2]; // z
-                        bufferData[dstOffset + 3] = outputAccessor.data[srcOffset + 3]; // w
-                    }
-                    break;
-                case 'translation':
-                    for (var nFrame: number = 0; nFrame < numFrame; nFrame++) {
-                        var srcOffset = nFrame * outputAccessor.numComponents;
-                        var dstOffset = skeletonPoseLength * nFrame + 12 * joint.index + 8;
-                        bufferData[dstOffset + 0] = outputAccessor.data[srcOffset + 0]; // x
-                        bufferData[dstOffset + 1] = outputAccessor.data[srcOffset + 1]; // y
-                        bufferData[dstOffset + 2] = outputAccessor.data[srcOffset + 2]; // z
-                        bufferData[dstOffset + 3] = inputAccessor.data[nFrame * inputAccessor.numComponents];
-                    }
-                    break;
+            if (!joint) {
+                switch (property) {
+                    case 'scale':
+                        break;
+                    case 'rotation':
+                        break;
+                    case 'translation':
+                        break;
+                }
+            } else {
+                switch (property) {
+                    case 'scale':
+                        for (var nFrame: number = 0; nFrame < numFrame; nFrame++) {
+                            var srcOffset = nFrame * outputAccessor.numComponents;
+                            var dstOffset = skeletonPoseLength * nFrame + 12 * joint.index;
+                            bufferData[dstOffset + 0] = outputAccessor.data[srcOffset + 0]; // x
+                            bufferData[dstOffset + 1] = outputAccessor.data[srcOffset + 1]; // y
+                            bufferData[dstOffset + 2] = outputAccessor.data[srcOffset + 2]; // z
+                            bufferData[dstOffset + 3] = 1;
+                        }
+                        break;
+                    case 'rotation':
+                        for (var nFrame: number = 0; nFrame < numFrame; nFrame++) {
+                            var srcOffset = nFrame * outputAccessor.numComponents;
+                            var dstOffset = skeletonPoseLength * nFrame + 12 * joint.index + 4;
+                            bufferData[dstOffset + 0] = outputAccessor.data[srcOffset + 0]; // x
+                            bufferData[dstOffset + 1] = outputAccessor.data[srcOffset + 1]; // y
+                            bufferData[dstOffset + 2] = outputAccessor.data[srcOffset + 2]; // z
+                            bufferData[dstOffset + 3] = outputAccessor.data[srcOffset + 3]; // w
+                        }
+                        break;
+                    case 'translation':
+                        for (var nFrame: number = 0; nFrame < numFrame; nFrame++) {
+                            var srcOffset = nFrame * outputAccessor.numComponents;
+                            var dstOffset = skeletonPoseLength * nFrame + 12 * joint.index + 8;
+                            bufferData[dstOffset + 0] = outputAccessor.data[srcOffset + 0]; // x
+                            bufferData[dstOffset + 1] = outputAccessor.data[srcOffset + 1]; // y
+                            bufferData[dstOffset + 2] = outputAccessor.data[srcOffset + 2]; // z
+                            bufferData[dstOffset + 3] = inputAccessor.data[nFrame * inputAccessor.numComponents];
+                        }
+                        break;
+                }
             }
         }
 

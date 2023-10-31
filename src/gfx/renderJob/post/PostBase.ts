@@ -1,4 +1,3 @@
-import { Scene3D } from '../../../core/Scene3D';
 import { ViewQuad } from '../../../core/ViewQuad';
 import { VirtualTexture } from '../../../textures/VirtualTexture';
 import { Texture } from '../../graphics/webGpu/core/texture/Texture';
@@ -34,8 +33,8 @@ export class PostBase {
         return rt;
     }
 
-    protected createViewQuad(name: string, shaderName: string, outRtTexture: VirtualTexture, shaderUniforms?: { [uniName: string]: UniformNode }, msaa: number = 0) {
-        let viewQuad = RTResourceMap.createViewQuad(name, 'Quad_vert_wgsl', shaderName, outRtTexture, shaderUniforms, msaa);
+    protected createViewQuad(name: string, shaderName: string, outRtTexture: VirtualTexture, msaa: number = 0) {
+        let viewQuad = RTResourceMap.createViewQuad(name, 'Quad_vert_wgsl', shaderName, outRtTexture, msaa);
         this.rtViewQuad.set(name, viewQuad);
         return viewQuad;
     }

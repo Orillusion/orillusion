@@ -1,4 +1,4 @@
-export let LambertShader: string = /*wgsl*/ `
+export let Lambert_shader: string = /*wgsl*/ `
     #include "Common_vert"
     #include "Common_frag"
     #include "ClusterLight"

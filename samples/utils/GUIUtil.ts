@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AtmosphericComponent, BillboardType, BlendMode, Color, DirectLight, Engine3D, GPUCullMode, GlobalFog, GlobalIlluminationComponent, HDRBloomPost, LitMaterial, Material, PointLight, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
+import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, BloomPost, Color, DirectLight, Engine3D, GPUCullMode, GTAOPost, GlobalFog, GlobalIlluminationComponent, LitMaterial, Material, MorphTargetBlender, Object3D, PointLight, SkinnedMeshRenderer2, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
@@ -8,13 +8,15 @@ export class GUIUtil {
     public static renderShadowSetting(open: boolean = true) {
         GUIHelp.addFolder('ShadowSetting');
         let setting = Engine3D.setting.shadow;
+
         GUIHelp.add(setting, 'shadowBound', 0, 2048, 1);
+        GUIHelp.add(setting, 'shadowBias', 0.0001, 0.2, 0.00001);
         open && GUIHelp.open();
         GUIHelp.endFolder();
     }
 
     //render AtmosphericComponent
-    public static renderAtomosphericSky(component: AtmosphericComponent, open: boolean = true, name?: string) {
+    public static renderAtmosphericSky(component: AtmosphericComponent, open: boolean = true, name?: string) {
         name ||= 'AtmosphericSky';
         GUIHelp.addFolder(name);
         GUIHelp.add(component, 'sunX', 0, 1, 0.01);
@@ -66,27 +68,37 @@ export class GUIUtil {
         GUIHelp.add(transform, 'rotationX', 0.0, 360.0, 0.01);
         GUIHelp.add(transform, 'rotationY', 0.0, 360.0, 0.01);
         GUIHelp.add(transform, 'rotationZ', 0.0, 360.0, 0.01);
-        GUIHelp.add(transform, 'scaleX', 0.0, 2.0, 0.01);
-        GUIHelp.add(transform, 'scaleY', 0.0, 2.0, 0.01);
-        GUIHelp.add(transform, 'scaleZ', 0.0, 2.0, 0.01);
+        GUIHelp.add(transform, 'scaleX', -2.0, 2.0, 0.01);
+        GUIHelp.add(transform, 'scaleY', -2.0, 2.0, 0.01);
+        GUIHelp.add(transform, 'scaleZ', -2.0, 2.0, 0.01);
 
         open && GUIHelp.open();
         GUIHelp.endFolder();
     }
 
-
-    //render bloom gui panel
-    public static renderBloom(bloom: HDRBloomPost, open: boolean = true, name?: string) {
-        name ||= 'HDRBloom';
+    public static renderBloom(bloom: BloomPost, open: boolean = true, name?: string) {
+        name ||= 'Bloom';
         GUIHelp.addFolder(name);
-        GUIHelp.add(bloom, 'enable');
-        GUIHelp.addColor(bloom, 'tintColor');
-        GUIHelp.add(bloom, 'luminosityThreshold');
-        GUIHelp.add(bloom, 'strength', 0, 3, 0.001);
-        GUIHelp.add(bloom, 'exposure');
-        GUIHelp.add(bloom, 'radius', 0, 1.0, 0.001);
-        GUIHelp.add(bloom, 'blurX');
-        GUIHelp.add(bloom, 'blurY');
+        GUIHelp.add(bloom, 'downSampleBlurSize', 3, 15, 1);
+        GUIHelp.add(bloom, 'downSampleBlurSigma', 0.01, 1, 0.001);
+        GUIHelp.add(bloom, 'upSampleBlurSize', 3, 15, 1);
+        GUIHelp.add(bloom, 'upSampleBlurSigma', 0.01, 1, 0.001);
+        GUIHelp.add(bloom, 'luminanceThreshole', 0.001, 10.0, 0.001);
+        GUIHelp.add(bloom, 'bloomIntensity', 0.001, 10.0, 0.001);
+        open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
+
+    public static renderVector3(obj: Object3D, open: boolean = true, name?: string) {
+        name ||= 'Vector3';
+        GUIHelp.addFolder(name);
+        GUIHelp.add(obj, 'x', -10.0, 10.0, 0.01);
+        GUIHelp.add(obj, 'y', -10.0, 10.0, 0.01);
+        GUIHelp.add(obj, 'z', -10.0, 10.0, 0.01);
+
+        GUIHelp.add(obj.transform, 'rotationX', 0.0, 360.0, 0.01);
+        GUIHelp.add(obj.transform, 'rotationY', 0.0, 360.0, 0.01);
+        GUIHelp.add(obj.transform, 'rotationZ', 0.0, 360.0, 0.01);
         open && GUIHelp.open();
         GUIHelp.endFolder();
     }
@@ -362,18 +374,20 @@ export class GUIUtil {
 
     static renderDebug() {
         // if (Engine3D.setting.render.debug) {
-        let debugTextures = Engine3D.getRenderJob(Engine3D.views[0]).postRenderer.debugTextures;
 
-        let debugTextureObj = { normalRender: -1 };
-        for (let i = 0; i < debugTextures.length; i++) {
-            const tex = debugTextures[i];
-            debugTextureObj[tex.name] = i;
-        }
         GUIHelp.removeFolder(`RenderPerformance`);
         //debug
         let f = GUIHelp.addFolder('RenderPerformance');
         f.open();
-        GUIHelp.add(Engine3D.setting.render, 'debugQuad', debugTextureObj);
+        if (Engine3D.getRenderJob(Engine3D.views[0]).postRenderer) {
+            let debugTextures = Engine3D.getRenderJob(Engine3D.views[0]).postRenderer.debugTextures;
+            let debugTextureObj = { normalRender: -1 };
+            for (let i = 0; i < debugTextures.length; i++) {
+                const tex = debugTextures[i];
+                debugTextureObj[tex.name] = i;
+            }
+            GUIHelp.add(Engine3D.setting.render, 'debugQuad', debugTextureObj);
+        }
         let debugChanel = {
             PositionView: 0,
             ColorView: 1,
@@ -400,50 +414,126 @@ export class GUIUtil {
         GUIHelp.add(Engine3D.setting.render, 'drawOpMax', 0.0, 10000, 1);
         GUIHelp.endFolder();
     }
-    // }
 
-    public static renderMaterial(mat: Material, open: boolean = true, name?: string) {
-        name ||= 'Material';
-        GUIHelp.addFolder(name);
+    static renderLitMaterial(mat: LitMaterial) {
+        GUIHelp.addFolder(mat.name);
+        GUIHelp.addColor(mat, 'baseColor').onChange((v) => {
+            let color = mat.baseColor;
+            color.copyFromArray(v);
+            mat.baseColor = color;
+        });
 
-        if (mat instanceof LitMaterial) {
-            GUIHelp.addColor(mat, 'baseColor').onChange((v) => {
-                mat.defaultPass.baseColor = v;
-            });
+        let blendMode = {
+            NONE: BlendMode.NONE,
+            NORMAL: BlendMode.NORMAL,
+            ADD: BlendMode.ADD,
+            ALPHA: BlendMode.ALPHA,
+        }
+        // change blend mode by click dropdown box
+        GUIHelp.add({ blendMode: mat.blendMode }, 'blendMode', blendMode).onChange((v) => {
+            mat.blendMode = BlendMode[BlendMode[parseInt(v)]];
+        });
 
-            let blendMode = {
-                NONE: BlendMode.NONE,
-                NORMAL: BlendMode.NORMAL,
-                ADD: BlendMode.ADD,
-                ALPHA: BlendMode.ALPHA,
-            }
-            // change blend mode by click dropdown box
-            GUIHelp.add({ blendMode: mat.blendMode }, 'blendMode', blendMode).onChange((v) => {
-                mat.blendMode = BlendMode[BlendMode[parseInt(v)]];
-            });
+        GUIHelp.add(mat, 'alphaCutoff', 0.0, 1.0, 0.0001).onChange((v) => {
+            mat.alphaCutoff = v;
+        });
 
-            GUIHelp.add(mat, 'alphaCutoff', 0.0, 1.0, 0.0001).onChange((v) => {
-                mat.alphaCutoff = v;
-            });
+        GUIHelp.add(mat, 'doubleSide').onChange((v) => {
+            mat.doubleSide = v;
+        });
 
-            GUIHelp.add(mat, 'doubleSide').onChange((v) => {
-                mat.doubleSide = v;
-            });
+        GUIHelp.add(mat, 'roughness', 0.0, 1.0, 0.0001).onChange((v) => {
+            mat.roughness = v;
+        });
 
-            GUIHelp.add(mat, 'roughness').onChange((v) => {
-                mat.roughness = v;
-            });
+        GUIHelp.add(mat, 'metallic', 0.0, 1.0, 0.0001).onChange((v) => {
+            mat.metallic = v;
+        });
 
-            GUIHelp.add(mat, 'metallic').onChange((v) => {
-                mat.metallic = v;
-            });
+        GUIHelp.endFolder();
+    }
 
-            GUIHelp.add(mat, 'envIntensity').onChange((v) => {
-                mat.envIntensity = v;
+    public static blendShape(obj: Object3D) {
+        GUIHelp.addFolder('morph controller');
+        // register MorphTargetBlender component
+        let blendShapeComponent = obj.addComponent(MorphTargetBlender);
+        let targetRenderers = blendShapeComponent.cloneMorphRenderers();
+
+        let influenceData = {};
+        // bind influenceData to gui
+        for (let key in targetRenderers) {
+            influenceData[key] = 0.0;
+            GUIHelp.add(influenceData, key, 0, 1, 0.01).onChange((v) => {
+                influenceData[key] = v;
+                let list = blendShapeComponent.getMorphRenderersByKey(key);
+                for (let renderer of list) {
+                    renderer.setMorphInfluence(key, v);
+                }
             });
         }
 
-        open && GUIHelp.open();
+        GUIHelp.open();
+        GUIHelp.endFolder();
+    }
+
+    public static renderBlendShape(obj: Object3D) {
+        GUIHelp.addFolder('morph controller');
+        // register MorphTargetBlender component
+        let blendShapeComponents = obj.getComponents(SkinnedMeshRenderer2);
+        let targetRenderers = null;
+        for (let ii = 0; ii < blendShapeComponents.length; ii++) {
+            if (blendShapeComponents[ii].geometry.blendShapeData) {
+                targetRenderers = blendShapeComponents[ii].geometry.blendShapeData.shapeNames;
+            }
+        }
+
+        if (targetRenderers) {
+            let influenceData = {};
+            // bind influenceData to gui
+            for (let i in targetRenderers) {
+                let key = targetRenderers[i];
+                influenceData[key] = 0.0;
+                GUIHelp.add(influenceData, key, 0, 1, 0.01).onChange((v) => {
+                    influenceData[key] = v;
+                    for (let index = 0; index < blendShapeComponents.length; index++) {
+                        for (let renderer of blendShapeComponents) {
+                            renderer.setMorphInfluence(key, v);
+                        }
+                    }
+                });
+            }
+        }
+
+        GUIHelp.open();
+        GUIHelp.endFolder();
+    }
+
+    static renderAnimator(com: AnimatorComponent) {
+        let anim = {}
+        for (let i = 0; i < com.clips.length; i++) {
+            const clip = com.clips[i];
+            anim[clip.clipName] = clip.clipName;
+        }
+
+        GUIHelp.addFolder('morph controller');
+
+        GUIHelp.add({ anim: anim }, 'anim', anim).onChange((v) => {
+            com.playAnim(v);
+            com.playBlendShape(v);
+        });
+        GUIHelp.endFolder();
+
+    }
+
+
+    public static renderGTAO(post: GTAOPost) {
+        GUIHelp.addFolder("GTAO");
+        GUIHelp.add(post, "maxDistance", 0.0, 149, 1);
+        GUIHelp.add(post, "maxPixel", 0.0, 150, 1);
+        GUIHelp.add(post, "rayMarchSegment", 0.0, 50, 0.001);
+        GUIHelp.add(post, "darkFactor", 0.0, 5, 0.001);
+        GUIHelp.add(post, "blendColor");
+        GUIHelp.add(post, "multiBounce");
         GUIHelp.endFolder();
     }
 }

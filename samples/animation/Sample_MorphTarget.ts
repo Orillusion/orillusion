@@ -3,7 +3,7 @@ import { Object3D, Scene3D, Engine3D, AtmosphericComponent, webGPUContext, Hover
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
 // Sample of how to control the morphtarget animation
-class Sample_MorphTarget {
+export class Sample_MorphTarget {
     lightObj3D: Object3D;
     scene: Scene3D;
     influenceData: { [key: string]: number } = {};
@@ -91,4 +91,4 @@ class Sample_MorphTarget {
 
 }
 
-new Sample_MorphTarget().run();
+// new Sample_MorphTarget().run();

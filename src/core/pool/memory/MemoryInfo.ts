@@ -150,8 +150,6 @@ export class MemoryInfo {
         this.dataBytes.setUint16(index * Uint16Array.BYTES_PER_ELEMENT, v, true);
     }
 
-
-
     public getUint16(index: number = 0): number {
         return this.dataBytes.getUint16(index * Uint16Array.BYTES_PER_ELEMENT, true);
     }
@@ -172,10 +170,6 @@ export class MemoryInfo {
     }
 
     public setFloat32Array(index: number, data: Float32Array) {
-        // let buffer = this.dataBytes.buffer.slice(this.dataBytes.byteOffset, this.dataBytes.byteOffset + data.length * Float32Array.BYTES_PER_ELEMENT);
-        // let tmp = new Float32Array(buffer, index * Float32Array.BYTES_PER_ELEMENT);
-        // tmp.set(data);
-
         let tmp = new Float32Array(this.dataBytes.buffer, this.dataBytes.byteOffset + index * Float32Array.BYTES_PER_ELEMENT, data.length);
         tmp.set(data);
     }

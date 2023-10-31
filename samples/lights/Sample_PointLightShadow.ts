@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, Vector3, View3D, SphereGeometry, Object3D, MeshRenderer, LitMaterial, PointLight, BoxGeometry, Object3DUtil } from "@orillusion/core";
+import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, Vector3, View3D, SphereGeometry, Object3D, MeshRenderer, LitMaterial, PointLight, BoxGeometry, Object3DUtil, PostProcessingComponent, FXAAPost } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
 // sample of point light shadow
@@ -10,6 +10,7 @@ class Sample_PointLightShadow {
 
         Engine3D.setting.shadow.enable = true;
         Engine3D.setting.shadow.debug = true;
+        Engine3D.setting.render.debug = true;
         Engine3D.setting.material.materialChannelDebug = true;
         Engine3D.setting.material.materialDebug = true;
 
@@ -32,6 +33,13 @@ class Sample_PointLightShadow {
         view.camera = mainCamera;
 
         Engine3D.startRenderView(view);
+
+        let post = this.scene.addComponent(PostProcessingComponent);
+        post.addPost(FXAAPost);
+
+        setTimeout(() => {
+            GUIUtil.renderDebug();
+        }, 1000);
     }
 
     async initScene(scene: Scene3D) {

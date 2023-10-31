@@ -13,7 +13,7 @@ export class ProbeGBufferFrame extends RTFrame {
     }
 
     crateGBuffer(rtWidth: number, rtHeight: number) {
-        let attachments = this.attachments;
+        let attachments = this.renderTargets;
         let rtDescriptors = this.rtDescriptors;
         let positionMap = new VirtualTexture(rtWidth, rtHeight, GPUTextureFormat.rgba16float, false);
         positionMap.name = `positionMap`;

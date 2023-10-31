@@ -15,12 +15,13 @@ import { ShadowLightsCollect } from "../../collect/ShadowLightsCollect";
 import { RTFrame } from "../../frame/RTFrame";
 import { OcclusionSystem } from "../../occlusion/OcclusionSystem";
 import { RendererPassState } from "../state/RendererPassState";
-import { RendererType } from "../state/RendererType";
+import { PassType } from "../state/RendererType";
 import { RendererBase } from "../RendererBase";
 import { ClusterLightingBuffer } from "../cluster/ClusterLightingBuffer";
 import { Reference } from "../../../../util/Reference";
 import { Texture } from "../../../graphics/webGpu/core/texture/Texture";
 import { CSM } from "../../../../core/csm/CSM";
+import { ShadowTexture } from "../../../../textures/ShadowTexture";
 
 /**
  * @internal
@@ -35,7 +36,7 @@ export class ShadowMapPassRenderer extends RendererBase {
     constructor() {
         super();
         this.setShadowMap(Engine3D.setting.shadow.shadowSize, CSM.Cascades);
-        this.passType = RendererType.SHADOW;
+        this.passType = PassType.SHADOW;
     }
 
     setShadowMap(size: number, cascades: number) {
@@ -45,7 +46,7 @@ export class ShadowMapPassRenderer extends RendererBase {
 
         for (let i = 0; i < 8; i++) {
             let rtFrame = new RTFrame([], []);
-            const tex = new VirtualTexture(size, size, GPUTextureFormat.depth32float, false);
+            const tex = new ShadowTexture(size, size, GPUTextureFormat.depth32float, false);
             tex.name = `shadowDepthTexture_${i}`;
             rtFrame.depthTexture = tex;
             rtFrame.label = "shadowRender";

@@ -3,6 +3,7 @@ import { GPUAddressMode, GPUTextureFormat } from '../gfx/graphics/webGpu/WebGPUC
 import { webGPUContext } from '../gfx/graphics/webGpu/Context3D';
 import { GPUContext } from '../gfx/renderJob/GPUContext';
 import { UUID } from '../util/Global';
+import { CResizeEvent } from '..';
 /**
  * @internal
  * Render target texture 
@@ -11,9 +12,16 @@ import { UUID } from '../util/Global';
  */
 export class VirtualTexture extends Texture {
     public resolveTarget: GPUTextureView;
+    sampleCount: number;
     // storeOp: string = 'store';
     // loadOp: GPULoadOp = `load`;
     // clearValue: GPUColor = [0, 0, 0, 0];
+
+    public clone() {
+        let texture = new VirtualTexture(this.width, this.height, this.format, this.useMipmap, this.usage, this.numberLayer, this.sampleCount);
+        texture.name = "clone_" + texture.name;
+        return texture;
+    }
 
     /**
      * create virtual texture
@@ -23,19 +31,43 @@ export class VirtualTexture extends Texture {
      * @param useMipmap whether or not gen mipmap
      * @returns
      */
-    constructor(width: number, height: number, format: GPUTextureFormat = GPUTextureFormat.rgba8unorm, useMipMap: boolean = false, usage?: number, textureCount: number = 1, sampleCount: number = 0, clear: boolean = true) {
-        super(width, height, textureCount);
+    constructor(width: number, height: number, format: GPUTextureFormat = GPUTextureFormat.rgba8unorm, useMipMap: boolean = false, usage?: GPUFlagsConstant, numberLayer: number = 1, sampleCount: number = 0, clear: boolean = true) {
+        super(width, height, numberLayer);
         let device = webGPUContext.device;
         this.name = UUID();
+
+        this.useMipmap = useMipMap;
+        this.sampleCount = sampleCount;
+        this.format = format;
+        this.numberLayer = numberLayer;
 
         if (usage != undefined) {
             this.usage = usage;
         } else {
-            this.usage = GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_SRC | GPUTextureUsage.COPY_DST;
+            this.usage = usage | GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_SRC | GPUTextureUsage.COPY_DST;
         }
 
-        this.createTextureDescriptor(width, height, 1, format, this.usage, textureCount, sampleCount);
+        if (this.usage & GPUTextureUsage.RENDER_ATTACHMENT || this.format == GPUTextureFormat.depth24plus || this.format == GPUTextureFormat.depth32float) {
+            webGPUContext.addEventListener(CResizeEvent.RESIZE, (e) => {
+                let { width, height } = e.data;
+                this.resize(width, height);
+            }, this);
+        }
+        this.resize(width, height);
+    }
 
+    public resize(width, height) {
+        let device = webGPUContext.device;
+        if (this.gpuTexture) {
+            Texture.delayDestroyTexture(this.gpuTexture);
+            this.gpuTexture = null;
+            this.view = null;
+        }
+
+        this.width = width;
+        this.height = height;
+
+        this.createTextureDescriptor(width, height, 1, this.format, this.usage, this.numberLayer, this.sampleCount);
         // this.loadOp = clear ? `clear` : `load`
         // this.loadOp = `clear`
 
@@ -43,11 +75,11 @@ export class VirtualTexture extends Texture {
 
         this.visibility = GPUShaderStage.COMPUTE | GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT;
 
-        if (format == GPUTextureFormat.rgba32float) {
+        if (this.format == GPUTextureFormat.rgba32float) {
             this.samplerBindingLayout.type = `non-filtering`;
             this.textureBindingLayout.sampleType = `unfilterable-float`;
             this.gpuSampler = device.createSampler({});
-        } else if (format == GPUTextureFormat.depth32float) {
+        } else if (this.format == GPUTextureFormat.depth32float) {
             this.samplerBindingLayout.type = `filtering`;
             this.sampler_comparisonBindingLayout.type = `comparison`;
             this.textureBindingLayout.sampleType = `depth`;
@@ -56,7 +88,7 @@ export class VirtualTexture extends Texture {
                 compare: 'less',
                 label: "sampler_comparison"
             });
-        } else if (format == GPUTextureFormat.depth24plus) {
+        } else if (this.format == GPUTextureFormat.depth24plus) {
             this.samplerBindingLayout = {
                 type: `filtering`,
             }
@@ -72,7 +104,7 @@ export class VirtualTexture extends Texture {
         } else {
             this.samplerBindingLayout.type = `filtering`;
             this.textureBindingLayout.sampleType = `float`;
-            if (sampleCount > 0) {
+            if (this.sampleCount > 0) {
                 this.textureBindingLayout.multisampled = true;
             }
             this.minFilter = 'linear';

@@ -79,7 +79,10 @@ export class CylinderGeometry extends GeometryBase {
             indexStart: start,
             indexCount: count,
             vertexStart: start,
+            vertexCount: 0,
+            firstStart: 0,
             index: index,
+            topology: 0,
         });
     }
 

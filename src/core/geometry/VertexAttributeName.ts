@@ -8,6 +8,11 @@ export enum VertexAttributeName {
     TANGENT = 'TANGENT',
     TEXCOORD_1 = 'TEXCOORD_1',
     TEXCOORD_2 = 'TEXCOORD_2',
+    TEXCOORD_3 = 'TEXCOORD_3',
+    TEXCOORD_4 = 'TEXCOORD_4',
+    TEXCOORD_5 = 'TEXCOORD_5',
+    TEXCOORD_6 = 'TEXCOORD_6',
+    TEXCOORD_7 = 'TEXCOORD_7',
     color = 'color',
     joints0 = 'joints0',
     joints1 = 'joints1',
@@ -17,4 +22,7 @@ export enum VertexAttributeName {
     indices = `indices`,
     vIndex = 'vIndex',
     a_morphPositions_0 = 'a_morphPositions_0',
+
+
+    all = 'all',
 }

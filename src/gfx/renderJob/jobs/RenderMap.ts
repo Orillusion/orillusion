@@ -1,15 +1,15 @@
 import { Camera3D } from "../../../core/Camera3D";
 import { Scene3D } from "../../../core/Scene3D";
 import { RendererBase } from "../passRenderer/RendererBase";
-import { RendererType } from "../passRenderer/state/RendererType";
+import { PassType } from "../passRenderer/state/RendererType";
 
 export class RendererMap {
 
-    private map: Map<RendererType, RendererBase>;
+    private map: Map<PassType, RendererBase>;
     private passRendererList: RendererBase[];
 
     constructor() {
-        this.map = new Map<RendererType, RendererBase>();
+        this.map = new Map<PassType, RendererBase>();
         this.passRendererList = [];
     }
 
@@ -24,7 +24,7 @@ export class RendererMap {
         }
     }
 
-    public getRenderer(passType: RendererType): RendererBase {
+    public getRenderer(passType: PassType): RendererBase {
         return this.map.get(passType);
     }
 
@@ -32,7 +32,7 @@ export class RendererMap {
         this.passRendererList.push(renderer);
     }
 
-    public getAllRenderer(): Map<RendererType, RendererBase> {
+    public getAllRenderer(): Map<PassType, RendererBase> {
         return this.map;
     }
 

@@ -3,6 +3,7 @@ import { Vector3 } from "../../../../math/Vector3";
 import { Probe } from "./Probe";
 import { GlobalIlluminationSetting } from "../../../../setting/GlobalIlluminationSetting";
 import { StorageGPUBuffer } from "../../../graphics/webGpu/core/buffer/StorageGPUBuffer";
+import { UniformGPUBuffer } from "../../../..";
 /**
  * @internal
  * @group Post
@@ -15,7 +16,7 @@ export class DDGIIrradianceVolume {
     private randomOrientation: Matrix4;
     private startPosition: Vector3 = new Vector3();
     private isVolumeChange: boolean = true;
-    public irradianceVolumeBuffer: StorageGPUBuffer;
+    public irradianceVolumeBuffer: UniformGPUBuffer;
 
     //__make random direction
     private readonly directionDistance: number = 20;
@@ -37,7 +38,7 @@ export class DDGIIrradianceVolume {
         this.setting = setting;
         this.randomOrientation = new Matrix4(false);
         this.randomOrientation.identity();
-        this.irradianceVolumeBuffer = new StorageGPUBuffer(80);
+        this.irradianceVolumeBuffer = new UniformGPUBuffer(80);
         this.createFramesBuffer();
         //center
         this.arroundPositions.push(this.centerDirection.clone());

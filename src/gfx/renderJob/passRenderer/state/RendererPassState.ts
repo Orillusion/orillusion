@@ -15,13 +15,10 @@ export class RendererPassState {
     public customSize: boolean = false;
     public zPreTexture: VirtualTexture = null;
     public depthTexture: VirtualTexture = null;
-    public outAttachments: GPUColorTargetState[];
+    public renderTargetTextures: GPUColorTargetState[];
     public outColor: number = -1;
     public renderTargets: Texture[];
-    public rtTextureDescripts: RTDescriptor[];
-    // public depthFormat: GPUTextureFormat = 'depth24plus';
-    // public depthFormat: GPUTextureFormat = 'depth32float';
-    // public depthTexture: GPUTexture;
+    public rtTextureDescriptors: RTDescriptor[];
     public irradianceBuffer: Texture[];
     public multisample: number = 0;
     public multiTexture: GPUTexture;

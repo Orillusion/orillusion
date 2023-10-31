@@ -42,6 +42,7 @@ export let GrassShader = /* wgsl */`
     var windMap: texture_2d<f32>;
 
     const DEGREES_TO_RADIANS : f32 = 3.1415926 / 180.0 ;
+    const PI : f32 = 3.1415926 ;
 
     @vertex
     fn VertMain( vertex:VertexAttributes ) -> VertexOutput {

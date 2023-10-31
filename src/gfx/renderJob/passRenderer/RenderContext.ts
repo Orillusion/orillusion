@@ -24,19 +24,23 @@ export class RenderContext {
      * continue renderer pass state
      * @returns 
      */
-    public beginContinueRendererPassState() {
+    public beginContinueRendererPassState(color_loadOp: GPULoadOp = 'load', depth_loadOp: GPULoadOp = 'load') {
         if (this.rendererPassStates.length > 0) {
             let splitRtFrame = this.rtFrame.clone();
             for (const iterator of splitRtFrame.rtDescriptors) {
                 iterator.loadOp = `load`;
                 // iterator.storeOp = `discard`;
             }
-            splitRtFrame.depthLoadOp = "load";
-            let splitRendererPassState = WebGPUDescriptorCreator.createRendererPassState(splitRtFrame);
+            splitRtFrame.depthLoadOp = depth_loadOp;
+            let splitRendererPassState = WebGPUDescriptorCreator.createRendererPassState(splitRtFrame, color_loadOp);
             this.rendererPassStates.push(splitRendererPassState);
             return splitRendererPassState;
         } else {
-            let splitRendererPassState = WebGPUDescriptorCreator.createRendererPassState(this.rtFrame);
+            // for (const iterator of this.rtFrame.rtDescriptors) {
+            //     iterator.loadOp = color_loadOp;
+            // }
+            this.rtFrame.depthLoadOp = depth_loadOp;
+            let splitRendererPassState = WebGPUDescriptorCreator.createRendererPassState(this.rtFrame, color_loadOp);
             this.rendererPassStates.push(splitRendererPassState);
             return splitRendererPassState;
         }
@@ -46,8 +50,14 @@ export class RenderContext {
         return this.rendererPassStates[this.rendererPassStates.length - 1];
     }
 
-    public beginRenderPass() {
-        this.beginContinueRendererPassState();
+    public beginOpaqueRenderPass() {
+        this.beginContinueRendererPassState('clear', 'clear');
+        this.begineNewCommand();
+        this.beginNewEncoder();
+    }
+
+    public beginTransparentRenderPass() {
+        this.beginContinueRendererPassState('load', 'load');
         this.begineNewCommand();
         this.beginNewEncoder();
     }

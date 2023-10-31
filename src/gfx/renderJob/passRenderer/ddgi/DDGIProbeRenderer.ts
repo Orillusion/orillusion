@@ -8,7 +8,7 @@ import { GPUContext } from '../../GPUContext';
 import { ProbeGBufferFrame } from '../../frame/ProbeGBufferFrame';
 import { OcclusionSystem } from '../../occlusion/OcclusionSystem';
 import { RendererBase } from '../RendererBase';
-import { RendererType } from '../state/RendererType';
+import { PassType } from '../state/RendererType';
 import { DDGIIrradianceComputePass } from './DDGIIrradianceComputePass';
 import { DDGIIrradianceVolume } from './DDGIIrradianceVolume';
 import { DDGIMultiBouncePass } from './DDGIMultiBouncePass';
@@ -62,7 +62,7 @@ export class DDGIProbeRenderer extends RendererBase {
     constructor(volume: DDGIIrradianceVolume) {
         super();
 
-        this.passType = RendererType.GI;
+        this.passType = PassType.GI;
 
         this.volume = volume;
         let giSetting = volume.setting;
@@ -79,9 +79,9 @@ export class DDGIProbeRenderer extends RendererBase {
         this.probeRenderResult = new ProbeRenderResult();
 
         let probeGBufferFrame = new ProbeGBufferFrame(this.sizeW, this.sizeH);
-        this.positionMap = probeGBufferFrame.attachments[0];
-        this.normalMap = probeGBufferFrame.attachments[1];
-        this.colorMap = probeGBufferFrame.attachments[2];
+        this.positionMap = probeGBufferFrame.renderTargets[0];
+        this.normalMap = probeGBufferFrame.renderTargets[1];
+        this.colorMap = probeGBufferFrame.renderTargets[2];
 
         this.setRenderStates(probeGBufferFrame);
     }
@@ -299,7 +299,7 @@ export class DDGIProbeRenderer extends RendererBase {
         if (execRender) {
             let probeList = EntityCollect.instance.getProbes(view.scene);
             this.renderContext.clean();
-            this.renderContext.beginRenderPass();
+            this.renderContext.beginOpaqueRenderPass();
             this.tempProbeList.length = 0;
             let remainCount = Math.min(this.probeCountPerFrame, probeList.length);
             this.probeRenderResult.count = remainCount;

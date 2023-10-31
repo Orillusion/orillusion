@@ -103,7 +103,7 @@ export class SphereGeometry extends GeometryBase {
                 normal_arr[ni++] = z * normLen;
 
                 uv_arr[ui++] = i / _segmentsW;
-                uv_arr[ui++] = j / _segmentsH;
+                uv_arr[ui++] = 1.0 - j / _segmentsH;
 
                 if (i > 0 && j > 0) {
                     var a: number = (_segmentsW + 1) * j + i;
@@ -156,7 +156,10 @@ export class SphereGeometry extends GeometryBase {
             indexStart: 0,
             indexCount: indice_arr.length,
             vertexStart: 0,
+            vertexCount: 0,
+            firstStart: 0,
             index: 0,
+            topology: 0
         });
 
         this.bounds = new BoundingBox(Vector3.ZERO, new Vector3(this.radius * 2, this.radius * 2, this.radius * 2))

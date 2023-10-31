@@ -25,6 +25,7 @@ export class VertexGPUBuffer extends GPUBufferBase {
             this.destroy();
         }
         this.buffer = device.createBuffer({
+            label: "VertexGPUBuffer",
             size: this.byteSize,
             usage: usage,
             mappedAtCreation: false,

@@ -7,6 +7,7 @@ import { LitMaterial } from '../../materials/LitMaterial';
 import { StringUtil } from '../../util/StringUtil';
 import { FileLoader } from '../FileLoader';
 import { ParserBase } from './ParserBase';
+import { ParserFormat } from './ParserFormat';
 
 
 type MatData = {
@@ -54,7 +55,7 @@ type Face = {
  * @group Loader
  */
 export class OBJParser extends ParserBase {
-  static format: string = 'text';
+  static format: ParserFormat = ParserFormat.TEXT;
   private textData: string = '';
 
   private source_vertices: number[][];
@@ -346,7 +347,10 @@ export class OBJParser extends ParserBase {
           indexStart: 0,
           indexCount: geoData.indeice_arr.length,
           vertexStart: 0,
+          vertexCount: 0,
+          firstStart: 0,
           index: 0,
+          topology: 0,
         });
 
         let mat = new LitMaterial();

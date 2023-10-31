@@ -11,9 +11,10 @@ import { UniformGPUBuffer } from "../core/buffer/UniformGPUBuffer";
 import { UniformNode } from "../core/uniforms/UniformNode";
 import { ShaderReflection } from "./value/ShaderReflectionInfo";
 import { UniformValue } from "./value/UniformValue";
+import { MaterialDataUniformGPUBuffer } from "../core/buffer/MaterialDataUniformGPUBuffer";
 
 
-export class ShaderBase {
+export class ShaderPassBase {
     /**
      * Shader Unique instance id
      */
@@ -58,6 +59,11 @@ export class ShaderBase {
      * Uniforms data collection
      */
     public uniforms: { [name: string]: UniformNode };
+
+    /**
+       * Uniform data for materials
+       */
+    public materialDataUniformBuffer: MaterialDataUniformGPUBuffer;
 
     protected _bufferDic: Map<string, GPUBufferBase>;
     protected _shaderChange: boolean = true;
@@ -251,8 +257,38 @@ export class ShaderBase {
         return this.uniforms[name].data;
     }
 
+    public getUniformFloat(name: string): number {
+        return this.uniforms[name].data;
+    }
+
+    public getUniformVector2(name: string): Vector2 {
+        return this.uniforms[name].data;
+    }
+
+    public getUniformVector3(name: string): Vector3 {
+        return this.uniforms[name].data;
+    }
+
+    public getUniformVector4(name: string): Vector4 {
+        return this.uniforms[name].data;
+    }
+
+    public getUniformColor(name: string): Color {
+        return this.uniforms[name].color;
+    }
+
+    public getBuffer(name: string): GPUBufferBase {
+        return this._bufferDic[name].data;
+    }
+
     protected noticeBufferChange(name: string) {
 
+    }
+
+    public applyUniform() {
+        if (this.materialDataUniformBuffer && this._valueChange) {
+            this.materialDataUniformBuffer.apply();
+        }
     }
 
     /**

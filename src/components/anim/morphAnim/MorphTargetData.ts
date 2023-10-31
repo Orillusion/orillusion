@@ -3,7 +3,7 @@ import { UniformGPUBuffer } from '../../../gfx/graphics/webGpu/core/buffer/Unifo
 import { MorphTarget_shader } from '../../../components/anim/morphAnim/MorphTarget_shader';
 import { ComputeShader } from '../../../gfx/graphics/webGpu/shader/ComputeShader';
 import { GPUContext } from '../../../gfx/renderJob/GPUContext';
-import { RenderShader } from '../../../gfx/graphics/webGpu/shader/RenderShader';
+import { RenderShaderPass } from '../../../gfx/graphics/webGpu/shader/RenderShaderPass';
 import { GeometryBase } from '../../../core/geometry/GeometryBase';
 import { VertexAttributeData } from '../../../core/geometry/VertexAttributeData';
 
@@ -67,6 +67,9 @@ export class MorphTargetData {
 
     protected _collectMorphTargetData: MorphTargetCollectData;
 
+    private _blendTarget: { [key: string]: any }
+
+
     constructor() {
         this._isInfluenceDirty = true;
         this.generateGPUBuffer();
@@ -97,7 +100,7 @@ export class MorphTargetData {
         this._normalAttrDataGroup.reset(this._collectMorphTargetData.mergedNormal);
     }
 
-    public applyRenderShader(renderShader: RenderShader) {
+    public applyRenderShader(renderShader: RenderShaderPass) {
         this.uploadMorphTargetBuffer();
         this.uploadConfigGBuffer();
         //
@@ -125,7 +128,9 @@ export class MorphTargetData {
         this._computeShader.workerSizeY = this._computeWorkGroupXY;
         this._computeShader.workerSizeZ = 1;
 
+        // if (false) {
         GPUContext.computeCommand(command, this._computeShaders);
+        // }
     }
 
     public updateInfluence(index: number, value: number) {
@@ -133,10 +138,24 @@ export class MorphTargetData {
         this._morphInfluenceArray[index] = value;
     }
 
+    public get blendShape() {
+        return this._blendTarget;
+    }
+
     private collectMorphTargetList(geometry: GeometryBase): MorphTargetCollectData {
         let posAttrList = this.collectAttribute('a_morphPositions_', geometry);
         let morphTargetCount = posAttrList.length;
         let vertexCount: number = posAttrList[0].data.length / 3;
+
+        this._blendTarget = {};
+        if (geometry.blendShapeData) {
+            for (let i = 0; i < geometry.blendShapeData.shapeIndexs.length; i++) {
+                let index = geometry.blendShapeData.shapeIndexs[i];
+                let shapeNames = geometry.blendShapeData.shapeNames[i].split(".");
+                let shapeName = shapeNames[shapeNames.length - 1];
+                this._blendTarget[shapeName] = (value) => this.updateInfluence(index, value);
+            }
+        }
 
         //position
         let posArray: Float32Array = new Float32Array(vertexCount * morphTargetCount * 3);
