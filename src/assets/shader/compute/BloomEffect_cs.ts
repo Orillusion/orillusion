@@ -12,7 +12,7 @@ struct BloomCfg{
 }
 @group(0) @binding(0) var<uniform> bloomCfg: BloomCfg;
 `
-//_______________高斯算法
+//_______________calc weight
 
 let GaussWeight2D: string =  /*wgsl*/ `
 fn GaussWeight2D(x:f32, y:f32, sigma:f32) -> f32
@@ -57,7 +57,7 @@ let GaussBlur = function (GaussNxN: string, inTex: string, inTexSampler: string)
 
 
 
-//________________________高亮像素筛选
+//________________________pixel filter
 
 export let threshold: string = /*wgsl*/ `
 ${BloomCfg}
@@ -117,7 +117,7 @@ fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_inv
   }
   var color = vec4<f32>(0.0, 0.0, 0.0, 1.0);
   var uv = vec2<f32>(f32(fragCoord.x), f32(fragCoord.y)) / vec2<f32>(f32(texSize.x - 1), f32(texSize.y -1));
-  let stride = vec2<f32>(1.0) / vec2<f32>(f32(texSize.x), f32(texSize.y));   // 上一级 mip 纹理的 texel size
+  let stride = vec2<f32>(1.0) / vec2<f32>(f32(texSize.x), f32(texSize.y));   //  texel size of last level
   let rgb = GaussNxN(uv, i32(bloomCfg.downSampleBlurSize), stride, bloomCfg.downSampleBlurSigma);
   color = vec4<f32>(rgb, color.w);
   textureStore(outTex, fragCoord, color);
@@ -125,7 +125,7 @@ fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_inv
 `
 
 
-//__________________________升采样
+//__________________________up sample
 export let upSample = /*wgsl*/ `
 ${BloomCfg}
 
@@ -152,7 +152,7 @@ fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_inv
   }
   var color = vec4<f32>(0.0, 0.0, 0.0, 1.0);
   var uv = vec2<f32>(f32(fragCoord.x), f32(fragCoord.y)) / vec2<f32>(f32(texSize.x - 1), f32(texSize.y -1));
-  // 上一级 mip 纹理的 texel size 是本级的一半
+  // half stride
   let prev_stride = vec2<f32>(0.5) / vec2<f32>(f32(texSize.x), f32(texSize.y));
   let curr_stride = vec2<f32>(1.0) / vec2<f32>(f32(texSize.x), f32(texSize.y));
 
@@ -164,7 +164,7 @@ fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_inv
 `
 
 
-//__________________________融合
+//__________________________blend
 export let post = /*wgsl*/ `
 ${BloomCfg}
 

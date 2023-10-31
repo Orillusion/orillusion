@@ -446,7 +446,7 @@ export class Res {
 
     public defaultGUITexture: GUITexture;
     public defaultGUISprite: GUISprite;
-    public defaltMaterial: LitMaterial;
+    public defaultMaterial: LitMaterial;
 
     /**
      * create a texture
@@ -533,6 +533,6 @@ export class Res {
         this.defaultGUISprite = new GUISprite(this.defaultGUITexture);
         this.defaultGUISprite.trimSize.set(4, 4)
 
-        this.defaltMaterial = new LitMaterial();
+        this.defaultMaterial = new LitMaterial();
     }
 }
