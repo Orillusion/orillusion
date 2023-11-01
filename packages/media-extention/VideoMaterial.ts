@@ -22,7 +22,6 @@ export class VideoMaterial extends Material {
         colorPass.passType = PassType.COLOR;
         colorPass.setShaderEntry(`VertMain`, `FragMain`)
 
-        colorPass.setShaderEntry(`VertMain`, `FragMain`)
         colorPass.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));
         colorPass.setUniformVector4(`transformUV2`, new Vector4(0, 0, 1, 1));
         colorPass.setUniformColor(`baseColor`, new Color());
