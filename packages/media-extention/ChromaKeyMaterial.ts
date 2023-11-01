@@ -1,4 +1,4 @@
-import { Engine3D, ShaderLib, Vector4, Color, BlendMode, registerMaterial, Material, RenderShaderPass, Texture } from "@orillusion/core";
+import { Engine3D, ShaderLib, Vector4, Color, BlendMode, registerMaterial, Material, RenderShaderPass, Texture, Shader, PassType } from "@orillusion/core";
 import { ChromaKeyShader } from "./ChromaKeyShader";
 
 /**
@@ -14,33 +14,38 @@ export class ChromaKeyMaterial extends Material {
         super();
 
         ShaderLib.register("ChromaKeyShader", ChromaKeyShader);
-        this.defaultPass = new RenderShaderPass(
+        let newShader = new Shader();
+
+        let colorPass = new RenderShaderPass(
             `ChromaKeyShader`,
             `ChromaKeyShader`
         );
-        this.defaultPass.setShaderEntry(`VertMain`, `FragMain`);
+        colorPass.setShaderEntry(`VertMain`, `FragMain`);
+        colorPass.passType = PassType.COLOR;
 
-        this.defaultPass.setUniformVector4(
+        colorPass.setUniformVector4(
             `transformUV1`,
             new Vector4(0, 0, 1, 1)
         );
-        this.defaultPass.setUniformVector4(
+        colorPass.setUniformVector4(
             `transformUV2`,
             new Vector4(0, 0, 1, 1)
         );
-        this.defaultPass.setUniformColor(`baseColor`, new Color());
-        this.defaultPass.setUniformVector4(`rectClip`, new Vector4(0, 0, 0, 0));
-        this.defaultPass.setUniformFloat(`alphaCutoff`, 0.5);
+        colorPass.setUniformColor(`baseColor`, new Color());
+        colorPass.setUniformVector4(`rectClip`, new Vector4(0, 0, 0, 0));
+        colorPass.setUniformFloat(`alphaCutoff`, 0.5);
 
-        this.defaultPass.setUniformColor(`keyColor`, new Color(0, 1, 0, 0));
-        this.defaultPass.setUniformFloat(`colorCutoff`, 0.4);
-        this.defaultPass.setUniformFloat(`colorFeathering`, 0.5);
-        this.defaultPass.setUniformFloat(`maskFeathering`, 1);
-        this.defaultPass.setUniformFloat(`sharpening`, 0.5);
-        this.defaultPass.setUniformFloat(`despoil`, 0.6);
-        this.defaultPass.setUniformFloat(`despoilLuminanceAdd`, 0);
+        colorPass.setUniformColor(`keyColor`, new Color(0, 1, 0, 0));
+        colorPass.setUniformFloat(`colorCutoff`, 0.4);
+        colorPass.setUniformFloat(`colorFeathering`, 0.5);
+        colorPass.setUniformFloat(`maskFeathering`, 1);
+        colorPass.setUniformFloat(`sharpening`, 0.5);
+        colorPass.setUniformFloat(`despoil`, 0.6);
+        colorPass.setUniformFloat(`despoilLuminanceAdd`, 0);
 
-        let shaderState = this.defaultPass.shaderState;
+        newShader.addRenderPass(colorPass);
+
+        let shaderState = colorPass.shaderState;
         shaderState.acceptShadow = false;
         shaderState.receiveEnv = false;
         shaderState.acceptGI = false;
@@ -50,127 +55,127 @@ export class ChromaKeyMaterial extends Material {
         shaderState.blendMode = BlendMode.ALPHA;
 
         // default value
-        this.defaultPass.setTexture(`baseMap`, Engine3D.res.whiteTexture);
+        this.shader.setTexture(`baseMap`, Engine3D.res.whiteTexture);
     }
 
     public set baseMap(value: Texture) {
-        this.defaultPass.setTexture(`baseMap`, value);
+        this.shader.setTexture(`baseMap`, value);
     }
 
     public get baseMap() {
-        return this.defaultPass.getTexture(`baseMap`);
+        return this.shader.getTexture(`baseMap`);
     }
 
     /**
      * Set the clip rect area
      */
     public set rectClip(value: Vector4) {
-        this.defaultPass.uniforms[`rectClip`].vector4 = value;
+        this.shader.setUniformVector4(`rectClip`, value);
     }
 
     /**
      * Get current clip rect area
      */
     public get rectClip(): Vector4 {
-        return this.defaultPass.uniforms[`rectClip`].vector4;
+        return this.shader.getUniformVector4(`rectClip`);
     }
 
     /**
      * Set the chromakey color
      */
     public set keyColor(value: Color) {
-        this.defaultPass.uniforms[`keyColor`].color = value;
+        this.shader.setUniformColor(`keyColor`, value);
     }
 
     /**
      * Get the chromakey color
      */
     public get keyColor(): Color {
-        return this.defaultPass.uniforms[`keyColor`].color;
+        return this.shader.getUniformColor(`keyColor`);
     }
 
     /**
      * Set the color cutoff factor
      */
     public set colorCutoff(value: number) {
-        this.defaultPass.uniforms[`colorCutoff`].value = value;
+        this.shader.setUniformFloat(`colorCutoff`, value);
     }
 
     /**
      * Get the color cutoff factor
      */
     public get colorCutoff(): number {
-        return this.defaultPass.uniforms[`colorCutoff`].value;
+        return this.shader.getUniformFloat(`colorCutoff`);
     }
 
     /**
      * Set the color feather factor
      */
     public set colorFeathering(value: number) {
-        this.defaultPass.uniforms[`colorFeathering`].value = value;
+        this.shader.setUniformFloat(`colorFeathering`, value);
     }
 
     /**
      * Get the color feather factor
      */
     public get colorFeathering(): number {
-        return this.defaultPass.uniforms[`colorFeathering`].value;
+        return this.shader.getUniformFloat(`colorFeathering`);
     }
 
     /**
      * Set the mask feather factor
      */
     public set maskFeathering(value: number) {
-        this.defaultPass.uniforms[`maskFeathering`].value = value;
+        this.shader.setUniformFloat(`maskFeathering`, value);
     }
 
     /**
      * Get the mask feather factor
      */
     public get maskFeathering(): number {
-        return this.defaultPass.uniforms[`maskFeathering`].value;
+        return this.shader.getUniformFloat(`maskFeathering`);
     }
 
     /**
      * Set the sharpen factor
      */
     public set sharpening(value: number) {
-        this.defaultPass.uniforms[`sharpening`].value = value;
+        this.shader.setUniformFloat(`sharpening`, value);
     }
 
     /**
      * Get the sharpen factor
      */
     public get sharpening(): number {
-        return this.defaultPass.uniforms[`sharpening`].value;
+        return this.shader.getUniformFloat(`sharpening`);
     }
 
     /**
      * Set the despoil factor
      */
     public set despoil(value: number) {
-        this.defaultPass.uniforms[`despoil`].value = value;
+        this.shader.setUniformFloat(`despoil`, value);
     }
 
     /**
      * Get the despoil factor
      */
     public get despoil(): number {
-        return this.defaultPass.uniforms[`despoil`].value;
+        return this.shader.getUniformFloat(`despoil`);
     }
 
     /**
      * Set the despoil luminance factor
      */
     public set despoilLuminanceAdd(value: number) {
-        this.defaultPass.uniforms[`despoilLuminanceAdd`].value = value;
+        this.shader.setUniformFloat(`despoilLuminanceAdd`, value);
     }
 
     /**
      * Get the despoil luminance factor
      */
     public get despoilLuminanceAdd(): number {
-        return this.defaultPass.uniforms[`despoilLuminanceAdd`].value;
+        return this.shader.getUniformFloat(`despoilLuminanceAdd`);
     }
 
     /**
