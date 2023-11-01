@@ -1,9 +1,9 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer, BoxGeometry, SphereGeometry, VirtualTexture, GPUTextureFormat, UnLitMaterial, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, PlaneGeometry, Vector3, Graphic3DMesh, Matrix4, Time, BlendMode } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer, BoxGeometry, SphereGeometry, VirtualTexture, GPUTextureFormat, UnLitMaterial, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, PlaneGeometry, Vector3, Graphic3DMesh, Matrix4, Time, BlendMode, Color } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { Stats } from "@orillusion/stats";
 
-export class Sample_GraphicMesh_1 {
+export class Sample_GraphicMesh_5 {
     lightObj3D: Object3D;
     scene: Scene3D;
     parts: Object3D[];
@@ -11,6 +11,9 @@ export class Sample_GraphicMesh_1 {
     height: number;
     cafe: number = 47;
     frame: number = 16;
+    view: View3D;
+
+    colors: Color[];
 
     constructor() { }
 
@@ -24,7 +27,7 @@ export class Sample_GraphicMesh_1 {
         Engine3D.setting.render.debug = true;
         Engine3D.setting.shadow.shadowBound = 5;
 
-
+        this.colors = [];
 
         GUIHelp.init();
 
@@ -37,11 +40,11 @@ export class Sample_GraphicMesh_1 {
 
         camera.object3D.addComponent(HoverCameraController).setCamera(30, 0, 120);
 
-        let view = new View3D();
-        view.scene = this.scene;
-        view.camera = camera;
+        this.view = new View3D();
+        this.view.scene = this.scene;
+        this.view.camera = camera;
 
-        Engine3D.startRenderView(view);
+        Engine3D.startRenderView(this.view);
 
         GUIUtil.renderDebug();
 
@@ -135,7 +138,7 @@ export class Sample_GraphicMesh_1 {
         GUIHelp.add(this, "cafe", 0.0, 100.0);
         GUIHelp.add(this, "frame", 0.0, 100.0);
         {
-            this.width = 200;
+            this.width = 100;
             this.height = 100;
             // let geometry = new BoxGeometry(1, 1, 1);
             let geometry = new PlaneGeometry(1, 1, 1, 1, Vector3.Z_AXIS);
@@ -152,23 +155,52 @@ export class Sample_GraphicMesh_1 {
                 const element = this.parts[i];
                 // mr.setTextureID(i, i % texts.length);
                 // mr.setTextureID(i, 52);
-                mr.setTextureID(i, 35);
+                mr.setTextureID(i, 39);
                 // mr.setTextureID(i, 39);
                 // mr.setTextureID(i, 18);
+
+                element.transform.scaleX = 2;
+                element.transform.scaleY = 2;
+                element.transform.scaleZ = 2;
+
+                // let c = Color.random();
+                // c.a = 0.55;
+                // this.colors.push(c);
             }
+
+            let c1 = new Color(0.65, 0.1, 0.2, 0.15);
+            let c2 = new Color(1.0, 1.1, 0.2, 0.65);
+            this.colors.push(c1);
+            this.colors.push(c2);
         }
     }
 
+    private tmpArray: any[] = [];
     update() {
         if (this.parts) {
             let pos = new Vector3();
+            this.tmpArray.length = 0;
             for (let i = 0; i < this.parts.length; i++) {
                 const element = this.parts[i];
 
                 let tmp = this.sphericalFibonacci(i, this.parts.length);
-                tmp.scaleBy(Math.sin((i + Time.frame * 0.01 * this.frame * 0.01)) * this.cafe);
+                let sc = Math.sin((i + Time.frame * 0.01 * this.frame * 0.01)) * this.cafe
+                tmp.scaleBy(sc);
 
                 element.transform.localPosition = tmp;
+
+                if (sc > this.cafe * 0.85) {
+                    this.tmpArray.push(element);
+                }
+            }
+
+            for (let i = 0; i < this.tmpArray.length - 1; i++) {
+                this.view.graphic3D.Clear(i.toString());
+                this.view.graphic3D.drawLines(i.toString(), [
+                    this.tmpArray[i].transform.worldPosition,
+                    this.tmpArray[i + 1].transform.worldPosition,
+                ],
+                    this.colors);
             }
         }
     }
