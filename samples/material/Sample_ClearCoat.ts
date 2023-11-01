@@ -72,7 +72,7 @@ class Sample_ClearCoat {
             // model.transform.scaleZ = 10;
             // model.transform.y = -5;
 
-            let clearCoatRoughnessTex = await Engine3D.res.loadTexture("PBR/ClearCoatTest/T_Imperfections_Wipe_Mask.PNG");
+            let clearCoatRoughnessTex = await Engine3D.res.loadTexture("materials/T_Imperfections_FingerPrints_Mask2.jpg");
 
             // this.scene.addChild(model);
             let space = 50;
