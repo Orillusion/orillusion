@@ -53,7 +53,8 @@ export class ChromaKeyMaterial extends Material {
         shaderState.castShadow = false;
         shaderState.useZ = false;
         shaderState.blendMode = BlendMode.ALPHA;
-
+        this.shader = newShader;
+        
         // default value
         this.shader.setTexture(`baseMap`, Engine3D.res.whiteTexture);
     }
