@@ -1,3 +1,4 @@
+import { Color, Vector4 } from "../../../../..";
 import { MeshRenderer } from "../../../../../components/renderer/MeshRenderer";
 import { View3D } from "../../../../../core/View3D";
 import { Object3D } from "../../../../../core/entities/Object3D";
@@ -23,7 +24,8 @@ export class Graphic3DMeshRenderer extends MeshRenderer {
         mat.baseMap = tex;
         this.material = mat;
 
-        this.transformBuffer = new StorageGPUBuffer(num * 2, 0);
+        this.transformBuffer = new StorageGPUBuffer( num * (4 * 4) , 0);
+        // this.transformBuffer = new StorageGPUBuffer( num * 2 , 0);
         this.material.setStorageBuffer("graphicBuffer", this.transformBuffer);
 
         this.object3Ds = [];
@@ -34,6 +36,11 @@ export class Graphic3DMeshRenderer extends MeshRenderer {
 
             this.transformBuffer.setFloat("matrix_" + i, element.transform.worldMatrix.index);
             this.transformBuffer.setFloat("texId_" + i, 1);
+            this.transformBuffer.setFloat("texId2_" + i, 1);
+            this.transformBuffer.setFloat("texId3_" + i, 1);
+            this.transformBuffer.setColor("baseColor_" + i, new Color() );
+            this.transformBuffer.setColor("emissiveColor_" + i, new Color(0,0,0,0));
+            this.transformBuffer.setVector4("uvRect_" + i, new Vector4(0,0,1,1) );
         }
 
         this.transformBuffer.apply();
@@ -42,6 +49,31 @@ export class Graphic3DMeshRenderer extends MeshRenderer {
 
     public setTextureID(i: number, id: number) {
         this.transformBuffer.setFloat("texId_" + i, id);
+        this._onChange = true;
+    }
+
+    // public setTexture2ID(i: number, id: number) {
+    //     this.transformBuffer.setFloat("texId_" + i, id);
+    //     this._onChange = true;
+    // }
+
+    // public setTexture3ID(i: number, id: number) {
+    //     this.transformBuffer.setFloat("texId_" + i, id);
+    //     this._onChange = true;
+    // }
+
+    public setBaseColor(i: number, color: Color) {
+        this.transformBuffer.setColor("baseColor_" + i, color);
+        this._onChange = true;
+    }
+
+    public setEmissiveColor(i: number, color: Color) {
+        this.transformBuffer.setColor("emissiveColor_" + i, color);
+        this._onChange = true;
+    }
+
+    public setUVRect(i: number, v: Vector4) {
+        this.transformBuffer.setVector4("uvRect_" + i, v);
         this._onChange = true;
     }
 

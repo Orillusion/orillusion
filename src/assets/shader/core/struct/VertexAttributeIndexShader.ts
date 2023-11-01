@@ -34,6 +34,11 @@ export let VertexAttributeIndexShader: string = /*wgsl*/ `
     struct GraphicNodeStruct{
         matrixIndex:f32,
         texIndex:f32,
+        tex2Index:f32,
+        tex3Index:f32,
+        baseColor:vec4f,
+        emissiveColor:vec4f,
+        uvRect:vec4f,
     }
 
     var<private> ORI_VertexOut: VertexOutput ;

@@ -94,6 +94,53 @@ export class LitMaterial extends Material {
         return this.shader.getTexture(`aoMap`);
     }
 
+    public set clearCoatRoughnessMap(texture: Texture) {
+        this.shader.setTexture(`clearCoatRoughnessMap`, texture);
+        this.shader.setDefine(`USE_CLEARCOAT`, true);
+        this.shader.setDefine(`USE_CLEARCOAT_ROUGHNESS`, true);
+    }
+
+    public get clearCoatRoughnessMap() {
+        return this.shader.getTexture(`clearCoatRoughnessMap`);
+    }
+
+    public set clearcoatColor(value: Color) {
+        this.shader.setUniformColor(`clearcoatColor`, value);
+        this.shader.setDefine(`USE_CLEARCOAT`, true);
+    }
+
+    public get clearcoatColor() {
+        return this.shader.getUniformColor(`clearcoatColor`);
+    }
+
+    public set clearcoatWeight(value: number) {
+        this.shader.setUniformFloat(`clearcoatWeight`, value);
+        this.shader.setDefine(`USE_CLEARCOAT`, true);
+    }
+
+    public get clearcoatWeight() {
+        return this.shader.getUniformFloat(`clearcoatWeight`);
+    }
+
+    public set clearcoatFactor(value: number) {
+        this.shader.setUniformFloat(`clearcoatFactor`, value);
+        this.shader.setDefine(`USE_CLEARCOAT`, true);
+    }
+
+    public get clearcoatFactor() {
+        return this.shader.getUniformFloat(`clearcoatFactor`);
+    }
+
+
+    public set clearcoatRoughnessFactor(value: number) {
+        this.shader.setUniformFloat(`clearcoatRoughnessFactor`, value);
+        this.shader.setDefine(`USE_CLEARCOAT`, true);
+    }
+
+    public get clearcoatRoughnessFactor() {
+        return this.shader.getUniformFloat(`clearcoatRoughnessFactor`);
+    }
+
     public set alphaCutoff(value: number) {
         this.shader.setUniform(`alphaCutoff`, value);
     }

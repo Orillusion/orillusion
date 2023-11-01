@@ -17,7 +17,7 @@ export class SkyMaterial extends Material {
         this.shader = new SkyShader();
         this.shader.setUniformVector3(`eyesPos`, new Vector3());
         this.shader.setUniformFloat(`exposure`, 1.0);
-        this.shader.setUniformFloat(`roughness`, 0.5);
+        this.shader.setUniformFloat(`roughness`, 0.0);
     }
 
     /**

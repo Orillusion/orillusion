@@ -307,6 +307,22 @@ export class Color {
         return dst;
     }
 
+    /**
+     * lerp two color 
+     * @param v 
+     * @param c1 
+     * @param c2 
+     * @param target 
+     * @returns 
+     */
+    public static lerp(v:number, c1:Color,c2:Color,target?:Color){
+        let ret = target ? target : new Color();
+        ret.r = (c2.r - c1.r) * v + c1.r ;  
+        ret.g = (c2.g - c1.g) * v + c1.g ;  
+        ret.b = (c2.b - c1.b) * v + c1.b ;  
+        ret.a = (c2.a - c1.a) * v + c1.a ;  
+        return target ;
+    }
 
 
     public static PRIMARY = 0x3f51b5; //

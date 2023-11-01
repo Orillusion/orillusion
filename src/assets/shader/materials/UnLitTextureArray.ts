@@ -52,9 +52,10 @@ export let UnLitTextureArray: string = /*wgsl*/ `
         // irradiance += (globalUniform.skyExposure * textureSampleLevel(prefilterMap, prefilterMapSampler, ORI_VertexVarying.vWorldNormal.xyz, 0.8 * (MAX_REFLECTION_LOD) ).rgb);
 
         graphicNode = graphicBuffer[u32(round(ORI_VertexVarying.index))];
-
+        
         var uv = transformUV1.zw * ORI_VertexVarying.fragUV0 + transformUV1.xy; 
-        let color = textureSample(baseMap,baseMapSampler,uv, u32(round(graphicNode.texIndex)) );
+        uv = graphicNode.uvRect.zw * uv.xy + graphicNode.uvRect.xy; 
+        var color = textureSample(baseMap,baseMapSampler,uv, u32(round(graphicNode.texIndex)) ) * graphicNode.baseColor ;
         // let color = textureSample(baseMap,baseMapSampler,uv, u32(round(ORI_VertexVarying.index)));
 
         // ORI_ViewDir = normalize( globalUniform.CameraPos.xyz - ORI_VertexVarying.vWorldPos.xyz);
@@ -62,6 +63,7 @@ export let UnLitTextureArray: string = /*wgsl*/ `
 
         // irradiance = LinearToGammaSpace(irradiance.rgb) * color.rgb ;//* att ;
 
+        color += graphicNode.emissiveColor ;
         if(color.w < 0.5){
             discard ;
         }

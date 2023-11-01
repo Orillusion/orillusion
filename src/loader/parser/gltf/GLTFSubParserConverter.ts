@@ -180,7 +180,7 @@ export class GLTFSubParserConverter {
                     let physicMaterial = (newMat = this.applyMaterialExtensions(primitive.material, newMat));
                     if (`enableBlend` in primitive.material) {
                         if (primitive.material[`enableBlend`]) {
-                            physicMaterial.blendMode = BlendMode.NORMAL;
+                            physicMaterial.blendMode = BlendMode.SOFT_ADD;
                         } else {
                             physicMaterial.blendMode = BlendMode.NONE;
                         }
