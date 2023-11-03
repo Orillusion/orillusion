@@ -19,6 +19,6 @@
         "url": "git+https://github.com/Orillusion/orillusion.git"
     },
     "dependencies": {
-        "@orillusion/core": "^0.6.0"
+        "@orillusion/core": "^0.7.0"
     }
 }

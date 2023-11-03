@@ -65,7 +65,6 @@ export class MaterialUtilities {
                 case ValueEnumType.int:
                 case ValueEnumType.int16:
                 case ValueEnumType.int32:
-                case ValueEnumType.int32:
                 case ValueEnumType.uint:
                 case ValueEnumType.uint32:
                 case ValueEnumType.uint64:
