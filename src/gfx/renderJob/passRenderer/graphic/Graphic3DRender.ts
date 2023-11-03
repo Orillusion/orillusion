@@ -10,17 +10,17 @@ import { Object3D } from "../../../../core/entities/Object3D";
 import { Graphics3DShape } from "./Graphics3DShape";
 import { GraphicConfig } from "./GraphicConfig";
 import { Graphic3DFillRenderer } from "./Graphic3DFillRenderer";
-import { Graphic3DLineBatchRenderer } from "./Graphic3DLineBatchRenderer";
+import { Graphic3DLineRenderer } from "./Graphic3DLineBatchRenderer";
 import { BoundUtil } from "../../../../util/BoundUtil";
 
 export class Graphic3D extends Object3D {
 
-    protected mLineRender: Graphic3DLineBatchRenderer;
+    protected mLineRender: Graphic3DLineRenderer;
     protected mFillRender: Graphic3DFillRenderer;
 
     constructor() {
         super();
-        this.mLineRender = this.addComponent(Graphic3DLineBatchRenderer);
+        this.mLineRender = this.addComponent(Graphic3DLineRenderer);
         this.mFillRender = this.addComponent(Graphic3DFillRenderer);
     }
 
@@ -465,12 +465,12 @@ export class Graphic3D extends Object3D {
             shape = this.mFillRender.shapes.get(uuid);
         } else return
 
-        const shapeData = shape.shapeData;
-        for (let i = 0; i < shapeData.length; i += GraphicConfig.ShapeVertexSize) {
-            shapeData[i + 4] = color.r;
-            shapeData[i + 5] = color.g;
-            shapeData[i + 6] = color.b;
-            shapeData[i + 7] = color.a;
+        const colorData = shape.colorData;
+        for (let i = 0; i < colorData.length; i += 4) {
+            colorData[i + 0] = color.r;
+            colorData[i + 1] = color.g;
+            colorData[i + 2] = color.b;
+            colorData[i + 3] = color.a;
         }
     }
 }

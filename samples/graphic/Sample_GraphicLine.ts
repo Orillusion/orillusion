@@ -1,11 +1,11 @@
 import { createExampleScene, createSceneParam } from "@samples/utils/ExampleScene";
-import { Object3D, Scene3D, Engine3D, GlobalIlluminationComponent, Object3DUtil, GTAOPost, PostProcessingComponent, TAAPost, Vector3, Color, AnimationCurve, Keyframe } from "@orillusion/core";
+import { View3D, Scene3D, Engine3D, GlobalIlluminationComponent, Object3DUtil, GTAOPost, PostProcessingComponent, TAAPost, Vector3, Color, AnimationCurve, Keyframe } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 
 class Sample_GraphicLine {
     scene: Scene3D;
-    view: import("c:/work/git/orillusion-nian/src/index").View3D;
+    view: View3D;
     async run() {
 
         Engine3D.setting.material.materialChannelDebug = true;
