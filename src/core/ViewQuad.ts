@@ -12,6 +12,7 @@ import { PassType } from '../gfx/renderJob/passRenderer/state/RendererType';
 import { View3D } from './View3D';
 import { Material } from '../materials/Material';
 import { QuadShader } from '../loader/parser/prefab/mats/shader/QuadShader';
+import { CResizeEvent } from '../event/CResizeEvent';
 /**
  * @internal
  * @group Entity
@@ -61,6 +62,22 @@ export class ViewQuad extends Object3D {
                 usage: GPUTextureUsage.RENDER_ATTACHMENT,
             })
         }
+
+        webGPUContext.addEventListener(CResizeEvent.RESIZE, (e) => {
+            this.rendererPassState = WebGPUDescriptorCreator.createRendererPassState(rtFrame, `load`);
+            if (multisample > 0) {
+                this.rendererPassState.multisample = this.quadShader.getDefaultColorShader().shaderState.multisample;
+                this.rendererPassState.multiTexture = webGPUContext.device.createTexture({
+                    size: {
+                        width: webGPUContext.presentationSize[0],
+                        height: webGPUContext.presentationSize[1],
+                    },
+                    sampleCount: multisample,
+                    format: renderTexture.length > 0 ? renderTexture[0].format : webGPUContext.presentationFormat,
+                    usage: GPUTextureUsage.RENDER_ATTACHMENT,
+                })
+            }
+        }, this);
     }
 
     /**

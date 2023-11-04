@@ -56,14 +56,16 @@ export class DepthCubeTexture extends Texture implements ITexture {
             dimension: '2d',
             usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.TEXTURE_BINDING,
         }
-        this.gpuTexture = webGPUContext.device.createTexture(this.textureDescriptor);
+        // this.gpuTexture = webGPUContext.device.createTexture(this.textureDescriptor);
+        this.gpuTexture = this.getGPUTexture();
     }
 
     public internalCreateView() {
         this.viewDescriptor = {
             dimension: `cube`,
         };
-        this.view = this.gpuTexture.createView(this.viewDescriptor);
+        this.view = this.getGPUView();
+        // this.view = this.gpuTexture.createView(this.viewDescriptor);
     }
 
     public internalCreateSampler() {

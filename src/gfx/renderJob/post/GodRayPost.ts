@@ -16,6 +16,7 @@ import { GBufferFrame } from '../frame/GBufferFrame';
 import { RTFrame } from '../frame/RTFrame';
 import { GodRay_cs } from '../../../assets/shader/compute/GodRay_cs';
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
+import { ShadowTexture } from '../../..';
 
 
 export class GodRayPost extends PostBase {
@@ -107,7 +108,7 @@ export class GodRayPost extends PostBase {
         let w = presentationSize[0];
         let h = presentationSize[1];
 
-        this.godRayTexture = new VirtualTexture(w, h, GPUTextureFormat.rgba16float, false, GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC | GPUTextureUsage.TEXTURE_BINDING);
+        this.godRayTexture = new ShadowTexture(w, h, GPUTextureFormat.rgba16float, false, GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC | GPUTextureUsage.TEXTURE_BINDING);
         this.godRayTexture.name = 'godRayTexture';
         let gtaoDec = new RTDescriptor();
         gtaoDec.loadOp = `load`;
@@ -152,6 +153,10 @@ export class GodRayPost extends PostBase {
         this.godRaySetting.setFloat('scatteringExponent', this.scatteringExponent);
 
         this.godRaySetting.apply();
+
+        this.godRayCompute.workerSizeX = Math.ceil(this.godRayTexture.width / 8);
+        this.godRayCompute.workerSizeY = Math.ceil(this.godRayTexture.height / 8);
+        this.godRayCompute.workerSizeZ = 1;
 
         GPUContext.computeCommand(command, [this.godRayCompute]);
         GPUContext.lastRenderPassState = this.rendererPassState;

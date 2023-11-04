@@ -117,14 +117,16 @@ export class BitmapTexture2DArray extends Texture implements ITexture {
             dimension: '2d',
             usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.TEXTURE_BINDING,
         }
-        this.gpuTexture = webGPUContext.device.createTexture(this.textureDescriptor);
+        // this.gpuTexture = webGPUContext.device.createTexture(this.textureDescriptor);
+        this.gpuTexture = this.getGPUTexture();
     }
 
     internalCreateView() {
         this.viewDescriptor = {
             dimension: `2d-array`,
         };
-        this.view = this.gpuTexture.createView(this.viewDescriptor);
+        // this.view = this.gpuTexture.createView(this.viewDescriptor);
+        this.view = this.getGPUView();
     }
 
     internalCreateSampler() {

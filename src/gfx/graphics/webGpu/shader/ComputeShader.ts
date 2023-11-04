@@ -3,7 +3,7 @@ import { webGPUContext } from '../Context3D';
 import { ShaderPassBase } from './ShaderPassBase';
 import { ShaderReflection, ShaderReflectionVarInfo } from './value/ShaderReflectionInfo';
 import { Preprocessor } from './util/Preprocessor';
-import { Reference, Struct } from '../../../..';
+import { CResizeEvent, Reference, Struct } from '../../../..';
 import { StorageGPUBuffer } from '../core/buffer/StorageGPUBuffer';
 import { StructStorageGPUBuffer } from '../core/buffer/StructStorageGPUBuffer';
 import { UniformGPUBuffer } from '../core/buffer/UniformGPUBuffer';
@@ -229,6 +229,14 @@ export class ComputeShader extends ShaderPassBase {
             this._groupsShaderReflectionVarInfos[i] = srvs;
             this.genGroups(i, this._groupsShaderReflectionVarInfos);
         }
+
+        webGPUContext.addEventListener(CResizeEvent.RESIZE, (e) => {
+            for (let i = 0; i < shaderReflection.groups.length; ++i) {
+                let srvs = shaderReflection.groups[i];
+                this._groupsShaderReflectionVarInfos[i] = srvs;
+                this.genGroups(i, this._groupsShaderReflectionVarInfos, true);
+            }
+        }, this);
     }
 
     protected preCompileShader(shader: string) {

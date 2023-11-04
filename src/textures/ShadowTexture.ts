@@ -3,7 +3,6 @@ import { GPUAddressMode, GPUTextureFormat } from '../gfx/graphics/webGpu/WebGPUC
 import { webGPUContext } from '../gfx/graphics/webGpu/Context3D';
 import { GPUContext } from '../gfx/renderJob/GPUContext';
 import { UUID } from '../util/Global';
-import { CResizeEvent } from '..';
 /**
  * @internal
  * Render target texture 
@@ -55,6 +54,7 @@ export class ShadowTexture extends Texture {
         // }
         this.resize(width, height);
     }
+
 
     public resize(width, height) {
         let device = webGPUContext.device;

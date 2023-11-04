@@ -116,14 +116,12 @@ class Context3D extends CEventDispatcher {
         let w = Math.floor(this.canvas.clientWidth * this.pixelRatio * this.super);
         let h = Math.floor(this.canvas.clientHeight * this.pixelRatio * this.super);
         if (w != this.windowWidth || h != this.windowHeight) {
-            // if (this.canvas.width != this.windowWidth || this.canvas.height != this.windowHeight) {
             this.canvas.width = this.windowWidth = w;
             this.canvas.height = this.windowHeight = h;
             this.presentationSize[0] = this.windowWidth;
             this.presentationSize[1] = this.windowHeight;
             this.aspect = this.windowWidth / this.windowHeight;
-            if (this.canResize)
-                this.dispatchEvent(new CResizeEvent(CResizeEvent.RESIZE, { width: this.windowWidth, height: this.windowHeight }));
+            this.dispatchEvent(new CResizeEvent(CResizeEvent.RESIZE, { width: this.windowWidth, height: this.windowHeight }));
         }
     }
 }

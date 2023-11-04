@@ -20,6 +20,7 @@
     menu.innerHTML = list
     document.body.appendChild(menu)
 
+
     // change sessionStorage.target on click, and reload iframe
     menu.addEventListener('click', (e: Event) => {
         const button = e.target as HTMLElement
@@ -68,3 +69,6 @@
         document.body.appendChild(iframe)
     }
 }
+
+// import { Sample_GraphicMesh_Trailing } from "./graphic/Sample_GraphicMesh_Trailing";
+// new Sample_GraphicMesh_Trailing().run();

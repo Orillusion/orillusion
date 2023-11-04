@@ -19,6 +19,7 @@ import { View3D } from '../../../core/View3D';
 import { TAA_cs } from '../../../assets/shader/compute/TAA_cs';
 import { TAACopyTex_cs } from '../../../assets/shader/compute/TAACopyTex_cs';
 import { TAASharpTex_cs } from '../../../assets/shader/compute/TAASharpTex_cs';
+import { CResizeEvent } from '../../../event/CResizeEvent';
 
 /**
  * Temporal AA
@@ -235,6 +236,10 @@ export class TAAPost extends PostBase {
             this.createResource();
             this.createCompute(view);
             this.rendererPassState = WebGPUDescriptorCreator.createRendererPassState(this.rtFrame, null);
+
+            webGPUContext.addEventListener(CResizeEvent.RESIZE, (e) => {
+                this.rendererPassState = WebGPUDescriptorCreator.createRendererPassState(this.rtFrame, null);
+            }, this);
         }
 
         let cfg = Engine3D.setting.render.postProcessing.taa;
@@ -247,6 +252,18 @@ export class TAAPost extends PostBase {
         this.taaSetting.setFloat('jitterX', view.camera.jitterX);
         this.taaSetting.setFloat('jitterY', view.camera.jitterY);
         this.taaSetting.apply();
+
+        this.taaCompute.workerSizeX = Math.ceil(this.taaTexture.width / 8);
+        this.taaCompute.workerSizeY = Math.ceil(this.taaTexture.height / 8);
+        this.taaCompute.workerSizeZ = 1;
+
+        this.copyTexCompute.workerSizeX = Math.ceil(this.taaTexture.width / 8);
+        this.copyTexCompute.workerSizeY = Math.ceil(this.taaTexture.height / 8);
+        this.copyTexCompute.workerSizeZ = 1;
+
+        this.sharpCompute.workerSizeX = Math.ceil(this.outTexture.width / 8);
+        this.sharpCompute.workerSizeY = Math.ceil(this.outTexture.height / 8);
+        this.sharpCompute.workerSizeZ = 1;
 
         GPUContext.computeCommand(command, [this.copyTexCompute, this.taaCompute, this.sharpCompute]);
 

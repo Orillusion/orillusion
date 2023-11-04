@@ -47,13 +47,13 @@ export class VirtualTexture extends Texture {
             this.usage = usage | GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_SRC | GPUTextureUsage.COPY_DST;
         }
 
-        if (this.usage & GPUTextureUsage.RENDER_ATTACHMENT || this.format == GPUTextureFormat.depth24plus || this.format == GPUTextureFormat.depth32float) {
-            webGPUContext.addEventListener(CResizeEvent.RESIZE, (e) => {
-                let { width, height } = e.data;
-                this.resize(width, height);
-            }, this);
-        }
         this.resize(width, height);
+
+        webGPUContext.addEventListener(CResizeEvent.RESIZE, (e) => {
+            let { width, height } = e.data;
+            this.resize(width, height);
+            this._textureChange = true;
+        }, this);
     }
 
     public resize(width, height) {
@@ -62,6 +62,8 @@ export class VirtualTexture extends Texture {
             Texture.delayDestroyTexture(this.gpuTexture);
             this.gpuTexture = null;
             this.view = null;
+            this.gpuSampler_comparison = null;
+            this.gpuSampler = null;
         }
 
         this.width = width;

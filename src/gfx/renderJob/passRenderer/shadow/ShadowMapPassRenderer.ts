@@ -5,7 +5,7 @@ import { Camera3D } from "../../../../core/Camera3D";
 import { View3D } from "../../../../core/View3D";
 import { Vector3 } from "../../../../math/Vector3";
 import { Depth2DTextureArray } from "../../../../textures/Depth2DTextureArray";
-import { VirtualTexture } from "../../../../textures/VirtualTexture";
+
 import { Time } from "../../../../util/Time";
 import { GPUTextureFormat } from "../../../graphics/webGpu/WebGPUConst";
 import { WebGPUDescriptorCreator } from "../../../graphics/webGpu/descriptor/WebGPUDescriptorCreator";
