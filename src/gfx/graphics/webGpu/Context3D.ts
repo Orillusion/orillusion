@@ -1,3 +1,4 @@
+import { CEvent } from '../../..';
 import { CEventDispatcher } from '../../../event/CEventDispatcher';
 import { CResizeEvent } from '../../../event/CResizeEvent';
 import { CanvasConfig } from './CanvasConfig';
@@ -17,7 +18,7 @@ class Context3D extends CEventDispatcher {
     public canvasConfig: CanvasConfig;
     public super: number = 1.0;
     private _pixelRatio: number = 1.0;
-    canResize: boolean = true;
+    private _resizeEvent: CEvent;
     // initSize: number[];
     public get pixelRatio() {
         return this._pixelRatio;
@@ -108,6 +109,9 @@ class Context3D extends CEventDispatcher {
             alphaMode: 'premultiplied',
             colorSpace: `srgb`,
         });
+
+        this._resizeEvent = new CResizeEvent(CResizeEvent.RESIZE, { width: this.windowWidth, height: this.windowHeight })
+
         this.updateSize();
         return true;
     }
@@ -121,7 +125,9 @@ class Context3D extends CEventDispatcher {
             this.presentationSize[0] = this.windowWidth;
             this.presentationSize[1] = this.windowHeight;
             this.aspect = this.windowWidth / this.windowHeight;
-            this.dispatchEvent(new CResizeEvent(CResizeEvent.RESIZE, { width: this.windowWidth, height: this.windowHeight }));
+
+            this._resizeEvent.data = { width: this.windowWidth, height: this.windowHeight };
+            this.dispatchEvent(this._resizeEvent);
         }
     }
 }
