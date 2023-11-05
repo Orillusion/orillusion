@@ -148,9 +148,6 @@ export class Sample_Grass {
         // GUIHelp.addFolder("shadow");
         // GUIHelp.add(Engine3D.setting.shadow, "shadowBound", 0.0, 3000, 0.0001);
         // GUIHelp.endFolder();
-
-        let globalFog = this.post.getPost(GlobalFog);
-        // GUIUtil.renderFog(globalFog);
     }
 
 }

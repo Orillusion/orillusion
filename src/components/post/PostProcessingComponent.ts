@@ -29,7 +29,6 @@ export class PostProcessingComponent extends ComponentBase {
     }
 
     private activePost() {
-        webGPUContext.canResize = false;
         let view = this.transform.view3D;
         let job = Engine3D.getRenderJob(view);
         this._postList.forEach((v) => {
@@ -38,7 +37,6 @@ export class PostProcessingComponent extends ComponentBase {
     }
 
     private unActivePost() {
-        webGPUContext.canResize = true;
         let view = this.transform.view3D;
         let job = Engine3D.getRenderJob(view);
         this._postList.forEach((v) => {
