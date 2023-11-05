@@ -1,7 +1,8 @@
-import { CEvent } from '../../..';
+import { CEvent, Texture } from '../../..';
 import { CEventDispatcher } from '../../../event/CEventDispatcher';
 import { CResizeEvent } from '../../../event/CResizeEvent';
 import { CanvasConfig } from './CanvasConfig';
+
 /**
  * @internal
  */
@@ -111,7 +112,11 @@ class Context3D extends CEventDispatcher {
         });
 
         this._resizeEvent = new CResizeEvent(CResizeEvent.RESIZE, { width: this.windowWidth, height: this.windowHeight })
-
+        const resizeObserver = new ResizeObserver(() => {
+            this.updateSize()
+            Texture.destroyTexture()
+        });
+        resizeObserver.observe(this.canvas);
         this.updateSize();
         return true;
     }
@@ -126,7 +131,8 @@ class Context3D extends CEventDispatcher {
             this.presentationSize[1] = this.windowHeight;
             this.aspect = this.windowWidth / this.windowHeight;
 
-            this._resizeEvent.data = { width: this.windowWidth, height: this.windowHeight };
+            this._resizeEvent.data.width = this.windowWidth;
+            this._resizeEvent.data.height = this.windowHeight;
             this.dispatchEvent(this._resizeEvent);
         }
     }

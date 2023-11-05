@@ -25,7 +25,6 @@ import { WasmMatrix } from '@orillusion/wasm-matrix/WasmMatrix';
 import { Matrix4 } from './math/Matrix4';
 import { FXAAPost } from './gfx/renderJob/post/FXAAPost';
 import { PostProcessingComponent } from './components/post/PostProcessingComponent';
-import { Texture } from './gfx/graphics/webGpu/core/texture/Texture';
 
 /** 
  * Orillusion 3D Engine
@@ -308,12 +307,15 @@ export class Engine3D {
     public static async init(descriptor: { canvasConfig?: CanvasConfig; beforeRender?: Function; renderLoop?: Function; lateRender?: Function, engineSetting?: EngineSetting } = {}) {
         console.log('Engine Version', version);
 
-        this.divB = document.createElement("div");
-        this.divB.style.position = 'absolute'
-        this.divB.style.zIndex = '999'
-        this.divB.style.color = '#FFFFFF'
-        this.divB.style.top = '150px'
-        document.body.appendChild(this.divB);
+        // for dev debug
+        if(import.meta.env.DEV){
+            this.divB = document.createElement("div");
+            this.divB.style.position = 'absolute'
+            this.divB.style.zIndex = '999'
+            this.divB.style.color = '#FFFFFF'
+            this.divB.style.top = '150px'
+            document.body.appendChild(this.divB);
+        }
 
         this.setting = { ...this.setting, ...descriptor.engineSetting }
 
@@ -431,9 +433,6 @@ export class Engine3D {
      * @internal
      */
     private static render(time) {
-        webGPUContext.updateSize();
-        Texture.destroyTexture();
-
         this._deltaTime = time - this._time;
         this._time = time;
 
@@ -568,7 +567,6 @@ export class Engine3D {
         }
 
         if (this._lateRender) this._lateRender();
-
     }
 
 
