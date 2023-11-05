@@ -21,7 +21,6 @@ import { WebGPUDescriptorCreator } from '../../../graphics/webGpu/descriptor/Web
 import { RendererPassState } from '../state/RendererPassState';
 import { PassType } from '../state/RendererType';
 import { ILight } from '../../../../components/lights/ILight';
-import { ShadowTexture } from '../../../../textures/ShadowTexture';
 import { Reference } from '../../../../util/Reference';
 
 type CubeShadowMapInfo = {
@@ -40,7 +39,7 @@ export class PointLightShadowRenderer extends RendererBase {
     private _shadowCameraDic: Map<ILight, CubeShadowMapInfo>;
     public shadowCamera: Camera3D;
     public cubeArrayTexture: DepthCubeArrayTexture;
-    public colorTexture: ShadowTexture;
+    public colorTexture: VirtualTexture;
     public shadowSize: number = 1024;
     constructor() {
         super();
@@ -49,7 +48,7 @@ export class PointLightShadowRenderer extends RendererBase {
         // this.shadowSize = Engine3D.setting.shadow.pointShadowSize;
         this._shadowCameraDic = new Map<ILight, CubeShadowMapInfo>();
         this.cubeArrayTexture = new DepthCubeArrayTexture(this.shadowSize, this.shadowSize, 8);
-        this.colorTexture = new ShadowTexture(this.shadowSize, this.shadowSize, GPUTextureFormat.bgra8unorm, false);
+        this.colorTexture = new VirtualTexture(this.shadowSize, this.shadowSize, GPUTextureFormat.bgra8unorm, false);
 
         Reference.getInstance().attached(this.cubeArrayTexture, this);
     }
@@ -61,11 +60,11 @@ export class PointLightShadowRenderer extends RendererBase {
         } else {
             let camera = new PointShadowCubeCamera(view.camera.near, view.camera.far, 90, true);
             camera.label = lightBase.name;
-            let depths: ShadowTexture[] = [];
+            let depths: VirtualTexture[] = [];
             let rendererPassStates: RendererPassState[] = [];
             for (let i = 0; i < 6; i++) {
 
-                let depthTexture = new ShadowTexture(this.shadowSize, this.shadowSize, this.cubeArrayTexture.format, false);
+                let depthTexture = new VirtualTexture(this.shadowSize, this.shadowSize, this.cubeArrayTexture.format, false);
                 let rtFrame = new RTFrame([this.colorTexture], [new RTDescriptor()]);
                 depthTexture.name = `shadowDepthTexture_` + lightBase.name + i + "_face";
                 rtFrame.depthTexture = depthTexture;

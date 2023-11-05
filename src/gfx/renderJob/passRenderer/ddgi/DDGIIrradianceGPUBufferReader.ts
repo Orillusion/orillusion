@@ -1,7 +1,7 @@
 ﻿import { Engine3D } from "../../../../Engine3D";
 import { CEvent } from "../../../../event/CEvent";
 import { CEventDispatcher } from "../../../../event/CEventDispatcher";
-import { VirtualTexture } from "../../../../textures/VirtualTexture";
+import { RenderTexture } from "../../../../textures/RenderTexture";
 import { webGPUContext } from "../../../graphics/webGpu/Context3D";
 import { GPUContext } from "../../GPUContext";
 import { DDGIProbeRenderer, GIRenderCompleteEvent, GIRenderStartEvent } from "./DDGIProbeRenderer";
@@ -12,13 +12,13 @@ export class DDGIIrradianceGPUBufferReader extends CEventDispatcher {
     private probeRenderer: DDGIProbeRenderer;
     private opColorBuffer: GPUBuffer;
     private opDepthBuffer: GPUBuffer;
-    private srcColorMap: VirtualTexture;
-    private srcDepthMap: VirtualTexture;
+    private srcColorMap: RenderTexture;
+    private srcDepthMap: RenderTexture;
 
     public opDepthArray: Float32Array;
     public opColorArray: Float32Array;
 
-    public initReader(probeRender: DDGIProbeRenderer, colorMap: VirtualTexture, depthMap: VirtualTexture) {
+    public initReader(probeRender: DDGIProbeRenderer, colorMap: RenderTexture, depthMap: RenderTexture) {
         this.probeRenderer = probeRender;
         this.srcColorMap = colorMap;
         this.srcDepthMap = depthMap;

@@ -1,7 +1,7 @@
 import { DDGILighting_shader } from '../../../../assets/shader/compute/DDGILighting_CSShader';
 import { View3D } from '../../../../core/View3D';
 import { Engine3D } from '../../../../Engine3D';
-import { VirtualTexture } from '../../../../textures/VirtualTexture';
+import { RenderTexture } from '../../../../textures/RenderTexture';
 import { GlobalBindGroup } from '../../../graphics/webGpu/core/bindGroups/GlobalBindGroup';
 import { Texture } from '../../../graphics/webGpu/core/texture/Texture';
 import { ComputeShader } from '../../../graphics/webGpu/shader/ComputeShader';
@@ -20,10 +20,10 @@ export class DDGILightingPass {
     private shadowMap: Texture;
     private pointShadowMap: Texture;
 
-    public lightingTexture: VirtualTexture;
+    public lightingTexture: RenderTexture;
     constructor() {
         let giSetting = Engine3D.setting.gi;
-        this.lightingTexture = new VirtualTexture(giSetting.probeSourceTextureSize, giSetting.probeSourceTextureSize, GPUTextureFormat.rgba16float, false, GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.STORAGE_BINDING);
+        this.lightingTexture = new RenderTexture(giSetting.probeSourceTextureSize, giSetting.probeSourceTextureSize, GPUTextureFormat.rgba16float, false, GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.STORAGE_BINDING);
     }
 
     private create(view: View3D) {

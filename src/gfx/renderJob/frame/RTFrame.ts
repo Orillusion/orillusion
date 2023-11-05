@@ -1,22 +1,21 @@
-import { VirtualTexture } from "../../../textures/VirtualTexture";
-import { Texture } from "../../graphics/webGpu/core/texture/Texture";
+import { RenderTexture } from "../../../textures/RenderTexture";
 import { RTDescriptor } from "../../graphics/webGpu/descriptor/RTDescriptor";
 
 export class RTFrame {
     public label: string;
     public customSize: boolean = false;
-    public renderTargets: VirtualTexture[];
+    public renderTargets: RenderTexture[];
     public rtDescriptors: RTDescriptor[];
 
-    public zPreTexture: VirtualTexture;
-    public depthTexture: VirtualTexture;
+    public zPreTexture: RenderTexture;
+    public depthTexture: RenderTexture;
 
     public depthViewIndex: number = 0;
     public depthCleanValue: number = 1;
     public depthLoadOp: GPULoadOp = `clear`;
     public isOutTarget: boolean = true;
 
-    constructor(attachments: VirtualTexture[], rtDescriptors: RTDescriptor[], depthTexture?: VirtualTexture, zPreTexture?: VirtualTexture, isOutTarget: boolean = true) {
+    constructor(attachments: RenderTexture[], rtDescriptors: RTDescriptor[], depthTexture?: RenderTexture, zPreTexture?: RenderTexture, isOutTarget: boolean = true) {
         this.renderTargets = attachments;
         this.rtDescriptors = rtDescriptors;
         this.depthTexture = depthTexture;

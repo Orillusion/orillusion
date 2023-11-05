@@ -236,10 +236,6 @@ export class TAAPost extends PostBase {
             this.createResource();
             this.createCompute(view);
             this.rendererPassState = WebGPUDescriptorCreator.createRendererPassState(this.rtFrame, null);
-
-            webGPUContext.addEventListener(CResizeEvent.RESIZE, (e) => {
-                this.rendererPassState = WebGPUDescriptorCreator.createRendererPassState(this.rtFrame, null);
-            }, this);
         }
 
         let cfg = Engine3D.setting.render.postProcessing.taa;
@@ -253,6 +249,23 @@ export class TAAPost extends PostBase {
         this.taaSetting.setFloat('jitterY', view.camera.jitterY);
         this.taaSetting.apply();
 
+        GPUContext.computeCommand(command, [this.copyTexCompute, this.taaCompute, this.sharpCompute]);
+        GPUContext.lastRenderPassState = this.rendererPassState;
+        this.preProjMatrix.copyFrom(view.camera.projectionMatrix);
+        this.preViewMatrix.copyFrom(view.camera.viewMatrix);
+    }
+
+    public onResize(): void {
+        let presentationSize = webGPUContext.presentationSize;
+        let w = presentationSize[0];
+        let h = presentationSize[1];
+
+        this.preColorBuffer.resizeBuffer(w * h * 4);
+
+        this.taaTexture.resize(w, h);
+        this.outTexture.resize(w, h);
+        this.preColorTex.resize(w, h);
+
         this.taaCompute.workerSizeX = Math.ceil(this.taaTexture.width / 8);
         this.taaCompute.workerSizeY = Math.ceil(this.taaTexture.height / 8);
         this.taaCompute.workerSizeZ = 1;
@@ -264,14 +277,5 @@ export class TAAPost extends PostBase {
         this.sharpCompute.workerSizeX = Math.ceil(this.outTexture.width / 8);
         this.sharpCompute.workerSizeY = Math.ceil(this.outTexture.height / 8);
         this.sharpCompute.workerSizeZ = 1;
-
-        GPUContext.computeCommand(command, [this.copyTexCompute, this.taaCompute, this.sharpCompute]);
-
-        GPUContext.lastRenderPassState = this.rendererPassState;
-
-        this.preProjMatrix.copyFrom(view.camera.projectionMatrix);
-        this.preViewMatrix.copyFrom(view.camera.viewMatrix);
-
-        // view.camera.getViewMatrix(this.preViewMatrix);
     }
 }

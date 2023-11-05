@@ -57,7 +57,8 @@ class Sample_GodRay {
 
 		{
 			let mat = new LitMaterial();
-
+			mat.roughness = 0.5;
+			mat.metallic = 0.2;
 			let floor = new Object3D();
 			let mr = floor.addComponent(MeshRenderer);
 			mr.geometry = new PlaneGeometry(2000, 2000);

@@ -177,8 +177,6 @@ export class GTAOPost extends PostBase {
         this.autoSetColorTexture('inTex', this.gtaoCompute);
         this.gtaoCompute.setStorageTexture(`outTex`, this.gtaoTexture);
 
-
-
         this.gtaoSetting = gtaoSetting;
     }
 
@@ -224,6 +222,7 @@ export class GTAOPost extends PostBase {
         if (!this.gtaoCompute) {
             this.createResource();
             this.createCompute();
+            this.onResize();
 
             this.rendererPassState = WebGPUDescriptorCreator.createRendererPassState(this.rtFrame, null);
             this.rendererPassState.label = "GTAO";
@@ -251,11 +250,18 @@ export class GTAOPost extends PostBase {
 
         this.gtaoSetting.apply();
 
+        GPUContext.computeCommand(command, [this.gtaoCompute]);
+        GPUContext.lastRenderPassState = this.rendererPassState;
+    }
+
+    public onResize() {
+        let presentationSize = webGPUContext.presentationSize;
+        let w = presentationSize[0];
+        let h = presentationSize[1];
+        this.gtaoTexture.resize(w, h);
+
         this.gtaoCompute.workerSizeX = Math.ceil(this.gtaoTexture.width / 8);
         this.gtaoCompute.workerSizeY = Math.ceil(this.gtaoTexture.height / 8);
         this.gtaoCompute.workerSizeZ = 1;
-
-        GPUContext.computeCommand(command, [this.gtaoCompute]);
-        GPUContext.lastRenderPassState = this.rendererPassState;
     }
 }

@@ -1,7 +1,7 @@
 import { Engine3D } from "../../../../Engine3D";
 import { Camera3D } from "../../../../core/Camera3D";
 
-import { VirtualTexture } from "../../../../textures/VirtualTexture";
+import { RenderTexture } from "../../../../textures/RenderTexture";
 import { Texture } from "../../../graphics/webGpu/core/texture/Texture";
 import { RTDescriptor } from "../../../graphics/webGpu/descriptor/RTDescriptor";
 import { RTFrame } from "../../frame/RTFrame";
@@ -13,8 +13,8 @@ export class RendererPassState {
 
     public label: string = "";
     public customSize: boolean = false;
-    public zPreTexture: VirtualTexture = null;
-    public depthTexture: VirtualTexture = null;
+    public zPreTexture: RenderTexture = null;
+    public depthTexture: RenderTexture = null;
     public renderTargetTextures: GPUColorTargetState[];
     public outColor: number = -1;
     public renderTargets: Texture[];

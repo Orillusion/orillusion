@@ -76,7 +76,7 @@ export let Quad_frag_wgsl: string = /*wgsl*/ `
     fn main(@location(0) fragUV: vec2<f32>) -> FragmentOutput {
         var uv = fragUV ;
         uv.y = 1.0 - uv.y ;
-        var color: vec4<f32> = textureSample(baseMap, baseMapSampler, uv ) + vec4f(0.1,0.0,0.0,1.0);
+        var color: vec4<f32> = textureSample(baseMap, baseMapSampler, uv );
 
         return FragmentOutput(color);
     }

@@ -1,7 +1,7 @@
 import { DDGIIrradiance_shader } from '../../../../assets/shader/compute/DDGIIrradiance_Cs';
 import { View3D } from '../../../../core/View3D';
 import { Engine3D } from '../../../../Engine3D';
-import { VirtualTexture } from '../../../../textures/VirtualTexture';
+import { RenderTexture } from '../../../../textures/RenderTexture';
 import { GlobalBindGroup } from '../../../graphics/webGpu/core/bindGroups/GlobalBindGroup';
 import { StorageGPUBuffer } from '../../../graphics/webGpu/core/buffer/StorageGPUBuffer';
 import { ComputeShader } from '../../../graphics/webGpu/shader/ComputeShader';
@@ -17,8 +17,8 @@ import { DDGIIrradianceVolume } from './DDGIIrradianceVolume';
 export class DDGIIrradianceComputePass {
     private irradianceBuffer: StorageGPUBuffer;
     private depthBuffer: StorageGPUBuffer;
-    private probeIrradianceMap: VirtualTexture;
-    private probeDepthMap: VirtualTexture;
+    private probeIrradianceMap: RenderTexture;
+    private probeDepthMap: RenderTexture;
     private volume: DDGIIrradianceVolume;
     private computeShader: ComputeShader;
     private depthRaysBuffer: StorageGPUBuffer;
@@ -48,7 +48,7 @@ export class DDGIIrradianceComputePass {
         this.computeShader.setStorageBuffer("models", GlobalBindGroup.modelMatrixBindGroup.matrixBufferDst);
     }
 
-    public setTextures(inputs: VirtualTexture[], probeIrradianceMap: VirtualTexture, probeDepthMap: VirtualTexture) {
+    public setTextures(inputs: RenderTexture[], probeIrradianceMap: RenderTexture, probeDepthMap: RenderTexture) {
         this.probeIrradianceMap = probeIrradianceMap;
         this.probeDepthMap = probeDepthMap;
 

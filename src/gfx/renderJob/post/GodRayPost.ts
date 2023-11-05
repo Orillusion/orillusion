@@ -15,8 +15,6 @@ import { RTDescriptor } from '../../graphics/webGpu/descriptor/RTDescriptor';
 import { GBufferFrame } from '../frame/GBufferFrame';
 import { RTFrame } from '../frame/RTFrame';
 import { GodRay_cs } from '../../../assets/shader/compute/GodRay_cs';
-import { GUIHelp } from '@orillusion/debug/GUIHelp';
-import { ShadowTexture } from '../../..';
 
 
 export class GodRayPost extends PostBase {
@@ -96,11 +94,9 @@ export class GodRayPost extends PostBase {
         let shadowRenderer = Engine3D.getRenderJob(view).shadowMapPassRenderer;
         this.godRayCompute.setSamplerTexture(`shadowMap`, shadowRenderer.depth2DArrayTexture);
 
-        this.godRayCompute.workerSizeX = Math.ceil(this.godRayTexture.width / 8);
-        this.godRayCompute.workerSizeY = Math.ceil(this.godRayTexture.height / 8);
-        this.godRayCompute.workerSizeZ = 1;
-
         this.godRaySetting = godRaySetting;
+
+        this.onResize();
     }
 
     private createResource() {
@@ -108,11 +104,25 @@ export class GodRayPost extends PostBase {
         let w = presentationSize[0];
         let h = presentationSize[1];
 
-        this.godRayTexture = new ShadowTexture(w, h, GPUTextureFormat.rgba16float, false, GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC | GPUTextureUsage.TEXTURE_BINDING);
+        this.godRayTexture = new VirtualTexture(w, h, GPUTextureFormat.rgba16float, false, GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC | GPUTextureUsage.TEXTURE_BINDING);
         this.godRayTexture.name = 'godRayTexture';
         let gtaoDec = new RTDescriptor();
         gtaoDec.loadOp = `load`;
         this.rtFrame = new RTFrame([this.godRayTexture], [gtaoDec]);
+    }
+
+    public onResize() {
+        let presentationSize = webGPUContext.presentationSize;
+        let w = presentationSize[0];
+        let h = presentationSize[1];
+
+        this.godRayTexture.resize(w, h);
+        this.historyGodRayData.resizeBuffer(4 * this.godRayTexture.width * this.godRayTexture.height);
+        this.godRayCompute.setStorageBuffer('historyGodRayData', this.historyGodRayData);
+
+        this.godRayCompute.workerSizeX = Math.ceil(this.godRayTexture.width / 8);
+        this.godRayCompute.workerSizeY = Math.ceil(this.godRayTexture.height / 8);
+        this.godRayCompute.workerSizeZ = 1;
     }
 
     /**
@@ -132,32 +142,19 @@ export class GodRayPost extends PostBase {
 
             let globalUniform = GlobalBindGroup.getCameraGroup(view.camera);
             this.godRayCompute.setUniformBuffer('globalUniform', globalUniform.uniformGPUBuffer);
-
-            GUIHelp.addFolder("GodRay");
-            GUIHelp.add(this, "blendColor", 0.0, 1.0, 0.1);
-            GUIHelp.add(this, 'scatteringExponent', 1, 10.0, 0.1);
-            GUIHelp.add(this, 'rayMarchCount', 10, 30.0, 1.0);
-            GUIHelp.add(this, 'intensity', 0.01, 2.0, 0.01);
-
-            GUIHelp.endFolder();
         }
 
         this.godRaySetting.setFloat('intensity', this.intensity);
         this.godRaySetting.setFloat('rayMarchCount', this.rayMarchCount);
 
-        let camera = view.camera;
-        this.godRaySetting.setFloat('viewPortWidth', camera.viewPort.width);
-        this.godRaySetting.setFloat('viewPortHeight', camera.viewPort.height);
-
+        let presentationSize = webGPUContext.presentationSize;
+        let w = presentationSize[0];
+        let h = presentationSize[1];
+        this.godRaySetting.setFloat('viewPortWidth', w);
+        this.godRaySetting.setFloat('viewPortHeight', h);
         this.godRaySetting.setFloat('blendColor', this.blendColor ? 1 : 0);
         this.godRaySetting.setFloat('scatteringExponent', this.scatteringExponent);
-
         this.godRaySetting.apply();
-
-        this.godRayCompute.workerSizeX = Math.ceil(this.godRayTexture.width / 8);
-        this.godRayCompute.workerSizeY = Math.ceil(this.godRayTexture.height / 8);
-        this.godRayCompute.workerSizeZ = 1;
-
         GPUContext.computeCommand(command, [this.godRayCompute]);
         GPUContext.lastRenderPassState = this.rendererPassState;
     }

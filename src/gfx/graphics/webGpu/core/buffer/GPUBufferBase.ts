@@ -33,9 +33,9 @@ export class GPUBufferBase {
 
     constructor() {
         this.mapAsyncReady = [];
-        this.memory = new MemoryDO();
-        this.memoryNodes = new Map<string | number, MemoryInfo>();
-        this._dataView = new Float32Array(this.memory.shareDataBuffer);
+        // this.memory = new MemoryDO();
+        // this.memoryNodes = new Map<string | number, MemoryInfo>();
+        // this._dataView = new Float32Array(this.memory.shareDataBuffer);
     }
 
     public debug() {
@@ -380,11 +380,14 @@ export class GPUBufferBase {
 
     protected createBuffer(usage: GPUBufferUsageFlags, size: number, data?: ArrayBufferData, debugLabel?: string) {
         let device = webGPUContext.device;
-        this.byteSize = size * 4;
-        this.usage = usage;
+
         if (this.buffer) {
             this.destroy();
         }
+
+        this.byteSize = size * 4;
+        this.usage = usage;
+
         this.buffer = device.createBuffer({
             label: debugLabel,
             size: this.byteSize,
@@ -392,12 +395,19 @@ export class GPUBufferBase {
             mappedAtCreation: false,
         });
 
+        this.memory = new MemoryDO();
+        this.memoryNodes = new Map<string | number, MemoryInfo>();
+        this._dataView = new Float32Array(this.memory.shareDataBuffer);
         this.memory.allocation(this.byteSize);
         if (data) {
             let m = this.memory.allocation_node(data.length * 4);
             m.setArrayBuffer(0, data);
             this.apply();
         }
+    }
+
+    public resizeBuffer(size: number, data?: ArrayBufferData) {
+        this.createBuffer(this.usage, size, data);
     }
 
     protected createNewBuffer(usage: GPUBufferUsageFlags, size: number): GPUBuffer {
