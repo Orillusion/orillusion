@@ -60,7 +60,7 @@ class Sample_DepthOfView {
         }
 
         // load a test gltf model
-        let minimalObj = await Engine3D.res.loadGltf('https://cdn.orillusion.com/PBR/ToyCar/ToyCar.gltf')
+        let minimalObj = await Engine3D.res.loadGltf('/PBR/ToyCar/ToyCar.gltf')
         minimalObj.scaleX = minimalObj.scaleY = minimalObj.scaleZ = 800
         scene.addChild(minimalObj)
 

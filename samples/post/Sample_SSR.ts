@@ -51,7 +51,7 @@ class Sample_SSR {
         }
 
         // load test model
-        let minimalObj = await Engine3D.res.loadGltf('https://cdn.orillusion.com/PBR/ToyCar/ToyCar.gltf')
+        let minimalObj = await Engine3D.res.loadGltf('/PBR/ToyCar/ToyCar.gltf')
         minimalObj.scaleX = minimalObj.scaleY = minimalObj.scaleZ = 1000
         scene.addChild(minimalObj)
 
