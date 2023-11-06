@@ -1,12 +1,12 @@
 import { DirectLight, Engine3D, View3D, LitMaterial, HoverCameraController, KelvinUtil, MeshRenderer, Object3D, PlaneGeometry, Scene3D, SphereGeometry, SSRPost, Time, CameraUtil, webGPUContext, PostProcessingComponent, BloomPost, AtmosphericComponent } from '@orillusion/core'
 import * as dat from '@orillusion/debug/dat.gui.module'
 
-export class Sample_SSR {
+class Sample_SSR {
     lightObj: Object3D
     scene: Scene3D
     mats: any[]
 
-    constructor() {}
+    constructor() { }
 
     async run() {
         Engine3D.setting.shadow.enable = true

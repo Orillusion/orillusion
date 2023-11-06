@@ -1,8 +1,9 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, BloomPost, Color, DirectLight, Engine3D, GPUCullMode, GTAOPost, GlobalFog, GlobalIlluminationComponent, LitMaterial, Material, MorphTargetBlender, Object3D, PointLight, SkinnedMeshRenderer2, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
+import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, BloomPost, Color, DepthOfFieldPost, DirectLight, Engine3D, GPUCullMode, GTAOPost, GlobalFog, GlobalIlluminationComponent, LitMaterial, Material, MorphTargetBlender, Object3D, PointLight, SkinnedMeshRenderer2, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
+
 
 
     public static renderShadowSetting(open: boolean = true) {
@@ -534,6 +535,14 @@ export class GUIUtil {
         GUIHelp.add(post, "darkFactor", 0.0, 5, 0.001);
         GUIHelp.add(post, "blendColor");
         GUIHelp.add(post, "multiBounce");
+        GUIHelp.endFolder();
+    }
+
+    static renderDepthOfField(post: DepthOfFieldPost) {
+        GUIHelp.addFolder("DOFPost");
+        GUIHelp.add(post, 'near', 0, 100, 1)
+        GUIHelp.add(post, 'far', 150, 300, 1)
+        GUIHelp.add(post, 'pixelOffset', 0.0, 15, 1)
         GUIHelp.endFolder();
     }
 }

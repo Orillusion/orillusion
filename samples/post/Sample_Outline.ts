@@ -1,11 +1,11 @@
-import { DirectLight, Engine3D, View3D, LitMaterial, HoverCameraController, KelvinUtil, MeshRenderer, Object3D, PlaneGeometry, Scene3D, SphereGeometry, PostProcessingComponent, CameraUtil, webGPUContext, OutlinePost, outlinePostManager, AtmosphericComponent, Color } from '@orillusion/core'
+import { DirectLight, Engine3D, View3D, LitMaterial, HoverCameraController, KelvinUtil, MeshRenderer, Object3D, PlaneGeometry, Scene3D, SphereGeometry, PostProcessingComponent, CameraUtil, webGPUContext, OutlinePost, outlinePostManager, AtmosphericComponent, Color, FXAAPost } from '@orillusion/core'
 import * as dat from '@orillusion/debug/dat.gui.module'
 
-export class Sample_Outline {
+class Sample_Outline {
     lightObj: Object3D
     scene: Scene3D
 
-    constructor() {}
+    constructor() { }
 
     async run() {
         Engine3D.setting.shadow.enable = false
@@ -31,6 +31,7 @@ export class Sample_Outline {
         Engine3D.startRenderView(view)
 
         let postProcessing = this.scene.addComponent(PostProcessingComponent)
+        // let outlinePost = postProcessing.addPost(FXAAPost)
         let outlinePost = postProcessing.addPost(OutlinePost)
 
         // const GUIHelp = new dat.GUI()
@@ -86,6 +87,8 @@ export class Sample_Outline {
 
     private createPlane(scene: Scene3D) {
         let mat = new LitMaterial()
+        mat.roughness = 0.5;
+        mat.metallic = 0.5;
         {
             let debugGeo = new PlaneGeometry(1000, 1000)
             let obj: Object3D = new Object3D()

@@ -1,10 +1,10 @@
 import { DepthOfFieldPost, DirectLight, Engine3D, PostProcessingComponent, View3D, LitMaterial, HoverCameraController, KelvinUtil, MeshRenderer, Object3D, PlaneGeometry, Scene3D, SphereGeometry, SSR_IS_Kernel, CameraUtil, webGPUContext, AtmosphericComponent } from '@orillusion/core'
 import * as dat from '@orillusion/debug/dat.gui.module'
 
-export class Sample_DepthOfView {
+class Sample_DepthOfView {
     lightObj: Object3D
     scene: Scene3D
-    constructor() {}
+    constructor() { }
 
     async run() {
         Engine3D.setting.shadow.enable = true
@@ -40,6 +40,9 @@ export class Sample_DepthOfView {
         GUIHelp.addFolder('Depth of Field')
         GUIHelp.add(DOFPost, 'near', 0, 100, 1)
         GUIHelp.add(DOFPost, 'far', 150, 300, 1)
+
+        console.log("run");
+
     }
 
     async initScene(scene: Scene3D) {
