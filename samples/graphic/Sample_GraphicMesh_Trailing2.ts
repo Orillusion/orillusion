@@ -1,9 +1,9 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer, BoxGeometry, SphereGeometry, VirtualTexture, GPUTextureFormat, UnLitMaterial, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, PlaneGeometry, Vector3, Graphic3DMesh, Matrix4, Time, BlendMode, Color, PostProcessingComponent, BloomPost, TrailGeometry, AnimationCurve, Keyframe, AnimationCurveT, KeyframeT, DepthOfFieldPost } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer, BoxGeometry, SphereGeometry, VirtualTexture, GPUTextureFormat, UnLitMaterial, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, PlaneGeometry, Vector3, Graphic3DMesh, Matrix4, Time, BlendMode, Color, PostProcessingComponent, BloomPost, TrailGeometry, AnimationCurve, Keyframe, AnimationCurveT, KeyframeT, DepthOfFieldPost, Quaternion } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { Stats } from "@orillusion/stats";
 
-export class Sample_GraphicMesh_Trailing {
+export class Sample_GraphicMesh_Trailing2 {
     lightObj3D: Object3D;
     scene: Scene3D;
     parts: Object3D[];
@@ -100,8 +100,8 @@ export class Sample_GraphicMesh_Trailing {
         GUIHelp.add(this, "cafe", 0.0, 100.0);
         GUIHelp.add(this, "frame", 0.0, 100.0);
         {
-            this.width = 20;
-            this.height = 20;
+            this.width = 10;
+            this.height = 10;
             let mr = Graphic3DMesh.drawTrail("trail", this.scene, bitmapTexture2DArray, 127, this.width * this.height);
             this.parts = mr.object3Ds;
             this.trail3ds = mr.trail3Ds;
@@ -136,35 +136,23 @@ export class Sample_GraphicMesh_Trailing {
 
     updateOnce(engineFrame: number) {
         if (this.trail3ds && this.trail3ds.length > 0) {
-            let curveX = new AnimationCurve();
-            let lenX = Math.floor(Math.random() * 10) + 1;
-            for (let pi = 0; pi < lenX; pi++) {
-                curveX.addKeyFrame(new Keyframe(pi / (lenX - 1), Math.random() * 2 - 1));
-            }
-
-            let curveY = new AnimationCurve();
-            let lenY = Math.floor(Math.random() * 10) + 1;
-            for (let pi = 0; pi < lenY; pi++) {
-                curveY.addKeyFrame(new Keyframe(pi / (lenY - 1), Math.random() * 2 - 1));
-            }
-
-            let curveZ = new AnimationCurve();
-            let lenZ = Math.floor(Math.random() * 10) + 1;
-            for (let pi = 0; pi < lenZ; pi++) {
-                curveZ.addKeyFrame(new Keyframe(pi / (lenZ - 1), Math.random() * 2 - 1));
-            }
-
             for (let i = 0; i < this.trail3ds.length; i++) {
                 const trail3d = this.trail3ds[i];
-                let dir = new Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1);
+                let dir = new Vector3(0, 1, 0);
+                let lx = 10 * Math.random() + 10;
+                let ly = 0.1 * Math.random() + 0.1;
+                let lz = 10 * Math.random() + 10;
+                let oy = 1 * Math.random() + 1;
                 for (let j = 0; j < trail3d.length; j++) {
                     let p = j / (trail3d.length - 1);
-                    let vx = curveX.getValue(p);
-                    let vy = curveY.getValue(p);
-                    let vz = curveZ.getValue(p);
-                    trail3d[j].x = vx * dir.x * 100;
-                    trail3d[j].y = vy * dir.y * 100;
-                    trail3d[j].z = vz * dir.z * 100;
+
+                    let q = Quaternion.HELP_0;
+                    q.fromEulerAngles(0, p * 360 * 4, 0);
+                    q.transformVector(Vector3.RIGHT, dir);
+
+                    trail3d[j].x = dir.x * lx * p;
+                    trail3d[j].y = j * ly + oy;
+                    trail3d[j].z = dir.z * lz * p;
                 }
             }
         }
