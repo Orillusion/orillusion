@@ -111,6 +111,8 @@ export class GlobalUniformGroup {
         }
         this.uniformGPUBuffer.setFloat32Array(`csmShadowBias`, this.csmShadowBias);
         this.uniformGPUBuffer.setFloat32Array(`csmMatrix`, this.csmMatrixRaw);
+        this.uniformGPUBuffer.setFloat32Array(`shadowLights`, this.shadowLights);
+
         this.uniformGPUBuffer.setVector3(`CameraPos`, camera.transform.worldPosition);
         this.uniformGPUBuffer.setFloat(`frame`, Time.frame);
         this.uniformGPUBuffer.setFloat(`time`, Time.frame);
@@ -141,7 +143,6 @@ export class GlobalUniformGroup {
         this.uniformGPUBuffer.setInt32(`nDirShadowEnd`, this.dirShadowEnd);
         this.uniformGPUBuffer.setInt32(`nPointShadowStart`, this.pointShadowStart);
         this.uniformGPUBuffer.setInt32(`nPointShadowEnd`, this.pointShadowEnd);
-        this.uniformGPUBuffer.setFloat32Array(`shadowLights`, this.shadowLights);
         this.uniformGPUBuffer.apply();
     }
 
@@ -157,6 +158,8 @@ export class GlobalUniformGroup {
         this.uniformGPUBuffer.setFloat32Array(`shadowCamera`, this.shadowMatrixRaw);
         this.uniformGPUBuffer.setFloat32Array(`csmShadowBias`, this.csmShadowBias);
         this.uniformGPUBuffer.setFloat32Array(`csmMatrix`, this.csmMatrixRaw);
+        this.uniformGPUBuffer.setFloat32Array(`shadowLights`, this.shadowLights);
+
         this.uniformGPUBuffer.setVector3(`CameraPos`, camera.transform.worldPosition);
 
         this.uniformGPUBuffer.setFloat(`frame`, Time.frame);
@@ -191,7 +194,6 @@ export class GlobalUniformGroup {
         this.uniformGPUBuffer.setInt32(`nDirShadowEnd`, this.dirShadowEnd);
         this.uniformGPUBuffer.setInt32(`nPointShadowStart`, this.pointShadowStart);
         this.uniformGPUBuffer.setInt32(`nPointShadowEnd`, this.pointShadowEnd);
-        this.uniformGPUBuffer.setFloat32Array(`shadowLights`, this.shadowLights);
 
         this.uniformGPUBuffer.apply();
     }

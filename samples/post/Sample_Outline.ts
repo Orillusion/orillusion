@@ -34,18 +34,18 @@ class Sample_Outline {
         // let outlinePost = postProcessing.addPost(FXAAPost)
         let outlinePost = postProcessing.addPost(OutlinePost)
 
-        // const GUIHelp = new dat.GUI()
-        // GUIHelp.addFolder('Outline')
-        // GUIHelp.add(outlinePost, 'outlinePixel', 0, 5)
-        // GUIHelp.add(outlinePost, 'fadeOutlinePixel', 0, 5)
-        // GUIHelp.add(
-        //     {
-        //         Change: () => {
-        //             this.selectBall()
-        //         }
-        //     },
-        //     'Change'
-        // )
+        const GUIHelp = new dat.GUI()
+        GUIHelp.addFolder('Outline')
+        GUIHelp.add(outlinePost, 'outlinePixel', 0, 5)
+        GUIHelp.add(outlinePost, 'fadeOutlinePixel', 0, 5)
+        GUIHelp.add(
+            {
+                Change: () => {
+                    this.selectBall()
+                }
+            },
+            'Change'
+        )
         this.selectBall()
     }
 
