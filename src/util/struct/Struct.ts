@@ -61,13 +61,13 @@ export class Struct {
                 return 1 * 4;
 
             case `Float32Array`:
-                return value.byteLength * 4;
+                return value.byteLength;
 
             case `Vector2`:
                 return 2 * 4;
 
             case `Vector3`:
-                return 4 * 4;
+                return 3 * 4;
 
             case `Vector4`:
                 return 4 * 4;

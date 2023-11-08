@@ -3,7 +3,7 @@ import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCam
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { Stats } from "@orillusion/stats";
 
-export class Sample_GraphicMesh_Trailing2 {
+export class Sample_GraphicTrailing3 {
     lightObj3D: Object3D;
     scene: Scene3D;
     parts: Object3D[];
@@ -102,9 +102,9 @@ export class Sample_GraphicMesh_Trailing2 {
         {
             this.width = 10;
             this.height = 10;
-            let mr = Graphic3DMesh.drawTrail("trail", this.scene, bitmapTexture2DArray, 127, this.width * this.height);
+            let mr = Graphic3DMesh.drawRibbon("trail", this.scene, bitmapTexture2DArray, 127, this.width * this.height);
             this.parts = mr.object3Ds;
-            this.trail3ds = mr.trail3Ds;
+            this.trail3ds = mr.ribbon3Ds;
 
             mr.material.blendMode = BlendMode.ADD;
             // mr.material.transparent = true;

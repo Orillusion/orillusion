@@ -1,9 +1,9 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer, BoxGeometry, SphereGeometry, VirtualTexture, GPUTextureFormat, UnLitMaterial, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, PlaneGeometry, Vector3, Graphic3DMesh, Matrix4, Time, BlendMode, Color, PostProcessingComponent, BloomPost, TrailGeometry, AnimationCurve, Keyframe, AnimationCurveT, KeyframeT, DepthOfFieldPost } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer, BoxGeometry, SphereGeometry, VirtualTexture, GPUTextureFormat, UnLitMaterial, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, PlaneGeometry, Vector3, Graphic3DMesh, Matrix4, Time, BlendMode, Color, PostProcessingComponent, BloomPost, TrailGeometry, AnimationCurve, Keyframe, AnimationCurveT, KeyframeT, DepthOfFieldPost, Quaternion, PingPong, Object3DUtil, GPUPrimitiveTopology } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { Stats } from "@orillusion/stats";
 
-export class Sample_GraphicMesh_Trailing {
+export class Sample_GraphicPath {
     lightObj3D: Object3D;
     scene: Scene3D;
     parts: Object3D[];
@@ -20,8 +20,8 @@ export class Sample_GraphicMesh_Trailing {
 
     async run() {
 
-        Matrix4.maxCount = 500000;
-        Matrix4.allocCount = 500000;
+        Matrix4.maxCount = 300000;
+        Matrix4.allocCount = 300000;
 
         await Engine3D.init({ beforeRender: () => this.update() });
 
@@ -49,20 +49,14 @@ export class Sample_GraphicMesh_Trailing {
 
         GUIUtil.renderDebug();
 
-        let post = this.scene.addComponent(PostProcessingComponent);
-        // let DOFPost = post.addPost(DepthOfFieldPost)
-        // DOFPost.near = 0
-        // DOFPost.far = 150
-        // DOFPost.pixelOffset = 2
-        // GUIUtil.renderDepthOfField(DOFPost);
-
-        let bloom = post.addPost(BloomPost);
-        bloom.bloomIntensity = 10.0
-        GUIUtil.renderBloom(bloom);
+        // let post = this.scene.addComponent(PostProcessingComponent);
+        // let bloom = post.addPost(BloomPost);
+        // bloom.bloomIntensity = 1.0
+        // GUIUtil.renderBloom(bloom);
 
         await this.initScene();
 
-        // sky.relativeTransform = this.lightObj3D.transform;
+        sky.relativeTransform = this.lightObj3D.transform;
     }
 
     async initScene() {
@@ -80,15 +74,15 @@ export class Sample_GraphicMesh_Trailing {
             this.scene.addChild(this.lightObj3D);
         }
 
-        let texts = [];
 
+        let texts = [];
         // texts.push(await Engine3D.res.loadTexture("particle/fx_a_fragment_003.png") as BitmapTexture2D);
         // texts.push(await Engine3D.res.loadTexture("textures/grid.jpg") as BitmapTexture2D);
-        // texts.push(await Engine3D.res.loadTexture("textures/frame.png") as BitmapTexture2D);
+        texts.push(await Engine3D.res.loadTexture("textures/frame.png") as BitmapTexture2D);
+        // texts.push(await Engine3D.res.loadTexture("textures/128/line_0001.PNG") as BitmapTexture2D);
         // texts.push(await Engine3D.res.loadTexture("textures/128/line_0010.png") as BitmapTexture2D);
-        texts.push(await Engine3D.res.loadTexture("textures/128/line_0001.PNG") as BitmapTexture2D);
-        texts.push(await Engine3D.res.loadTexture("textures/128/line_0013.png") as BitmapTexture2D);
-        texts.push(await Engine3D.res.loadTexture("textures/128/line_0017.png") as BitmapTexture2D);
+        // texts.push(await Engine3D.res.loadTexture("textures/128/line_0013.png") as BitmapTexture2D);
+        // texts.push(await Engine3D.res.loadTexture("textures/128/line_0017.png") as BitmapTexture2D);
 
         let bitmapTexture2DArray = new BitmapTexture2DArray(texts[0].width, texts[0].height, texts.length);
         bitmapTexture2DArray.setTextures(texts);
@@ -100,15 +94,15 @@ export class Sample_GraphicMesh_Trailing {
         GUIHelp.add(this, "cafe", 0.0, 100.0);
         GUIHelp.add(this, "frame", 0.0, 100.0);
         {
-            this.width = 20;
-            this.height = 20;
-            let mr = Graphic3DMesh.drawTrail("trail", this.scene, bitmapTexture2DArray, 127, this.width * this.height);
+            this.width = 1;
+            this.height = 1;
+            let mr = Graphic3DMesh.drawRibbon("trail", this.scene, bitmapTexture2DArray, 255, this.width * this.height);
             this.parts = mr.object3Ds;
-            this.trail3ds = mr.trail3Ds;
+            this.trail3ds = mr.ribbon3Ds;
 
-            mr.material.blendMode = BlendMode.ADD;
-            // mr.material.transparent = true;
-            mr.material.doubleSide = true;
+            mr.material.blendMode = BlendMode.SOFT_ADD;
+            mr.material.transparent = true;
+            // mr.material.doubleSide = true;
             mr.material.depthWriteEnabled = false;
             // mr.material.useBillboard = true;
 
@@ -136,35 +130,27 @@ export class Sample_GraphicMesh_Trailing {
 
     updateOnce(engineFrame: number) {
         if (this.trail3ds && this.trail3ds.length > 0) {
-            let curveX = new AnimationCurve();
-            let lenX = Math.floor(Math.random() * 10) + 1;
-            for (let pi = 0; pi < lenX; pi++) {
-                curveX.addKeyFrame(new Keyframe(pi / (lenX - 1), Math.random() * 2 - 1));
-            }
-
-            let curveY = new AnimationCurve();
-            let lenY = Math.floor(Math.random() * 10) + 1;
-            for (let pi = 0; pi < lenY; pi++) {
-                curveY.addKeyFrame(new Keyframe(pi / (lenY - 1), Math.random() * 2 - 1));
-            }
-
-            let curveZ = new AnimationCurve();
-            let lenZ = Math.floor(Math.random() * 10) + 1;
-            for (let pi = 0; pi < lenZ; pi++) {
-                curveZ.addKeyFrame(new Keyframe(pi / (lenZ - 1), Math.random() * 2 - 1));
-            }
-
             for (let i = 0; i < this.trail3ds.length; i++) {
                 const trail3d = this.trail3ds[i];
-                let dir = new Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1);
+                Vector3.HELP_0.x = Math.random() * 10 - 5;
+                Vector3.HELP_0.y = Math.random() * 2 - 1;
+                Vector3.HELP_0.z = Math.random() * 10 - 5;
+                let offsetAngle = Math.random() * 360;
                 for (let j = 0; j < trail3d.length; j++) {
                     let p = j / (trail3d.length - 1);
-                    let vx = curveX.getValue(p);
-                    let vy = curveY.getValue(p);
-                    let vz = curveZ.getValue(p);
-                    trail3d[j].x = vx * dir.x * 100;
-                    trail3d[j].y = vy * dir.y * 100;
-                    trail3d[j].z = vz * dir.z * 100;
+                    // trail3d[j].x = j * 0.1 + Math.cos(p * (trail3d.length / 10)) * 5;
+                    // trail3d[j].y = Math.sin(p * (trail3d.length / 10)) * 5 + 10;
+                    // trail3d[j].z = i * 10;
+
+                    trail3d[j].x = Math.sin(p * (trail3d.length / 15) + offsetAngle) * p * 35 + Vector3.HELP_0.x;
+                    trail3d[j].y = j * 0.2 + Vector3.HELP_0.y;
+                    trail3d[j].z = Math.cos(p * (trail3d.length / 10) + offsetAngle) * p * 35 + Vector3.HELP_0.z;
+
+                    // let obj = Object3DUtil.GetSingleSphere(0.1, 1, 0, 0);
+                    // this.scene.addChild(obj);
+                    // obj.transform.x = trail3d[j].x;
+                    // obj.transform.y = trail3d[j].y;
+                    // obj.transform.z = trail3d[j].z;
                 }
             }
         }

@@ -438,6 +438,9 @@ export class GPUBufferBase {
             mappedAtCreation: false,
         });
 
+        this.memory = new MemoryDO();
+        this.memoryNodes = new Map<string | number, MemoryInfo>();
+        this._dataView = new Float32Array(this.memory.shareDataBuffer);
         this.memory.allocation(totalLength);
         for (let i = 0; i < count; i++) {
             let name = i;
