@@ -133,7 +133,7 @@ export class BloomPost extends PostBase {
 
     private createDownSampleComputes() {
         let setting = Engine3D.setting.render.postProcessing.bloom;
-        const N = setting.downSampleStep;  // 下采样次数
+        const N = setting.downSampleStep;
         this.downSampleComputes = [];
 
         for (let i = 0; i < N; i++) {
@@ -153,7 +153,7 @@ export class BloomPost extends PostBase {
 
     private createUpSampleComputes() {
         let setting = Engine3D.setting.render.postProcessing.bloom;
-        const N = setting.downSampleStep;  // 下采样次数
+        const N = setting.downSampleStep;
         this.upSampleComputes = [];
         {
             let compute = new ComputeShader(upSample);
@@ -189,7 +189,7 @@ export class BloomPost extends PostBase {
 
     private createPostCompute() {
         let setting = Engine3D.setting.render.postProcessing.bloom;
-        const N = setting.downSampleStep;  // 融合结果
+        const N = setting.downSampleStep;
 
         this.postCompute = new ComputeShader(post);
 
@@ -214,12 +214,11 @@ export class BloomPost extends PostBase {
 
         this.RT_threshold = new VirtualTexture(screenWidth, screenHeight, GPUTextureFormat.rgba16float, false, GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC | GPUTextureUsage.TEXTURE_BINDING);
 
-        const N = setting.downSampleStep;  // 下采样次数
+        const N = setting.downSampleStep;
         {
             let downSize = 2;
             this.RT_BloomDown = [];
 
-            // 创建下纹理
             for (let i = 0; i < N; i++) {
                 let w = Math.ceil(screenWidth / downSize);
                 let h = Math.ceil(screenHeight / downSize);
@@ -229,7 +228,6 @@ export class BloomPost extends PostBase {
         }
 
         {
-            // 创建上采样纹理
             this.RT_BloomUp = [];
             for (let i = 0; i < N - 1; i++) {
                 let w = this.RT_BloomDown[N - 2 - i].width;
@@ -282,9 +280,9 @@ export class BloomPost extends PostBase {
         let screenWidth = presentationSize[0];
         let screenHeight = presentationSize[1];
         this.RT_threshold.resize(screenWidth, screenHeight);
-        const N = cfg.downSampleStep;  // 下采样次数
+        const N = cfg.downSampleStep;
         let downSize = 2;
-        // 创建下纹理
+        // 
         for (let i = 0; i < N; i++) {
             let w = Math.ceil(screenWidth / downSize);
             let h = Math.ceil(screenHeight / downSize);

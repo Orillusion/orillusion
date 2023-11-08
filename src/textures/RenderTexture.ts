@@ -14,8 +14,8 @@ export class RenderTexture extends Texture {
     public resolveTarget: GPUTextureView;
 
     sampleCount: number;
-    autoResize: boolean;
-    clear: boolean;
+    autoResize?: boolean;
+    clear?: boolean;
     /**
      * create virtual texture
      * @param width width of texture
