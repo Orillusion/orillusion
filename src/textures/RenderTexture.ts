@@ -12,8 +12,10 @@ import { CResizeEvent } from '..';
  */
 export class RenderTexture extends Texture {
     public resolveTarget: GPUTextureView;
-    sampleCount: number;
 
+    sampleCount: number;
+    autoResize: boolean;
+    clear: boolean;
     /**
      * create virtual texture
      * @param width width of texture
@@ -22,15 +24,21 @@ export class RenderTexture extends Texture {
      * @param useMipmap whether or not gen mipmap
      * @returns
      */
-    constructor(width: number, height: number, format: GPUTextureFormat = GPUTextureFormat.rgba8unorm, useMipMap: boolean = false, usage?: GPUFlagsConstant, numberLayer: number = 1, sampleCount: number = 0, clear: boolean = true) {
+    constructor(width: number, height: number,
+        format: GPUTextureFormat = GPUTextureFormat.rgba8unorm,
+        useMipMap: boolean = false, usage?: GPUFlagsConstant,
+        numberLayer: number = 1, sampleCount: number = 0,
+        clear: boolean = true, autoResize: boolean = true) {
+
         super(width, height, numberLayer);
-        let device = webGPUContext.device;
         this.name = UUID();
 
+        this.autoResize = autoResize;
         this.useMipmap = useMipMap;
         this.sampleCount = sampleCount;
         this.format = format;
         this.numberLayer = numberLayer;
+        this.clear = clear;
 
         if (usage != undefined) {
             this.usage = usage;
@@ -40,11 +48,14 @@ export class RenderTexture extends Texture {
 
         this.resize(width, height);
 
-        webGPUContext.addEventListener(CResizeEvent.RESIZE, (e) => {
-            let { width, height } = e.data;
-            this.resize(width, height);
-            this._textureChange = true;
-        }, this);
+        if (autoResize) {
+            webGPUContext.addEventListener(CResizeEvent.RESIZE, (e) => {
+                let { width, height } = e.data;
+                this.resize(width, height);
+                this._textureChange = true;
+            }, this);
+        }
+
     }
 
     public resize(width, height) {
@@ -151,7 +162,7 @@ export class RenderTexture extends Texture {
     }
 
     public clone() {
-        let texture = new RenderTexture(this.width, this.height, this.format, this.useMipmap, this.usage, this.numberLayer, this.sampleCount);
+        let texture = new RenderTexture(this.width, this.height, this.format, this.useMipmap, this.usage, this.numberLayer, this.sampleCount, this.clear, this.autoResize);
         texture.name = "clone_" + texture.name;
         return texture;
     }

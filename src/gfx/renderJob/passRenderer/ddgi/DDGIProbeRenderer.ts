@@ -78,7 +78,7 @@ export class DDGIProbeRenderer extends RendererBase {
 
         this.probeRenderResult = new ProbeRenderResult();
 
-        let probeGBufferFrame = new ProbeGBufferFrame(this.sizeW, this.sizeH);
+        let probeGBufferFrame = new ProbeGBufferFrame(this.sizeW, this.sizeH, false);
         this.positionMap = probeGBufferFrame.renderTargets[0];
         this.normalMap = probeGBufferFrame.renderTargets[1];
         this.colorMap = probeGBufferFrame.renderTargets[2];
