@@ -16,11 +16,9 @@ struct BloomCfg{
 let CalcUV_01 = /*wgsl*/ `
   fn CalcUV_01(coord:vec2<i32>, texSize:vec2<u32>) -> vec2<f32>
   {
-    var uv = vec2<f32>(0.0);
-    uv.x = (f32(coord.x) + 0.5) / f32(texSize.x);
-    uv.y = (f32(coord.y) + 0.5) / f32(texSize.y);
-
-    return uv;
+    let u = (f32(coord.x) + 0.5) / f32(texSize.x);
+    let v = (f32(coord.y) + 0.5) / f32(texSize.y);
+    return vec2<f32>(u, v);
   }
 
 `
