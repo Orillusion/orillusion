@@ -139,10 +139,11 @@ export class GeometryBase {
      * add subGeometry from lod level 
      * @param lodLevels @see LODDescriptor
      */
-    public addSubGeometry(...lodLevels: LODDescriptor[]) {
+    public addSubGeometry(...lodLevels: LODDescriptor[]): SubGeometry {
         let sub = new SubGeometry();
         sub.lodLevels = lodLevels;
         this.subGeometries.push(sub);
+        return sub;
     }
 
     /**

@@ -29,9 +29,7 @@ export class UIPanel extends UIImage {
     public scissorFadeOutSize: number = 0;
 
     protected _uiRenderer: GUIRenderer;
-    protected _uiMaterial: GUIMaterial;
     protected _geometry: GUIGeometry;
-    protected _limitVertexCount: number = 0;
     protected _maxCount: number = 128;
 
     public readonly isUIPanel = true;
@@ -61,11 +59,25 @@ export class UIPanel extends UIImage {
         this.visible = false;
     }
 
+    public updateDrawCallSegment(index: number, indexStart: number, indexCount: number) {
+        this._geometry.updateSubGeometry(index, indexStart, indexCount);
+        let firstMaterial = this._uiRenderer.material;
+        let newMaterial: GUIMaterial = this._uiRenderer.materials[index] as GUIMaterial;
+        if (!newMaterial) {
+            newMaterial = new GUIMaterial(this.space);
+            let newMaterials = this._uiRenderer.materials.slice();
+            newMaterials.push(newMaterial);
+            this._uiRenderer.materials = newMaterials;
+            newMaterial.cullMode = firstMaterial.cullMode;
+            newMaterial.depthCompare = firstMaterial.depthCompare;
+        }
+    }
+
     private create(space: GUISpace) {
         this._maxCount = this.space == GUISpace.World ? GUIConfig.quadMaxCountForWorld : GUIConfig.quadMaxCountForView;
         this._uiRenderer = this.object3D.addComponent(GUIRenderer);
         this._geometry = this._uiRenderer.geometry = new GUIGeometry(this._maxCount).create();
-        this._uiMaterial = this._uiRenderer.material = new GUIMaterial(space);
+        this._uiRenderer.material = new GUIMaterial(space);
         this._uiRenderer.renderOrder = GUIConfig.SortOrderStartWorld;
 
         this._rebuild = new GUIGeometryRebuild();
@@ -100,7 +112,9 @@ export class UIPanel extends UIImage {
 
     public set cullMode(value: GPUCullMode) {
         if (this.space == GUISpace.World) {
-            this._uiRenderer.material.cullMode = value;
+            for (let item of this._uiRenderer.materials) {
+                item.cullMode = value;
+            }
         } else {
             console.warn('Cannot change cullMode in view space');
         }
@@ -139,16 +153,18 @@ export class UIPanel extends UIImage {
         panel._uiRenderer.needSortOnCameraZ = panel.needSortOnCameraZ;
 
         //update material
-        let material = panel._uiMaterial;
-        material.setGUISolution(GUIConfig.solution, GUIConfig.pixelRatio);
-        material.setScreenSize(webGPUContext.canvas.clientWidth, webGPUContext.canvas.clientHeight);
-        material.setLimitVertex(panel._limitVertexCount);
-        material.setScissorEnable(panel.scissorEnable);
-        if (panel.scissorEnable) {
-            let maskQuad = panel.mainQuads[0];
-            material.setScissorRect(maskQuad.left, maskQuad.bottom, maskQuad.right, maskQuad.top);
-            material.setScissorCorner(panel.scissorCornerRadius, panel.scissorFadeOutSize);
+        for (let item of panel['_uiRenderer'].materials) {
+            let material = item as GUIMaterial;
+            material.setGUISolution(GUIConfig.solution, GUIConfig.pixelRatio);
+            material.setScreenSize(webGPUContext.canvas.clientWidth, webGPUContext.canvas.clientHeight);
+            material.setScissorEnable(panel.scissorEnable);
+            if (panel.scissorEnable) {
+                let maskQuad = panel.mainQuads[0];
+                material.setScissorRect(maskQuad.left, maskQuad.bottom, maskQuad.right, maskQuad.top);
+                material.setScissorCorner(panel.scissorCornerRadius, panel.scissorFadeOutSize);
+            }
         }
+
 
         //clear flag
         panel.needUpdateGeometry = false;
