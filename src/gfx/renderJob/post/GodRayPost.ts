@@ -168,16 +168,18 @@ export class GodRayPost extends PostBase {
             this.godRayCompute.setUniformBuffer('globalUniform', globalUniform.uniformGPUBuffer);
         }
 
-        this.godRaySetting.setFloat('intensity', this.intensity);
-        this.godRaySetting.setFloat('rayMarchCount', this.rayMarchCount);
+        let setting = Engine3D.setting.render.postProcessing.godRay;
+
+        this.godRaySetting.setFloat('intensity', setting.intensity);
+        this.godRaySetting.setFloat('rayMarchCount', setting.rayMarchCount);
 
         let presentationSize = webGPUContext.presentationSize;
         let w = presentationSize[0];
         let h = presentationSize[1];
         this.godRaySetting.setFloat('viewPortWidth', w);
         this.godRaySetting.setFloat('viewPortHeight', h);
-        this.godRaySetting.setFloat('blendColor', this.blendColor ? 1 : 0);
-        this.godRaySetting.setFloat('scatteringExponent', this.scatteringExponent);
+        this.godRaySetting.setFloat('blendColor', setting.blendColor ? 1 : 0);
+        this.godRaySetting.setFloat('scatteringExponent', setting.scatteringExponent);
         this.godRaySetting.apply();
         GPUContext.computeCommand(command, [this.godRayCompute]);
         GPUContext.lastRenderPassState = this.rendererPassState;
