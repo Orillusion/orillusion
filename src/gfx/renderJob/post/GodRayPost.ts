@@ -15,6 +15,7 @@ import { RTDescriptor } from '../../graphics/webGpu/descriptor/RTDescriptor';
 import { GBufferFrame } from '../frame/GBufferFrame';
 import { RTFrame } from '../frame/RTFrame';
 import { GodRay_cs } from '../../../assets/shader/compute/GodRay_cs';
+import { clamp } from '../../../math/MathUtil';
 
 
 export class GodRayPost extends PostBase {
@@ -49,21 +50,44 @@ export class GodRayPost extends PostBase {
      * @internal
      */
     onAttach(view: View3D,) {
-        // Engine3D.setting.render.postProcessing.gtao.enable = true;
+        Engine3D.setting.render.postProcessing.godRay.enable = true;
         this.createGUI();
     }
     /**
      * @internal
      */Render
     onDetach(view: View3D,) {
-        // Engine3D.setting.render.postProcessing.gtao.enable = false;
+        Engine3D.setting.render.postProcessing.godRay.enable = false;
         this.removeGUI();
     }
 
-    public blendColor: boolean = true;
-    public rayMarchCount: number = 16;
-    public scatteringExponent: number = 5;
-    public intensity: number = 0.5;
+    public get blendColor(): boolean {
+        return Engine3D.setting.render.postProcessing.godRay.blendColor;
+    }
+    public set blendColor(value: boolean) {
+        Engine3D.setting.render.postProcessing.godRay.blendColor = value;
+    }
+    public get rayMarchCount(): number {
+        return Engine3D.setting.render.postProcessing.godRay.rayMarchCount;
+    }
+    public set rayMarchCount(value: number) {
+        value = clamp(value, 8, 20);
+        Engine3D.setting.render.postProcessing.godRay.rayMarchCount = value;
+    }
+    public get scatteringExponent(): number {
+        return Engine3D.setting.render.postProcessing.godRay.scatteringExponent;
+    }
+    public set scatteringExponent(value: number) {
+        value = clamp(value, 1, 40);
+        Engine3D.setting.render.postProcessing.godRay.scatteringExponent = value;
+    }
+    public get intensity(): number {
+        return Engine3D.setting.render.postProcessing.godRay.intensity;
+    }
+    public set intensity(value: number) {
+        value = clamp(value, 0.01, 5);
+        Engine3D.setting.render.postProcessing.godRay.intensity = value;
+    }
 
     private createGUI() {
 
@@ -74,7 +98,7 @@ export class GodRayPost extends PostBase {
 
 
     private createCompute(view: View3D) {
-        let setting = Engine3D.setting.render.postProcessing.gtao;
+        let setting = Engine3D.setting.render.postProcessing.godRay;
 
         this.godRayCompute = new ComputeShader(GodRay_cs);
 

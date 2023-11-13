@@ -36,10 +36,11 @@ class Sample_GodRay {
 		Engine3D.startRenderView(view);
 
 		let postProcessing = this.scene.addComponent(PostProcessingComponent);
-		postProcessing.addPost(GodRayPost);
+		let godRay = postProcessing.addPost(GodRayPost);
 		postProcessing.addPost(BloomPost);
 
 		GUIUtil.renderAtmosphericSky(sky, false);
+		GUIUtil.renderGodRay(godRay);
 	}
 	async initScene() {
 		{
@@ -52,7 +53,7 @@ class Sample_GodRay {
 			lc.castShadow = true;
 			lc.intensity = 20;
 			this.scene.addChild(this.lightObj);
-			GUIUtil.renderDirLight(lc);
+			GUIUtil.renderDirLight(lc, false);
 		}
 
 		{
