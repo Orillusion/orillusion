@@ -11,7 +11,7 @@ export function NonSerialize(cls, key): any {
     dic[key] = true;
 }
 
-export function IsNonSerialize<T extends object>(instance: T, key: keyof T): boolean {
+export function IsNonSerialize<T extends object>(instance: T, key: string): boolean {
     let noSerializeDic;
     while (instance) {
         instance = instance['__proto__'];

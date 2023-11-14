@@ -249,40 +249,43 @@ export class GPUBufferBase {
         for (let i = 0; i < ref.length; i++) {
             const att = ref[i];
             let value = obj[att.name];
+            this.writeValue(node, att, value);
+        }
+    }
 
-            switch (att.type) {
-                case `Boolean`:
-                    node.writeFloat(value);
-                    break;
+    private writeValue(node: MemoryInfo, att: { name: string, type: string }, value: any) {
+        switch (att.type) {
+            case `Boolean`:
+                node.writeFloat(value);
+                break;
 
-                case `Number`:
-                    node.writeFloat(value);
-                    break;
+            case `Number`:
+                node.writeFloat(value);
+                break;
 
-                case `Float32Array`:
-                    node.writeFloat32Array(value);
-                    break;
+            case `Float32Array`:
+                node.writeFloat32Array(value);
+                break;
 
-                case `Vector2`:
-                    node.writeVector2(value);
-                    break;
+            case `Vector2`:
+                node.writeVector2(value);
+                break;
 
-                case `Vector3`:
-                    node.writeVector3(value);
-                    break;
+            case `Vector3`:
+                node.writeVector3(value);
+                break;
 
-                case `Vector4`:
-                    node.writeVector4(value);
-                    break;
+            case `Vector4`:
+                node.writeVector4(value);
+                break;
 
-                case `Color`:
-                    node.writeRGBColor(value);
-                    break;
+            case `Color`:
+                node.writeRGBColor(value);
+                break;
 
-                case `Array`:
-                    node.writeArray(value);
-                    break;
-            }
+            case `Array`:
+                node.writeArray(value);
+                break;
         }
     }
 

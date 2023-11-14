@@ -1,4 +1,4 @@
-import { StructStorageGPUBuffer, Vector3 } from "../../../../..";
+import { NonSerialize, StructStorageGPUBuffer, Vector3 } from "../../../../..";
 import { graphicTrailCompute } from "../../../../../assets/shader/graphic/GraphicTrailCompute";
 import { MeshRenderer } from "../../../../../components/renderer/MeshRenderer";
 import { View3D } from "../../../../../core/View3D";
@@ -24,16 +24,19 @@ export enum FaceMode {
 }
 
 export class RibbonStruct extends Struct {
-    index: number = 1;
-    segment: number = 5;
-    visible: number = 1;
-    width: number = 1;
-    uv: Vector4 = new Vector4(0, 0, 1, 128);
-    uvSpeed: Vector2 = new Vector2(0, 0.01);
-    smooth: number = 0;
-    faceMode: number = FaceMode.FaceToCamera;
-    right: Vector4 = new Vector4(0, 0, 1);
-    ids: Float32Array = new Float32Array(Graphic3DRibbonRenderer.maxRibbonSegment);
+    public index: number = 1;
+    public segment: number = 5;
+    public visible: number = 1;
+    public width: number = 0.25;
+    public uv: Vector4 = new Vector4(0, 0, 1, 30);
+    public uvSpeed: Vector2 = new Vector2(0, 2.1);
+    public smooth: number = 0;
+    public faceMode: number = FaceMode.FaceToCamera;
+    public up: Vector4 = new Vector4(0, 1, 0);
+    public ids: Float32Array = new Float32Array(Graphic3DRibbonRenderer.maxRibbonSegment);
+
+    @NonSerialize
+    public ribbonPoint: Object3D[] = [];
 }
 
 export class Graphic3DRibbonRenderer extends MeshRenderer {
@@ -42,7 +45,7 @@ export class Graphic3DRibbonRenderer extends MeshRenderer {
     public sourceGeometry: GeometryBase;
     public texture: BitmapTexture2DArray;
     public object3Ds: Object3D[];
-    public ribbon3Ds: Object3D[][];
+    // public ribbon3Ds: Object3D[][];
     public ribbons: RibbonStruct[];
     public ribbonCount: number = 10;
 
@@ -61,7 +64,7 @@ export class Graphic3DRibbonRenderer extends MeshRenderer {
             this.ribbons[i] = new RibbonStruct();
             this.ribbons[i].index = i;
             this.ribbons[i].segment = ribbonSegment;
-            this.ribbons[i].width = 1.5;
+            this.ribbons[i].width = 0.5;
             this.ribbons[i].faceMode = FaceMode.FaceToCamera;
         }
 
@@ -100,13 +103,12 @@ export class Graphic3DRibbonRenderer extends MeshRenderer {
         this._computeShader = new ComputeShader(graphicTrailCompute(Graphic3DRibbonRenderer.maxRibbonSegment));
         this._ribbonBuffer = new StructStorageGPUBuffer(RibbonStruct, count);
 
-        this.ribbon3Ds = [];
         for (let i = 0; i < count; i++) {
-            this.ribbon3Ds[i] = [];
+            this.ribbons[i].ribbonPoint = [];
             for (let j = 0; j < Graphic3DRibbonRenderer.maxRibbonSegment; j++) {
                 const element = new Object3D();
-                this.ribbon3Ds[i].push(element);
                 this.object3D.addChild(element);
+                this.ribbons[i].ribbonPoint[j] = element;
                 this.ribbons[i].ids[j] = element.transform.worldMatrix.index;
             }
         }
@@ -163,7 +165,7 @@ export class Graphic3DRibbonRenderer extends MeshRenderer {
 
     private computeTrail(view: View3D, command: GPUCommandEncoder) {
         this._computeShader.workerSizeX = this.ribbonCount;
-        this._computeShader.workerSizeY = Math.floor(this.ribbonSegment / Graphic3DRibbonRenderer.maxRibbonSegment);
+        this._computeShader.workerSizeY = 1;// Math.floor(this.ribbonSegment / Graphic3DRibbonRenderer.maxRibbonSegment);
         // this._computeShader.workerSizeX = 1;
         GPUContext.computeCommand(command, [this._computeShader]);
     }

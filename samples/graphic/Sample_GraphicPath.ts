@@ -76,9 +76,11 @@ export class Sample_GraphicPath {
 
 
         let texts = [];
+        texts.push(await Engine3D.res.loadTexture("textures/frame64.png") as BitmapTexture2D);
+        texts.push(await Engine3D.res.loadTexture("textures/line_001064.png") as BitmapTexture2D);
+
         // texts.push(await Engine3D.res.loadTexture("particle/fx_a_fragment_003.png") as BitmapTexture2D);
         // texts.push(await Engine3D.res.loadTexture("textures/grid.jpg") as BitmapTexture2D);
-        texts.push(await Engine3D.res.loadTexture("textures/frame.png") as BitmapTexture2D);
         // texts.push(await Engine3D.res.loadTexture("textures/128/line_0001.PNG") as BitmapTexture2D);
         // texts.push(await Engine3D.res.loadTexture("textures/128/line_0010.png") as BitmapTexture2D);
         // texts.push(await Engine3D.res.loadTexture("textures/128/line_0013.png") as BitmapTexture2D);
@@ -94,12 +96,14 @@ export class Sample_GraphicPath {
         GUIHelp.add(this, "cafe", 0.0, 100.0);
         GUIHelp.add(this, "frame", 0.0, 100.0);
         {
-            this.width = 1;
+            this.width = 40;
             this.height = 1;
             let mr = Graphic3DMesh.drawRibbon("trail", this.scene, bitmapTexture2DArray, 255, this.width * this.height);
             this.parts = mr.object3Ds;
-            this.trail3ds = mr.ribbon3Ds;
 
+
+
+            
             mr.material.blendMode = BlendMode.SOFT_ADD;
             mr.material.transparent = true;
             // mr.material.doubleSide = true;
@@ -126,25 +130,25 @@ export class Sample_GraphicPath {
 
     private tmpArray: any[] = [];
     update() {
+        this.updateOnce(Time.frame);
     }
 
     updateOnce(engineFrame: number) {
         if (this.trail3ds && this.trail3ds.length > 0) {
+            // Vector3.HELP_0.x = Math.random() * 10 - 5;
+            // Vector3.HELP_0.y = Math.random() * 2 - 1;
+            // Vector3.HELP_0.z = Math.random() * 10 - 5;
+            Vector3.HELP_0.set(0, 0, 0);
+            // let offsetAngle = Math.random() * 360;
             for (let i = 0; i < this.trail3ds.length; i++) {
                 const trail3d = this.trail3ds[i];
-                Vector3.HELP_0.x = Math.random() * 10 - 5;
-                Vector3.HELP_0.y = Math.random() * 2 - 1;
-                Vector3.HELP_0.z = Math.random() * 10 - 5;
-                let offsetAngle = Math.random() * 360;
+                let offsetAngle = i * 2.0;
+
                 for (let j = 0; j < trail3d.length; j++) {
                     let p = j / (trail3d.length - 1);
-                    // trail3d[j].x = j * 0.1 + Math.cos(p * (trail3d.length / 10)) * 5;
-                    // trail3d[j].y = Math.sin(p * (trail3d.length / 10)) * 5 + 10;
-                    // trail3d[j].z = i * 10;
-
-                    trail3d[j].x = Math.sin(p * (trail3d.length / 15) + offsetAngle) * p * 35 + Vector3.HELP_0.x;
+                    trail3d[j].x = Math.sin(p * (trail3d.length / 15) + offsetAngle + engineFrame * 0.001) * p * 35 + Vector3.HELP_0.x;
                     trail3d[j].y = j * 0.2 + Vector3.HELP_0.y;
-                    trail3d[j].z = Math.cos(p * (trail3d.length / 10) + offsetAngle) * p * 35 + Vector3.HELP_0.z;
+                    trail3d[j].z = Math.cos(p * (trail3d.length / 10) + offsetAngle + engineFrame * 0.001) * p * 35 + Vector3.HELP_0.z;
 
                     // let obj = Object3DUtil.GetSingleSphere(0.1, 1, 0, 0);
                     // this.scene.addChild(obj);

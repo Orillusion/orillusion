@@ -1,4 +1,11 @@
+<<<<<<< Updated upstream
 // import { Sample_GraphicPath } from "./graphic/Sample_GraphicPath"
+=======
+import { Sample_GraphicPath } from "./graphic/Sample_GraphicPath"
+import { Sample_GraphicPath2 } from "./graphic/Sample_GraphicPath2";
+import { Sample_GraphicPath3 } from "./graphic/Sample_GraphicPath3";
+import { Sample_GraphicShape } from "./graphic/Sample_GraphicShape";
+>>>>>>> Stashed changes
 
 /******** Load all samples in /src/sample/ ********/
 {
@@ -75,4 +82,11 @@
 // import { Sample_GraphicMesh_Trailing } from "./graphic/Sample_GraphicMesh_Trailing";
 // new Sample_GraphicMesh_Trailing().run();
 
+<<<<<<< Updated upstream
 // new Sample_GraphicPath().run();
+=======
+// new Sample_GraphicPath().run();
+// new Sample_GraphicPath2().run();
+// new Sample_GraphicPath3().run();
+new Sample_GraphicShape().run();
+>>>>>>> Stashed changes

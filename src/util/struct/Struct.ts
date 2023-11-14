@@ -6,13 +6,16 @@
  * @group Util
  */
 import { Ctor } from "../Global";
+import { EditorInspector, IsNonSerialize, NonSerialize } from "../SerializeDecoration";
 
 export class Struct {
+    @NonSerialize
     private __refection: {
         name: string;
         type: string;
     }[];
 
+    @NonSerialize
     private __size: number = 0;
 
     /**
@@ -24,7 +27,7 @@ export class Struct {
             let self = this;
             this.__refection = [];
             for (const key in self) {
-                if (!key.includes(`__`)) {
+                if (!IsNonSerialize(this, key)) {
                     const element = self[key];
                     let att = {
                         name: key,
@@ -110,7 +113,7 @@ export class Struct {
         let struct = this.Get(c);
         if (struct.__size == 0) {
             for (const key in struct) {
-                if (key.indexOf(`__`) == -1) {
+                if (!IsNonSerialize(struct, key)) {
                     const element = struct[key];
                     struct.__size += Struct.getValueSize(element);
                 }
