@@ -100,32 +100,32 @@ export class Sample_LoadGLB {
             }
         )
 
-        let model: Object3D;
         let { url, scale, offset, rotation } = JSON.parse(list[`HIE-Hand-Armor`]);
-        this.loadGLB(model, url, offset, scale, rotation);
+        this.loadGLB(url, offset, scale, rotation);
         GUIHelp.add({ Model: `HIE-Hand-Armor` }, 'Model', list).onChange(async (v) => {
             let { url, scale, offset, rotation } = JSON.parse(v);
-            this.loadGLB(model, url, offset, scale, rotation);
+            this.loadGLB(url, offset, scale, rotation);
         });
     }
 
-    private async loadGLB(model: Object3D, url: string, offset: number[], scale: number, rotation: number[]) {
-        if (model) {
-            this.scene.removeChild(model);
+    private model: Object3D;
+    private async loadGLB(url: string, offset: number[], scale: number, rotation: number[]) {
+        if (this.model) {
+            this.scene.removeChild(this.model);
         }
-        model = (await Engine3D.res.loadGltf(url, { onProgress: (e) => this.onLoadProgress(e), onComplete: (e) => this.onComplete(e) })) as Object3D;
-        this.scene.addChild(model);
-        model.x = offset[0];
-        model.y = offset[1];
-        model.z = offset[2];
+        this.model = (await Engine3D.res.loadGltf(url, { onProgress: (e) => this.onLoadProgress(e), onComplete: (e) => this.onComplete(e) })) as Object3D;
+        this.scene.addChild(this.model);
+        this.model.x = offset[0];
+        this.model.y = offset[1];
+        this.model.z = offset[2];
 
-        model.scaleX = scale;
-        model.scaleY = scale;
-        model.scaleZ = scale;
+        this.model.scaleX = scale;
+        this.model.scaleY = scale;
+        this.model.scaleZ = scale;
 
-        model.rotationX = rotation[0];
-        model.rotationY = rotation[1];
-        model.rotationZ = rotation[2];
+        this.model.rotationX = rotation[0];
+        this.model.rotationY = rotation[1];
+        this.model.rotationZ = rotation[2];
     }
 
     onLoadProgress(e) {
