@@ -261,6 +261,7 @@ export class EntityCollect {
 
 
     public getRenderNodes(scene: Scene3D, camera: Camera3D): CollectInfo {
+        this.autoSortRenderNodes(scene);
         this._collectInfo.clean();
         this._collectInfo.sky = this.sky;
 
