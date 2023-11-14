@@ -47,14 +47,14 @@ export class RTResourceMap {
         return rt;
     }
 
-    public static createViewQuad(name: string, shaderVS: string, shaderFS: string, outRtTexture: VirtualTexture, shaderUniforms?: { [uniName: string]: UniformNode }, multisample: number = 0) {
+    public static createViewQuad(name: string, shaderVS: string, shaderFS: string, outRtTexture: VirtualTexture, multisample: number = 0) {
         let rtFrame = new RTFrame([
             outRtTexture
         ],
             [
                 new RTDescriptor()
             ]);
-        let viewQuad = new ViewQuad(shaderVS, shaderFS, rtFrame, shaderUniforms, multisample);
+        let viewQuad = new ViewQuad(shaderVS, shaderFS, rtFrame, multisample);
         RTResourceMap.rtViewQuad.set(name, viewQuad);
         return viewQuad;
     }

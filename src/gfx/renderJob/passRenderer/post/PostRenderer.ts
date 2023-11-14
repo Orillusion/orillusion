@@ -7,7 +7,7 @@ import { GPUContext } from "../../GPUContext";
 import { RTFrame } from "../../frame/RTFrame";
 import { PostBase } from "../../post/PostBase";
 import { RendererBase } from "../RendererBase";
-import { RendererType } from "../state/RendererType";
+import { PassType } from "../state/RendererType";
 
 
 /**
@@ -20,7 +20,7 @@ export class PostRenderer extends RendererBase {
     constructor() {
         super();
 
-        this._rendererType = RendererType.POST;
+        this._rendererType = PassType.POST;
 
         this.postList = [];
 
@@ -29,7 +29,7 @@ export class PostRenderer extends RendererBase {
 
     public initRenderer() {
         ShaderLib.register("FullQuad_vert_wgsl", FullQuad_vert_wgsl);
-        this.finalQuadView = new ViewQuad(`Quad_vert_wgsl`, `Quad_frag_wgsl`, new RTFrame([], []), null, null, false);
+        this.finalQuadView = new ViewQuad(`Quad_vert_wgsl`, `Quad_frag_wgsl`, new RTFrame([], []), 0, false);
     }
 
     public attachPost(view: View3D, post: PostBase) {

@@ -1,5 +1,5 @@
 import { createExampleScene, createSceneParam } from "@samples/utils/ExampleScene";
-import { Object3D, Scene3D, Engine3D, GlobalIlluminationComponent, Object3DUtil, GTAOPost, HDRBloomPost, PostProcessingComponent, TAAPost } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, GlobalIlluminationComponent, Object3DUtil, GTAOPost, PostProcessingComponent, TAAPost, BloomPost, FXAAPost } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 
@@ -12,6 +12,7 @@ class Sample_GI {
 
         Engine3D.setting.gi.enable = true;
         Engine3D.setting.gi.debug = true;
+        Engine3D.setting.render.debug = true;
 
         Engine3D.setting.gi.probeYCount = 3;
         Engine3D.setting.gi.probeXCount = 6;
@@ -33,16 +34,6 @@ class Sample_GI {
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.updateFrameRate = 1;
 
-        Engine3D.setting.render.postProcessing.bloom = {
-            enable: true,
-            debug: false,
-            blurX: 4,
-            blurY: 4,
-            luminosityThreshold: 0.9,
-            radius: 4,
-            strength: 1.2
-        };
-
         await Engine3D.init({
             renderLoop: () => {
                 if (this.giComponent?.isStart) {
@@ -60,16 +51,20 @@ class Sample_GI {
         exampleScene.camera.enableCSM = true;
         Engine3D.startRenderViews([exampleScene.view]);
         let job = Engine3D.getRenderJob(exampleScene.view);
+
+        let postProcessing = this.scene.addComponent(PostProcessingComponent);
+        // postProcessing.addPost(FXAAPost);
+        // postProcessing.addPost(TAAPost);
+        // postProcessing.addPost(GTAOPost);
+        postProcessing.addPost(BloomPost);
         await this.initScene();
         this.addGIProbes();
         // GUIUtil.renderAtomosphericSky(exampleScene.atmosphericSky);
-        GUIUtil.renderDirLight(exampleScene.light);
+        GUIUtil.renderDirLight(exampleScene.light, false);
 
-        let postProcessing = this.scene.addComponent(PostProcessingComponent);
-        postProcessing.addPost(TAAPost);
-        postProcessing.addPost(GTAOPost);
-        postProcessing.addPost(HDRBloomPost);
+        GUIUtil.renderDebug();
 
+        GUIUtil.renderAtmosphericSky(exampleScene.atmosphericSky);
     }
 
     private giComponent: GlobalIlluminationComponent;
@@ -83,7 +78,7 @@ class Sample_GI {
     async initScene() {
         {
             let floorHeight = 20;
-            let floor = Object3DUtil.GetSingleCube(1000, floorHeight, 1000, 0.6, 0.6, 0.6);
+            let floor = Object3DUtil.GetSingleCube(1000, floorHeight, 1000, 0.5, 0.5, 0.5);
             floor.y = -floorHeight;
             this.scene.addChild(floor);
         }

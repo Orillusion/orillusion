@@ -16,17 +16,6 @@ class Sample_ClearCoat {
 
         //config settings
         Engine3D.setting.shadow.shadowBound = 300;
-        Engine3D.setting.render.postProcessing.bloom = {
-            enable: true,
-            blurX: 4,
-            blurY: 4,
-            exposure: 1,
-            luminosityThreshold: 0.8,
-            strength: 0.86,
-            radius: 4,
-            debug: false
-        };
-
 
         this.scene = new Scene3D();
         let camera = CameraUtil.createCamera3DObject(this.scene);
@@ -83,7 +72,7 @@ class Sample_ClearCoat {
             // model.transform.scaleZ = 10;
             // model.transform.y = -5;
 
-            let clearCoatRoughnessTex = await Engine3D.res.loadTexture("PBR/ClearCoatTest/T_Imperfections_Wipe_Mask.PNG");
+            let clearCoatRoughnessTex = await Engine3D.res.loadTexture("materials/T_Imperfections_FingerPrints_Mask2.jpg");
 
             // this.scene.addChild(model);
             let space = 50;

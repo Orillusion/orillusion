@@ -11,7 +11,7 @@ export class KHR_materials_clearcoat {
     public static apply(gltf: any, dmaterial: any, tMaterial: any) {
         let extensions = dmaterial.extensions;
         if (extensions && extensions[`KHR_materials_clearcoat`]) {
-            (tMaterial as Material).defaultPass.setDefine('USE_CLEARCOAT', true);
+            (tMaterial as Material).shader.getDefaultColorShader().setDefine('USE_CLEARCOAT', true);
 
             let KHR_materials_clearcoat = extensions[`KHR_materials_clearcoat`];
             if (`clearcoatFactor` in KHR_materials_clearcoat) {

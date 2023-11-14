@@ -1,11 +1,11 @@
 import { RenderNode } from '../../../components/renderer/RenderNode';
-import { RendererType } from '../passRenderer/state/RendererType';
+import { PassType } from '../passRenderer/state/RendererType';
 /**
  * @internal
  * @group Post
  */
 export type RenderGroup = {
     key: string;
-    bundleMap: Map<RendererType, GPURenderBundle>;
+    bundleMap: Map<PassType, GPURenderBundle>;
     renderNodes: RenderNode[];
 };

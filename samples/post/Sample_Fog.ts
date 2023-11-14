@@ -1,4 +1,4 @@
-import { AtmosphericComponent, BoxGeometry, CameraUtil, CylinderGeometry, DirectLight, Engine3D, GlobalFog, HoverCameraController, KelvinUtil, LitMaterial, MeshRenderer, Object3D, PlaneGeometry, PostProcessingComponent, Scene3D, View3D, webGPUContext } from '@orillusion/core';
+import { AtmosphericComponent, BoxGeometry, CameraUtil, CylinderGeometry, DirectLight, Engine3D, FXAAPost, GlobalFog, HoverCameraController, KelvinUtil, LitMaterial, MeshRenderer, Object3D, PlaneGeometry, PostProcessingComponent, Scene3D, View3D, webGPUContext } from '@orillusion/core';
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { GUIUtil } from '@samples/utils/GUIUtil';
 
@@ -28,8 +28,9 @@ class Sample_Fog {
         Engine3D.startRenderView(view);
 
         GUIHelp.init();
-        GUIUtil.renderAtomosphericSky(sky, false);
+        GUIUtil.renderAtmosphericSky(sky, false);
         let postProcessing = this.scene.addComponent(PostProcessingComponent);
+        let fXAAPost = postProcessing.addPost(FXAAPost);
         let fog = postProcessing.addPost(GlobalFog);
         GUIUtil.renderGlobalFog(fog, true);
     }
@@ -49,7 +50,6 @@ class Sample_Fog {
 
         {
             let mat = new LitMaterial();
-            mat.maskMap = Engine3D.res.createTexture(32, 32, 255.0, 255.0, 0.0, 1);
             mat.roughness = 0.5;
             mat.metallic = 0.5;
 
@@ -65,7 +65,6 @@ class Sample_Fog {
 
     private createPlane(scene: Scene3D) {
         let mat = new LitMaterial();
-        mat.maskMap = Engine3D.res.createTexture(32, 32, 255.0, 255.0, 0.0, 1);
         mat.roughness = 1.0;
         mat.metallic = 0.0;
 

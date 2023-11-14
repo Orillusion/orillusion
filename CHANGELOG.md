@@ -1,3 +1,20 @@
+# [0.7.0](https://github.com/Orillusion/orillusion/compare/v0.6.9...v0.7.0) (2023-11-01)
+
+
+### Bug Fixes
+
+* Character loss during text layout. ([#317](https://github.com/Orillusion/orillusion/issues/317)) ([8ad7169](https://github.com/Orillusion/orillusion/commit/8ad71695df37ce3b21833773fe4c429817d2108c))
+* fix gltf sample ([#321](https://github.com/Orillusion/orillusion/issues/321)) ([4ca35b5](https://github.com/Orillusion/orillusion/commit/4ca35b576454cb52aee47ddbc271a4d36a906e78))
+* **particle:** add get baseMap ([e59bd9f](https://github.com/Orillusion/orillusion/commit/e59bd9f4d43e98941ef634aff5c4e525a02cc6f1))
+
+
+### Features
+
+* add graphic bath mesh ([#319](https://github.com/Orillusion/orillusion/issues/319)) ([7df4f95](https://github.com/Orillusion/orillusion/commit/7df4f95c9bfa85dc2aae121a64916121c2741988))
+* **audio:** move audio to @orillusion/media-extension ([166d286](https://github.com/Orillusion/orillusion/commit/166d2866b3e427339082f6bbdc7d391d4b91e784))
+
+
+
 ## [0.6.9](https://github.com/Orillusion/orillusion/compare/v0.6.8...v0.6.9) (2023-09-06)
 
 ### Bug Fixes
@@ -22,6 +39,11 @@
 * add log z depth ([520b2bb](https://github.com/Orillusion/orillusion/commit/520b2bb7be1cf803e2b11c5f222ddd3d9667fd4a))
 * add transform depth order ([bf40831](https://github.com/Orillusion/orillusion/commit/bf40831cb9637f7d7b18e4c4cf650ddb5c0b2e13))
 * fadeout csm shadow far away ([bf30fe7](https://github.com/Orillusion/orillusion/commit/bf30fe71f6ccba71ebb3e3406f4f248d28e7615d))
+
+### BREAKING CHANGES
+* **material:** `MaterialBase` has beed renamed to `Material`, also need to implement `get/set` for `baseMap` for custom materials
+* **shadow:** drop `shadowBias`, `shadowNear`, `shadowFar` options in shadow settings, values will be calculated automatically
+* **Bloom:** add new `exposure` option in Bloom settings
 
 ## [0.6.8](https://github.com/Orillusion/orillusion/compare/v0.6.7...v0.6.8) (2023-08-10)
 

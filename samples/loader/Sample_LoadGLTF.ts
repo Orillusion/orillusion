@@ -9,16 +9,9 @@ class Sample_LoadGLTF {
     async run() {
         //config settings
         Engine3D.setting.material.materialChannelDebug = true;
-        Engine3D.setting.shadow.shadowBound = 5;
-        Engine3D.setting.render.postProcessing.bloom = {
-            enable: true,
-            blurX: 4,
-            blurY: 4,
-            luminosityThreshold: 0.8,
-            strength: 0.86,
-            radius: 4,
-            debug: false
-        };
+        Engine3D.setting.shadow.shadowBound = 100;
+        Engine3D.setting.shadow.shadowSize = 2048;
+
 
         //init engine
         await Engine3D.init();

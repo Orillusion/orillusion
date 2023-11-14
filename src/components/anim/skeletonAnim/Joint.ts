@@ -18,6 +18,11 @@ export class Joint {
     public index: number = 0;
 
     /**
+     * Bone instanceID
+     */
+    public instanceID: string = "";
+
+    /**
      * The parent of a bone joint
      */
     public parent: Joint = null;
@@ -25,7 +30,7 @@ export class Joint {
     /**
      * Bone joint child object
      */
-    public children: Array<Joint> = [];
+    // public children: Array<Joint> = [];
 
     /**
      * The scaling value of the bone joint

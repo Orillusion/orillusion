@@ -1,69 +1,205 @@
-import { Material } from "..";
 import { Engine3D } from "../Engine3D";
-import { RenderShader } from "../gfx/graphics/webGpu/shader/RenderShader";
-import { RendererType } from "../gfx/renderJob/passRenderer/state/RendererType";
+import { Texture } from "../gfx/graphics/webGpu/core/texture/Texture";
+import { RenderShaderPass } from "../gfx/graphics/webGpu/shader/RenderShaderPass";
+import { StandShader } from "../loader/parser/prefab/mats/shader/StandShader";
+import { Color } from "../math/Color";
+import { Material } from "./Material";
 import { PhysicMaterial } from "./PhysicMaterial";
 
-export class LitMaterial extends PhysicMaterial {
+export class LitMaterial extends Material {
+
     constructor() {
         super();
 
-        let colorPass = new RenderShader('PBRLItShader', 'PBRLItShader');
-        this.defaultPass = colorPass;
-
-        colorPass.setShaderEntry(`VertMain`, `FragMain`)
-        let shaderState = colorPass.shaderState;
-        shaderState.acceptShadow = true;
-        shaderState.castShadow = true;
-        shaderState.receiveEnv = true;
-        shaderState.acceptGI = true;
-        shaderState.useLight = true;
-
-        let bdrflutTex = Engine3D.res.getTexture(`BRDFLUT`);
-        this.brdfLUT = bdrflutTex;
-        colorPass.setDefine('USE_BRDF', true);
-
-        this.setDefault();
-
-        this.baseMap = Engine3D.res.whiteTexture;
-        this.normalMap = Engine3D.res.normalTexture;
-        this.emissiveMap = Engine3D.res.blackTexture;
-
-        this.alphaCutoff = 0.5;
+        let shader = new StandShader();
+        this.shader = shader;
     }
 
     public clone(): Material {
         let litMaterial = new LitMaterial();
 
-        let colorPass = litMaterial.defaultPass;
-        colorPass.setUniform(`shadowBias`, this.defaultPass.getUniform(`shadowBias`));
-        colorPass.setUniform(`transformUV1`, this.defaultPass.getUniform(`transformUV1`));
-        colorPass.setUniform(`transformUV2`, this.defaultPass.getUniform(`transformUV2`));
-        colorPass.setUniform(`baseColor`, this.defaultPass.getUniform(`baseColor`));
-        colorPass.setUniform(`emissiveColor`, this.defaultPass.getUniform(`emissiveColor`));
-        colorPass.setUniform(`materialF0`, this.defaultPass.getUniform(`materialF0`));
-        colorPass.setUniform(`envIntensity`, this.defaultPass.getUniform(`envIntensity`));
-        colorPass.setUniform(`normalScale`, this.defaultPass.getUniform(`normalScale`));
-        colorPass.setUniform(`roughness`, this.defaultPass.getUniform(`roughness`));
-        colorPass.setUniform(`metallic`, this.defaultPass.getUniform(`metallic`));
-        colorPass.setUniform(`ao`, this.defaultPass.getUniform(`ao`));
-        colorPass.setUniform(`roughness_min`, this.defaultPass.getUniform(`roughness_min`));
-        colorPass.setUniform(`roughness_max`, this.defaultPass.getUniform(`roughness_max`));
-        colorPass.setUniform(`metallic_min`, this.defaultPass.getUniform(`metallic_min`));
-        colorPass.setUniform(`metallic_max`, this.defaultPass.getUniform(`metallic_max`));
-        colorPass.setUniform(`emissiveIntensity`, this.defaultPass.getUniform(`emissiveIntensity`));
-        colorPass.setUniform(`alphaCutoff`, this.defaultPass.getUniform(`alphaCutoff`));
-        colorPass.setUniform(`ior`, this.defaultPass.getUniform(`ior`));
-        colorPass.setUniform(`clearcoatFactor`, this.defaultPass.getUniform(`clearcoatFactor`));
-        colorPass.setUniform(`clearcoatRoughnessFactor`, this.defaultPass.getUniform(`clearcoatRoughnessFactor`));
-        colorPass.setUniform(`clearcoatColor`, this.defaultPass.getUniform(`clearcoatColor`));
-        colorPass.setUniform(`clearcoatWeight`, this.defaultPass.getUniform(`clearcoatWeight`));
+        let colorPass = litMaterial.shader.getDefaultColorShader();
+        let sourceShader = this.shader.getDefaultColorShader();
+        colorPass.defineValue = { ...sourceShader.defineValue }
+        colorPass.setUniform(`shadowBias`, sourceShader.getUniform(`shadowBias`));
+        colorPass.setUniform(`transformUV1`, sourceShader.getUniform(`transformUV1`));
+        colorPass.setUniform(`transformUV2`, sourceShader.getUniform(`transformUV2`));
+        colorPass.setUniform(`baseColor`, sourceShader.getUniform(`baseColor`));
+        colorPass.setUniform(`specularColor`, sourceShader.getUniform(`specularColor`));
+        colorPass.setUniform(`emissiveColor`, sourceShader.getUniform(`emissiveColor`));
+        colorPass.setUniform(`materialF0`, sourceShader.getUniform(`materialF0`));
+        colorPass.setUniform(`envIntensity`, sourceShader.getUniform(`envIntensity`));
+        colorPass.setUniform(`normalScale`, sourceShader.getUniform(`normalScale`));
+        colorPass.setUniform(`roughness`, sourceShader.getUniform(`roughness`));
+        colorPass.setUniform(`metallic`, sourceShader.getUniform(`metallic`));
+        colorPass.setUniform(`ao`, sourceShader.getUniform(`ao`));
+        colorPass.setUniform(`roughness_min`, sourceShader.getUniform(`roughness_min`));
+        colorPass.setUniform(`roughness_max`, sourceShader.getUniform(`roughness_max`));
+        colorPass.setUniform(`metallic_min`, sourceShader.getUniform(`metallic_min`));
+        colorPass.setUniform(`metallic_max`, sourceShader.getUniform(`metallic_max`));
+        colorPass.setUniform(`emissiveIntensity`, sourceShader.getUniform(`emissiveIntensity`));
+        colorPass.setUniform(`alphaCutoff`, sourceShader.getUniform(`alphaCutoff`));
+        colorPass.setUniform(`ior`, sourceShader.getUniform(`ior`));
+        colorPass.setUniform(`clearcoatFactor`, sourceShader.getUniform(`clearcoatFactor`));
+        colorPass.setUniform(`clearcoatRoughnessFactor`, sourceShader.getUniform(`clearcoatRoughnessFactor`));
+        colorPass.setUniform(`clearcoatColor`, sourceShader.getUniform(`clearcoatColor`));
+        colorPass.setUniform(`clearcoatWeight`, sourceShader.getUniform(`clearcoatWeight`));
 
-        colorPass.setTexture(`baseMap`, this.defaultPass.getTexture(`baseMap`));
-        colorPass.setTexture(`normalMap`, this.defaultPass.getTexture(`normalMap`));
-        colorPass.setTexture(`emissiveMap`, this.defaultPass.getTexture(`emissiveMap`));
-        colorPass.setTexture(`aoMap`, this.defaultPass.getTexture(`aoMap`));
-        colorPass.setTexture(`maskMap`, this.defaultPass.getTexture(`maskMap`));
+        colorPass.setTexture(`baseMap`, sourceShader.getTexture(`baseMap`));
+        colorPass.setTexture(`normalMap`, sourceShader.getTexture(`normalMap`));
+        colorPass.setTexture(`emissiveMap`, sourceShader.getTexture(`emissiveMap`));
+        colorPass.setTexture(`aoMap`, sourceShader.getTexture(`aoMap`));
+        colorPass.setTexture(`maskMap`, sourceShader.getTexture(`maskMap`));
         return litMaterial;
+    }
+
+    public set baseMap(texture: Texture) {
+        this.shader.setTexture(`baseMap`, texture);
+    }
+
+    public get baseMap() {
+        return this.shader.getTexture(`baseMap`);
+    }
+
+    public set maskMap(texture: Texture) {
+        this.shader.setTexture(`maskMap`, texture);
+    }
+
+    public get maskMap() {
+        return this.shader.getTexture(`maskMap`);
+    }
+
+
+    public set normalMap(texture: Texture) {
+        this.shader.setTexture(`normalMap`, texture);
+    }
+
+    public get normalMap() {
+        return this.shader.getTexture(`normalMap`);
+    }
+
+    public set emissiveMap(texture: Texture) {
+        this.shader.setTexture(`emissiveMap`, texture);
+    }
+
+    public get emissiveMap() {
+        return this.shader.getTexture(`emissiveMap`);
+    }
+
+    public set aoMap(texture: Texture) {
+        this.shader.setTexture(`aoMap`, texture);
+    }
+
+    public get aoMap() {
+        return this.shader.getTexture(`aoMap`);
+    }
+
+    public set clearCoatRoughnessMap(texture: Texture) {
+        this.shader.setTexture(`clearCoatRoughnessMap`, texture);
+        this.shader.setDefine(`USE_CLEARCOAT`, true);
+        this.shader.setDefine(`USE_CLEARCOAT_ROUGHNESS`, true);
+    }
+
+    public get clearCoatRoughnessMap() {
+        return this.shader.getTexture(`clearCoatRoughnessMap`);
+    }
+
+    public set clearcoatColor(value: Color) {
+        this.shader.setUniformColor(`clearcoatColor`, value);
+        this.shader.setDefine(`USE_CLEARCOAT`, true);
+    }
+
+    public get clearcoatColor() {
+        return this.shader.getUniformColor(`clearcoatColor`);
+    }
+
+    public set clearcoatWeight(value: number) {
+        this.shader.setUniformFloat(`clearcoatWeight`, value);
+        this.shader.setDefine(`USE_CLEARCOAT`, true);
+    }
+
+    public get clearcoatWeight() {
+        return this.shader.getUniformFloat(`clearcoatWeight`);
+    }
+
+    public set clearcoatFactor(value: number) {
+        this.shader.setUniformFloat(`clearcoatFactor`, value);
+        this.shader.setDefine(`USE_CLEARCOAT`, true);
+    }
+
+    public get clearcoatFactor() {
+        return this.shader.getUniformFloat(`clearcoatFactor`);
+    }
+
+
+    public set clearcoatRoughnessFactor(value: number) {
+        this.shader.setUniformFloat(`clearcoatRoughnessFactor`, value);
+        this.shader.setDefine(`USE_CLEARCOAT`, true);
+    }
+
+    public get clearcoatRoughnessFactor() {
+        return this.shader.getUniformFloat(`clearcoatRoughnessFactor`);
+    }
+
+    public set alphaCutoff(value: number) {
+        this.shader.setUniform(`alphaCutoff`, value);
+    }
+
+    public get alphaCutoff() {
+        return this.shader.getUniform(`alphaCutoff`);
+    }
+
+    /**
+     * set base color (tint color)
+     */
+    public set baseColor(color: Color) {
+        this.shader.setUniformColor(`baseColor`, color);
+    }
+
+    /**
+     * get base color (tint color)
+     */
+    public get baseColor() {
+        return this.shader.getUniformColor("baseColor");
+    }
+
+    public get roughness(): number {
+        return this.shader.getUniformFloat("roughness");
+    }
+
+    public set roughness(value: number) {
+        this.shader.setUniformFloat("roughness", value);
+    }
+
+    public get metallic(): number {
+        return this.shader.getUniformFloat("metallic");
+    }
+
+    public set metallic(value: number) {
+        this.shader.setUniformFloat("metallic", value);
+    }
+
+    public get emissiveColor(): Color {
+        return this.shader.getUniformColor("emissiveColor");
+    }
+
+    public set emissiveColor(value: Color) {
+        this.shader.setUniformColor("emissiveColor", value);
+    }
+
+    public get emissiveIntensity(): number {
+        return this.shader.getUniformFloat("emissiveIntensity");
+    }
+
+    public set emissiveIntensity(value: number) {
+        this.shader.setUniformFloat("emissiveIntensity", value);
+    }
+
+    public get ao(): number {
+        return this.shader.getUniform(`ao`);
+    }
+
+    public set ao(value: number) {
+        this.shader.setUniform(`ao`, value);
     }
 }

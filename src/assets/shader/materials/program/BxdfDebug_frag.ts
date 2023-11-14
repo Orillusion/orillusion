@@ -6,7 +6,7 @@ export let BxdfDebug_frag: string = /*wgsl*/ `
         }
 
         fn debugMeshID(){
-            let meshIDColor = u32(ORI_VertexVarying.vWorldPos.w ) ;
+            let meshIDColor = u32(round(ORI_VertexVarying.vWorldPos.w) ) ;
             let color = colorSet[ meshIDColor % 9u] ;
             ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(color.rgb),1.0);
         }
@@ -29,7 +29,7 @@ export let BxdfDebug_frag: string = /*wgsl*/ `
         }
 
         fn debugAmbient(){
-            ORI_FragmentOutput.color = vec4<f32>(fragData.Irradiance * fragData.Albedo.rgb,1.0);
+            ORI_FragmentOutput.color = vec4<f32>(vec3f(fragData.Alpha) ,1.0);
         }
         
         fn debugEmissive(){
@@ -57,7 +57,7 @@ export let BxdfDebug_frag: string = /*wgsl*/ `
         }
 
         fn debugTangent(){
-            ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(fragData.TangentChannel),1.0);
+            ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(fragData.T),1.0);
         }
 
         fn debugFragmentOut(){

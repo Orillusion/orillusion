@@ -4,8 +4,6 @@ import { Vector2 } from '../../../math/Vector2';
 import { UniformNode } from '../../graphics/webGpu/core/uniforms/UniformNode';
 import { GPUTextureFormat } from '../../graphics/webGpu/WebGPUConst';
 import { webGPUContext } from '../../graphics/webGpu/Context3D';
-import { RTResourceConfig } from '../config/RTResourceConfig';
-import { RTResourceMap } from '../frame/RTResourceMap';
 import { PostBase } from './PostBase';
 import { View3D } from '../../../core/View3D';
 import { FXAAShader } from '../../..';
@@ -21,17 +19,13 @@ export class FXAAPost extends PostBase {
     constructor() {
         super();
         let presentationSize = webGPUContext.presentationSize;
-        RTResourceMap.createRTTexture(RTResourceConfig.colorBufferTex_NAME, presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float, false);
 
         ShaderLib.register("FXAA_Shader", FXAAShader);
 
-        let shaderUniforms = {
-            u_texel: new UniformNode(new Vector2(1.0 / presentationSize[0], 1.0 / presentationSize[1])),
-            u_strength: new UniformNode(4),
-        };
-
         let rt = this.createRTTexture(`FXAAPost`, presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float);
-        this.createViewQuad(`fxaa`, 'FXAA_Shader', rt, shaderUniforms);
+        let quad = this.createViewQuad(`fxaa`, 'FXAA_Shader', rt);
+        quad.quadShader.setUniform("u_texel", new Vector2(1.0 / presentationSize[0], 1.0 / presentationSize[1]));
+        quad.quadShader.setUniform("u_strength", 4);
     }
     /**
      * @internal

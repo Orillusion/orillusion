@@ -1,4 +1,4 @@
-import { Engine3D, ShaderLib, Vector4, Color, Texture, Material, RenderShader } from "@orillusion/core";
+import { Engine3D, ShaderLib, Vector4, Color, Texture, Material, RenderShaderPass, Shader, PassType } from "@orillusion/core";
 import ImageMaterialShader from "./ImageMaterialShader.wgsl?raw";
 
 
@@ -15,60 +15,65 @@ export class ImageMaterial extends Material {
     constructor() {
         super();
         ShaderLib.register("ImageMaterialShader", ImageMaterialShader);
-        this.defaultPass = new RenderShader(`ImageMaterialShader`, `ImageMaterialShader`);
-        this.defaultPass.setShaderEntry(`VertMain`, `FragMain`)
-        this.defaultPass.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));
-        this.defaultPass.setUniformVector4(`transformUV2`, new Vector4(0, 0, 1, 1));
-        this.defaultPass.setUniformColor(`baseColor`, new Color());
-        this.defaultPass.setUniformVector4(`rectClip`, new Vector4(0, 0, 0, 0));
-        this.defaultPass.setUniformFloat(`alphaCutoff`, 0.5);
+        let newShader = new Shader();
 
-        let shaderState = this.defaultPass.shaderState;
+        let defaultPass = new RenderShaderPass(`ImageMaterialShader`, `ImageMaterialShader`);
+        defaultPass.passType = PassType.COLOR;
+        defaultPass.setShaderEntry(`VertMain`, `FragMain`)
+        defaultPass.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));
+        defaultPass.setUniformVector4(`transformUV2`, new Vector4(0, 0, 1, 1));
+        defaultPass.setUniformColor(`baseColor`, new Color());
+        defaultPass.setUniformVector4(`rectClip`, new Vector4(0, 0, 0, 0));
+        defaultPass.setUniformFloat(`alphaCutoff`, 0.5);
+        newShader.addRenderPass(defaultPass);
+
+        let shaderState = defaultPass.shaderState;
         shaderState.acceptShadow = false;
         shaderState.receiveEnv = false;
         shaderState.acceptGI = false;
         shaderState.useLight = false;
         shaderState.castShadow = false;
         shaderState.useZ = false;
+        this.shader = newShader;
 
         // default value
-        this.defaultPass.setTexture(`baseMap`, Engine3D.res.whiteTexture);
+        this.shader.setTexture(`baseMap`, Engine3D.res.whiteTexture);
     }
 
     public set baseMap(value: Texture) {
-        this.defaultPass.setTexture(`baseMap`, value);
+        this.shader.setTexture(`baseMap`, value);
     }
 
     public get baseMap() {
-        return this.defaultPass.getTexture(`baseMap`);
+        return this.shader.getTexture(`baseMap`);
     }
 
     /**
      * set base color (tint color)
      */
     public set baseColor(color: Color) {
-        this.defaultPass.setUniformColor(`baseColor`, color);
+        this.shader.setUniformColor(`baseColor`, color);
     }
 
     /**
      * get base color (tint color)
      */
     public get baseColor() {
-        return this.defaultPass.uniforms[`baseColor`].color;
+        return this.shader.getUniformColor(`baseColor`);
     }
 
     /**
      * Set the clip rect area
      */
     public set rectClip(value: Vector4) {
-        this.defaultPass.uniforms[`rectClip`].vector4 = value;
+        this.shader.setUniformVector4(`rectClip`, value);
     }
 
     /**
      * Get the clip rect area
      */
     public get rectClip(): Vector4 {
-        return this.defaultPass.uniforms[`rectClip`].vector4;
+        return this.shader.getUniformVector4(`rectClip`);
     }
 
     /**

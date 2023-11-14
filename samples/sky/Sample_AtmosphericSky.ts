@@ -28,7 +28,7 @@ class Sample_AtmosphericSky {
 
         // gui
         GUIHelp.init();
-        GUIUtil.renderAtomosphericSky(sky);
+        GUIUtil.renderAtmosphericSky(sky);
     }
 }
 

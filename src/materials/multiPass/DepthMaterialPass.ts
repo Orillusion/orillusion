@@ -1,4 +1,4 @@
-import { RenderShader } from '../..';
+import { RenderShaderPass, PassType } from '../..';
 
 
 /**
@@ -6,9 +6,10 @@ import { RenderShader } from '../..';
  * DepthMaterialPass
  * @group Material
  */
-export class DepthMaterialPass extends RenderShader {
+export class DepthMaterialPass extends RenderShaderPass {
     constructor() {
         super(`ZPass_shader_vs`, `ZPass_shader_vs`);
+        this.passType = PassType.DEPTH;
         this.setShaderEntry("main");
         this.useRz = false;
         let shaderState = this.shaderState;

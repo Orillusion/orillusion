@@ -3,6 +3,7 @@ import { fonts } from "../../assets/Fonts";
 import { GUISprite } from "../../components/gui/core/GUISprite";
 import { GUITexture } from "../../components/gui/core/GUITexture";
 import { ParserBase } from "./ParserBase";
+import { ParserFormat } from "./ParserFormat";
 
 export class FontInfo {
     public face: string = '';
@@ -49,7 +50,7 @@ export class FontChar {
 }
 
 export class FontParser extends ParserBase {
-    static format: string = 'text';
+    static format: ParserFormat = ParserFormat.TEXT;
 
     public static parseSprite(guiTexture: GUITexture[], fontData: FontInfo) {
         for (const key in fontData.fontChar) {

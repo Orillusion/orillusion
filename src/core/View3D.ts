@@ -28,7 +28,6 @@ export class View3D extends CEventListener {
         super();
         this.canvasList = [];
         this._viewPort = new Vector4(x, y, width, height);
-        this.enablePick = true;
         this.graphic3D = new Graphic3D();
     }
 
@@ -60,7 +59,7 @@ export class View3D extends CEventListener {
         this._scene = value;
         value.view = this;
 
-        ShadowLightsCollect.createBuffer(value);
+        ShadowLightsCollect.createBuffer(this);
 
         if (this.graphic3D)
             value.addChild(this.graphic3D);

@@ -4,6 +4,8 @@ import { GlobalUniform } from "../core/common/GlobalUniform";
  * @internal
  */
 export let GlobalFog_shader = /* wgsl */ `
+var<private> PI: f32 = 3.14159265359;
+
 struct FragmentOutput {
     @location(0) o_Target: vec4<f32>
 };

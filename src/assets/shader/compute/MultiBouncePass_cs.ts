@@ -13,7 +13,7 @@ export let MultiBouncePass_cs: string = /*wgsl*/ `
   };
 
   @group(0) @binding(0) var outputBuffer : texture_storage_2d<rgba16float, write>;
-  @group(0) @binding(1) var<storage,read> uniformData : IrradianceVolumeData ;
+  @group(0) @binding(1) var<uniform> uniformData : IrradianceVolumeData ;
 
   @group(1) @binding(0) var normalMapSampler : sampler;
   @group(1) @binding(1) var normalMap : texture_2d<f32>;

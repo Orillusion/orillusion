@@ -1,9 +1,10 @@
-import { RenderShader } from '..';
+import { PassType, Shader } from '..';
 import { GIProbeShader } from '../assets/shader/materials/GIProbeShader';
 import { ShaderLib } from '../assets/shader/ShaderLib';
 import { Engine3D } from '../Engine3D';
+import { RenderShaderPass } from '../gfx/graphics/webGpu/shader/RenderShaderPass';
 import { Vector4 } from '../math/Vector4';
-import { PhysicMaterial } from './PhysicMaterial';
+import { Material } from './Material';
 
 /**
  * @internal
@@ -16,36 +17,34 @@ export enum GIProbeMaterialType {
     Other = 3,
 }
 
-export class GIProbeMaterial extends PhysicMaterial {
+export class GIProbeMaterial extends Material {
     static count = 0;
 
     constructor(type: GIProbeMaterialType = GIProbeMaterialType.CastGI, index: number = 0) {
         super();
         ShaderLib.register("GIProbeShader", GIProbeShader);
 
-        this.defaultPass = new RenderShader('GIProbeShader', 'GIProbeShader');
+        let newShader = new Shader();
 
-        this.defaultPass.setDefine('USE_BRDF', true);
-        this.defaultPass.setShaderEntry(`VertMain`, `FragMain`);
-        this.defaultPass.setUniformVector4('probeUniform', new Vector4(index, type, 0, 0));
-        let shaderState = this.defaultPass.shaderState;
+        let colorShader = new RenderShaderPass('GIProbeShader', 'GIProbeShader');
+        colorShader.passType = PassType.COLOR;
+        newShader.addRenderPass(colorShader);
+
+        colorShader.setDefine('USE_BRDF', true);
+        colorShader.setShaderEntry(`VertMain`, `FragMain`);
+        colorShader.setUniformVector4('probeUniform', new Vector4(index, type, 0, 0));
+        let shaderState = colorShader.shaderState;
         shaderState.acceptShadow = false;
         shaderState.castShadow = false;
         shaderState.receiveEnv = false;
         shaderState.acceptGI = false;
         shaderState.useLight = false;
 
-        let bdrflutTex = Engine3D.res.getTexture(`BRDFLUT`);
-        this.brdfLUT = bdrflutTex;
+        newShader.setTexture("baseMap", Engine3D.res.whiteTexture);
+        newShader.setTexture("normalMap", Engine3D.res.normalTexture);
+        newShader.setTexture("emissiveMap", Engine3D.res.blackTexture);
 
-        this.baseMap = Engine3D.res.whiteTexture;
-        this.normalMap = Engine3D.res.normalTexture;
-        // this.aoMap = defaultTexture.whiteTexture;
-        // this.maskMap = defaultTexture.maskTexture;
-        // this.maskMap = defaultTexture.grayTexture;
-        // shader.setDefine(`USE_ARMC`, false);
-        this.emissiveMap = Engine3D.res.blackTexture;
+        this.shader = newShader;
     }
 
-    debug() { }
 }

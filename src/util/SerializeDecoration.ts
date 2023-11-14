@@ -86,3 +86,27 @@ export function RegisterComponent(cls, key, p1?, p2?, p3?): any {
     }
     dic[cls.name] = cls;
 }
+
+export function GetComponentClass(name: string) {
+    let coms = window['__Component__'];
+    if (coms[name]) {
+        return coms[name];
+    }
+    return null;
+}
+
+export function RegisterShader(cls, key, p1?, p2?, p3?): any {
+    let dic: { [name: string]: any } = window['__shader__'];
+    if (!dic) {
+        dic = window['__shader__'] = {};
+    }
+    dic[cls.name] = cls;
+}
+
+export function GetShader(name: string) {
+    let coms = window['__shader__'];
+    if (coms[name]) {
+        return coms[name];
+    }
+    return null;
+}

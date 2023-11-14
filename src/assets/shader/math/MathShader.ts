@@ -2,7 +2,6 @@
  * @internal
  */
 export let MathShader = /* wgsl */ `
-var<private> PI: f32 = 3.14159265359;
 
 
 fn applyQuaternion(position:vec3<f32>, q:vec4<f32>) -> vec3<f32>{
@@ -301,5 +300,14 @@ fn dir_to_faceId(pt:vec3<f32>) -> i32 {
       comp  = fract(comp);
       comp -= comp.xxyz * bitMsk;
       return comp;
+    }
+
+    fn calculateBillboardMatrix2(eye:vec3f,pos:vec3f,up:vec3f) -> mat3x3<f32> {
+      
+      let zAxis: vec3f = -normalize(pos.xyz - eye);
+      var xAxis: vec3f = cross(up,zAxis);
+      xAxis = normalize(cross(zAxis,xAxis));
+      let yAxis = normalize(cross(zAxis, xAxis));
+      return mat3x3<f32>(xAxis, yAxis, zAxis);
     }
 `;

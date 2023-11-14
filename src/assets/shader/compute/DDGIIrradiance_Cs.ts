@@ -2,6 +2,7 @@ export let DDGIIrradiance_shader = /*wgsl*/`
 #include "GenerayRandomDir"
 #include "MathShader"
 #include "IrradianceVolumeData_frag"
+var<private> PI: f32 = 3.14159265359;
 
 struct ProbeData{
   offsetX:f32,
@@ -32,7 +33,7 @@ struct CacheHitData{
 @group(0) @binding(0) var<storage, read> probes : array<ProbeData>;
 @group(0) @binding(1) var<storage, read_write> irradianceBuffer : array<vec4<f32>>;
 @group(0) @binding(2) var<storage, read_write> depthBuffer : array<vec4<f32>>;
-@group(0) @binding(3) var<storage, read> uniformData : IrradianceVolumeData ;
+@group(0) @binding(3) var<uniform> uniformData : IrradianceVolumeData ;
 @group(0) @binding(4) var probeIrradianceMap : texture_storage_2d<rgba16float, write>;
 @group(0) @binding(5) var probeDepthMap : texture_storage_2d<rgba16float, write>;
 @group(0) @binding(6) var<storage, read_write> depthRaysBuffer : array<vec4<f32>>;

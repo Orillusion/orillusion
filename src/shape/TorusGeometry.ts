@@ -114,7 +114,10 @@ export class TorusGeometry extends GeometryBase {
             indexStart: 0,
             indexCount: indicesData.length,
             vertexStart: 0,
+            vertexCount: 0,
+            firstStart: 0,
             index: 0,
+            topology: 0,
         });
 
     }

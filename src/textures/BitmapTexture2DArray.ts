@@ -49,13 +49,13 @@ export class BitmapTexture2DArray extends Texture implements ITexture {
      */
     public addTexture(bitmapTexture: BitmapTexture2D) {
         if (bitmapTexture.width != this.width || bitmapTexture.height != this.height) {
-            console.error("bitmap texture muse match bitmapTextureArray size!");
+            console.error("bitmap texture must match bitmapTextureArray size!");
         }
-        if (this._bitmapTextures.indexOf(bitmapTexture) == -1) {
-            bitmapTexture.pid = this._bitmapTextures.length;
-            this._bitmapTextures.push(bitmapTexture);
-            this.updateTexture();
-        }
+        // if (this._bitmapTextures.indexOf(bitmapTexture) == -1) {
+        bitmapTexture.pid = this._bitmapTextures.length;
+        this._bitmapTextures.push(bitmapTexture);
+        this.updateTexture();
+        // }
     }
 
     /**

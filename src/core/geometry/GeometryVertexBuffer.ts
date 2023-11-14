@@ -4,6 +4,7 @@ import { VertexAttributeData } from "./VertexAttributeData";
 import { GeometryVertexType } from "./GeometryVertexType";
 import { VertexBufferLayout, VertexAttribute } from "./VertexAttribute";
 import { VertexAttributeSize } from "./VertexAttributeSize";
+import { VertexAttributeName } from "./VertexAttributeName";
 
 
 export class GeometryVertexBuffer {
@@ -32,6 +33,9 @@ export class GeometryVertexBuffer {
                 break;
             case GeometryVertexType.compose:
                 this.createComposeVertexBuffer(vertexDataInfos, shaderReflection);
+                break;
+            case GeometryVertexType.compose_bin:
+                this.createComposBinVertexBuffer(vertexDataInfos, shaderReflection);
                 break;
         }
     }
@@ -62,6 +66,7 @@ export class GeometryVertexBuffer {
                 }
                 vertexDataInfos.set(attributeInfo.name, vertexInfo);
             }
+
             let len = vertexInfo.data.length / attributeLayout.stride;
             if (this.vertexCount != 0 && this.vertexCount != len) {
                 console.error(" vertex count not match attribute count");
@@ -111,14 +116,68 @@ export class GeometryVertexBuffer {
                 }
                 vertexDataInfos.set(attributeInfo.name, vertexInfo);
             }
-            let len = vertexInfo.data.length / attributeLayout.stride;
-            if (this.vertexCount != 0 && this.vertexCount != len) {
-                console.error(" vertex count not match attribute count");
+            if (vertexInfo.data) {
+                let len = vertexInfo.data.length / attributeLayout.stride;
+                if (this.vertexCount != 0 && this.vertexCount != len) {
+                    console.error(" vertex count not match attribute count");
+                }
+                this.vertexCount = len;
             }
-            this.vertexCount = len;
-
             attributeOffset += attributeInfo.size;
         }
+
+        this._vertexBufferLayouts[0] = {
+            name: `composeStruct`,
+            arrayStride: attributeOffset * 4,
+            stepMode: `vertex`,
+            attributes: this._attributeSlotLayouts[0],
+            offset: 0,
+            size: this.vertexCount * attributeOffset * 4
+        }
+
+        this.vertexGPUBuffer = new VertexGPUBuffer(this.vertexCount * attributeOffset);
+    }
+
+    private createComposBinVertexBuffer(vertexDataInfos: Map<string, VertexAttributeData>, shaderReflection: ShaderReflection) {
+        this._attributeSlotLayouts[0] = [];
+
+        let attributeOffset = 0;
+        for (let i = 0; i < shaderReflection.attributes.length; i++) {
+            const attributeInfo = shaderReflection.attributes[i];
+            if (attributeInfo.name == `index`) continue;
+            if (attributeInfo.type == `builtin`) continue;
+            this._attributeLocation[attributeInfo.name] = attributeInfo.location;
+
+            let attributeLayout: VertexAttribute = {
+                name: attributeInfo.name,
+                format: attributeInfo.format,
+                offset: attributeOffset * 4,
+                shaderLocation: attributeInfo.location,
+                stride: VertexAttributeSize[attributeInfo.format]
+            }
+            this._attributeSlotLayouts[0][attributeInfo.location] = attributeLayout;
+
+            let vertexInfo = vertexDataInfos.get(attributeInfo.name);
+            if (!vertexInfo) {
+                vertexInfo = {
+                    attribute: attributeInfo.name,
+                    data: new Float32Array(attributeInfo.size * this.vertexCount)
+                }
+                vertexDataInfos.set(attributeInfo.name, vertexInfo);
+            }
+            if (vertexInfo.data) {
+                let len = vertexInfo.data.length / attributeLayout.stride;
+                if (this.vertexCount != 0 && this.vertexCount != len) {
+                    console.error(" vertex count not match attribute count");
+                }
+                this.vertexCount = len;
+            }
+            attributeOffset += attributeInfo.size;
+        }
+
+        let att_all = vertexDataInfos.get(VertexAttributeName.all);
+        let len = att_all.data.length / attributeOffset;
+        this.vertexCount = len;
 
         this._vertexBufferLayouts[0] = {
             name: `composeStruct`,
@@ -154,6 +213,9 @@ export class GeometryVertexBuffer {
                     }
                 }
                 break;
+            case GeometryVertexType.compose_bin:
+                this.vertexGPUBuffer.node.setFloat32Array(0, vertexDataInfo.data as Float32Array);
+                break;
         }
         this.vertexGPUBuffer?.apply();
     }
@@ -184,6 +246,13 @@ export class GeometryVertexBuffer {
                             }
                         });
                     }
+                }
+                break;
+
+            case GeometryVertexType.compose_bin:
+                {
+                    let attributeData = vertexDataInfos.get(VertexAttributeName.all);
+                    this.vertexGPUBuffer.node.setFloat32Array(0, attributeData.data as Float32Array);
                 }
                 break;
         }

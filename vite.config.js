@@ -2,12 +2,11 @@
 import { defineConfig } from 'vite'
 import { readFile, writeFile, readdir, lstat } from 'fs/promises'
 import { resolve, parse } from 'path'
-// import basicSsl from '@vitejs/plugin-basic-ssl'
 export default defineConfig(option => ({
     server: {
         host: '0.0.0.0',
         port: 8000,
-        // hmr: false // open this line if no auto hot-reload required
+        hmr: false // open this line if no auto hot-reload required
     },
     publicDir: option.command === 'build' ? false : 'public',
     resolve: {
@@ -59,12 +58,11 @@ export default defineConfig(option => ({
     }, {
         name: 'cors',
         configureServer: server => {
-            server.middlewares.use((_req, res, next) => {
-                res.setHeader("Cross-Origin-Resource-Policy", "cross-origin")
-                res.setHeader("Cross-Origin-Opener-Policy", "same-origin")
-                res.setHeader("Cross-Origin-Embedder-Policy", "require-corp")
-                next();
-            })
+            // server.middlewares.use((_req, res, next) => {
+            //     res.setHeader("Cross-Origin-Resource-Policy", "cross-origin")
+            //     res.setHeader("Cross-Origin-Opener-Policy", "same-origin")
+            //     res.setHeader("Cross-Origin-Embedder-Policy", "require-corp")
+            // })
         }
     }],
     build: {

@@ -183,6 +183,24 @@ export class LightBase extends ComponentBase implements ILight {
         this.lightData.lightColor = value;
         this.onChange();
     }
+
+    /**
+     * Get light source color
+     * @return Color
+     */
+    public get color(): Color {
+        return this.lightData.lightColor;
+    }
+
+    /**
+     * Set light source color
+     * @param Color
+     */
+    public set color(value: Color) {
+        this.lightData.lightColor = value;
+        this.onChange();
+    }
+
     /**
      * Get Illumination intensity of light source
      * @return number
@@ -190,6 +208,7 @@ export class LightBase extends ComponentBase implements ILight {
     public get intensity(): number {
         return this.lightData.intensity as number;
     }
+
     /**
      * Set Illumination intensity of light source
      * @param value

@@ -1,4 +1,4 @@
-import { AttributeAnimCurve, BitmapTexture2D, BlendMode, Color, Engine3D, ExtrudeGeometry, LitMaterial, MeshRenderer, Object3D, Object3DUtil, PropertyAnimClip, PropertyAnimation, Scene3D, Vector3, WrapMode } from "@orillusion/core";
+import { AttributeAnimCurve, BitmapTexture2D, BlendMode, BloomPost, Color, Engine3D, ExtrudeGeometry, LitMaterial, MeshRenderer, Object3D, Object3DUtil, PropertyAnimClip, PropertyAnimation, Scene3D, Vector3, WrapMode } from "@orillusion/core";
 import { createExampleScene, createSceneParam } from "@samples/utils/ExampleScene";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
@@ -25,7 +25,8 @@ class Sample_ConduitGeometry2 {
         let exampleScene = createExampleScene(param);
         exampleScene.camera.enableCSM = true;
         this.scene = exampleScene.scene;
-        Engine3D.startRenderView(exampleScene.view);
+        let job = Engine3D.startRenderView(exampleScene.view);
+        job.addPost(new BloomPost());
         await this.createMaterial();
         await this.loadCurveData();
 
@@ -53,6 +54,7 @@ class Sample_ConduitGeometry2 {
         animation.speed = 0.5;
         animation.appendClip(this.animClip);
     }
+
     async loadCurveData() {
         // load external curve data
         let json: any = await Engine3D.res.loadJSON('json/anim_0.json');
@@ -76,6 +78,7 @@ class Sample_ConduitGeometry2 {
         let texture = new BitmapTexture2D();
         texture.addressModeU = "repeat";
         texture.addressModeV = "repeat";
+        // await texture.load('textures/grid.jpg');
         await texture.load('textures/cell.png');
         this.material.baseMap = texture;
     }

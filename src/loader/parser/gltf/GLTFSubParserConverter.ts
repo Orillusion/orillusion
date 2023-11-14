@@ -177,73 +177,59 @@ export class GLTFSubParserConverter {
                 if (primitive.material) {
                     const { baseColorTexture, baseColorFactor, metallicFactor, roughnessFactor, doubleSided, metallicRoughnessTexture, normalTexture, occlusionTexture, emissiveTexture, emissiveFactor, enableBlend, alphaCutoff } = primitive.material;
 
-                    let physicMaterial = (newMat = this.applyMaterialExtensions(primitive.material, newMat) as PhysicMaterial);
+                    let physicMaterial = (newMat = this.applyMaterialExtensions(primitive.material, newMat));
                     if (`enableBlend` in primitive.material) {
                         if (primitive.material[`enableBlend`]) {
-                            physicMaterial.blendMode = BlendMode.NORMAL;
-                            physicMaterial.depthWriteEnabled = false;
+                            physicMaterial.blendMode = BlendMode.SOFT_ADD;
                         } else {
                             physicMaterial.blendMode = BlendMode.NONE;
                         }
-
-                        if (primitive.material.defines) {
-                            if (primitive.material.defines.indexOf(`ALPHA_BLEND`) != -1) {
-                                physicMaterial.blendMode = BlendMode.ALPHA;
-                                physicMaterial.transparent = true;
-                                physicMaterial.depthWriteEnabled = false;
-                            }
-                        }
                     }
 
-                    if (`alphaCutoff` in primitive.material && alphaCutoff > 0) {
-                        physicMaterial.alphaCutoff = alphaCutoff;
+                    if (`alphaCutoff` in primitive.material && alphaCutoff > 0 && alphaCutoff < 1) {
+                        physicMaterial.setUniformFloat("alphaCutoff", alphaCutoff);
                         physicMaterial.blendMode = BlendMode.NORMAL;
                         physicMaterial.transparent = true;
-                        physicMaterial.depthWriteEnabled = false;
+                        // physicMaterial.depthWriteEnabled = false;
                     }
 
-                    if (primitive.material.transformUV1) physicMaterial.uvTransform_1 = primitive.material.transformUV1;
-                    if (primitive.material.transformUV2) physicMaterial.uvTransform_2 = primitive.material.transformUV2;
-
-                    physicMaterial.baseColor = new Color(baseColorFactor[0], baseColorFactor[1], baseColorFactor[2], baseColorFactor[3]);
-
-                    physicMaterial.roughness = roughnessFactor;
-
-                    physicMaterial.metallic = metallicFactor;
-
+                    if (primitive.material.transformUV1) {
+                        physicMaterial.setUniformVector4("uvTransform_1", primitive.material.transformUV1);
+                    }
+                    if (primitive.material.transformUV2) {
+                        physicMaterial.setUniformVector4("uvTransform_2", primitive.material.transformUV2);
+                    }
+                    physicMaterial.setUniformColor("baseColor", new Color(baseColorFactor[0], baseColorFactor[1], baseColorFactor[2], baseColorFactor[3]));
+                    physicMaterial.setUniformFloat("roughness", roughnessFactor);
+                    physicMaterial.setUniformFloat("metallic", metallicFactor);
+                    physicMaterial.setUniformFloat("ao", 1);
                     physicMaterial.doubleSide = doubleSided;
 
-                    physicMaterial.ao = 1;
-
                     if (baseColorTexture) {
-                        physicMaterial.baseMap = baseColorTexture;
+                        physicMaterial.setTexture("baseMap", baseColorTexture);
                     }
 
                     if (normalTexture) {
-                        physicMaterial.normalMap = normalTexture;
+                        physicMaterial.setTexture("normalMap", normalTexture);
                     }
 
                     if (metallicRoughnessTexture) {
-                        physicMaterial.maskMap = metallicRoughnessTexture;
+                        physicMaterial.setTexture("maskMap", metallicRoughnessTexture);
                     }
 
                     if (occlusionTexture && (metallicRoughnessTexture != occlusionTexture)) {
-                        physicMaterial.aoMap = occlusionTexture;
+                        physicMaterial.setTexture("aoMap", occlusionTexture);
                     }
 
                     if (emissiveTexture) {
-                        physicMaterial.emissiveMap = emissiveTexture;
+                        physicMaterial.setTexture("emissiveMap", emissiveTexture);
                     }
 
                     if (emissiveFactor && (emissiveFactor[0] > 0 || emissiveFactor[1] > 0 || emissiveFactor[2] > 0)) {
-                        if (physicMaterial.emissiveMap) {
-                            if (physicMaterial.emissiveMap == Engine3D.res.blackTexture) {
-                                physicMaterial.emissiveMap = Engine3D.res.whiteTexture;
-                            }
+                        if (!physicMaterial.shader.getTexture("emissiveMap")) {
+                            physicMaterial.shader.setTexture("emissiveMap", Engine3D.res.whiteTexture);
                         }
-                        let emissiveFactorA = emissiveFactor[3] ? emissiveFactor[3] : 1.0;
-                        physicMaterial.emissiveColor = new Color(emissiveFactor[0], emissiveFactor[1], emissiveFactor[2], emissiveFactorA);
-                        physicMaterial.emissiveIntensity = 1;
+                        physicMaterial.setUniformColor("emissiveColor", new Color(emissiveFactor[0], emissiveFactor[1], emissiveFactor[2], emissiveFactor[3]));
                     }
                 }
             }
@@ -412,6 +398,9 @@ export class GLTFSubParserConverter {
                 indexCount: indicesAttribute.data.length,
                 vertexStart: 0,
                 index: 0,
+                vertexCount: 0,
+                firstStart: 0,
+                topology: 0
             }
         )
         return geometry;

@@ -1,3 +1,4 @@
+import { RegisterComponent } from "..";
 import { Object3D } from "../core/entities/Object3D";
 import { StorageGPUBuffer } from "../gfx/graphics/webGpu/core/buffer/StorageGPUBuffer";
 import { Time } from "../util/Time";
@@ -11,6 +12,7 @@ import { SkeletonPose } from "./anim/skeletonAnim/SkeletonPose";
  * skeleton animation
  * @group Animation 
  */
+@RegisterComponent
 export class SkeletonAnimationComponent extends ComponentBase {
   /**
    * Whether it is playing

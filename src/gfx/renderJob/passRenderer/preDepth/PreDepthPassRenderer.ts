@@ -14,7 +14,7 @@ import { RTResourceMap } from "../../frame/RTResourceMap";
 import { OcclusionSystem } from "../../occlusion/OcclusionSystem";
 import { RendererBase } from "../RendererBase";
 import { ClusterLightingBuffer } from "../cluster/ClusterLightingBuffer";
-import { RendererType } from "../state/RendererType";
+import { PassType } from "../state/RendererType";
 import { ZCullingCompute } from "./ZCullingCompute";
 
 /**
@@ -28,7 +28,7 @@ export class PreDepthPassRenderer extends RendererBase {
     zCullingCompute: ZCullingCompute;
     constructor() {
         super();
-        this.passType = RendererType.DEPTH;
+        this.passType = PassType.DEPTH;
 
         let size = webGPUContext.presentationSize;
         let scale = 1;

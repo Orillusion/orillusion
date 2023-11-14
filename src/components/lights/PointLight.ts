@@ -1,7 +1,7 @@
-import { Engine3D } from '../../Engine3D';
 import { View3D } from '../../core/View3D';
 import { Vector3 } from '../../math/Vector3';
 import { UUID } from '../../util/Global';
+import { RegisterComponent } from '../../util/SerializeDecoration';
 import { LightBase } from './LightBase';
 import { LightType } from './LightData';
 /**
@@ -10,6 +10,7 @@ import { LightType } from './LightData';
  *A common example is to simulate the light emitted by a light bulb, where a point light source cannot create shadows.
  * @group Lights
  */
+@RegisterComponent
 export class PointLight extends LightBase {
 
     constructor() {

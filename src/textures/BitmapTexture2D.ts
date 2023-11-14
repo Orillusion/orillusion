@@ -10,6 +10,7 @@ import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
  */
 export class BitmapTexture2D extends Texture {
     private _source: HTMLCanvasElement | ImageBitmap | OffscreenCanvas | HTMLImageElement;
+    public premultiplyAlpha: PremultiplyAlpha = 'none';
 
     /**
      * @constructor
@@ -18,6 +19,10 @@ export class BitmapTexture2D extends Texture {
     constructor(useMipmap: boolean = true) {
         super();
         this.useMipmap = useMipmap;
+
+        this.lodMinClamp = 0;
+        this.lodMaxClamp = 4;
+
         // this.visibility = GPUShaderStage.COMPUTE | GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT;
     }
 
@@ -37,7 +42,7 @@ export class BitmapTexture2D extends Texture {
         if (this._source instanceof HTMLImageElement) {
             this._source.decode().then(async () => {
                 if (this._source instanceof HTMLImageElement) {
-                    const imageBitmap = await createImageBitmap(this._source, { imageOrientation: this.flipY ? "flipY" : "from-image" });
+                    const imageBitmap = await createImageBitmap(this._source, { imageOrientation: this.flipY ? "flipY" : "from-image", premultiplyAlpha: 'none' });
                     this.generate(imageBitmap);
                 }
             });
@@ -55,6 +60,7 @@ export class BitmapTexture2D extends Texture {
      * @param loaderFunctions callback function when load complete
      */
     public async load(url: string, loaderFunctions?: LoaderFunctions) {
+        this.name = StringUtil.getURLName(url);
         if (url.indexOf(';base64') != -1) {
             const img = document.createElement('img');
             let start = url.indexOf('data:image');
@@ -66,25 +72,32 @@ export class BitmapTexture2D extends Texture {
             const imageBitmap = await createImageBitmap(img, {
                 resizeWidth: img.width,
                 resizeHeight: img.height,
-                imageOrientation: this.flipY ? "flipY" : "from-image"
+                imageOrientation: this.flipY ? "flipY" : "from-image",
+                premultiplyAlpha: 'none'
             });
             this.format = GPUTextureFormat.rgba8unorm;
             this.generate(imageBitmap);
         } else {
-            const r = await fetch(url, {
-                headers: Object.assign({
-                    'Accept': 'image/avif,image/webp,*/*'
-                }, loaderFunctions?.headers)
-            });
-            // const img = await r.blob();
-            // await this.loadFromBlob(img);
-            let chunks = await LoaderBase.read(url, r, loaderFunctions);
-            let img = new Blob([chunks], { type: 'image/jpeg' });
-            chunks = null;
+            return new Promise((succ, fial) => {
+                fetch(url, {
+                    headers: Object.assign({
+                        'Accept': 'image/avif,image/webp,*/*'
+                    }, loaderFunctions?.headers)
+                }).then((r) => {
+                    // const img = await r.blob();
+                    // await this.loadFromBlob(img);
+                    LoaderBase.read(url, r, loaderFunctions).then((chunks) => {
+                        let img = new Blob([chunks], { type: 'image/jpeg' });
+                        chunks = null;
+                        this.loadFromBlob(img).then(() => {
+                            succ(true);
+                        });
+                    });
 
-            await this.loadFromBlob(img);
+                })
+            })
+
         }
-        this.name = StringUtil.getURLName(url);
         return true;
     }
 
@@ -96,14 +109,15 @@ export class BitmapTexture2D extends Texture {
     */
     public async loadFromBlob(imgData: Blob) {
         this.imageData = imgData;
-        let imageBitmap = await createImageBitmap(imgData, { imageOrientation: this.flipY ? 'flipY' : 'from-image' });
+        let imageBitmap = await createImageBitmap(imgData, { imageOrientation: this.flipY ? 'flipY' : 'from-image', premultiplyAlpha: 'none' });
         if (imageBitmap.width < 32 || imageBitmap.height < 32) {
             let width = Math.max(imageBitmap.width, 32);
             let height = Math.max(imageBitmap.height, 32);
             imageBitmap = await createImageBitmap(imageBitmap, {
                 resizeWidth: width,
                 resizeHeight: height,
-                imageOrientation: this.flipY ? "flipY" : "from-image"
+                imageOrientation: this.flipY ? "flipY" : "from-image",
+                premultiplyAlpha: 'none'
             });
         }
         this.format = GPUTextureFormat.rgba8unorm;

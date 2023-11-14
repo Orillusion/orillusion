@@ -1,4 +1,4 @@
-import { Engine3D, ShaderLib, Texture, GPUCompareFunction, BlendMode, Color, Vector4, RenderShader, Material, RendererType } from "@orillusion/core";
+import { Engine3D, ShaderLib, Texture, GPUCompareFunction, BlendMode, Color, Vector4, RenderShaderPass, Material, PassType, Shader } from "@orillusion/core";
 import { ParticleRenderShader } from "../shader/ParticleRenderShader";
 
 /**
@@ -10,36 +10,41 @@ export class ParticleMaterial extends Material {
         super();
         ShaderLib.register("ParticleRenderShader", ParticleRenderShader);
 
-        let colorPass = new RenderShader(`ParticleRenderShader`, `ParticleRenderShader`);
-        this.defaultPass = colorPass;
+        let newShader = new Shader();
+
+        let colorPass = new RenderShaderPass(`ParticleRenderShader`, `ParticleRenderShader`);
+        colorPass.passType = PassType.COLOR;
         colorPass.setShaderEntry(`VertMain`, `FragMain`)
+        newShader.addRenderPass(colorPass);
 
         colorPass.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));
         colorPass.setUniformVector4(`transformUV2`, new Vector4(0, 0, 1, 1));
         colorPass.setUniformColor(`baseColor`, new Color());
         colorPass.setUniformFloat(`alphaCutoff`, 0.5);
+        colorPass.renderOrder = 3001;
+        colorPass.shaderState.transparent = true;
+        colorPass.shaderState.depthWriteEnabled = false;
+        colorPass.shaderState.depthCompare = GPUCompareFunction.less;
+        colorPass.shaderState.acceptShadow = false;
+        colorPass.shaderState.receiveEnv = false;
+        colorPass.shaderState.acceptGI = false;
+        colorPass.shaderState.useLight = false;
+        colorPass.shaderState.castShadow = false;
 
-        let shaderState = colorPass.shaderState;
-        shaderState.acceptShadow = false;
-        shaderState.receiveEnv = false;
-        shaderState.acceptGI = false;
-        shaderState.useLight = false;
-        shaderState.castShadow = false;
-        shaderState.depthWriteEnabled = true;
+        this.shader = newShader;
 
         // default value
         this.baseMap = Engine3D.res.whiteTexture;
         this.blendMode = BlendMode.ADD;
-        this.defaultPass.renderOrder = 3001;
-        this.defaultPass.shaderState.transparent = true;
-        this.defaultPass.shaderState.depthWriteEnabled = false;
-        this.defaultPass.shaderState.depthCompare = GPUCompareFunction.less;
-
     }
 
     public set baseMap(texture: Texture) {
         //not need env texture
-        this.defaultPass.setTexture(`baseMap`, texture);
+        this.shader.setTexture(`baseMap`, texture);
+    }
+
+    public get baseMap() {
+        return this.shader.getTexture(`baseMap`);
     }
 
     public set envMap(texture: Texture) {

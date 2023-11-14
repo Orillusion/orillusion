@@ -124,9 +124,9 @@ export class BlendFactor {
                 blend.color.operation = 'add';
                 break;
             case BlendMode.NORMAL:
-                blend.color.srcFactor = 'one';
-                blend.color.dstFactor = 'one-minus-src-alpha';
-                blend.color.operation = 'add';
+                blend.color.srcFactor = `src-alpha`;
+                blend.color.dstFactor = `one-minus-src-alpha`;
+                blend.color.operation = `add`;
                 break;
             case BlendMode.SOFT_ADD:
                 blend.color.srcFactor = `one`;

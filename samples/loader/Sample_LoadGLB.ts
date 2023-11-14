@@ -1,4 +1,4 @@
-import { AtmosphericComponent, Engine3D, GTAOPost, HDRBloomPost, LitMaterial, MeshRenderer, Object3D, PlaneGeometry, PostProcessingComponent, Scene3D, SkyRenderer, TAAPost } from "@orillusion/core";
+import { AtmosphericComponent, BloomPost, Engine3D, GTAOPost, LitMaterial, MeshRenderer, Object3D, PlaneGeometry, PostProcessingComponent, Scene3D, SkyRenderer, TAAPost } from "@orillusion/core";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { createExampleScene } from "@samples/utils/ExampleScene";
 import { GUIUtil } from "@samples/utils/GUIUtil";
@@ -27,7 +27,7 @@ export class Sample_LoadGLB {
         let post = this.scene.addComponent(PostProcessingComponent);
         let gtao = post.addPost(GTAOPost);
         // let taa = post.addPost(TAAPost);
-        let hdr = post.addPost(HDRBloomPost);
+        let hdr = post.addPost(BloomPost);
 
         GUIUtil.renderBloom(hdr);
         GUIUtil.renderDirLight(ex.light);
@@ -83,14 +83,6 @@ export class Sample_LoadGLB {
                 rotation: [180, 0, 0]
             }
         )
-        list[`Mark-XLIV`] = JSON.stringify(
-            {
-                url: `gltfs/glb/Mark-XLIV.glb`,
-                scale: 0.1,
-                offset: [0, 0, 0],
-                rotation: [0, 0, 0]
-            }
-        )
         list[`PotionBottle`] = JSON.stringify(
             {
                 url: `gltfs/glb/PotionBottle.glb`,
@@ -109,26 +101,31 @@ export class Sample_LoadGLB {
         )
 
         let model: Object3D;
+        let { url, scale, offset, rotation } = JSON.parse(list[`HIE-Hand-Armor`]);
+        this.loadGLB(model, url, offset, scale, rotation);
         GUIHelp.add({ Model: `HIE-Hand-Armor` }, 'Model', list).onChange(async (v) => {
             let { url, scale, offset, rotation } = JSON.parse(v);
-            if (model) {
-                this.scene.removeChild(model);
-            }
-            model = (await Engine3D.res.loadGltf(url, { onProgress: (e) => this.onLoadProgress(e), onComplete: (e) => this.onComplete(e) })) as Object3D;
-            this.scene.addChild(model);
-            model.x = offset[0];
-            model.y = offset[1];
-            model.z = offset[2];
-
-            model.scaleX = scale;
-            model.scaleY = scale;
-            model.scaleZ = scale;
-
-            model.rotationX = rotation[0];
-            model.rotationY = rotation[1];
-            model.rotationZ = rotation[2];
-
+            this.loadGLB(model, url, offset, scale, rotation);
         });
+    }
+
+    private async loadGLB(model: Object3D, url: string, offset: number[], scale: number, rotation: number[]) {
+        if (model) {
+            this.scene.removeChild(model);
+        }
+        model = (await Engine3D.res.loadGltf(url, { onProgress: (e) => this.onLoadProgress(e), onComplete: (e) => this.onComplete(e) })) as Object3D;
+        this.scene.addChild(model);
+        model.x = offset[0];
+        model.y = offset[1];
+        model.z = offset[2];
+
+        model.scaleX = scale;
+        model.scaleY = scale;
+        model.scaleZ = scale;
+
+        model.rotationX = rotation[0];
+        model.rotationY = rotation[1];
+        model.rotationZ = rotation[2];
     }
 
     onLoadProgress(e) {

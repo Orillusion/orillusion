@@ -63,6 +63,7 @@ export let GTAO_cs: string = /*wgsl*/ `
       if(gtaoData.blendColor > 0.5){
           outColor = oc.xyz * gtao;
       }
+      // textureStore(outTex, fragCoord , vec4<f32>(vec3f(newFactor), oc.w));
       textureStore(outTex, fragCoord , vec4<f32>(outColor, oc.w));
     }
     
@@ -115,14 +116,16 @@ export let GTAO_cs: string = /*wgsl*/ `
                 && sampleCoord.y < i32(texSize.y) )
               {
                 totalWeight += 1.0;
-                let samplePosition = textureLoad(posTex, sampleCoord, 0).xyz;
-                let distanceVec2 = samplePosition - wPosition;
-                let distance = length(distanceVec2);
-                if(distance < gtaoData.maxDistance && distance > 1.0){
-                  let sampleDir = normalize(distanceVec2);
-                  var factor = saturate(dot(sampleDir, originNormal) - 0.1);
-                  factor *= 1.0 - distance / gtaoData.maxDistance;
-                  weight += factor;
+                let samplePosition = textureLoad(posTex, sampleCoord, 0).xyzw;
+                if(samplePosition.w>0.0){
+                  let distanceVec2 = samplePosition.xyz - wPosition;
+                  let distance = length(distanceVec2);
+                  if(distance < gtaoData.maxDistance ){
+                    let sampleDir = normalize(distanceVec2);
+                    var factor = saturate( dot(sampleDir, originNormal));
+                    factor *= 1.0 - distance / gtaoData.maxDistance;
+                    weight += factor;
+                  }
                 }
               }
           }

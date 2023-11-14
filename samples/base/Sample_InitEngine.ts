@@ -1,4 +1,4 @@
-import { AtmosphericComponent, BoxGeometry, CameraUtil, DirectLight, Engine3D, GTAOPost, HDRBloomPost, HoverCameraController, KelvinUtil, LambertMaterial, LitMaterial, MeshRenderer, Object3D, OcclusionSystem, PlaneGeometry, PostProcessingComponent, Quaternion, Scene3D, SphereGeometry, UnLitMaterial, Vector3, Vector3Ex, View3D } from '@orillusion/core';
+import { AtmosphericComponent, BloomPost, BoxGeometry, CameraUtil, DirectLight, Engine3D, GTAOPost, HoverCameraController, KelvinUtil, LambertMaterial, LitMaterial, MeshRenderer, Object3D, OcclusionSystem, PlaneGeometry, PostProcessingComponent, Quaternion, Scene3D, SphereGeometry, UnLitMaterial, Vector3, Vector3Ex, View3D } from '@orillusion/core';
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { Stats } from '@orillusion/stats';
 import { GUIUtil } from '@samples/utils/GUIUtil';
@@ -37,7 +37,7 @@ export class Sample_InitEngine {
         Engine3D.startRenderView(this.view);
 
         let postCom = scene.addComponent(PostProcessingComponent);
-        let post = postCom.addPost(HDRBloomPost) as HDRBloomPost;
+        let post = postCom.addPost(BloomPost) as BloomPost;
         let post2 = postCom.addPost(GTAOPost) as GTAOPost;
 
         GUIUtil.renderBloom(post);

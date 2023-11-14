@@ -1,12 +1,9 @@
-import { StorageGPUBuffer } from '../../..';
-import { Engine3D } from '../../../Engine3D';
 import { ILight } from '../../../components/lights/ILight';
-
 import { LightType } from '../../../components/lights/LightData';
 import { Scene3D } from '../../../core/Scene3D';
-
+import { View3D } from '../../../core/View3D';
 import { CameraUtil } from '../../../util/CameraUtil';
-import { UUID } from '../../../util/Global';
+import { GlobalBindGroup } from '../../graphics/webGpu/core/bindGroups/GlobalBindGroup';
 /**
  * @internal
  * @group Lights
@@ -18,33 +15,18 @@ export class ShadowLightsCollect {
 
     public static directionLightList: Map<Scene3D, ILight[]>;
     public static pointLightList: Map<Scene3D, ILight[]>;
-    public static shadowBuffer: Map<Scene3D, StorageGPUBuffer>;
-    public static shadowLights: Map<Scene3D, Uint32Array>;//Uint32Array = new Uint32Array(16);
+    public static shadowLights: Map<Scene3D, Float32Array>;
 
     public static init() {
         this.directionLightList = new Map<Scene3D, ILight[]>();
         this.pointLightList = new Map<Scene3D, ILight[]>();
-
-        this.shadowBuffer = new Map<Scene3D, StorageGPUBuffer>;
-        this.shadowLights = new Map<Scene3D, Uint32Array>;
+        this.shadowLights = new Map<Scene3D, Float32Array>;
     }
 
-    public static createBuffer(scene: Scene3D) {
-        if (!this.shadowBuffer.has(scene)) {
-            let buffer = new StorageGPUBuffer(4 + 16);
-            buffer.visibility = GPUShaderStage.FRAGMENT;
-            this.shadowBuffer.set(scene, buffer);
-
-            buffer.setInt32('nDirShadowStart', 0);
-            buffer.setInt32('nDirShadowEnd', 1);
-            buffer.setInt32('nPointShadowStart', 0);
-            buffer.setInt32('nPointShadowEnd', 0);
-
-            let list = new Uint32Array(16);
-            this.shadowLights.set(scene, list);
-
-            buffer.setUint32Array('shadowLights', list);
-            buffer.apply();
+    public static createBuffer(view: View3D) {
+        if (!this.shadowLights.has(view.scene)) {
+            let list = new Float32Array(16);
+            this.shadowLights.set(view.scene, list);
         }
     }
 
@@ -175,11 +157,11 @@ export class ShadowLightsCollect {
     }
 
 
-    public static update(scene3D: Scene3D) {
-        let shadowBuffer = this.shadowBuffer.get(scene3D);
-        let shadowLights = this.shadowLights.get(scene3D);
-        let directionLightList = ShadowLightsCollect.directionLightList.get(scene3D);
-        let pointLightList = ShadowLightsCollect.pointLightList.get(scene3D);
+    public static update(view: View3D) {
+        let globalUniform = GlobalBindGroup.getCameraGroup(view.camera);
+        let shadowLights = this.shadowLights.get(view.scene);
+        let directionLightList = ShadowLightsCollect.directionLightList.get(view.scene);
+        let pointLightList = ShadowLightsCollect.pointLightList.get(view.scene);
 
         let nDirShadowStart: number = 0;
         let nDirShadowEnd: number = 0;
@@ -195,8 +177,8 @@ export class ShadowLightsCollect {
             }
             nDirShadowEnd = directionLightList.length;
         }
-        shadowBuffer.setInt32('nDirShadowStart', nDirShadowStart);
-        shadowBuffer.setInt32('nDirShadowEnd', nDirShadowEnd);
+        globalUniform.dirShadowStart = nDirShadowStart;
+        globalUniform.dirShadowEnd = nDirShadowEnd;
 
         if (pointLightList) {
             nPointShadowStart = nDirShadowEnd;
@@ -208,10 +190,9 @@ export class ShadowLightsCollect {
             }
             nPointShadowEnd = nPointShadowStart + pointLightList.length;
         }
-        shadowBuffer.setInt32('nPointShadowStart', nPointShadowStart);
-        shadowBuffer.setInt32('nPointShadowEnd', nPointShadowEnd);
 
-        shadowBuffer.setUint32Array(`shadowLights`, shadowLights);
-        shadowBuffer.apply();
+        globalUniform.pointShadowStart = nPointShadowStart;
+        globalUniform.pointShadowEnd = nPointShadowEnd;
+        globalUniform.shadowLights = shadowLights;
     }
 }

@@ -17,6 +17,7 @@ import { PostBase } from '../post/PostBase';
 import { RendererBase } from '../passRenderer/RendererBase';
 import { Ctor } from '../../../util/Global';
 import { DDGIProbeRenderer } from '../passRenderer/ddgi/DDGIProbeRenderer';
+import { Texture } from '../../graphics/webGpu/core/texture/Texture';
 
 /**
  * render jobs 
@@ -74,6 +75,7 @@ export class RendererJob {
      */
     public pauseRender: boolean = false;
     public pickFire: PickFire;
+    public renderState: boolean = false;
     protected _view: View3D;
 
     /**
@@ -124,6 +126,7 @@ export class RendererJob {
      * start render task
      */
     public start() {
+        this.renderState = true;
     }
 
     // public get guiCanvas(): UICanvas {
@@ -162,7 +165,10 @@ export class RendererJob {
      * @param post
      */
     public addPost(post: PostBase): PostBase | PostBase[] {
-        if (!this.postRenderer) this.enablePost(GBufferFrame.getGBufferFrame('ColorPassGBuffer'));
+        if (!this.postRenderer) {
+            GBufferFrame.bufferTexture = true;
+            this.enablePost(GBufferFrame.getGBufferFrame('ColorPassGBuffer'));
+        }
 
         if (post instanceof PostBase) {
             this.postRenderer.attachPost(this.view, post);
@@ -198,7 +204,7 @@ export class RendererJob {
         this.clusterLightingRender.render(view, this.occlusionSystem);
 
         if (this.shadowMapPassRenderer) {
-            ShadowLightsCollect.update(view.scene);
+            ShadowLightsCollect.update(view);
             this.shadowMapPassRenderer.render(view, this.occlusionSystem);
         }
 
@@ -226,6 +232,7 @@ export class RendererJob {
         if (this.postRenderer && this.postRenderer.postList.length > 0) {
             this.postRenderer.render(view);
         }
+
     }
 
     public debug() {

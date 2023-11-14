@@ -97,6 +97,14 @@ export let ColorUtil: string = /*wgsl*/ `
         }
     }
 
+    fn BlendNormalRNM( n1:vec3f,  n2:vec3f) -> vec3f
+	{
+		let t = n1.xyz + vec3f(0.0, 0.0, 1.0);
+		let u = n2.xyz * vec3f(-1.0, -1.0, 1.0);
+		let r = (t / t.z) * dot(t, u) - u;
+		return r;
+	}
+
 //     fn ReorientedBlendNormal(){
 //         vec3 t = texture(baseMap,   uv).xyz * vec3( 2.0,  2.0, 2.0) + vec3(-1.0, -1.0,  0.0);
 // vec3 u = texture(detailMap, uv).xyz * vec3(-2.0, -2.0, 2.0) + vec3( 1.0,  1.0, -1.0);

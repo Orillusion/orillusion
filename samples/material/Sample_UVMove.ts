@@ -12,16 +12,6 @@ class Sample_UVMove {
 
         Engine3D.setting.material.materialChannelDebug = true;
         Engine3D.setting.shadow.shadowBound = 5;
-        Engine3D.setting.render.postProcessing.bloom = {
-            enable: true,
-            blurX: 4,
-            blurY: 4,
-            exposure: 1,
-            luminosityThreshold: 0.8,
-            strength: 0.86,
-            radius: 4,
-            debug: false
-        };
 
         this.scene = new Scene3D();
         let sky = this.scene.addComponent(AtmosphericComponent);

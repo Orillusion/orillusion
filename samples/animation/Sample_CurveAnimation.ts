@@ -1,5 +1,6 @@
 import { Object3D, Scene3D, AnimationCurve, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, Keyframe, Object3DUtil, Time } from "@orillusion/core";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
+import { GUIUtil } from "@samples/utils/GUIUtil";
 
 class Sample_AnimCurve {
     lightObj3D: Object3D;
@@ -13,6 +14,7 @@ class Sample_AnimCurve {
     async run() {
         await Engine3D.init({ beforeRender: () => this.renderUpdate() });
 
+        Engine3D.setting.render.debug = true;
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.updateFrameRate = 1;
         Engine3D.setting.shadow.type = `HARD`;
@@ -36,6 +38,8 @@ class Sample_AnimCurve {
 
         await this.initScene();
         sky.relativeTransform = this.lightObj3D.transform;
+
+        GUIUtil.renderDebug();
     }
 
     async initScene() {
@@ -50,6 +54,8 @@ class Sample_AnimCurve {
             directLight.castShadow = true;
             directLight.intensity = 30;
             this.scene.addChild(this.lightObj3D);
+
+            GUIUtil.renderDirLight(directLight);
 
             //create animation curve 1
             this.curve1 = new AnimationCurve();

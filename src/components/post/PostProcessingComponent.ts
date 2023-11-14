@@ -1,3 +1,4 @@
+import { FXAAPost, webGPUContext } from "../..";
 import { Engine3D } from "../../Engine3D";
 import { PostBase } from "../../gfx/renderJob/post/PostBase";
 import { Ctor } from "../../util/Global";
@@ -5,6 +6,8 @@ import { ComponentBase } from "../ComponentBase";
 
 export class PostProcessingComponent extends ComponentBase {
     private _postList: Map<string, PostBase>;
+
+
     public init(param?: any): void {
         this._postList = new Map<string, PostBase>();
     }
@@ -26,6 +29,7 @@ export class PostProcessingComponent extends ComponentBase {
     }
 
     private activePost() {
+        webGPUContext.canResize = false;
         let view = this.transform.view3D;
         let job = Engine3D.getRenderJob(view);
         this._postList.forEach((v) => {
@@ -34,6 +38,7 @@ export class PostProcessingComponent extends ComponentBase {
     }
 
     private unActivePost() {
+        webGPUContext.canResize = true;
         let view = this.transform.view3D;
         let job = Engine3D.getRenderJob(view);
         this._postList.forEach((v) => {
@@ -42,20 +47,27 @@ export class PostProcessingComponent extends ComponentBase {
     }
 
     public addPost<T extends PostBase>(c: Ctor<T>): T {
-        if (this._postList.has(c.prototype)) return;
+        if (this._postList.has(c.name)) return;
+        if (!this._postList.has("FXAAPost")) {
+            let post = new FXAAPost();
+            this._postList.set(post.constructor.name, post);
+            if (this._enable)
+                this.activePost();
+            if (c.name == "FXAAPost") {
+                return post as T;
+            }
+        }
         let post = new c();
-        this._postList.set(c.prototype, post);
+        this._postList.set(c.name, post);
         if (this._enable)
             this.activePost();
-        // post.onAttach(this.transform.view3D);
-        // Engine3D.getRenderJob(this.transform.view3D).addPost(post);
         return post;
     }
 
     public removePost<T extends PostBase>(c: Ctor<T>) {
-        if (!this._postList.has(c.prototype)) return;
-        let post = this._postList.get(c.prototype);
-        this._postList.delete(c.prototype);
+        if (!this._postList.has(c.name)) return;
+        let post = this._postList.get(c.name);
+        this._postList.delete(c.name);
 
         let view = this.transform.view3D;
         let job = Engine3D.getRenderJob(view);
@@ -63,7 +75,7 @@ export class PostProcessingComponent extends ComponentBase {
     }
 
     public getPost<T extends PostBase>(c: Ctor<T>): T {
-        if (!this._postList.has(c.prototype)) return null;
-        return this._postList.get(c.prototype) as T;
+        if (!this._postList.has(c.name)) return null;
+        return this._postList.get(c.name) as T;
     }
 }

@@ -1,4 +1,4 @@
-export let PavementShader:string = /*wgsl*/`
+export let PavementShader: string = /*wgsl*/`
         #include "Common_vert"
         #include "Common_frag"
         #include "BxDF_frag"
@@ -57,7 +57,7 @@ export let PavementShader:string = /*wgsl*/`
             ORI_ShadingInput.Roughness = ReflectMap * materialUniform.roughness  ;
             ORI_ShadingInput.Metallic = materialUniform.metallic ;
             ORI_ShadingInput.Specular = 0.5 ;
-            ORI_ShadingInput.AmbientOcclusion = Ao * materialUniform.ao ;
+            ORI_ShadingInput.AmbientOcclusion = Ao;
             ORI_ShadingInput.EmissiveColor = vec4<f32>(0.0);
 
             let normal = unPackRGNormal(Normal,Displace.r*materialUniform.normalScale,1.0) ;

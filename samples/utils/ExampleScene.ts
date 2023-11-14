@@ -48,10 +48,10 @@ let exampleSceneParam: ExampleSceneParam;
 export function createSceneParam(): ExampleSceneParam {
     let param: ExampleSceneParam = {
         camera: {
-            near: 1,
-            far: 5000,
+            near: 0.01,
+            far: 1000,
             distance: 100,
-            fov: 60,
+            fov: 45,
             pitch: -15,
             roll: -30,
         },

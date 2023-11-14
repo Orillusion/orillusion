@@ -14,10 +14,13 @@ import { EntityCollect } from "../collect/EntityCollect";
 import { RTFrame } from "../frame/RTFrame";
 import { OcclusionSystem } from "../occlusion/OcclusionSystem";
 import { RendererPassState } from "./state/RendererPassState";
-import { RendererType } from "./state/RendererType";
+import { PassType } from "./state/RendererType";
 import { RenderContext } from "./RenderContext";
 import { ClusterLightingRender } from "./cluster/ClusterLightingRender";
 import { ClusterLightingBuffer } from "./cluster/ClusterLightingBuffer";
+import { RTResourceMap } from "../frame/RTResourceMap";
+import { RTResourceConfig } from "../config/RTResourceConfig";
+import { webGPUContext } from "../../graphics/webGpu/Context3D";
 
 
 /**
@@ -33,14 +36,14 @@ export class RendererBase extends CEventDispatcher {
 
     protected renderContext: RenderContext;
 
-    protected _rendererType: RendererType;
+    protected _rendererType: PassType;
     protected _rtFrame: RTFrame;
 
-    public get passType(): RendererType {
+    public get passType(): PassType {
         return this._rendererType;
     }
 
-    public set passType(value: RendererType) {
+    public set passType(value: PassType) {
         this._rendererType = value;
     }
 
@@ -63,6 +66,7 @@ export class RendererBase extends CEventDispatcher {
         }
 
         this.renderContext = new RenderContext(rtFrame);
+
     }
 
     public setIrradiance(probeIrradianceMap: VirtualTexture, probeDepthMap: VirtualTexture) {
