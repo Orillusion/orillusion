@@ -108,14 +108,14 @@ export class PointLight extends LightBase {
     }
 
     public onGraphic(view?: View3D): void {
-        let custom = view.graphic3D.createCustomShape(
-            `PointLight_${this.object3D.instanceID}`,
-            this.transform,
-        );
-        custom.buildAxis();
-        custom.buildCircle(Vector3.ZERO, this.range, 32, Vector3.X_AXIS);
-        custom.buildCircle(Vector3.ZERO, this.range, 32, Vector3.Y_AXIS);
-        custom.buildCircle(Vector3.ZERO, this.range, 32, Vector3.Z_AXIS);
+        // let custom = view.graphic3D.createCustomShape(
+        //     `PointLight_${this.object3D.instanceID}`,
+        //     this.transform,
+        // );
+        // custom.buildAxis();
+        // custom.buildCircle(Vector3.ZERO, this.range, 32, Vector3.X_AXIS);
+        // custom.buildCircle(Vector3.ZERO, this.range, 32, Vector3.Y_AXIS);
+        // custom.buildCircle(Vector3.ZERO, this.range, 32, Vector3.Z_AXIS);
     }
 
     /**
