@@ -1,6 +1,5 @@
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D, PlaneGeometry, UnLitMaterial, Color, Vector3, ComponentBase, PointerEvent3D, Camera3D, BoundingBox, GeometryBase, VertexAttributeName } from '@orillusion/core';
-import { GUIUtil } from '@samples/utils/GUIUtil';
 
 // simple base demo
 class Sample_Transform {
@@ -8,6 +7,11 @@ class Sample_Transform {
 	private lineWidth: number = 10
 	private scene: Scene3D
 	private camera: Camera3D
+    private drawInterval: number = 30
+    private precision: number = 100
+    private lineColor: Color = new Color(1, 1, 1)
+    private lastTime: number
+    private points: Object3D[] = []
 
     async run() {
         // init engine
@@ -19,13 +23,13 @@ class Sample_Transform {
         // init camera3D
         let mainCamera = CameraUtil.createCamera3D(null, scene);
         mainCamera.orthoOffCenter(-window.innerWidth / 2, window.innerWidth / 2, -window.innerHeight / 2, window.innerHeight / 2, 0, 5000)
-        this.camera = mainCamera;
+        this.camera = mainCamera
 
-        // create a basic plane
+        // add basic plane
         let plane = new Object3D();
         let mr = plane.addComponent(MeshRenderer);
         mr.geometry = new PlaneGeometry(window.innerWidth, window.innerHeight, 1, 1, Vector3.Z_AXIS);
-        const mat = new UnLitMaterial()
+        let mat = new UnLitMaterial()
         mat.baseColor = new Color(0.2, 0.2, 0.2)
         mr.material = mat;
         plane.z = 100;
@@ -46,17 +50,30 @@ class Sample_Transform {
         // debug GUI
         GUIHelp.init();
 		GUIHelp.add(this, 'lineWidth', 10, 50, 1);
+        GUIHelp.add(this, 'precision', 4, 360, 1);
+        GUIHelp.add(this, 'drawInterval', 15, 100, 1);
+        GUIHelp.addColor(this, 'lineColor');
+        GUIHelp.addButton('clearCanvas', () => {
+            this.points.map((point) => {
+                this.scene.removeChild(point)
+            })
+            this.points = []
+        })
     }
 
 	onMouseDown(e: PointerEvent3D) {
-		//Camera3D.screenPointToWorld
+		this.lastTime = Date.now()
 		this.onDraw = true;
 		this.drawPoint(e.mouseX, e.mouseY);
     }
 	
 	onMouseMove(e: PointerEvent3D) {
 		if (!this.onDraw) return;
-		this.drawPoint(e.mouseX, e.mouseY);
+        const now = Date.now();
+        if (now - this.lastTime > this.drawInterval) {
+            this.drawPoint(e.mouseX, e.mouseY);
+            this.lastTime = now;
+        }
 	}
 	
 	onMouseUp(e: PointerEvent3D) {
@@ -64,43 +81,44 @@ class Sample_Transform {
 	}
 
 	drawPoint(x: number, y: number) {
-		let plane = new Object3D();
-        let mr = plane.addComponent(MeshRenderer);
-        mr.geometry = new CircleGeometry(this.lineWidth)
-        console.log(mr.geometry)
-        const mat = new UnLitMaterial()
-        mat.baseColor = new Color(1, 1, 1)
+		let point = new Object3D();
+        let mr = point.addComponent(MeshRenderer);
+        mr.geometry = new CircleGeometry(this.lineWidth, this.precision)
+        const mat = new UnLitMaterial();
+        mat.baseColor = this.lineColor;
         mr.material = mat;
-        plane.z = 10;
-		const point = this.camera.screenPointToWorld(x, y, 10)
-		plane.x = point.x;
-		plane.y = point.y;
-		this.scene.addChild(plane);
+        point.z = 10
+		const pos = this.camera.screenPointToWorld(x, y, 10);
+		point.x = pos.x;
+		point.y = pos.y;
+        this.points.push(point);
+		this.scene.addChild(point);
 	}
 }
 
 class CircleGeometry extends GeometryBase {
     public radius: number
+    public precision: number
     /**
-     * Define the normal vector of a plane
+     * Define the normal vector of a circle
      */
     public up: Vector3;
 
-    constructor(radius: number) {
+    constructor(radius: number, precision: number) {
         super();
-        // this.geometrySource = new SerializeGeometrySource().setPrimitive('primitive-plane');
         this.radius = radius
+        this.precision = precision
         this.up = Vector3.Z_AXIS;
         this.buildGeometry(this.up);
     }
 
     private buildGeometry(axis: Vector3): void {
-        let vertexCount = 361;
+        let vertexCount = this.precision + 1;
         let position_arr = new Float32Array(vertexCount * 3);
         let normal_arr = new Float32Array(vertexCount * 3);
 
         let indices_arr: any;
-        let totalIndexCount = 360 * 3
+        let totalIndexCount = this.precision * 3
         if (totalIndexCount >= Uint16Array.length) {
             indices_arr = new Uint32Array(totalIndexCount);
         } else {
@@ -116,8 +134,8 @@ class CircleGeometry extends GeometryBase {
         normal_arr[indexN++] = 0;
         normal_arr[indexN++] = 0;
         normal_arr[indexN++] = 1;
-        for (let i = 0; i < 360; i++) {
-            const angle = i / 360 * Math.PI * 2
+        for (let i = 0; i < this.precision; i++) {
+            const angle = i / this.precision * Math.PI * 2
             position_arr[indexP++] = this.radius * Math.cos(angle)
             position_arr[indexP++] = -this.radius * Math.sin(angle)
             position_arr[indexP++] = 0
@@ -127,7 +145,7 @@ class CircleGeometry extends GeometryBase {
             normal_arr[indexN++] = 1;
 
             indices_arr[numIndices++] = 0;
-            indices_arr[numIndices++] = i === 359 ? 1 : i + 2;
+            indices_arr[numIndices++] = i === this.precision - 1 ? 1 : i + 2;
             indices_arr[numIndices++] = i + 1;
         }
 
