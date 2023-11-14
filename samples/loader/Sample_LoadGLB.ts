@@ -6,6 +6,7 @@ import { GUIUtil } from "@samples/utils/GUIUtil";
 // Sample to load glb file
 export class Sample_LoadGLB {
     scene: Scene3D;
+    model: Object3D;
 
     async run() {
         GUIHelp.init();
@@ -49,91 +50,80 @@ export class Sample_LoadGLB {
 
         /******** load glb file *******/
 
-        //cull mode
-        let list = {};
-        list[`HIE-Hand-Armor`] = JSON.stringify(
-            {
+        //model list
+        let list = {
+            "HIE-Hand-Armor": {
                 url: `gltfs/glb/HIE-Hand-Armor.glb`,
                 scale: 1,
                 offset: [0, 0, 0],
                 rotation: [0, 0, 0]
-            }
-        )
-        list[`PebsiCan`] = JSON.stringify(
-            {
+            },
+            "PebsiCan": {
                 url: `gltfs/glb/PebsiCan.glb`,
                 scale: 1,
                 offset: [0, 3, 0],
                 rotation: [0, 0, 0]
-            }
-        )
-        list[`Liv-SpecOpsWolf`] = JSON.stringify(
-            {
+            },
+            "Liv-SpecOpsWolf": {
                 url: `gltfs/glb/Liv-SpecOpsWolf.glb`,
                 scale: 20,
                 offset: [0, 0, 0],
                 rotation: [0, 0, 0]
-            }
-        )
-        list[`FlamingoPool`] = JSON.stringify(
-            {
+            },
+            "FlamingoPool": {
                 url: `gltfs/glb/FlamingoPool.glb`,
                 scale: 0.5,
                 offset: [0, 0, 0],
                 rotation: [180, 0, 0]
-            }
-        )
-        list[`PotionBottle`] = JSON.stringify(
-            {
+            },
+            "PotionBottle": {
                 url: `gltfs/glb/PotionBottle.glb`,
                 scale: 0.1,
                 offset: [0, 0, 0],
                 rotation: [0, 0, 0]
-            }
-        )
-        list[`wukong`] = JSON.stringify(
-            {
+            },
+            "wukong": {
                 url: `gltfs/wukong/wukong.gltf`,
                 scale: 10,
                 offset: [0, 0, 0],
                 rotation: [0, 0, 0]
             }
-        )
+        };
 
-        let { url, scale, offset, rotation } = JSON.parse(list[`HIE-Hand-Armor`]);
-        this.loadGLB(url, offset, scale, rotation);
-        GUIHelp.add({ Model: `HIE-Hand-Armor` }, 'Model', list).onChange(async (v) => {
-            let { url, scale, offset, rotation } = JSON.parse(v);
+        
+        GUIHelp.add({ Model: `HIE-Hand-Armor` }, 'Model', Object.keys(list)).onChange(async (v) => {
+            let { url, scale, offset, rotation } = list[v];
             this.loadGLB(url, offset, scale, rotation);
         });
+        let { url, scale, offset, rotation } = list[`HIE-Hand-Armor`];
+        this.loadGLB(url, offset, scale, rotation);
     }
 
-    private model: Object3D;
     private async loadGLB(url: string, offset: number[], scale: number, rotation: number[]) {
         if (this.model) {
             this.scene.removeChild(this.model);
         }
-        this.model = (await Engine3D.res.loadGltf(url, { onProgress: (e) => this.onLoadProgress(e), onComplete: (e) => this.onComplete(e) })) as Object3D;
-        this.scene.addChild(this.model);
-        this.model.x = offset[0];
-        this.model.y = offset[1];
-        this.model.z = offset[2];
+        let model = this.model = (await Engine3D.res.loadGltf(url, { onProgress: (e) => this.onLoadProgress(e), onComplete: (e) => this.onComplete(e) })) as Object3D;
+        this.scene.addChild(model);
+        model.x = offset[0];
+        model.y = offset[1];
+        model.z = offset[2];
 
-        this.model.scaleX = scale;
-        this.model.scaleY = scale;
-        this.model.scaleZ = scale;
+        model.scaleX = scale;
+        model.scaleY = scale;
+        model.scaleZ = scale;
 
-        this.model.rotationX = rotation[0];
-        this.model.rotationY = rotation[1];
-        this.model.rotationZ = rotation[2];
+        model.rotationX = rotation[0];
+        model.rotationY = rotation[1];
+        model.rotationZ = rotation[2];
     }
 
     onLoadProgress(e) {
-        console.log(e);
+        console.log('[loading]', e);
     }
 
     onComplete(e) {
-        console.log(e);
+        console.log('[compelete]', e);
     }
 
 }
