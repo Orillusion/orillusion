@@ -7,7 +7,7 @@ import { MeshRenderer } from './MeshRenderer';
  * The mesh renderer component is a component used to render the mesh
  * @group Components
  */
-@RegisterComponent
+@RegisterComponent(MeshFilter, 'MeshFilter')
 export class MeshFilter extends MeshRenderer {
     constructor() {
         super();

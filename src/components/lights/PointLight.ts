@@ -10,7 +10,7 @@ import { LightType } from './LightData';
  *A common example is to simulate the light emitted by a light bulb, where a point light source cannot create shadows.
  * @group Lights
  */
-@RegisterComponent
+@RegisterComponent(PointLight, 'PointLight')
 export class PointLight extends LightBase {
 
     constructor() {

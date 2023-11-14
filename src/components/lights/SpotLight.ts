@@ -13,7 +13,7 @@ import { LightType } from './LightData';
  * Similar to a desk lamp, chandelier, or flashlight, this light source can produce shadows.
  * @group Lights
  */
-@RegisterComponent
+@RegisterComponent(SpotLight, 'SpotLight')
 export class SpotLight extends LightBase {
     constructor() {
         super();
