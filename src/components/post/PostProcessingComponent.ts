@@ -29,7 +29,6 @@ export class PostProcessingComponent extends ComponentBase {
     }
 
     private activePost() {
-        webGPUContext.canResize = false;
         let view = this.transform.view3D;
         let job = Engine3D.getRenderJob(view);
         this._postList.forEach((v) => {
@@ -38,7 +37,6 @@ export class PostProcessingComponent extends ComponentBase {
     }
 
     private unActivePost() {
-        webGPUContext.canResize = true;
         let view = this.transform.view3D;
         let job = Engine3D.getRenderJob(view);
         this._postList.forEach((v) => {
@@ -48,12 +46,12 @@ export class PostProcessingComponent extends ComponentBase {
 
     public addPost<T extends PostBase>(c: Ctor<T>): T {
         if (this._postList.has(c.name)) return;
-        if (!this._postList.has("FXAAPost")) {
+        if (!this._postList.has(FXAAPost.name)) {
             let post = new FXAAPost();
             this._postList.set(post.constructor.name, post);
             if (this._enable)
                 this.activePost();
-            if (c.name == "FXAAPost") {
+            if (c.name === FXAAPost.name) {
                 return post as T;
             }
         }

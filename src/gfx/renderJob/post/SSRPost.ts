@@ -289,6 +289,38 @@ export class SSRPost extends PostBase {
         GPUContext.computeCommand(command, computes);
         GPUContext.lastRenderPassState = this.rendererPassState;
     }
+
+    public onResize(): void {
+        let presentationSize = webGPUContext.presentationSize;
+        let w = presentationSize[0];
+        let h = presentationSize[1];
+        let ssrWidth = Math.ceil(w * Engine3D.setting.render.postProcessing.ssr.pixelRatio);
+        let ssrHeight = Math.ceil(h * Engine3D.setting.render.postProcessing.ssr.pixelRatio);
+
+        this.finalTexture.resize(w, h);
+        this.isRetTexture.resize(ssrWidth, ssrHeight);
+
+        this.rayTraceData.resizeBuffer(ssrWidth * ssrHeight * 8);
+        this.ssrColorData.resizeBuffer(ssrWidth * ssrHeight * 4);
+        this.historyPosition.resizeBuffer(ssrWidth * ssrHeight * 4);
+
+        this.ssrUniformBuffer.setFloat('ssrBufferSizeX', this.isRetTexture.width);
+        this.ssrUniformBuffer.setFloat('ssrBufferSizeY', this.isRetTexture.height);
+        this.ssrUniformBuffer.setFloat('colorMapSizeX', this.finalTexture.width);
+        this.ssrUniformBuffer.setFloat('colorMapSizeY', this.finalTexture.height);
+
+        this.SSR_RayTraceCompute.workerSizeX = Math.ceil(this.isRetTexture.width / 8);
+        this.SSR_RayTraceCompute.workerSizeY = Math.ceil(this.isRetTexture.height / 8);
+        this.SSR_RayTraceCompute.workerSizeZ = 1;
+
+        this.SSR_IS_Compute.workerSizeX = Math.ceil(this.isRetTexture.width / 8);
+        this.SSR_IS_Compute.workerSizeY = Math.ceil(this.isRetTexture.height / 8);
+        this.SSR_IS_Compute.workerSizeZ = 1;
+
+        this.SSR_Blend_Compute.workerSizeX = Math.ceil(this.finalTexture.width / 8);
+        this.SSR_Blend_Compute.workerSizeY = Math.ceil(this.finalTexture.height / 8);
+        this.SSR_Blend_Compute.workerSizeZ = 1;
+    }
 }
 
 /**

@@ -2,7 +2,7 @@ import { Camera3D } from '../../../../core/Camera3D';
 import { CubeCamera } from '../../../../core/CubeCamera';
 import { Engine3D } from '../../../../Engine3D';
 import { CEvent } from '../../../../event/CEvent';
-import { VirtualTexture } from '../../../../textures/VirtualTexture';
+import { RenderTexture } from '../../../../textures/RenderTexture';
 import { EntityCollect } from '../../collect/EntityCollect';
 import { GPUContext } from '../../GPUContext';
 import { ProbeGBufferFrame } from '../../frame/ProbeGBufferFrame';
@@ -43,17 +43,17 @@ export class DDGIProbeRenderer extends RendererBase {
     private probeRenderResult: ProbeRenderResult;
     private renderStatus: GlobalIrradianceStatus = 'none';
 
-    public positionMap: VirtualTexture;
-    public normalMap: VirtualTexture;
-    public colorMap: VirtualTexture;
+    public positionMap: RenderTexture;
+    public normalMap: RenderTexture;
+    public colorMap: RenderTexture;
     public probeNext: number = 128;
     public sizeW: number;
     public sizeH: number;
     public lightingPass: DDGILightingPass;
     public bouncePass: DDGIMultiBouncePass;
     public irradianceComputePass: DDGIIrradianceComputePass;
-    public irradianceDepthMap: VirtualTexture;
-    public irradianceColorMap: VirtualTexture;
+    public irradianceDepthMap: RenderTexture;
+    public irradianceColorMap: RenderTexture;
 
     /**
      * 
@@ -78,7 +78,7 @@ export class DDGIProbeRenderer extends RendererBase {
 
         this.probeRenderResult = new ProbeRenderResult();
 
-        let probeGBufferFrame = new ProbeGBufferFrame(this.sizeW, this.sizeH);
+        let probeGBufferFrame = new ProbeGBufferFrame(this.sizeW, this.sizeH, false);
         this.positionMap = probeGBufferFrame.renderTargets[0];
         this.normalMap = probeGBufferFrame.renderTargets[1];
         this.colorMap = probeGBufferFrame.renderTargets[2];
@@ -341,9 +341,9 @@ export class DDGIProbeRenderer extends RendererBase {
     private initIrradianceMap(volume: DDGIIrradianceVolume): void {
         let setting = volume.setting;
         let usage = GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.COPY_SRC | GPUTextureUsage.COPY_DST;
-        this.irradianceDepthMap = new VirtualTexture(setting.octRTMaxSize, setting.octRTMaxSize, GPUTextureFormat.rgba16float, false, usage);
+        this.irradianceDepthMap = new RenderTexture(setting.octRTMaxSize, setting.octRTMaxSize, GPUTextureFormat.rgba16float, false, usage);
         this.irradianceDepthMap.name = 'irradianceDepthMap';
-        this.irradianceColorMap = new VirtualTexture(setting.octRTMaxSize, setting.octRTMaxSize, GPUTextureFormat.rgba16float, false, usage);
+        this.irradianceColorMap = new RenderTexture(setting.octRTMaxSize, setting.octRTMaxSize, GPUTextureFormat.rgba16float, false, usage);
         this.irradianceColorMap.name = 'irradianceColorMap';
     }
 
@@ -351,7 +351,7 @@ export class DDGIProbeRenderer extends RendererBase {
     * @internal
     * @group DDGI
     */
-    private writeToTexture(texture: VirtualTexture, array: Float32Array, width: number, height: number) {
+    private writeToTexture(texture: RenderTexture, array: Float32Array, width: number, height: number) {
         console.log(texture.name);
         const buffer = webGPUContext.device.createBuffer({
             size: array.byteLength,

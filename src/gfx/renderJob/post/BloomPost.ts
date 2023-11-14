@@ -1,4 +1,3 @@
-import { VirtualTexture } from '../../../textures/VirtualTexture';
 import { UniformGPUBuffer } from '../../graphics/webGpu/core/buffer/UniformGPUBuffer';
 import { WebGPUDescriptorCreator } from '../../graphics/webGpu/descriptor/WebGPUDescriptorCreator';
 import { ComputeShader } from '../../graphics/webGpu/shader/ComputeShader';
@@ -12,6 +11,7 @@ import { View3D } from '../../../core/View3D';
 import { RTDescriptor } from '../../graphics/webGpu/descriptor/RTDescriptor';
 import { RTFrame } from '../frame/RTFrame';
 import { downSample, post, threshold, upSample } from '../../../assets/shader/compute/BloomEffect_cs';
+import { VirtualTexture } from '../../../textures/VirtualTexture';
 
 /**
  * Bloom Effects
@@ -80,10 +80,10 @@ export class BloomPost extends PostBase {
         Engine3D.setting.render.postProcessing.bloom.downSampleBlurSize = value;
     }
 
-
     public get downSampleBlurSigma(): number {
         return Engine3D.setting.render.postProcessing.bloom.downSampleBlurSigma;
     }
+
     public set downSampleBlurSigma(value: number) {
         Engine3D.setting.render.postProcessing.bloom.downSampleBlurSigma = value;
     }
@@ -91,6 +91,7 @@ export class BloomPost extends PostBase {
     public get upSampleBlurSize(): number {
         return Engine3D.setting.render.postProcessing.bloom.upSampleBlurSize;
     }
+
     public set upSampleBlurSize(value: number) {
         Engine3D.setting.render.postProcessing.bloom.upSampleBlurSize = value;
     }
@@ -98,6 +99,7 @@ export class BloomPost extends PostBase {
     public get upSampleBlurSigma(): number {
         return Engine3D.setting.render.postProcessing.bloom.upSampleBlurSigma;
     }
+
     public set upSampleBlurSigma(value: number) {
         Engine3D.setting.render.postProcessing.bloom.upSampleBlurSigma = value;
     }
@@ -105,6 +107,7 @@ export class BloomPost extends PostBase {
     public get luminanceThreshole(): number {
         return Engine3D.setting.render.postProcessing.bloom.luminanceThreshole;
     }
+
     public set luminanceThreshole(value: number) {
         Engine3D.setting.render.postProcessing.bloom.luminanceThreshole = value;
     }
@@ -112,6 +115,7 @@ export class BloomPost extends PostBase {
     public get bloomIntensity(): number {
         return Engine3D.setting.render.postProcessing.bloom.bloomIntensity;
     }
+
     public set bloomIntensity(value: number) {
         Engine3D.setting.render.postProcessing.bloom.bloomIntensity = value;
     }
@@ -129,7 +133,7 @@ export class BloomPost extends PostBase {
 
     private createDownSampleComputes() {
         let setting = Engine3D.setting.render.postProcessing.bloom;
-        const N = setting.downSampleStep;  // 下采样次数
+        const N = setting.downSampleStep;
         this.downSampleComputes = [];
 
         for (let i = 0; i < N; i++) {
@@ -142,16 +146,14 @@ export class BloomPost extends PostBase {
             compute.workerSizeX = Math.ceil(dstTexture.width / 8);
             compute.workerSizeY = Math.ceil(dstTexture.height / 8);
             compute.workerSizeZ = 1;
-
             this.downSampleComputes.push(compute);
-
             // Graphics.Blit(RT_BloomDown[i - 1], RT_BloomDown[i], new Material(Shader.Find("Shaders/downSample")));
         }
     }
 
     private createUpSampleComputes() {
         let setting = Engine3D.setting.render.postProcessing.bloom;
-        const N = setting.downSampleStep;  // 下采样次数
+        const N = setting.downSampleStep;
         this.upSampleComputes = [];
         {
             let compute = new ComputeShader(upSample);
@@ -187,7 +189,7 @@ export class BloomPost extends PostBase {
 
     private createPostCompute() {
         let setting = Engine3D.setting.render.postProcessing.bloom;
-        const N = setting.downSampleStep;  // 融合结果
+        const N = setting.downSampleStep;
 
         this.postCompute = new ComputeShader(post);
 
@@ -201,7 +203,6 @@ export class BloomPost extends PostBase {
         this.postCompute.workerSizeZ = 1;
     }
 
-
     private createResource() {
         let setting = Engine3D.setting.render.postProcessing.bloom;
 
@@ -213,12 +214,11 @@ export class BloomPost extends PostBase {
 
         this.RT_threshold = new VirtualTexture(screenWidth, screenHeight, GPUTextureFormat.rgba16float, false, GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC | GPUTextureUsage.TEXTURE_BINDING);
 
-        const N = setting.downSampleStep;  // 下采样次数
+        const N = setting.downSampleStep;
         {
             let downSize = 2;
             this.RT_BloomDown = [];
 
-            // 创建下纹理
             for (let i = 0; i < N; i++) {
                 let w = Math.ceil(screenWidth / downSize);
                 let h = Math.ceil(screenHeight / downSize);
@@ -228,7 +228,6 @@ export class BloomPost extends PostBase {
         }
 
         {
-            // 创建上采样纹理
             this.RT_BloomUp = [];
             for (let i = 0; i < N - 1; i++) {
                 let w = this.RT_BloomDown[N - 2 - i].width;
@@ -240,9 +239,6 @@ export class BloomPost extends PostBase {
         let bloomDesc = new RTDescriptor();
         bloomDesc.loadOp = `load`;
 
-        // this.rtFrame = new RTFrame([this.RT_threshold], [bloomDesc]);
-        // this.rtFrame = new RTFrame([this.RT_BloomDown[4]], [bloomDesc]);
-        // this.rtFrame = new RTFrame([this.RT_BloomUp[5]], [bloomDesc]);
         this.rtFrame = new RTFrame([this.RT_threshold], [bloomDesc]);
     }
 
@@ -277,4 +273,61 @@ export class BloomPost extends PostBase {
         GPUContext.lastRenderPassState = this.rendererPassState;
     }
 
+    public onResize() {
+        let cfg = Engine3D.setting.render.postProcessing.bloom;
+
+        let presentationSize = webGPUContext.presentationSize;
+        let screenWidth = presentationSize[0];
+        let screenHeight = presentationSize[1];
+        this.RT_threshold.resize(screenWidth, screenHeight);
+        const N = cfg.downSampleStep;
+        let downSize = 2;
+        // 
+        for (let i = 0; i < N; i++) {
+            let w = Math.ceil(screenWidth / downSize);
+            let h = Math.ceil(screenHeight / downSize);
+            this.RT_BloomDown[i].resize(w, h);
+            downSize *= 2;
+        }
+
+        for (let i = 0; i < N - 1; i++) {
+            let w = this.RT_BloomDown[N - 2 - i].width;
+            let h = this.RT_BloomDown[N - 2 - i].height;
+            this.RT_BloomUp[i].resize(w, h);
+        }
+
+        this.thresholdCompute.workerSizeX = Math.ceil(this.RT_threshold.width / 8);
+        this.thresholdCompute.workerSizeY = Math.ceil(this.RT_threshold.height / 8);
+        this.thresholdCompute.workerSizeZ = 1;
+
+        for (let i = 0; i < N; i++) {
+            let compute = this.downSampleComputes[i];
+            let dstTexture = this.RT_BloomDown[i];
+            compute.workerSizeX = Math.ceil(dstTexture.width / 8);
+            compute.workerSizeY = Math.ceil(dstTexture.height / 8);
+            compute.workerSizeZ = 1;
+        }
+
+        {
+            let dstTexture = this.RT_BloomUp[0];
+            let compute = this.upSampleComputes[0];
+            compute.workerSizeX = Math.ceil(dstTexture.width / 8);
+            compute.workerSizeY = Math.ceil(dstTexture.height / 8);
+            compute.workerSizeZ = 1;
+        }
+
+        {
+            for (let i = 1; i < N - 1; i++) {
+                let dstTexture = this.RT_BloomUp[i];
+                let compute = this.upSampleComputes[i];
+                compute.workerSizeX = Math.ceil(dstTexture.width / 8);
+                compute.workerSizeY = Math.ceil(dstTexture.height / 8);
+                compute.workerSizeZ = 1;
+            }
+        }
+
+        this.postCompute.workerSizeX = Math.ceil(this.RT_threshold.width / 8);
+        this.postCompute.workerSizeY = Math.ceil(this.RT_threshold.height / 8);
+        this.postCompute.workerSizeZ = 1;
+    }
 }

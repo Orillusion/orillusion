@@ -9,6 +9,8 @@ import { RTResourceConfig } from '../config/RTResourceConfig';
 import { PostRenderer } from '../passRenderer/post/PostRenderer';
 import { View3D } from '../../../core/View3D';
 import { Reference } from '../../../util/Reference';
+import { CResizeEvent } from '../../../event/CResizeEvent';
+import { webGPUContext } from '../../graphics/webGpu/Context3D';
 /**
  * @internal
  * Base class for post-processing effects
@@ -23,6 +25,8 @@ export class PostBase {
     constructor() {
         this.rtViewQuad = new Map<string, ViewQuad>();
         this.virtualTexture = new Map<string, VirtualTexture>();
+
+        webGPUContext.addEventListener(CResizeEvent.RESIZE, this.onResize, this);
     }
 
     protected createRTTexture(name: string, rtWidth: number, rtHeight: number, format: GPUTextureFormat, useMipmap: boolean = false, sampleCount: number = 0) {
@@ -57,15 +61,18 @@ export class PostBase {
     /**
      * @internal
      */
-    public compute(view: View3D,) { }
+    public compute(view: View3D) { }
     /**
      * @internal
      */
-    public onAttach(view: View3D,) { }
+    public onAttach(view: View3D) { }
     /**
      * @internal
      */
-    public onDetach(view: View3D,) { }
+    public onDetach(view: View3D) { }
+    public onResize() {
+
+    }
     /**
      * @internal
      */

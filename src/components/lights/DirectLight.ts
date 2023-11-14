@@ -9,7 +9,7 @@ import { LightType } from './LightData';
  *The light of this light source is parallel, for example, sunlight. This light source can generate shadows.
  * @group Lights
  */
-@RegisterComponent
+@RegisterComponent(DirectLight, 'DirectLight')
 export class DirectLight extends LightBase {
     public shadowCamera: Camera3D;
 

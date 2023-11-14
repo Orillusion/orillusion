@@ -19,6 +19,14 @@ export let OutLineBlendColor_cs: string = /*wgsl*/ `
    var<private> texSize: vec2<u32>;
    var<private> fragCoord: vec2<i32>;
 
+
+   fn CalcUV_01(coord:vec2<i32>, texSize:vec2<u32>) -> vec2<f32>
+   {
+      let u = (f32(coord.x) + 0.5) / f32(texSize.x);
+      let v = (f32(coord.y) + 0.5) / f32(texSize.y);
+      return vec2<f32>(u, v);
+   }
+
    @compute @workgroup_size( 8 , 8 , 1 )
    fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_invocation_id) globalInvocation_id : vec3<u32>)
    {
@@ -28,10 +36,7 @@ export let OutLineBlendColor_cs: string = /*wgsl*/ `
          return;
       }
 
-      var uv01 = vec2<f32>(fragCoord) / (vec2<f32>(texSize) - 1.0);
-      var offset = vec2<f32>(texSize) / vec2<f32>(outlineSetting.lowTexWidth, outlineSetting.lowTexHeight);
-      offset = 0.5 * offset / (vec2<f32>(texSize) - 1.0);
-      uv01 += offset;
+      let uv01 = CalcUV_01(fragCoord, texSize);
       var outLineColor = textureSampleLevel(lowTex, lowTexSampler, uv01, 0.0);
 
       outLineColor.x *= outlineSetting.strength;

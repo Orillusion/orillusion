@@ -47,6 +47,36 @@ export class GUIGeometry extends GeometryBase {
         this.maxQuadCount = max;
     }
 
+    updateSubGeometry(index: number, start: number, count: number) {
+        let geom = this.subGeometries[index];
+        if (geom) {
+            let desc = geom.lodLevels[0];
+            desc.indexStart = start;
+            desc.indexCount = count;
+            desc.index = index;
+        } else {
+            geom = this.addSubGeometry({
+                indexStart: start,
+                indexCount: count,
+                vertexStart: 0,
+                vertexCount: 0,
+                firstStart: 0,
+                index: index,
+                topology: 0,
+            });
+        }
+        return geom;
+    }
+
+    resetSubGeometries() {
+        for (let item of this.subGeometries) {
+            let desc = item.lodLevels[0];
+            desc.indexStart = 0;
+            desc.indexCount = 0;
+            desc.index = 0;
+        }
+    }
+
     /**
      * the bounds will be set to infinity
      * @returns GUIGeometry
@@ -59,7 +89,7 @@ export class GUIGeometry extends GeometryBase {
         return this;
     }
 
-    public get vPositionBuffer(): StorageGPUBuffer {
+    public getPositionBuffer(): StorageGPUBuffer {
         if (this._onPositionChange) {
             this._posAttribute.buffer.apply();
             this._onPositionChange = false;
@@ -67,7 +97,7 @@ export class GUIGeometry extends GeometryBase {
         return this._posAttribute.buffer;
     }
 
-    public get vSpriteBuffer(): StorageGPUBuffer {
+    public getSpriteBuffer(): StorageGPUBuffer {
         if (this._onSpriteChange) {
             this._spriteAttribute.buffer.apply();
             this._onSpriteChange = false;
@@ -75,7 +105,7 @@ export class GUIGeometry extends GeometryBase {
         return this._spriteAttribute.buffer;
     }
 
-    public get vColorBuffer(): StorageGPUBuffer {
+    public getColorBuffer(): StorageGPUBuffer {
         if (this._onColorChange) {
             this._colorAttribute.buffer.apply();
             this._onColorChange = false;
@@ -120,15 +150,8 @@ export class GUIGeometry extends GeometryBase {
         this.setAttribute(VertexAttributeName.uv, this._attributeUV);
         this.setAttribute(VertexAttributeName.vIndex, this._attributeVIndex);
 
-        this.addSubGeometry({
-            indexStart: 0,
-            indexCount: this._faceIndexes.length,
-            vertexStart: 0,
-            vertexCount: 0,
-            firstStart: 0,
-            index: 0,
-            topology: 0,
-        });
+        this.updateSubGeometry(0, 0, this._faceIndexes.length);
+
         return this;
     }
 

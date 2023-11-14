@@ -76,14 +76,18 @@ export let BxDF_frag: string = /*wgsl*/ `
           switch (light.lightType) {
             case PointLightType: {
               specColor += pointLighting( fragData.Albedo.rgb,ORI_VertexVarying.vWorldPos.xyz,fragData.N,fragData.V,fragData.Roughness,fragData.Metallic,light) ;
+              break;
             }
             case DirectLightType: {
               specColor += directLighting( fragData.Albedo.rgb ,fragData.N,fragData.V,fragData.Roughness ,fragData.Metallic, light , globalUniform.shadowBias) ;
+              break;
             }
             case SpotLightType: {
               specColor += spotLighting( fragData.Albedo.rgb,ORI_VertexVarying.vWorldPos.xyz,fragData.N,fragData.V,fragData.Roughness,fragData.Metallic , light ) ;
+              break;
             }
             default: {
+              break;
             }
           }
       }

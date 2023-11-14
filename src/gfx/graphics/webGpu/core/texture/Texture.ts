@@ -32,7 +32,7 @@ export class Texture implements GPUSamplerDescriptor {
     /**
      * GPUTextureView
      */
-    public view: GPUTextureView; // Assigned later
+    public view: GPUTextureView | GPUExternalTexture; // Assigned later
 
     /**
      * GPUSampler
@@ -545,7 +545,9 @@ export class Texture implements GPUSamplerDescriptor {
 
     private static _texs: GPUTexture[] = [];
     public static delayDestroyTexture(tex: GPUTexture) {
-        this._texs.push(tex);
+        if (!this._texs.includes(tex)) {
+            this._texs.push(tex);
+        }
     }
 
     public static destroyTexture() {

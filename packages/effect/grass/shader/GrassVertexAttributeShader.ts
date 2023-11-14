@@ -13,15 +13,16 @@ export let GrassVertexAttributeShader: string = /*wgsl*/ `
     }
 
     struct VertexOutput {
-        @location(0) varying_UV0: vec2<f32>,
-        @location(1) varying_UV1: vec2<f32>,
-        @location(2) varying_ViewPos: vec4<f32>,
-        @location(3) varying_Clip: vec4<f32>,
-        @location(4) varying_WPos: vec4<f32>,
-        @location(5) varying_WNormal: vec3<f32>,
-        @location(6) varying_Color: vec4<f32>,
+        @location(0) index: f32,
+        @location(1) varying_UV0: vec2<f32>,
+        @location(2) varying_UV1: vec2<f32>,
+        @location(3) varying_ViewPos: vec4<f32>,
+        @location(4) varying_Clip: vec4<f32>,
+        @location(5) varying_WPos: vec4<f32>,
+        @location(6) varying_WNormal: vec3<f32>,
+        @location(7) varying_Color: vec4<f32>,
         #if USE_SHADOWMAPING
-            @location(7) varying_ShadowPos: vec4<f32>,
+            @location(8) varying_ShadowPos: vec4<f32>,
         #endif
         @builtin(position) member: vec4<f32>
     };

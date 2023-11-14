@@ -1,7 +1,7 @@
 import { MultiBouncePass_cs } from '../../../../assets/shader/compute/MultiBouncePass_cs';
 import { View3D } from '../../../../core/View3D';
 import { Engine3D } from '../../../../Engine3D';
-import { VirtualTexture } from '../../../../textures/VirtualTexture';
+import { RenderTexture } from '../../../../textures/RenderTexture';
 import { ComputeShader } from '../../../graphics/webGpu/shader/ComputeShader';
 import { GPUTextureFormat } from '../../../graphics/webGpu/WebGPUConst';
 import { GPUContext } from '../../GPUContext';
@@ -13,7 +13,7 @@ import { DDGIIrradianceVolume } from './DDGIIrradianceVolume';
  * @group Post
  */
 export class DDGIMultiBouncePass {
-    public blendTexture: VirtualTexture;
+    public blendTexture: RenderTexture;
     private volume: DDGIIrradianceVolume;
     private computerShader: ComputeShader;
 
@@ -24,14 +24,14 @@ export class DDGIMultiBouncePass {
 
     private initPipeline() {
         let giSetting = Engine3D.setting.gi;
-        this.blendTexture = new VirtualTexture(giSetting.probeSourceTextureSize, giSetting.probeSourceTextureSize, GPUTextureFormat.rgba16float, false, GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.STORAGE_BINDING);
+        this.blendTexture = new RenderTexture(giSetting.probeSourceTextureSize, giSetting.probeSourceTextureSize, GPUTextureFormat.rgba16float, false, GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.STORAGE_BINDING);
 
         this.computerShader = new ComputeShader(MultiBouncePass_cs);
         this.computerShader.setStorageTexture("outputBuffer", this.blendTexture);
         this.computerShader.setUniformBuffer("uniformData", this.volume.irradianceVolumeBuffer);
     }
 
-    public setInputs(inputs: VirtualTexture[]) {
+    public setInputs(inputs: RenderTexture[]) {
         let worldNormalMap = inputs[0];
         let colorMap = inputs[1];
         let lightingMap = inputs[2];

@@ -78,10 +78,6 @@ export class DepthOfFieldPost extends PostBase {
         Engine3D.setting.render.postProcessing.depthOfView.enable = false;
     }
 
-    private createGUI() {
-
-    }
-
     public get pixelOffset() {
         let setting = Engine3D.setting.render.postProcessing.depthOfView;
         return setting.pixelOffset;
@@ -129,8 +125,8 @@ export class DepthOfFieldPost extends PostBase {
             blurCompute.setUniformBuffer('blurSetting', blurSetting);
             let rtFrame = GBufferFrame.getGBufferFrame("ColorPassGBuffer");
 
-            blurCompute.setSamplerTexture(RTResourceConfig.positionBufferTex_NAME, rtFrame.renderTargets[1]);
-            blurCompute.setSamplerTexture(RTResourceConfig.normalBufferTex_NAME, rtFrame.renderTargets[2]);
+            blurCompute.setSamplerTexture(RTResourceConfig.positionBufferTex_NAME, rtFrame.getPositionMap());
+            blurCompute.setSamplerTexture(RTResourceConfig.normalBufferTex_NAME, rtFrame.getNormalMap());
 
             let input = i % 2 == 0 ? this.blurTexture1 : this.blurTexture2;
             let output = i % 2 == 1 ? this.blurTexture1 : this.blurTexture2;
@@ -177,21 +173,17 @@ export class DepthOfFieldPost extends PostBase {
         if (!this.blurComputes) {
             this.createResource();
             this.createBlurCompute();
-            this.createGUI();
-
             let standUniform = GlobalBindGroup.getCameraGroup(view.camera);
             for (let i = 0; i < this.blurComputes.length; i++) {
                 const blurCompute = this.blurComputes[i];
-                blurCompute.setUniformBuffer('standUniform', standUniform.uniformGPUBuffer);
+                blurCompute.setUniformBuffer('globalUniform', standUniform.uniformGPUBuffer);
             }
             this.rendererPassState = WebGPUDescriptorCreator.createRendererPassState(this.rtFrame, null);
         }
-
         this.autoSetColorTexture('inTex', this.blurComputes[0]);
 
         let cfg = Engine3D.setting.render.postProcessing.depthOfView;
         cfg.far = Math.max(cfg.near, cfg.far) + 0.0001;
-
         for (let i = 0; i < cfg.iterationCount; i++) {
             let blurCompute = this.blurComputes[i];
             let blurSetting = this.blurSettings[i];
@@ -201,9 +193,25 @@ export class DepthOfFieldPost extends PostBase {
             blurSetting.apply();
             blurCompute.setStorageBuffer('blurSetting', blurSetting);
         }
-
         GPUContext.computeCommand(command, this.blurComputes);
-
         GPUContext.lastRenderPassState = this.rendererPassState;
+    }
+
+    public onResize(): void {
+        let presentationSize = webGPUContext.presentationSize;
+        let w = presentationSize[0];
+        let h = presentationSize[1];
+        let cfg = Engine3D.setting.render.postProcessing.depthOfView;
+        cfg.far = Math.max(cfg.near, cfg.far) + 0.0001;
+
+        this.blurTexture1.resize(w, h);
+        this.blurTexture2.resize(w, h);
+
+        for (let i = 0; i < cfg.iterationCount; i++) {
+            let compute = this.blurComputes[i];
+            compute.workerSizeX = Math.ceil(this.blurTexture1.width / 8);
+            compute.workerSizeY = Math.ceil(this.blurTexture1.height / 8);
+            compute.workerSizeZ = 1;
+        }
     }
 }

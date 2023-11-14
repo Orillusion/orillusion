@@ -14,7 +14,7 @@ import { Color, Material, mergeFunctions } from '../..';
  * The mesh renderer component is a component used to render the mesh
  * @group Components
  */
-@RegisterComponent
+@RegisterComponent(MeshRenderer, 'MeshRenderer')
 export class MeshRenderer extends RenderNode {
     /**
      * Enabling this option allows the grid to display any shadows cast on the grid.

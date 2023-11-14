@@ -17,6 +17,7 @@ import { RTDescriptor } from '../../graphics/webGpu/descriptor/RTDescriptor';
 import { GBufferFrame } from '../frame/GBufferFrame';
 import { RTFrame } from '../frame/RTFrame';
 import { GTAO_cs } from '../../../assets/shader/compute/GTAO_cs';
+import { CResizeEvent } from '../../../event/CResizeEvent';
 
 /**
  * Ground base Ambient Occlusion
@@ -68,14 +69,12 @@ export class GTAOPost extends PostBase {
      */
     onAttach(view: View3D,) {
         Engine3D.setting.render.postProcessing.gtao.enable = true;
-        this.createGUI();
     }
     /**
      * @internal
      */Render
     onDetach(view: View3D,) {
         Engine3D.setting.render.postProcessing.gtao.enable = false;
-        this.removeGUI();
     }
 
     public get maxDistance() {
@@ -153,14 +152,6 @@ export class GTAOPost extends PostBase {
         setting.usePosFloat32 = value;
     }
 
-    private createGUI() {
-
-    }
-
-    private removeGUI() {
-    }
-
-
     private createCompute() {
         let setting = Engine3D.setting.render.postProcessing.gtao;
 
@@ -180,15 +171,11 @@ export class GTAOPost extends PostBase {
         this.gtaoCompute.setStorageBuffer('aoBuffer', this.aoBuffer);
         let rtFrame = GBufferFrame.getGBufferFrame("ColorPassGBuffer");
         //setting.usePosFloat32 ? RTResourceMap.getTexture(RTResourceConfig.positionBufferTex_NAME): 
-        let posTexture = rtFrame.renderTargets[1];
+        let posTexture = rtFrame.getPositionMap();
         this.gtaoCompute.setSamplerTexture(`posTex`, posTexture);
         this.gtaoCompute.setSamplerTexture(`normalTex`, rtFrame.renderTargets[2]);
         this.autoSetColorTexture('inTex', this.gtaoCompute);
         this.gtaoCompute.setStorageTexture(`outTex`, this.gtaoTexture);
-
-        this.gtaoCompute.workerSizeX = Math.ceil(this.gtaoTexture.width / 8);
-        this.gtaoCompute.workerSizeY = Math.ceil(this.gtaoTexture.height / 8);
-        this.gtaoCompute.workerSizeZ = 1;
 
         this.gtaoSetting = gtaoSetting;
     }
@@ -235,6 +222,7 @@ export class GTAOPost extends PostBase {
         if (!this.gtaoCompute) {
             this.createResource();
             this.createCompute();
+            this.onResize();
 
             this.rendererPassState = WebGPUDescriptorCreator.createRendererPassState(this.rtFrame, null);
             this.rendererPassState.label = "GTAO";
@@ -264,5 +252,16 @@ export class GTAOPost extends PostBase {
 
         GPUContext.computeCommand(command, [this.gtaoCompute]);
         GPUContext.lastRenderPassState = this.rendererPassState;
+    }
+
+    public onResize() {
+        let presentationSize = webGPUContext.presentationSize;
+        let w = presentationSize[0];
+        let h = presentationSize[1];
+        this.gtaoTexture.resize(w, h);
+
+        this.gtaoCompute.workerSizeX = Math.ceil(this.gtaoTexture.width / 8);
+        this.gtaoCompute.workerSizeY = Math.ceil(this.gtaoTexture.height / 8);
+        this.gtaoCompute.workerSizeZ = 1;
     }
 }

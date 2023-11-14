@@ -17,7 +17,6 @@ import { PostBase } from '../post/PostBase';
 import { RendererBase } from '../passRenderer/RendererBase';
 import { Ctor } from '../../../util/Global';
 import { DDGIProbeRenderer } from '../passRenderer/ddgi/DDGIProbeRenderer';
-import { Texture } from '../../graphics/webGpu/core/texture/Texture';
 
 /**
  * render jobs 
