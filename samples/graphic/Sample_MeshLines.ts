@@ -1,15 +1,15 @@
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
-import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D, PlaneGeometry, UnLitMaterial, Color, Vector3, ComponentBase, PointerEvent3D, Camera3D, BoundingBox, GeometryBase, VertexAttributeName, SphereGeometry, CylinderGeometry, MathUtil, Quaternion } from '@orillusion/core';
+import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D, PlaneGeometry, UnLitMaterial, Color, Vector3, ComponentBase, PointerEvent3D, Camera3D, BoundingBox, GeometryBase, VertexAttributeName, SphereGeometry, CylinderGeometry, MathUtil, Quaternion, BlendMode, GPUCullMode } from '@orillusion/core';
 
-class Sample_DrawLines {
+class Sample_MeshLines {
     private onDraw: boolean = false
     private lineWidth: number = 0.1
     private scene: Scene3D
     private camera: Camera3D
     private drawInterval: number = 30
-    private precision: number = 100
-    private depth: number = 0.9
-    private lineColor: Color = new Color(1, 1, 1)
+    private precision: number = 32
+    private depth: number = 0
+    private lineColor: Color = new Color(1, 0, 0)
     private lastTime: number
     private path: Object3D[] = []
     private hoverCameraController: HoverCameraController;
@@ -17,6 +17,11 @@ class Sample_DrawLines {
     private lastY: number = null
 
     async run() {
+        let hit = document.createElement('p')
+        hit.innerHTML = 'Press left mouse to rotate camera<br>Press right mouse to draw lines'
+        // fix hit on bottom of screen
+        hit.setAttribute('style', 'position:fixed;bottom:10px;left:0;right:0;text-align:center;color:white;font-size:20px;z-index:11;pointer-events:none')
+        document.body.appendChild(hit)
         // init engine
         await Engine3D.init();
         // create new Scene
@@ -26,11 +31,10 @@ class Sample_DrawLines {
         // init camera3D
         let mainCamera = CameraUtil.createCamera3D(null, scene);
         mainCamera.perspective(60, Engine3D.aspect, 1, 2000.0);
-        mainCamera.lookAt(new Vector3(0, 0, 10), new Vector3(0, 0, 0), Vector3.UP);
 
         // add a basic camera controller
         this.hoverCameraController = mainCamera.object3D.addComponent(HoverCameraController);
-        this.hoverCameraController.setCamera(0, 0, 10)
+        this.hoverCameraController.setCamera(0, 0, 20)
 
         this.camera = mainCamera
 
@@ -39,7 +43,10 @@ class Sample_DrawLines {
         let mr = plane.addComponent(MeshRenderer);
         mr.geometry = new PlaneGeometry(20, 20, 1, 1, Vector3.Z_AXIS);
         let mat = new UnLitMaterial()
-        mat.baseColor = new Color(0.2, 0.2, 0.2)
+        mat.baseColor = new Color(1, 1, 1, 0.4)
+        mat.transparent = true
+        mat.cullMode = GPUCullMode.none
+        mat.blendMode = BlendMode.NORMAL
         mr.material = mat;
         scene.addChild(plane);
 
@@ -58,19 +65,18 @@ class Sample_DrawLines {
         // debug GUI
         GUIHelp.init();
         GUIHelp.add(this, 'lineWidth', 0.1, 2, 0.1);
-        GUIHelp.add(this, 'precision', 4, 360, 1);
+        GUIHelp.add(this, 'precision', 4, 64, 1);
+        GUIHelp.add(this, 'depth', -1, 1, 0.01);
         GUIHelp.add(this, 'drawInterval', 15, 100, 1);
-        GUIHelp.add(this, 'depth', 0, 0.9, 0.05);
         GUIHelp.addColor(this, 'lineColor');
         GUIHelp.addButton('resetView', () => {
-            this.hoverCameraController.setCamera(0, 0, 10)
+            this.hoverCameraController.setCamera(0, 0, 20)
         })
         GUIHelp.addButton('clearCanvas', () => {
-            this.path.map((point) => {
-                this.scene.removeChild(point)
-            })
-            this.path = []
+            this.path.map((point) => this.scene.removeChild(point))
+            this.path.length = 0
         })
+        GUIHelp.open()
     }
 
     onMouseDown(e: PointerEvent3D) {
@@ -86,9 +92,11 @@ class Sample_DrawLines {
     
     onMouseMove(e: PointerEvent3D) {
         if (!this.onDraw) return;
+        e.stopImmediatePropagation()
         const now = Date.now();
         if (now - this.lastTime > this.drawInterval) {
             this.drawLine(e.mouseX, e.mouseY);
+            this.drawPoint(e.mouseX, e.mouseY);
             this.lastTime = now;
             this.lastX = e.mouseX
             this.lastY = e.mouseY
@@ -108,7 +116,8 @@ class Sample_DrawLines {
         const mat = new UnLitMaterial();
         mat.baseColor = this.lineColor;
         mr.material = mat;
-        const pos = this.camera.screenPointToWorld(x, y, this.depth);
+        this.camera.worldToScreenPoint(this.hoverCameraController.target, Vector3.HELP_0)
+        const pos = this.camera.screenPointToWorld(x, y, Vector3.HELP_0.z + this.depth / 100);
         point.x = pos.x;
         point.y = pos.y;
         point.z = pos.z;
@@ -117,8 +126,9 @@ class Sample_DrawLines {
     }
 
     drawLine(x: number, y: number) {
-        const start = this.camera.screenPointToWorld(this.lastX, this.lastY, this.depth);
-        const end = this.camera.screenPointToWorld(x, y, this.depth);
+        this.camera.worldToScreenPoint(this.hoverCameraController.target, Vector3.HELP_0)
+        const start = this.camera.screenPointToWorld(this.lastX, this.lastY, Vector3.HELP_0.z + this.depth / 100);
+        const end = this.camera.screenPointToWorld(x, y, Vector3.HELP_0.z);
         const distance = Math.sqrt((start.x - end.x) * (start.x - end.x) + (start.y - end.y) * (start.y - end.y) + (start.z - end.z) * (start.z - end.z))
         let line = new Object3D();
         let mr = line.addComponent(MeshRenderer);
@@ -133,13 +143,13 @@ class Sample_DrawLines {
         const vec = new Vector3(end.x - start.x, end.y - start.y, end.z - start.z);
 
         // when calculate rotation matrix, we need to normalize vectors first
-        const rot = MathUtil.fromToRotation(new Vector3(0, 1, 0), vec.normalize())
+        const rot = MathUtil.fromToRotation(Vector3.Y_AXIS, vec.normalize())
         if (!Number.isNaN(rot.x) && !Number.isNaN(rot.y) && !Number.isNaN(rot.z)) {
-            line.transform.localRotQuat = MathUtil.fromToRotation(new Vector3(0, 1, 0), vec.normalize());
+            line.transform.localRotQuat = MathUtil.fromToRotation(Vector3.Y_AXIS, vec.normalize());
         }
         this.path.push(line);
         this.scene.addChild(line);
     }
 }
 
-new Sample_DrawLines().run()
+new Sample_MeshLines().run()
