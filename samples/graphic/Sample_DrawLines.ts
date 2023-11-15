@@ -1,8 +1,7 @@
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D, PlaneGeometry, UnLitMaterial, Color, Vector3, ComponentBase, PointerEvent3D, Camera3D, BoundingBox, GeometryBase, VertexAttributeName, SphereGeometry, CylinderGeometry, MathUtil, Quaternion } from '@orillusion/core';
 
-// simple base demo
-class Sample_Transform {
+class Sample_DrawLines {
     private onDraw: boolean = false
     private lineWidth: number = 0.1
     private scene: Scene3D
@@ -143,4 +142,4 @@ class Sample_Transform {
     }
 }
 
-new Sample_Transform().run()
+new Sample_DrawLines().run()
