@@ -17,11 +17,11 @@ class Sample_MeshLines {
     private lastY: number = null
 
     async run() {
-        let hit = document.createElement('p')
-        hit.innerHTML = 'Press left mouse to rotate camera<br>Press right mouse to draw lines'
-        // fix hit on bottom of screen
-        hit.setAttribute('style', 'position:fixed;bottom:10px;left:0;right:0;text-align:center;color:white;font-size:20px;z-index:11;pointer-events:none')
-        document.body.appendChild(hit)
+        // add tips on bottom of screen
+        let tips = document.createElement('p')
+        tips.innerHTML = 'Press left mouse to rotate camera<br>Press right mouse to draw lines'
+        tips.setAttribute('style', 'position:fixed;bottom:10px;left:0;right:0;text-align:center;color:white;font-size:20px;z-index:11;pointer-events:none')
+        document.body.appendChild(tips)
         // init engine
         await Engine3D.init();
         // create new Scene
