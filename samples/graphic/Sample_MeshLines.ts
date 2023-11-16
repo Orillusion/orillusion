@@ -135,9 +135,9 @@ class Sample_MeshLines {
         point.scaleX = point.scaleY = point.scaleZ = this.lineWidth
         this.camera.worldToScreenPoint(this.hoverCameraController.target, Vector3.HELP_0)
         const pos = this.camera.screenPointToWorld(x, y, Vector3.HELP_0.z + this.depth / 100);
-        point.x = pos.x
-        point.y = pos.y
-        point.z = pos.z
+        point.x = pos.x;
+        point.y = pos.y;
+        point.z = pos.z;
         this.path.push(point);
         this.scene.addChild(point);
     }
