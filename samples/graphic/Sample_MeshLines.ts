@@ -1,5 +1,6 @@
 import { Engine3D, Scene3D, CameraUtil, HoverCameraController, Object3D, MeshRenderer, View3D, PlaneGeometry, UnLitMaterial, Color, Vector3, PointerEvent3D, Camera3D, SphereGeometry, CylinderGeometry, MathUtil, BlendMode, GPUCullMode } from '@orillusion/core';
 import * as dat from "@orillusion/debug/dat.gui.module";
+import { Stats } from '@orillusion/stats';
 
 class Sample_MeshLines {
     private onDraw: boolean = false
@@ -25,6 +26,7 @@ class Sample_MeshLines {
         await Engine3D.init();
         // create new Scene
         let scene = new Scene3D();
+        scene.addComponent(Stats)
         this.scene = scene;
 
         // init camera3D
@@ -83,7 +85,9 @@ class Sample_MeshLines {
         });
         f.add({'resetView': () => this.hoverCameraController.setCamera(0, 0, 20)}, 'resetView')
         f.add({'clearCanvas': () => {
-            this.path.map((point) => this.scene.removeChild(point))
+            this.path.map((point) => {
+                this.scene.removeChild(point)
+            })
             this.path.length = 0
         }}, 'clearCanvas')
         f.open()
@@ -128,7 +132,7 @@ class Sample_MeshLines {
         let mr = point.addComponent(MeshRenderer);
         mr.geometry = this.pointGeometry;
         mr.material = this.material;
-        point.localScale = new Vector3(this.lineWidth, this.lineWidth, this.lineWidth);
+        point.scaleX = point.scaleY = point.scaleZ = this.lineWidth
         this.camera.worldToScreenPoint(this.hoverCameraController.target, Vector3.HELP_0)
         const pos = this.camera.screenPointToWorld(x, y, Vector3.HELP_0.z + this.depth / 100);
         point.x = pos.x;
@@ -147,17 +151,18 @@ class Sample_MeshLines {
         let mr = line.addComponent(MeshRenderer);
         mr.geometry = this.lineGeometry;
         mr.material = this.material;
-        line.localScale = new Vector3(this.lineWidth, distance, this.lineWidth)
+        line.scaleX = line.scaleZ = this.lineWidth
+        line.scaleY = distance;
         line.x = start.x + (end.x - start.x) / 2;
         line.y = start.y + (end.y - start.y) / 2;
         line.z = start.z + (end.z - start.z) / 2;
 
-        const vec = new Vector3(end.x - start.x, end.y - start.y, end.z - start.z);
-
-        // when calculate rotation matrix, we need to normalize vectors first
-        const rot = MathUtil.fromToRotation(Vector3.Y_AXIS, vec.normalize())
+        // normalize the direction vector
+        const dir = Vector3.HELP_1.set(end.x - start.x, end.y - start.y, end.z - start.z).normalize()
+        const rot = MathUtil.fromToRotation(Vector3.Y_AXIS, dir)
+        // make sure the rotation is valid
         if (!Number.isNaN(rot.x) && !Number.isNaN(rot.y) && !Number.isNaN(rot.z)) {
-            line.transform.localRotQuat = MathUtil.fromToRotation(Vector3.Y_AXIS, vec.normalize());
+            line.transform.localRotQuat = rot;
         }
         this.path.push(line);
         this.scene.addChild(line);
