@@ -135,9 +135,9 @@ class Sample_MeshLines {
         point.scaleX = point.scaleY = point.scaleZ = this.lineWidth
         this.camera.worldToScreenPoint(this.hoverCameraController.target, Vector3.HELP_0)
         const pos = this.camera.screenPointToWorld(x, y, Vector3.HELP_0.z + this.depth / 100);
-        point.x = pos.x;
-        point.y = pos.y;
-        point.z = pos.z;
+        point.x = pos.x
+        point.y = pos.y
+        point.z = pos.z
         this.path.push(point);
         this.scene.addChild(point);
     }
@@ -146,12 +146,12 @@ class Sample_MeshLines {
         this.camera.worldToScreenPoint(this.hoverCameraController.target, Vector3.HELP_0)
         const start = this.camera.screenPointToWorld(this.lastX, this.lastY, Vector3.HELP_0.z + this.depth / 100);
         const end = this.camera.screenPointToWorld(x, y, Vector3.HELP_0.z);
-        const distance = Math.sqrt((start.x - end.x) * (start.x - end.x) + (start.y - end.y) * (start.y - end.y) + (start.z - end.z) * (start.z - end.z))
+        const distance = Math.sqrt(end.distanceToSquared(start))
         let line = new Object3D();
         let mr = line.addComponent(MeshRenderer);
         mr.geometry = this.lineGeometry;
         mr.material = this.material;
-        line.scaleX = line.scaleZ = this.lineWidth
+        line.scaleX = line.scaleZ = this.lineWidth;
         line.scaleY = distance;
         line.x = start.x + (end.x - start.x) / 2;
         line.y = start.y + (end.y - start.y) / 2;
