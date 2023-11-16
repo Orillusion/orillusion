@@ -1,27 +1,23 @@
-import { GUIHelp } from '@orillusion/debug/GUIHelp';
-import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D, PlaneGeometry, UnLitMaterial, Color, Vector3, ComponentBase, PointerEvent3D, Camera3D, BoundingBox, GeometryBase, VertexAttributeName, SphereGeometry, CylinderGeometry, MathUtil, Quaternion, BlendMode, GPUCullMode } from '@orillusion/core';
+import { Engine3D, Scene3D, CameraUtil, HoverCameraController, Object3D, MeshRenderer, View3D, PlaneGeometry, UnLitMaterial, Color, Vector3, PointerEvent3D, Camera3D, SphereGeometry, CylinderGeometry, MathUtil, BlendMode, GPUCullMode } from '@orillusion/core';
+import * as dat from "@orillusion/debug/dat.gui.module";
 
 class Sample_MeshLines {
     private onDraw: boolean = false
-    private lineWidth: number = 0.1
     private scene: Scene3D
     private camera: Camera3D
-    private drawInterval: number = 30
-    private precision: number = 32
-    private depth: number = 0
-    private lineColor: Color = new Color(1, 0, 0)
     private lastTime: number
     private path: Object3D[] = []
     private hoverCameraController: HoverCameraController;
-    private lastX: number = null
-    private lastY: number = null
+    private lastX: number = -1
+    private lastY: number = -1
+
+    public lineWidth: number = 0.1
+    public drawInterval: number = 30
+    public precision: number = 32
+    public depth: number = 0
+    public lineColor: Color = new Color(1, 0, 0)
 
     async run() {
-        // add tips on bottom of screen
-        let tips = document.createElement('p')
-        tips.innerHTML = 'Press left mouse to rotate camera<br>Press right mouse to draw lines'
-        tips.setAttribute('style', 'position:fixed;bottom:10px;left:0;right:0;text-align:center;color:white;font-size:20px;z-index:11;pointer-events:none')
-        document.body.appendChild(tips)
         // init engine
         await Engine3D.init();
         // create new Scene
@@ -57,26 +53,31 @@ class Sample_MeshLines {
 
         // start render
         Engine3D.startRenderView(view);
-        
+
         Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_DOWN, this.onMouseDown, this, null, 999);
         Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_MOVE, this.onMouseMove, this);
         Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_UP, this.onMouseUp, this);
 
         // debug GUI
-        GUIHelp.init();
-        GUIHelp.add(this, 'lineWidth', 0.1, 2, 0.1);
-        GUIHelp.add(this, 'precision', 4, 64, 1);
-        GUIHelp.add(this, 'depth', -1, 1, 0.01);
-        GUIHelp.add(this, 'drawInterval', 15, 100, 1);
-        GUIHelp.addColor(this, 'lineColor');
-        GUIHelp.addButton('resetView', () => {
-            this.hoverCameraController.setCamera(0, 0, 20)
-        })
-        GUIHelp.addButton('clearCanvas', () => {
+        let gui = new dat.GUI();
+        let f = gui.addFolder('Orillusion');
+        f.add(this, 'lineWidth', 0.1, 2, 0.1);
+        f.add(this, 'precision', 4, 64, 1);
+        f.add(this, 'depth', -1, 1, 0.01);
+        f.add(this, 'drawInterval', 15, 100, 1);
+        f.addColor({lineColor: Object.values(this.lineColor).map((v,i)=> i === 3 ? v : v*255)}, 'lineColor').onChange(v=>{
+            this.lineColor = new Color(v[0]/255, v[1]/255, v[2]/255, v[3])
+        });
+        f.add({'resetView': () => this.hoverCameraController.setCamera(0, 0, 20)}, 'resetView')
+        f.add({'clearCanvas': () => {
             this.path.map((point) => this.scene.removeChild(point))
             this.path.length = 0
-        })
-        GUIHelp.open()
+        }}, 'clearCanvas')
+        f.open()
+
+        // add tips
+        gui.add({tips: 'Press to rotate camera'}, 'tips').name('Left Mouse')
+        gui.add({tips: 'Press to draw lines'}, 'tips').name('Right Mouse')
     }
 
     onMouseDown(e: PointerEvent3D) {
@@ -89,7 +90,7 @@ class Sample_MeshLines {
             this.lastY = e.mouseY;
         }
     }
-    
+
     onMouseMove(e: PointerEvent3D) {
         if (!this.onDraw) return;
         e.stopImmediatePropagation()
@@ -102,11 +103,11 @@ class Sample_MeshLines {
             this.lastY = e.mouseY
         }
     }
-    
+
     onMouseUp(e: PointerEvent3D) {
         this.onDraw = false;
-        this.lastX = null;
-        this.lastY = null;
+        this.lastX = -1;
+        this.lastY = -1;
     }
 
     drawPoint(x: number, y: number) {
@@ -139,7 +140,7 @@ class Sample_MeshLines {
         line.x = start.x + (end.x - start.x) / 2;
         line.y = start.y + (end.y - start.y) / 2;
         line.z = start.z + (end.z - start.z) / 2;
-        
+
         const vec = new Vector3(end.x - start.x, end.y - start.y, end.z - start.z);
 
         // when calculate rotation matrix, we need to normalize vectors first
