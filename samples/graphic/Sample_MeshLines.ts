@@ -10,6 +10,9 @@ class Sample_MeshLines {
     private hoverCameraController: HoverCameraController;
     private lastX: number = -1
     private lastY: number = -1
+    private pointGeometry: SphereGeometry
+    private lineGeometry: CylinderGeometry
+    private material: UnLitMaterial
 
     public lineWidth: number = 0.1
     public drawInterval: number = 30
@@ -33,6 +36,11 @@ class Sample_MeshLines {
         this.hoverCameraController.setCamera(0, 0, 20)
 
         this.camera = mainCamera
+
+        this.pointGeometry = new SphereGeometry(0.5, 32, 32)
+        this.lineGeometry = new CylinderGeometry(0.5, 0.5, 1, 32, 32)
+        this.material = new UnLitMaterial()
+        this.material.baseColor = this.lineColor
 
         // add basic plane
         let plane = new Object3D();
@@ -62,11 +70,16 @@ class Sample_MeshLines {
         let gui = new dat.GUI();
         let f = gui.addFolder('Orillusion');
         f.add(this, 'lineWidth', 0.1, 2, 0.1);
-        f.add(this, 'precision', 4, 64, 1);
+        f.add(this, 'precision', 4, 64, 1).onChange((precision) => {
+            this.lineGeometry = new CylinderGeometry(0.5, 0.5, 1, precision, precision)
+            this.pointGeometry = new SphereGeometry(0.5, precision, precision)
+        });
         f.add(this, 'depth', -1, 1, 0.01);
         f.add(this, 'drawInterval', 15, 100, 1);
         f.addColor({lineColor: Object.values(this.lineColor).map((v,i)=> i === 3 ? v : v*255)}, 'lineColor').onChange(v=>{
             this.lineColor = new Color(v[0]/255, v[1]/255, v[2]/255, v[3])
+            this.material = new UnLitMaterial()
+            this.material.baseColor = this.lineColor
         });
         f.add({'resetView': () => this.hoverCameraController.setCamera(0, 0, 20)}, 'resetView')
         f.add({'clearCanvas': () => {
@@ -113,10 +126,9 @@ class Sample_MeshLines {
     drawPoint(x: number, y: number) {
         let point = new Object3D();
         let mr = point.addComponent(MeshRenderer);
-        mr.geometry = new SphereGeometry(this.lineWidth / 2, this.precision, this.precision)
-        const mat = new UnLitMaterial();
-        mat.baseColor = this.lineColor;
-        mr.material = mat;
+        mr.geometry = this.pointGeometry;
+        mr.material = this.material;
+        point.localScale = new Vector3(this.lineWidth, this.lineWidth, this.lineWidth);
         this.camera.worldToScreenPoint(this.hoverCameraController.target, Vector3.HELP_0)
         const pos = this.camera.screenPointToWorld(x, y, Vector3.HELP_0.z + this.depth / 100);
         point.x = pos.x;
@@ -133,10 +145,9 @@ class Sample_MeshLines {
         const distance = Math.sqrt((start.x - end.x) * (start.x - end.x) + (start.y - end.y) * (start.y - end.y) + (start.z - end.z) * (start.z - end.z))
         let line = new Object3D();
         let mr = line.addComponent(MeshRenderer);
-        mr.geometry = new CylinderGeometry(this.lineWidth / 2, this.lineWidth / 2, distance, this.precision, this.precision)
-        const mat = new UnLitMaterial();
-        mat.baseColor = this.lineColor;
-        mr.material = mat;
+        mr.geometry = this.lineGeometry;
+        mr.material = this.material;
+        line.localScale = new Vector3(this.lineWidth, distance, this.lineWidth)
         line.x = start.x + (end.x - start.x) / 2;
         line.y = start.y + (end.y - start.y) / 2;
         line.z = start.z + (end.z - start.z) / 2;
