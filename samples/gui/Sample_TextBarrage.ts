@@ -1,5 +1,4 @@
-import { Engine3D, Scene3D, CameraUtil, HoverCameraController, Object3D, MeshRenderer, View3D, PlaneGeometry, UnLitMaterial, Color, Vector3, PointerEvent3D, Camera3D, SphereGeometry, CylinderGeometry, MathUtil, BlendMode, GPUCullMode, ViewPanel, UITextField, TextAnchor, ComponentBase, BoundUtil, WorldPanel, UIPanel } from '@orillusion/core';
-import { Stats } from '@orillusion/stats';
+import { Engine3D, Scene3D, CameraUtil, HoverCameraController, Object3D, MeshRenderer, View3D, PlaneGeometry, UnLitMaterial, Color, Vector3, PointerEvent3D, Camera3D, SphereGeometry, CylinderGeometry, MathUtil, BlendMode, GPUCullMode, ViewPanel, UITextField, TextAnchor, ComponentBase, BoundUtil, WorldPanel, UIPanel, AtmosphericComponent } from '@orillusion/core';
 
 class Sample_TextBarrage {
     private scene: Scene3D
@@ -15,20 +14,18 @@ class Sample_TextBarrage {
         // load base font
         await Engine3D.res.loadFont('https://cdn.orillusion.com/fnt/0.fnt')
 
+        // add an Atmospheric sky enviroment
+        let sky = scene.addComponent(AtmosphericComponent);
+        sky.sunY = 0.6
+
         // init camera3D
         let mainCamera = CameraUtil.createCamera3D(null, scene);
-        mainCamera.orthoOffCenter(-window.innerWidth / 2, window.innerWidth / 2, -window.innerHeight / 2, window.innerHeight / 2, 0, 5000)
+        mainCamera.perspective(60, Engine3D.aspect, 1, 2000.0);
         this.camera = mainCamera
 
-        // add basic plane
-        let plane = new Object3D();
-        let mr = plane.addComponent(MeshRenderer);
-        mr.geometry = new PlaneGeometry(window.innerWidth, window.innerHeight, 1, 1, Vector3.Z_AXIS);
-        let mat = new UnLitMaterial()
-        mat.baseColor = new Color(0.2, 0.2, 0.2)
-        mr.material = mat;
-        plane.z = 100;
-        scene.addChild(plane);
+        // add a basic camera controller
+        const hoverCameraController = mainCamera.object3D.addComponent(HoverCameraController);
+        hoverCameraController.setCamera(0, 0, 20)
 
         // create a view with target scene and camera
         let view = new View3D();
@@ -37,11 +34,10 @@ class Sample_TextBarrage {
 
         // create UIpanel root
         let panelRoot: Object3D = new Object3D()
-        let panel: UIPanel = panelRoot.addComponent(WorldPanel)
-        panel.cullMode = GPUCullMode.none
+        const panel = panelRoot.addComponent(ViewPanel, {billboard: true});
         // add to UIcanvas
         let canvas = view.enableUICanvas()
-        canvas.addChild(panelRoot)
+        canvas.addChild(panel.object3D)
 
         // Create text barrage
         const textCount = 50;
@@ -49,11 +45,10 @@ class Sample_TextBarrage {
             const textQuad = new Object3D();
             panelRoot.addChild(textQuad);
             const text = textQuad.addComponent(UITextField);
-            // text.text = 'test'
             text.color = new Color(1, 1, 1)
-            text.fontSize = 12
-            text.alignment = TextAnchor.MiddleRight
-            text.uiTransform.resize(120, 12)
+            text.fontSize = 32
+            text.alignment = TextAnchor.MiddleCenter
+            text.uiTransform.resize(300, 12)
 
             // Init and reset text barrage animation
             const barrage = textQuad.addComponent(TextBarrageAnimation);
@@ -101,8 +96,8 @@ class TextBarrageAnimation extends ComponentBase {
         const now = Date.now()
         const dt = (now - this.lastTime)
         this.lastTime = now
-        this.object3D.transform.x += this._speed * dt;
-        if (this.object3D.transform.x < this._range) {
+        this._text.uiTransform.x += this._speed * dt;
+        if (this._text.uiTransform.x < this._range) {
           this._reset(false);
         }
       }
@@ -125,14 +120,14 @@ class TextBarrageAnimation extends ComponentBase {
       const orthographicSize = window.innerWidth / 2
       if (isFirst) {
         const halfOrthoWidth = orthographicSize * this.camera.aspect;
-        this.object3D.transform.x = getRandomNum(-halfOrthoWidth, halfOrthoWidth);
+        this._text.uiTransform.x = getRandomNum(-halfOrthoWidth, halfOrthoWidth);
       } else {
-        this.object3D.transform.x = orthographicSize * this.camera.aspect + 120
+        this._text.uiTransform.x = orthographicSize * this.camera.aspect + 300
       }
-      this.object3D.transform.y = getRandomNum(-window.innerHeight / 2, window.innerHeight / 2);
+      this._text.uiTransform.y = getRandomNum(-window.innerHeight / 2, window.innerHeight / 2);
   
       // Reset speed
-      this._speed = getRandomNum(-500, -200) * 0.0005;
+      this._speed = getRandomNum(-500, -200) * 0.0003;
     }
   }
   
