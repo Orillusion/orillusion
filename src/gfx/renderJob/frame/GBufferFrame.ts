@@ -1,5 +1,5 @@
-import { Engine3D } from "../../..";
-import { VirtualTexture } from "../../../textures/VirtualTexture";
+
+import { RenderTexture } from "../../../textures/RenderTexture";
 import { webGPUContext } from "../../graphics/webGpu/Context3D";
 import { GPUTextureFormat } from "../../graphics/webGpu/WebGPUConst";
 import { RTDescriptor } from "../../graphics/webGpu/descriptor/RTDescriptor";
@@ -32,7 +32,7 @@ export class GBufferFrame extends RTFrame {
         let colorRTDes = new RTDescriptor();
         colorRTDes.loadOp = `clear`;
 
-        let depthTexture = new VirtualTexture(rtWidth, rtHeight, GPUTextureFormat.depth24plus, false);
+        let depthTexture = new RenderTexture(rtWidth, rtHeight, GPUTextureFormat.depth24plus, false);
         depthTexture.name = `depthTexture`;
         let depthDec = new RTDescriptor();
         depthDec.loadOp = `load`;

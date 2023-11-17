@@ -92,7 +92,7 @@ class Sample_PixelPick {
         let obj = this.getPickObject(e);
         if (obj) {
             let msc = obj.getComponent(MaterialStateComponent);
-            msc.changeColor(new Color(2, 0, 0, 1), 120);
+            msc.changeColor(new Color(1.2, 0, 0, 1), 120);
         }
     }
 
@@ -100,7 +100,7 @@ class Sample_PixelPick {
         let obj = this.getPickObject(e);
         if (obj) {
             let msc = obj.getComponent(MaterialStateComponent);
-            msc.changeColor(new Color(2, 2, 0, 1), 120);
+            msc.changeColor(new Color(1, 1.2, 0, 1), 120);
         }
     }
 
@@ -108,7 +108,7 @@ class Sample_PixelPick {
         let obj = this.getPickObject(e);
         if (obj) {
             let msc = obj.getComponent(MaterialStateComponent);
-            msc.changeColor(new Color(2, 0, 0, 1), 120);
+            msc.changeColor(new Color(1.2, 0, 0.5, 1), 120);
         }
     }
 
@@ -116,7 +116,7 @@ class Sample_PixelPick {
         let obj = this.getPickObject(e);
         if (obj) {
             let msc = obj.getComponent(MaterialStateComponent);
-            msc.changeColor(new Color(1, 0.64, 0.8, 2.5), 100);
+            msc.changeColor(new Color(1, 0.64, 0.8, 1.5), 100);
         }
     }
 

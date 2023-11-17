@@ -82,24 +82,19 @@ var<private> wNormal:vec3<f32>;
 
 const LUMEN = 10.764;
 
-fn samplePosition(uv:vec2<i32>) -> vec4<f32>
+fn samplePosition(uv:vec2<f32>) -> vec4<f32>
 {
-   var oc1:vec4<f32> = textureSampleLevel(positionMap, positionMapSampler, vec2<f32>(0.0), 0.0);
-   var oc:vec4<f32> = textureLoad(positionMap, uv, 0) ;
-   return oc;
+   return textureSampleLevel(positionMap, positionMapSampler,uv, 0.0);
 }
 
-fn sampleNormal(uv:vec2<i32>) -> vec4<f32>
+fn sampleNormal(uv:vec2<f32>) -> vec4<f32>
 {
-   var oc1:vec4<f32> = textureSampleLevel(normalMap, normalMapSampler, vec2<f32>(0.0), 0.0);
-   var oc:vec4<f32> = textureLoad(normalMap, uv, 0);
-   return oc;
+  return textureSampleLevel(normalMap, normalMapSampler, uv, 0.0);
 }
 
-fn sampleColor(uv:vec2<i32>) -> vec4<f32>
+fn sampleColor(uv:vec2<f32>) -> vec4<f32>
 {
-   var oc1:vec4<f32> = textureSampleLevel(colorMap, colorMapSampler, vec2<f32>(0.0), 0.0);
-   var oc:vec4<f32> = textureLoad(colorMap, uv, 0);
+   var oc:vec4<f32> = textureSampleLevel(colorMap, colorMapSampler, uv, 0.0);
    ulitColor = vec3(oc.xyz);
    return oc;
 }
@@ -245,14 +240,21 @@ fn spotLight( albedo:vec3<f32>,WP:vec3<f32>, N:vec3<f32>, V:vec3<f32>, light:Lig
  return  color ;
 }
 
-fn coordFun(fragCoord:vec2<u32>)-> vec4<f32>{
- var uv = vec2<i32>(i32(fragCoord.x), i32(fragCoord.y)) ;
- var pos = samplePosition(uv);
+fn CalcUV_01(coord:vec2<i32>, texSize:vec2<u32>) -> vec2<f32>
+{
+  let u = (f32(coord.x) + 0.5) / f32(texSize.x);
+  let v = (f32(coord.y) + 0.5) / f32(texSize.y);
+  return vec2<f32>(u, v);
+}
 
- var normalMap = sampleNormal(uv);
+fn coordFun(fragCoord:vec2<i32>)-> vec4<f32>{
+ let uv_01 = CalcUV_01(fragCoord, texSize);
+ var pos = samplePosition(uv_01);
+
+ var normalMap = sampleNormal(uv_01);
  var normal = normalize( normalMap.xyz * 2.0 - 1.0 );
 
- var color = sampleColor(uv);
+ var color = sampleColor(uv_01);
  var emissive = vec4<f32>(pos.a,normalMap.a,color.a,0.0) * 1.0 ;
  if(pos.w + 1.0 > 10000.0){
    return vec4<f32>(color);
@@ -305,14 +307,16 @@ fn coordFun(fragCoord:vec2<u32>)-> vec4<f32>{
 //   return fragPosition;
 // }
 
+var<private> texSize: vec2<u32>;
+
 @compute @workgroup_size( 8 , 8 , 1 )
 fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_invocation_id) globalInvocation_id : vec3<u32>)
 {
-   var fragCoord = vec2<u32>( globalInvocation_id.x, globalInvocation_id.y);
+   var fragCoord = vec2<i32>(globalInvocation_id.xy);
+   texSize = textureDimensions(colorMap).xy;
    var color = coordFun(fragCoord);
-   
    // color = vec4(pow(color.rgb,vec3<f32>(1.0/2.4)),1.0);
-   textureStore(outputBuffer, vec2<i32>(fragCoord),color);
+   textureStore(outputBuffer, fragCoord, color);
 }
 
 `

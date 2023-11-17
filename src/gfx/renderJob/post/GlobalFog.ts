@@ -215,6 +215,7 @@ export class GlobalFog extends PostBase {
         }
         return texture;
     }
+
     /**
      * @internal
      */

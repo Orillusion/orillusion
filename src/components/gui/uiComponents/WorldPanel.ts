@@ -35,7 +35,10 @@ export class WorldPanel extends UIPanel {
     if (this._depthTest != value) {
       this._depthTest = value;
       let compare = this.depthTest ? GPUCompareFunction.less_equal : GPUCompareFunction.always;
-      this._uiRenderer.material.depthCompare = compare;
+      for (let item of this._uiRenderer.materials) {
+        item.depthCompare = compare;
+      }
+
     }
   }
 

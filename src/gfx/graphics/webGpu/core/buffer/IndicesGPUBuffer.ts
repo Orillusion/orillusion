@@ -1,3 +1,4 @@
+import { MemoryDO } from '../../../../../core/pool/memory/MemoryDO';
 import { MemoryInfo } from '../../../../../core/pool/memory/MemoryInfo';
 import { webGPUContext } from '../../Context3D';
 import { ArrayBufferData } from './ArrayBufferData';
@@ -32,7 +33,8 @@ export class IndicesGPUBuffer extends GPUBufferBase {
             mappedAtCreation: false,
         });
 
-
+        this.memory = new MemoryDO();
+        this.memoryNodes = new Map<string | number, MemoryInfo>();
         this.memory.allocation(this.byteSize);
         if (data) {
             this.indicesNode = this.memory.allocation_node(data.length * 4);

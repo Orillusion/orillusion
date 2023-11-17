@@ -37,8 +37,8 @@ export class GUIMaterial extends Material {
         colorPass.setUniformVector4('scissorRect', new Vector4());
         colorPass.setUniformFloat('scissorCornerRadius', 0.0);
         colorPass.setUniformFloat('scissorFadeOutSize', 0.0);
-        colorPass.setUniformFloat('limitVertex', 0);
         colorPass.setUniformFloat('pixelRatio', 1);
+        colorPass.setUniformFloat('empty', 0);
 
         let shaderState = colorPass.shaderState;
         // shaderState.useZ = false;
@@ -51,13 +51,6 @@ export class GUIMaterial extends Material {
         // colorPass.receiveEnv = false;
 
         this.shader = newShader;
-    }
-
-    /**
-    * Write effective vertex count (vertex index < vertexCount)
-    */
-    public setLimitVertex(vertexCount: number) {
-        this.shader.setUniformFloat('limitVertex', vertexCount);
     }
 
     public setGUISolution(value: Vector2, pixelRatio: number) {

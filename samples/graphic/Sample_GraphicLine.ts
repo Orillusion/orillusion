@@ -1,5 +1,5 @@
 import { createExampleScene, createSceneParam } from "@samples/utils/ExampleScene";
-import { View3D, Scene3D, Engine3D, GlobalIlluminationComponent, Object3DUtil, GTAOPost, PostProcessingComponent, TAAPost, Vector3, Color, AnimationCurve, Keyframe } from "@orillusion/core";
+import { Scene3D, Engine3D, Vector3, Color, AnimationCurve, Keyframe, View3D } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 

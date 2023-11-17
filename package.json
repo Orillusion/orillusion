@@ -1,6 +1,6 @@
 {
     "name": "@orillusion/core",
-    "version": "0.7.0",
+    "version": "0.7.1",
     "author": "Orillusion",
     "description": "Orillusion WebGPU Engine",
     "main": "./dist/orillusion.umd.js",
@@ -31,7 +31,7 @@
         "dev": "vite",
         "build": "tsc --p tsconfig.build.json && vite build && npm run build:types && npm run minify",
         "build:test": "tsc --p tsconfig.build.json && vite build",
-        "build:types": "tsc --emitDeclarationOnly -p tsconfig.build.json && mv dist/src dist/types",
+        "build:types": "tsc --emitDeclarationOnly -p tsconfig.build.json && rm -rf dist/packages && mv dist/src dist/types",
         "minify": "./node_modules/vite/node_modules/.bin/esbuild dist/orillusion.es.max.js --minify --outfile=dist/orillusion.es.js && ./node_modules/vite/node_modules/.bin/esbuild dist/orillusion.umd.max.js --minify --outfile=dist/orillusion.umd.js",
         "test": "electron test/ci/main.js",
         "test:ci": "xvfb-maybe -- electron --enable-unsafe-webgpu --enable-features=Vulkan --use-vulkan=swiftshader --use-webgpu-adapter=swiftshader --no-sandbox test/ci/main.js",

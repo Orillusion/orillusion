@@ -12,6 +12,17 @@ struct BloomCfg{
 }
 @group(0) @binding(0) var<uniform> bloomCfg: BloomCfg;
 `
+
+let CalcUV_01 = /*wgsl*/ `
+  fn CalcUV_01(coord:vec2<i32>, texSize:vec2<u32>) -> vec2<f32>
+  {
+    let u = (f32(coord.x) + 0.5) / f32(texSize.x);
+    let v = (f32(coord.y) + 0.5) / f32(texSize.y);
+    return vec2<f32>(u, v);
+  }
+
+`
+
 //_______________calc weight
 
 let GaussWeight2D: string =  /*wgsl*/ `
@@ -106,6 +117,7 @@ var<private> fragCoord: vec2<i32>;
 
 ${GaussWeight2D}
 ${GaussBlur('GaussNxN', 'inTex', 'inTexSampler')}
+${CalcUV_01}
 
 @compute @workgroup_size( 8 , 8 , 1 )
 fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_invocation_id) globalInvocation_id : vec3<u32>)
@@ -116,7 +128,7 @@ fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_inv
       return;
   }
   var color = vec4<f32>(0.0, 0.0, 0.0, 1.0);
-  var uv = vec2<f32>(f32(fragCoord.x), f32(fragCoord.y)) / vec2<f32>(f32(texSize.x - 1), f32(texSize.y -1));
+  var uv = CalcUV_01(fragCoord, texSize);
   let stride = vec2<f32>(1.0) / vec2<f32>(f32(texSize.x), f32(texSize.y));   //  texel size of last level
   let rgb = GaussNxN(uv, i32(bloomCfg.downSampleBlurSize), stride, bloomCfg.downSampleBlurSigma);
   color = vec4<f32>(rgb, color.w);
@@ -141,6 +153,7 @@ var<private> fragCoord: vec2<i32>;
 ${GaussWeight2D}
 ${GaussBlur('GaussNxN_0', '_MainTex', '_MainTexSampler')}
 ${GaussBlur('GaussNxN_1', '_PrevMip', '_PrevMipSampler')}
+${CalcUV_01}
 
 @compute @workgroup_size( 8 , 8 , 1 )
 fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_invocation_id) globalInvocation_id : vec3<u32>)
@@ -151,14 +164,15 @@ fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_inv
       return;
   }
   var color = vec4<f32>(0.0, 0.0, 0.0, 1.0);
-  var uv = vec2<f32>(f32(fragCoord.x), f32(fragCoord.y)) / vec2<f32>(f32(texSize.x - 1), f32(texSize.y -1));
+  var uv = CalcUV_01(fragCoord, texSize);
+  
   // half stride
   let prev_stride = vec2<f32>(0.5) / vec2<f32>(f32(texSize.x), f32(texSize.y));
   let curr_stride = vec2<f32>(1.0) / vec2<f32>(f32(texSize.x), f32(texSize.y));
 
-  let rgb1 = GaussNxN_0(uv, i32(bloomCfg.upSampleBlurSize), prev_stride, bloomCfg.upSampleBlurSigma);
-  let rgb2 = GaussNxN_1(uv, i32(bloomCfg.upSampleBlurSize), curr_stride, bloomCfg.upSampleBlurSigma);
-  color = vec4<f32>(rgb1+rgb2, color.w);
+  let rgb1 = GaussNxN_1(uv, i32(bloomCfg.upSampleBlurSize), prev_stride, bloomCfg.upSampleBlurSigma);
+  let rgb2 = GaussNxN_0(uv, i32(bloomCfg.upSampleBlurSize), curr_stride, bloomCfg.upSampleBlurSigma);
+  color = vec4<f32>(rgb1 + rgb2, color.w);
   textureStore(outTex, fragCoord, color);
 }
 `
@@ -167,6 +181,7 @@ fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_inv
 //__________________________blend
 export let post = /*wgsl*/ `
 ${BloomCfg}
+${CalcUV_01}
 
 @group(0) @binding(1) var _MainTex : texture_2d<f32>;
 @group(0) @binding(2) var _BloomTex : texture_2d<f32>;
@@ -198,9 +213,7 @@ fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_inv
       return;
   }
   var color = textureLoad(_MainTex, fragCoord, 0);
-  let uv = vec2<f32>(f32(fragCoord.x), f32(fragCoord.y)) / vec2<f32>(f32(texSize.x - 1), f32(texSize.y - 1));
-
-  // var bloom = textureLoad(_BloomTex, fragCoord, 0).xyz;
+  var uv = CalcUV_01(fragCoord, texSize);
   var bloom = textureSampleLevel(_BloomTex, _BloomTexSampler, uv, 0.0).xyz * bloomCfg.bloomIntensity;
   
   // tone map

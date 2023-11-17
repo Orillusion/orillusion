@@ -126,10 +126,10 @@ export class Entity extends CEventDispatcher {
      */
     public addChild(child: Entity): Entity {
         if (child == null) {
-            return new console.error('child is null!');
+            throw new Error('child is null!');
         }
         if (child === this) {
-            return new console.error('child is self!');
+            throw new Error('child is self!');
         }
 
         let index = this.entityChildren.indexOf(child);
@@ -149,8 +149,8 @@ export class Entity extends CEventDispatcher {
      * @param child Removed objects
      */
     public removeChild(child: Entity) {
-        if (child === null) return new console.error('remove child is null!');
-        if (child === this) return new console.error('add child is self!');
+        if (child === null) return; // throw new Error('remove child is null!');
+        if (child === this) throw new Error('add child is self!');
         let index = this.entityChildren.indexOf(child);
         if (index != -1) {
             this.entityChildren.splice(index, 1);

@@ -18,6 +18,14 @@ export let SSR_BlendColor_cs: string = /*wgsl*/ `
     alpha:f32,
     fresnel:f32,
   }
+
+  fn CalcUV_01(coord:vec2<i32>, texSize:vec2<u32>) -> vec2<f32>
+  {
+    let u = (f32(coord.x) + 0.5) / f32(texSize.x);
+    let v = (f32(coord.y) + 0.5) / f32(texSize.y);
+    return vec2<f32>(u, v);
+  }
+
   
   @compute @workgroup_size( 8 , 8 , 1 )
   fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_invocation_id) globalInvocation_id : vec3<u32>)
@@ -33,8 +41,7 @@ export let SSR_BlendColor_cs: string = /*wgsl*/ `
     let index = ssrCoord.x + ssrCoord.y * i32(ssrTexSize.x);
     let hitData = rayTraceBuffer[index];
     var color = textureLoad(colorMap, fragCoord , 0);
-    var uv01 = vec2<f32>(f32(fragCoord.x), f32(fragCoord.y));
-    uv01 = uv01 / vec2<f32>(colorTexSize - 1);
+    var uv01 = CalcUV_01(fragCoord, colorTexSize);
     
     var ssrColor = textureSampleLevel(ssrMap, ssrMapSampler, uv01, 0.0);
     var tc = mix(color, ssrColor, hitData.fresnel) ;

@@ -3,7 +3,6 @@ import { GPUAddressMode, GPUTextureFormat } from '../gfx/graphics/webGpu/WebGPUC
 import { webGPUContext } from '../gfx/graphics/webGpu/Context3D';
 import { GPUContext } from '../gfx/renderJob/GPUContext';
 import { UUID } from '../util/Global';
-import { CResizeEvent } from '..';
 /**
  * @internal
  * Render target texture 
@@ -47,12 +46,6 @@ export class VirtualTexture extends Texture {
             this.usage = usage | GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_SRC | GPUTextureUsage.COPY_DST;
         }
 
-        if (this.usage & GPUTextureUsage.RENDER_ATTACHMENT || this.format == GPUTextureFormat.depth24plus || this.format == GPUTextureFormat.depth32float) {
-            webGPUContext.addEventListener(CResizeEvent.RESIZE, (e) => {
-                let { width, height } = e.data;
-                this.resize(width, height);
-            }, this);
-        }
         this.resize(width, height);
     }
 
@@ -66,13 +59,8 @@ export class VirtualTexture extends Texture {
 
         this.width = width;
         this.height = height;
-
         this.createTextureDescriptor(width, height, 1, this.format, this.usage, this.numberLayer, this.sampleCount);
-        // this.loadOp = clear ? `clear` : `load`
-        // this.loadOp = `clear`
-
         this.useMipmap = false;
-
         this.visibility = GPUShaderStage.COMPUTE | GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT;
 
         if (this.format == GPUTextureFormat.rgba32float) {
@@ -114,9 +102,10 @@ export class VirtualTexture extends Texture {
 
             this.addressModeU = GPUAddressMode.clamp_to_edge;
             this.addressModeV = GPUAddressMode.clamp_to_edge;
-            // this.visibility = GPUShaderStage.FRAGMENT;
             this.gpuSampler = device.createSampler(this);
         }
+
+        this._textureChange = true;
     }
 
     /**

@@ -12,7 +12,7 @@ import { SkeletonPose } from "./anim/skeletonAnim/SkeletonPose";
  * skeleton animation
  * @group Animation 
  */
-@RegisterComponent
+@RegisterComponent(SkeletonAnimationComponent, 'SkeletonAnimationComponent')
 export class SkeletonAnimationComponent extends ComponentBase {
   /**
    * Whether it is playing

@@ -13,7 +13,7 @@ import { LightType } from './LightData';
  * Similar to a desk lamp, chandelier, or flashlight, this light source can produce shadows.
  * @group Lights
  */
-@RegisterComponent
+@RegisterComponent(SpotLight, 'SpotLight')
 export class SpotLight extends LightBase {
     constructor() {
         super();
@@ -124,29 +124,29 @@ export class SpotLight extends LightBase {
     }
 
     public onGraphic(view: View3D) {
-        let custom = view.graphic3D.createCustomShape(
-            `SpotLight_${this.object3D.instanceID}`,
-            this.transform,
-        );
+        // let custom = view.graphic3D.createCustomShape(
+        //     `SpotLight_${this.object3D.instanceID}`,
+        //     this.transform,
+        // );
 
-        const range = this.range;
-        const outerAngle = this.outerAngle / 2.0;
-        custom.buildAxis();
+        // const range = this.range;
+        // const outerAngle = this.outerAngle / 2.0;
+        // custom.buildAxis();
 
-        let angle = (90 - outerAngle) * DEGREES_TO_RADIANS;
-        let v0 = range * Math.cos(angle);
-        let v1 = range * Math.sin(angle);
-        custom.buildLines([Vector3.ZERO, new Vector3(0, v0, v1)]);
-        custom.buildLines([Vector3.ZERO, new Vector3(v0, 0, v1)]);
+        // let angle = (90 - outerAngle) * DEGREES_TO_RADIANS;
+        // let v0 = range * Math.cos(angle);
+        // let v1 = range * Math.sin(angle);
+        // custom.buildLines([Vector3.ZERO, new Vector3(0, v0, v1)]);
+        // custom.buildLines([Vector3.ZERO, new Vector3(v0, 0, v1)]);
 
-        angle = (90 + outerAngle) * DEGREES_TO_RADIANS;
-        v0 = range * Math.cos(angle);
-        v1 = range * Math.sin(angle);
-        custom.buildLines([Vector3.ZERO, new Vector3(0, v0, v1)]);
-        custom.buildLines([Vector3.ZERO, new Vector3(v0, 0, v1)]);
-        custom.buildArcLine(Vector3.ZERO, range, 90 - outerAngle, 90 + outerAngle, 16, Vector3.X_AXIS);
-        custom.buildArcLine(Vector3.ZERO, range, 90 - outerAngle, 90 + outerAngle, 16, Vector3.Y_AXIS);
-        custom.buildCircle(new Vector3(0, 0, range * Math.sin(angle)), range * Math.cos(angle), 32, Vector3.Z_AXIS);
+        // angle = (90 + outerAngle) * DEGREES_TO_RADIANS;
+        // v0 = range * Math.cos(angle);
+        // v1 = range * Math.sin(angle);
+        // custom.buildLines([Vector3.ZERO, new Vector3(0, v0, v1)]);
+        // custom.buildLines([Vector3.ZERO, new Vector3(v0, 0, v1)]);
+        // custom.buildArcLine(Vector3.ZERO, range, 90 - outerAngle, 90 + outerAngle, 16, Vector3.X_AXIS);
+        // custom.buildArcLine(Vector3.ZERO, range, 90 - outerAngle, 90 + outerAngle, 16, Vector3.Y_AXIS);
+        // custom.buildCircle(new Vector3(0, 0, range * Math.sin(angle)), range * Math.cos(angle), 32, Vector3.Z_AXIS);
     }
 
     /**
