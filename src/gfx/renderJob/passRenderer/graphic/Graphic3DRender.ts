@@ -8,13 +8,11 @@ import { Camera3D } from "../../../../core/Camera3D";
 import { CameraType } from "../../../../core/CameraType";
 import { Object3D } from "../../../../core/entities/Object3D";
 import { Graphics3DShape } from "./Graphics3DShape";
-import { GraphicConfig } from "./GraphicConfig";
 import { Graphic3DFillRenderer } from "./Graphic3DFillRenderer";
 import { Graphic3DLineRenderer } from "./Graphic3DLineBatchRenderer";
 import { BoundUtil } from "../../../../util/BoundUtil";
 
 export class Graphic3D extends Object3D {
-
     protected mLineRender: Graphic3DLineRenderer;
     protected mFillRender: Graphic3DFillRenderer;
 

@@ -1,7 +1,6 @@
 import { Color } from "../../../../math/Color";
 import { DEGREES_TO_RADIANS } from "../../../../math/MathUtil";
 import { Vector3 } from "../../../../math/Vector3";
-import { GraphicConfig } from "./GraphicConfig";
 
 /**
  * @internal
@@ -11,7 +10,6 @@ export class Graphics3DShape {
     public type: string;
     public color: Color;
     public count: number = 0;
-    // public shapeData: Float32Array;
     public pointData: Float32Array;
     public colorData: Float32Array;
     public dirtyData: boolean = false;
