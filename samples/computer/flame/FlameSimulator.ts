@@ -1,4 +1,4 @@
-import { ClusterLightingBuffer, ComputeGPUBuffer, GeometryBase, MeshRenderer, RendererMask, RendererPassState, RendererType, SkeletonAnimationComponent, SkinnedMeshRenderer, Time, View3D } from '@orillusion/core';
+import { ClusterLightingBuffer, ComputeGPUBuffer, GeometryBase, MeshRenderer, PassType, RendererMask, RendererPassState, SkeletonAnimationComponent, SkinnedMeshRenderer, Time, View3D } from '@orillusion/core';
 import { FlameSimulatorConfig } from './FlameSimulatorConfig';
 import { FlameSimulatorPipeline } from './FlameSimulatorPipeline';
 
@@ -50,7 +50,7 @@ export class FlameSimulator extends MeshRenderer {
         }
     }
 
-    public nodeUpdate(view: View3D, passType: RendererType, renderPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer) {
+    public nodeUpdate(view: View3D, passType: PassType, renderPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer) {
         if (!this.mFlameComputePipeline) {
             let skeletonAnimation = this.object3D.getComponentsInChild(SkeletonAnimationComponent)[0];
             let skinnedMeshRenderer = this.object3D.getComponentsInChild(SkinnedMeshRenderer)[0];
