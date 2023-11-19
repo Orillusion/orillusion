@@ -3,11 +3,6 @@ import { Engine3D, Scene3D, CameraUtil, HoverCameraController, Object3D, MeshRen
 class Sample_TextBarrage {
     private scene: Scene3D
     private camera: Camera3D
-    private info: {
-      outCount: number,
-      inCount: number,
-      passed: boolean,
-    } = { outCount: 0, inCount: 0, passed: false }
 
     async run() {
         // init engine
@@ -59,7 +54,6 @@ class Sample_TextBarrage {
             const barrage = textQuad.addComponent(TextBarrageAnimation);
             barrage.camera = this.camera;
             barrage.priorityOffset = textCount;
-            barrage.info = this.info
             barrage.play();
         }
 
@@ -79,12 +73,6 @@ class TextBarrageAnimation extends ComponentBase {
   
     public camera: Camera3D;
     public priorityOffset: number = 0;
-    public info: {
-      outCount: number,
-      inCount: number,
-      passed: boolean,
-    } = { outCount: 0, inCount: 0, passed: false }
-    private show: boolean = true
   
     private _speed: number = 0;
     private _range: number = 0;
@@ -109,15 +97,7 @@ class TextBarrageAnimation extends ComponentBase {
         const dt = (now - this.lastTime)
         this.lastTime = now
         this._text.uiTransform.x += this._speed * dt;
-        if (this._text.uiTransform.x < this._range && this.show) {
-          this.info.outCount++
-          this.show = false
-          if (this.info.outCount >= 50) {
-            this.info.inCount = 0
-            this.info.outCount = 0
-            this.info.passed = true
-          }
-        } else if (this.info.passed && !this.show) {
+        if (this._text.uiTransform.x + 300 < this._range) {
           this._reset(false);
         }
       }
@@ -142,19 +122,12 @@ class TextBarrageAnimation extends ComponentBase {
       if (isFirst) {
         this._text.uiTransform.x = getRandomNum(-halfWidth, halfWidth);
       } else {
-        this._text.uiTransform.x = halfWidth + 300
+        this._text.uiTransform.x = halfWidth
       }
       this._text.uiTransform.y = getRandomNum(-halfHeight, halfHeight);
   
       // Reset speed
       this._speed = getRandomNum(-500, -200) * 0.0003;
-
-      // Reset info
-      this.info.inCount++
-      this.show = true
-      if (this.info.inCount >= 50) {
-        this.info.passed = false
-      }
     }
   }
   
