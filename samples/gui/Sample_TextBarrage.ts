@@ -48,7 +48,7 @@ class Sample_TextBarrage {
             text.color = new Color(1, 1, 1)
             text.fontSize = 32
             text.alignment = TextAnchor.MiddleCenter
-            text.uiTransform.resize(300, 12)
+            text.uiTransform.resize(150 * window.devicePixelRatio, 12)
 
             // Init and reset text barrage animation
             const barrage = textQuad.addComponent(TextBarrageAnimation);
@@ -86,7 +86,7 @@ class TextBarrageAnimation extends ComponentBase {
   
     start(): void {
       this._text = this.object3D.getComponent(UITextField);
-      this._range = -window.devicePixelRatio * window.innerWidth / 2;
+      this._range = - Engine3D.width * 0.5
       this.lastTime = Date.now();
       this._reset(true);
     }
@@ -116,13 +116,13 @@ class TextBarrageAnimation extends ComponentBase {
       // Reset color
       text.color = colors[getRandomNum(0, colors.length - 1)];
   
-      const halfWidth = window.devicePixelRatio * window.innerWidth / 2
-      const halfHeight = window.devicePixelRatio * window.innerHeight / 2
+      const halfWidth = Engine3D.width * 0.5
+      const halfHeight = Engine3D.height * 0.5
       // Reset position
       if (isFirst) {
         this._text.uiTransform.x = getRandomNum(-halfWidth, halfWidth);
       } else {
-        this._text.uiTransform.x = halfWidth
+        this._text.uiTransform.x = halfWidth + 150 * window.devicePixelRatio / 2
       }
       this._text.uiTransform.y = getRandomNum(-halfHeight, halfHeight);
   
