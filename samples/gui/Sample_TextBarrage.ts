@@ -97,7 +97,7 @@ class TextBarrageAnimation extends ComponentBase {
         const dt = (now - this.lastTime)
         this.lastTime = now
         this._text.uiTransform.x += this._speed * dt;
-        if (this._text.uiTransform.x + 300 < this._range) {
+        if (this._text.uiTransform.x + 150 * window.devicePixelRatio / 2 < this._range) {
           this._reset(false);
         }
       }
