@@ -3,6 +3,11 @@ import { Engine3D, Scene3D, CameraUtil, HoverCameraController, Object3D, MeshRen
 class Sample_TextBarrage {
     private scene: Scene3D
     private camera: Camera3D
+    private info: {
+      outCount: number,
+      inCount: number,
+      passed: boolean,
+    } = { outCount: 0, inCount: 0, passed: false }
 
     async run() {
         // init engine
@@ -54,6 +59,7 @@ class Sample_TextBarrage {
             const barrage = textQuad.addComponent(TextBarrageAnimation);
             barrage.camera = this.camera;
             barrage.priorityOffset = textCount;
+            barrage.info = this.info
             barrage.play();
         }
 
@@ -73,6 +79,12 @@ class TextBarrageAnimation extends ComponentBase {
   
     public camera: Camera3D;
     public priorityOffset: number = 0;
+    public info: {
+      outCount: number,
+      inCount: number,
+      passed: boolean,
+    } = { outCount: 0, inCount: 0, passed: false }
+    private show: boolean = true
   
     private _speed: number = 0;
     private _range: number = 0;
@@ -85,8 +97,8 @@ class TextBarrageAnimation extends ComponentBase {
     }
   
     start(): void {
-      this._text = this.object3D.getComponent(UITextField)
-      this._range = -window.innerWidth / 2 * this.camera.aspect;
+      this._text = this.object3D.getComponent(UITextField);
+      this._range = -window.devicePixelRatio * window.innerWidth / 2;
       this.lastTime = Date.now();
       this._reset(true);
     }
@@ -97,7 +109,15 @@ class TextBarrageAnimation extends ComponentBase {
         const dt = (now - this.lastTime)
         this.lastTime = now
         this._text.uiTransform.x += this._speed * dt;
-        if (this._text.uiTransform.x < this._range) {
+        if (this._text.uiTransform.x < this._range && this.show) {
+          this.info.outCount++
+          this.show = false
+          if (this.info.outCount >= 50) {
+            this.info.inCount = 0
+            this.info.outCount = 0
+            this.info.passed = true
+          }
+        } else if (this.info.passed && !this.show) {
           this._reset(false);
         }
       }
@@ -116,18 +136,25 @@ class TextBarrageAnimation extends ComponentBase {
       // Reset color
       text.color = colors[getRandomNum(0, colors.length - 1)];
   
+      const halfWidth = window.devicePixelRatio * window.innerWidth / 2
+      const halfHeight = window.devicePixelRatio * window.innerHeight / 2
       // Reset position
-      const orthographicSize = window.innerWidth / 2
       if (isFirst) {
-        const halfOrthoWidth = orthographicSize * this.camera.aspect;
-        this._text.uiTransform.x = getRandomNum(-halfOrthoWidth, halfOrthoWidth);
+        this._text.uiTransform.x = getRandomNum(-halfWidth, halfWidth);
       } else {
-        this._text.uiTransform.x = orthographicSize * this.camera.aspect + 300
+        this._text.uiTransform.x = halfWidth + 300
       }
-      this._text.uiTransform.y = getRandomNum(-window.innerHeight / 2, window.innerHeight / 2);
+      this._text.uiTransform.y = getRandomNum(-halfHeight, halfHeight);
   
       // Reset speed
       this._speed = getRandomNum(-500, -200) * 0.0003;
+
+      // Reset info
+      this.info.inCount++
+      this.show = true
+      if (this.info.inCount >= 50) {
+        this.info.passed = false
+      }
     }
   }
   
