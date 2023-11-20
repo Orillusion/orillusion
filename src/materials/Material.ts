@@ -91,7 +91,14 @@ export class Material {
     }
 
     public set cullMode(value: GPUCullMode) {
-        this._defaultSubShader.cullMode = value;
+        if (this._defaultSubShader.cullMode != value) {
+            for (let list of this._shader.passShader.values()) {
+                for (let pass of list) {
+                    pass.cullMode = value;
+                }
+            }
+            this._defaultSubShader.cullMode = value;
+        }
     }
 
     public get depthWriteEnabled(): boolean {
