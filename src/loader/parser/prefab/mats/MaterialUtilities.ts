@@ -22,8 +22,7 @@ export class MaterialUtilities {
             material.shader = new shader();
             return material;
         } else {
-            throw new console.error("not found shader, shader name is " + name);
-
+            throw new Error("not found shader, shader name is " + name);
         }
     }
 

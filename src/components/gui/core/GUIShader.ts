@@ -181,8 +181,8 @@ export class GUIShader {
             scissorCornerRadius:f32,
             scissorFadeOutSize:f32,
 
-            limitVertex:f32,
             pixelRatio:f32,
+            empty:f32,
         }
         
         struct VertexOutput {
@@ -247,7 +247,7 @@ export class GUIShader {
             var vSpriteData = vSpriteBuffer[quadIndex];
             
             var op = vec2<f32>(0.0001);
-            let isValidVertex = vSpriteData.vVisible > 0.5 && vertexIndex < materialUniform.limitVertex;
+            let isValidVertex = vSpriteData.vVisible > 0.5;
             if(isValidVertex){
                 op = 2.0 * vertexPosition * materialUniform.pixelRatio  / materialUniform.screenSize;
             }
@@ -281,7 +281,7 @@ export class GUIShader {
             var op = vec4<f32>(0.0001);
             var vSpriteData = vSpriteBuffer[quadIndex];
 
-            let isValidVertex = vSpriteData.vVisible > 0.5 && vertexIndex < materialUniform.limitVertex;
+            let isValidVertex = vSpriteData.vVisible > 0.5;
             if(isValidVertex){
                 op = globalUniform.projMat * globalUniform.viewMat * modelMatrix * localPos ;
             }

@@ -10,19 +10,12 @@ import { CResizeEvent } from '..';
  * Render what we want to render onto a texture instead of rendering it onto the screen as we usually do
  * @group Texture
  */
-export class ShadowTexture extends Texture {
+export class RenderTexture extends Texture {
     public resolveTarget: GPUTextureView;
+
     sampleCount: number;
-    // storeOp: string = 'store';
-    // loadOp: GPULoadOp = `load`;
-    // clearValue: GPUColor = [0, 0, 0, 0];
-
-    public clone() {
-        let texture = new ShadowTexture(this.width, this.height, this.format, this.useMipmap, this.usage, this.numberLayer, this.sampleCount);
-        texture.name = "clone_" + texture.name;
-        return texture;
-    }
-
+    autoResize?: boolean;
+    clear?: boolean;
     /**
      * create virtual texture
      * @param width width of texture
@@ -31,15 +24,21 @@ export class ShadowTexture extends Texture {
      * @param useMipmap whether or not gen mipmap
      * @returns
      */
-    constructor(width: number, height: number, format: GPUTextureFormat = GPUTextureFormat.rgba8unorm, useMipMap: boolean = false, usage?: GPUFlagsConstant, numberLayer: number = 1, sampleCount: number = 0, clear: boolean = true) {
+    constructor(width: number, height: number,
+        format: GPUTextureFormat = GPUTextureFormat.rgba8unorm,
+        useMipMap: boolean = false, usage?: GPUFlagsConstant,
+        numberLayer: number = 1, sampleCount: number = 0,
+        clear: boolean = true, autoResize: boolean = true) {
+
         super(width, height, numberLayer);
-        let device = webGPUContext.device;
         this.name = UUID();
 
+        this.autoResize = autoResize;
         this.useMipmap = useMipMap;
         this.sampleCount = sampleCount;
         this.format = format;
         this.numberLayer = numberLayer;
+        this.clear = clear;
 
         if (usage != undefined) {
             this.usage = usage;
@@ -47,20 +46,23 @@ export class ShadowTexture extends Texture {
             this.usage = usage | GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_SRC | GPUTextureUsage.COPY_DST;
         }
 
-        // if (this.usage & GPUTextureUsage.RENDER_ATTACHMENT || this.format == GPUTextureFormat.depth24plus || this.format == GPUTextureFormat.depth32float) {
-        //     webGPUContext.addEventListener(CResizeEvent.RESIZE, (e) => {
-        //         let { width, height } = e.data;
-        //         this.resize(width, height);
-        //     }, this);
-        // }
         this.resize(width, height);
+
+        if (autoResize) {
+            webGPUContext.addEventListener(CResizeEvent.RESIZE, (e) => {
+                let { width, height } = e.data;
+                this.resize(width, height);
+                this._textureChange = true;
+            }, this);
+        }
+
     }
 
     public resize(width, height) {
         let device = webGPUContext.device;
         if (this.gpuTexture) {
+            Texture.delayDestroyTexture(this.gpuTexture);
             this.gpuTexture = null;
-            // Texture.delayDestroyTexture(this.gpuTexture);
             this.view = null;
         }
 
@@ -117,6 +119,8 @@ export class ShadowTexture extends Texture {
             // this.visibility = GPUShaderStage.FRAGMENT;
             this.gpuSampler = device.createSampler(this);
         }
+
+        this._textureChange = true;
     }
 
     /**
@@ -155,6 +159,12 @@ export class ShadowTexture extends Texture {
         );
 
         GPUContext.endCommandEncoder(commandEncoder);
+    }
+
+    public clone() {
+        let texture = new RenderTexture(this.width, this.height, this.format, this.useMipmap, this.usage, this.numberLayer, this.sampleCount, this.clear, this.autoResize);
+        texture.name = "clone_" + texture.name;
+        return texture;
     }
 
     public readTextureToImage() {

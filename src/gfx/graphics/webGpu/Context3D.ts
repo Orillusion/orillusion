@@ -1,6 +1,8 @@
+import { CEvent, Texture } from '../../..';
 import { CEventDispatcher } from '../../../event/CEventDispatcher';
 import { CResizeEvent } from '../../../event/CResizeEvent';
 import { CanvasConfig } from './CanvasConfig';
+
 /**
  * @internal
  */
@@ -17,7 +19,7 @@ class Context3D extends CEventDispatcher {
     public canvasConfig: CanvasConfig;
     public super: number = 1.0;
     private _pixelRatio: number = 1.0;
-    canResize: boolean = true;
+    private _resizeEvent: CEvent;
     // initSize: number[];
     public get pixelRatio() {
         return this._pixelRatio;
@@ -108,6 +110,13 @@ class Context3D extends CEventDispatcher {
             alphaMode: 'premultiplied',
             colorSpace: `srgb`,
         });
+
+        this._resizeEvent = new CResizeEvent(CResizeEvent.RESIZE, { width: this.windowWidth, height: this.windowHeight })
+        const resizeObserver = new ResizeObserver(() => {
+            this.updateSize()
+            Texture.destroyTexture()
+        });
+        resizeObserver.observe(this.canvas);
         this.updateSize();
         return true;
     }
@@ -116,14 +125,15 @@ class Context3D extends CEventDispatcher {
         let w = Math.floor(this.canvas.clientWidth * this.pixelRatio * this.super);
         let h = Math.floor(this.canvas.clientHeight * this.pixelRatio * this.super);
         if (w != this.windowWidth || h != this.windowHeight) {
-            // if (this.canvas.width != this.windowWidth || this.canvas.height != this.windowHeight) {
             this.canvas.width = this.windowWidth = w;
             this.canvas.height = this.windowHeight = h;
             this.presentationSize[0] = this.windowWidth;
             this.presentationSize[1] = this.windowHeight;
             this.aspect = this.windowWidth / this.windowHeight;
-            if (this.canResize)
-                this.dispatchEvent(new CResizeEvent(CResizeEvent.RESIZE, { width: this.windowWidth, height: this.windowHeight }));
+
+            this._resizeEvent.data.width = this.windowWidth;
+            this._resizeEvent.data.height = this.windowHeight;
+            this.dispatchEvent(this._resizeEvent);
         }
     }
 }

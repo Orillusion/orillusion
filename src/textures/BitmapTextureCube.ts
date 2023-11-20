@@ -41,7 +41,8 @@ export class BitmapTextureCube extends TextureCube {
 
         this.textureDescriptor.size = { width: this.width, height: this.height, depthOrArrayLayers: 6 };
         this.textureDescriptor.dimension = '2d';
-        this.gpuTexture = device.createTexture(this.textureDescriptor);
+        // this.gpuTexture = device.createTexture(this.textureDescriptor);
+        this.gpuTexture = this.getGPUTexture();
 
         let faceTextures: GPUTexture[] = [];
         let lastFaceTextures: GPUTexture[] = faceTextures;

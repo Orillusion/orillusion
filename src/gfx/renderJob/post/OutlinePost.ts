@@ -25,14 +25,12 @@ import { OutlinePostSlot, outlinePostData } from '../../../io/OutlinePostData';
  * post effect out line 
  * OutlinePostManager,
  * ```
- *       //setting
- *       let cfg = {@link Engine3D.setting.render.postProcessing.outline};
- *         let view = new View3D();
-        view.scene = this.scene;
-        view.camera = mainCamera;
-        
- *       
- *       Engine3D.startRender(renderJob);
+ *  setting
+ *  let cfg = {@link Engine3D.setting.render.postProcessing.outline};
+ *  let view = new View3D();
+ *  view.scene = this.scene;
+ *  view.camera = mainCamera;
+ *  Engine3D.startRender(renderJob);
  *```
  * @group Post Effects
  */
@@ -40,40 +38,63 @@ export class OutlinePost extends PostBase {
     /**
      * @internal
      */
-    outlineTex: VirtualTexture;
-
-    lowTex: VirtualTexture;
-
+    private outlineTex: VirtualTexture;
+    /**
+      * @internal
+      */
+    private lowTex: VirtualTexture;
     /**
      * @internal
      */
-    rendererPassState: RendererPassState;
+    private rendererPassState: RendererPassState;
     /**
      * @internal
      */
-    calcWeightCompute: ComputeShader;
-    outlineCompute: ComputeShader;
-    blendCompute: ComputeShader;
+    private calcWeightCompute: ComputeShader;
     /**
      * @internal
      */
-    outlineSetting: StorageGPUBuffer;
-
+    private outlineCompute: ComputeShader;
+    /**
+    * @internal
+    */
+    private blendCompute: ComputeShader;
     /**
      * @internal
      */
-    slotsBuffer: StorageGPUBuffer;
-    slotsArray: Float32Array;
-
-
-    entitiesArray: Float32Array;
-    entitiesBuffer: StorageGPUBuffer;
-
-    weightBuffer: StorageGPUBuffer;
-    lowTexSize: Vector2;
-
-    oldOutlineColor: StorageGPUBuffer;
-    rtFrame: RTFrame;
+    private outlineSetting: StorageGPUBuffer;
+    /**
+     * @internal
+     */
+    private slotsBuffer: StorageGPUBuffer;
+    /**
+     * @internal
+     */
+    private slotsArray: Float32Array;
+    /**
+     * @internal
+     */
+    private entitiesArray: Float32Array;
+    /**
+     * @internal
+     */
+    private entitiesBuffer: StorageGPUBuffer;
+    /**
+     * @internal
+     */
+    private weightBuffer: StorageGPUBuffer;
+    /**
+     * @internal
+     */
+    private lowTexSize: Vector2;
+    /**
+     * @internal
+     */
+    private oldOutlineColor: StorageGPUBuffer;
+    /**
+     * @internal
+     */
+    private rtFrame: RTFrame;
 
     constructor() {
         super();
@@ -267,5 +288,31 @@ export class OutlinePost extends PostBase {
         this.fetchOutlineData();
         GPUContext.computeCommand(command, this.computeList);
         GPUContext.lastRenderPassState = this.rendererPassState;
+    }
+
+    public onResize(): void {
+        let presentationSize = webGPUContext.presentationSize;
+        let w = presentationSize[0];
+        let h = presentationSize[1];
+        let textureScale = Engine3D.setting.render.postProcessing.outline.textureScale;
+        this.lowTexSize = new Vector2(Math.ceil(w * textureScale), Math.ceil(h * textureScale));
+
+        this.lowTex.resize(this.lowTexSize.x, this.lowTexSize.y);
+        this.outlineTex.resize(w, h);
+
+        this.weightBuffer.resizeBuffer(this.lowTexSize.x * this.lowTexSize.y * 4);
+        this.oldOutlineColor.resizeBuffer(this.lowTexSize.x * this.lowTexSize.y * 4);
+
+        this.calcWeightCompute.workerSizeX = Math.ceil(this.lowTex.width / 8);
+        this.calcWeightCompute.workerSizeY = Math.ceil(this.lowTex.height / 8);
+        this.calcWeightCompute.workerSizeZ = 1;
+
+        this.outlineCompute.workerSizeX = Math.ceil(this.lowTex.width / 8);
+        this.outlineCompute.workerSizeY = Math.ceil(this.lowTex.height / 8);
+        this.outlineCompute.workerSizeZ = 1;
+
+        this.blendCompute.workerSizeX = Math.ceil(this.outlineTex.width / 8);
+        this.blendCompute.workerSizeY = Math.ceil(this.outlineTex.height / 8);
+        this.blendCompute.workerSizeZ = 1;
     }
 }

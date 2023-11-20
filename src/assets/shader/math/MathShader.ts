@@ -310,4 +310,5 @@ fn dir_to_faceId(pt:vec3<f32>) -> i32 {
       let yAxis = normalize(cross(zAxis, xAxis));
       return mat3x3<f32>(xAxis, yAxis, zAxis);
     }
+
 `;

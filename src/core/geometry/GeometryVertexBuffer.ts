@@ -73,7 +73,6 @@ export class GeometryVertexBuffer {
             }
             this.vertexCount = len;
 
-
             this._vertexBufferLayouts[attributeInfo.location] = {
                 name: attributeInfo.name,
                 arrayStride: attributeInfo.size * 4,

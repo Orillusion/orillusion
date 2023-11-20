@@ -31,16 +31,16 @@ export class Sample_Grass {
 
         Engine3D.startRenderView(this.view);
 
-        this.post = this.view.scene.addComponent(PostProcessingComponent);
-        let fxaa = this.post.addPost(FXAAPost);
-        let fog = this.post.addPost(GlobalFog);
-        fog.fogColor = new Color(136 / 255, 215 / 255, 236 / 255, 1);
-        fog.start = 0;
-        fog.overrideSkyFactor = 0.0764;
-        fog.ins = 1;
-        fog.falloff = 0.626;
-        fog.scatteringExponent = 3;
-        fog.dirHeightLine = 10;
+        // this.post = this.view.scene.addComponent(PostProcessingComponent);
+        // let fxaa = this.post.addPost(FXAAPost);
+        // let fog = this.post.addPost(GlobalFog);
+        // fog.fogColor = new Color(136 / 255, 215 / 255, 236 / 255, 1);
+        // fog.start = 0;
+        // fog.overrideSkyFactor = 0.0764;
+        // fog.ins = 1;
+        // fog.falloff = 0.626;
+        // fog.scatteringExponent = 3;
+        // fog.dirHeightLine = 10;
         // post.addPost(TAAPost);
 
         this.createScene(this.view.scene);
@@ -148,9 +148,6 @@ export class Sample_Grass {
         // GUIHelp.addFolder("shadow");
         // GUIHelp.add(Engine3D.setting.shadow, "shadowBound", 0.0, 3000, 0.0001);
         // GUIHelp.endFolder();
-
-        let globalFog = this.post.getPost(GlobalFog);
-        // GUIUtil.renderFog(globalFog);
     }
 
 }

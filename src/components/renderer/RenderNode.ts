@@ -396,17 +396,14 @@ export class RenderNode extends ComponentBase {
                         GPUContext.bindGeometryBuffer(renderContext.encoder, renderNode._geometry);
                     }
                     GPUContext.bindPipeline(renderContext.encoder, renderShader);
-                    let subGeometries = renderNode._geometry.subGeometries;
-                    for (let k = 0; k < subGeometries.length; k++) {
-                        const subGeometry = subGeometries[k];
-                        let lodInfos = subGeometry.lodLevels;
-                        let lodInfo = lodInfos[renderNode.lodLevel];
+                    let subGeometry = renderNode._geometry.subGeometries[i];
+                    let lodInfos = subGeometry.lodLevels;
+                    let lodInfo = lodInfos[renderNode.lodLevel];
 
-                        if (renderNode.instanceCount > 0) {
-                            GPUContext.drawIndexed(renderContext.encoder, lodInfo.indexCount, renderNode.instanceCount, lodInfo.indexStart, 0, 0);
-                        } else {
-                            GPUContext.drawIndexed(renderContext.encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
-                        }
+                    if (renderNode.instanceCount > 0) {
+                        GPUContext.drawIndexed(renderContext.encoder, lodInfo.indexCount, renderNode.instanceCount, lodInfo.indexStart, 0, 0);
+                    } else {
+                        GPUContext.drawIndexed(renderContext.encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
                     }
                 }
             }
@@ -452,12 +449,10 @@ export class RenderNode extends ComponentBase {
                     if (matPass.pipeline) {
                         GPUContext.bindPipeline(encoder, matPass);
                         let subGeometries = node._geometry.subGeometries;
-                        for (let k = 0; k < subGeometries.length; k++) {
-                            const subGeometry = subGeometries[k];
-                            let lodInfos = subGeometry.lodLevels;
-                            let lodInfo = lodInfos[node.lodLevel];
-                            GPUContext.drawIndexed(encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
-                        }
+                        const subGeometry = subGeometries[i];
+                        let lodInfos = subGeometry.lodLevels;
+                        let lodInfo = lodInfos[node.lodLevel];
+                        GPUContext.drawIndexed(encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
                     }
                 }
             }

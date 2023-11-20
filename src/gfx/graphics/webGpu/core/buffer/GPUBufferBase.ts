@@ -33,9 +33,9 @@ export class GPUBufferBase {
 
     constructor() {
         this.mapAsyncReady = [];
-        this.memory = new MemoryDO();
-        this.memoryNodes = new Map<string | number, MemoryInfo>();
-        this._dataView = new Float32Array(this.memory.shareDataBuffer);
+        // this.memory = new MemoryDO();
+        // this.memoryNodes = new Map<string | number, MemoryInfo>();
+        // this._dataView = new Float32Array(this.memory.shareDataBuffer);
     }
 
     public debug() {
@@ -249,40 +249,43 @@ export class GPUBufferBase {
         for (let i = 0; i < ref.length; i++) {
             const att = ref[i];
             let value = obj[att.name];
+            this.writeValue(node, att, value);
+        }
+    }
 
-            switch (att.type) {
-                case `Boolean`:
-                    node.writeFloat(value);
-                    break;
+    private writeValue(node: MemoryInfo, att: { name: string, type: string }, value: any) {
+        switch (att.type) {
+            case `Boolean`:
+                node.writeFloat(value);
+                break;
 
-                case `Number`:
-                    node.writeFloat(value);
-                    break;
+            case `Number`:
+                node.writeFloat(value);
+                break;
 
-                case `Float32Array`:
-                    node.writeFloat32Array(value);
-                    break;
+            case `Float32Array`:
+                node.writeFloat32Array(value);
+                break;
 
-                case `Vector2`:
-                    node.writeVector2(value);
-                    break;
+            case `Vector2`:
+                node.writeVector2(value);
+                break;
 
-                case `Vector3`:
-                    node.writeVector3(value);
-                    break;
+            case `Vector3`:
+                node.writeVector3(value);
+                break;
 
-                case `Vector4`:
-                    node.writeVector4(value);
-                    break;
+            case `Vector4`:
+                node.writeVector4(value);
+                break;
 
-                case `Color`:
-                    node.writeRGBColor(value);
-                    break;
+            case `Color`:
+                node.writeRGBColor(value);
+                break;
 
-                case `Array`:
-                    node.writeArray(value);
-                    break;
-            }
+            case `Array`:
+                node.writeArray(value);
+                break;
         }
     }
 
@@ -380,11 +383,14 @@ export class GPUBufferBase {
 
     protected createBuffer(usage: GPUBufferUsageFlags, size: number, data?: ArrayBufferData, debugLabel?: string) {
         let device = webGPUContext.device;
-        this.byteSize = size * 4;
-        this.usage = usage;
+
         if (this.buffer) {
             this.destroy();
         }
+
+        this.byteSize = size * 4;
+        this.usage = usage;
+
         this.buffer = device.createBuffer({
             label: debugLabel,
             size: this.byteSize,
@@ -392,12 +398,19 @@ export class GPUBufferBase {
             mappedAtCreation: false,
         });
 
+        this.memory = new MemoryDO();
+        this.memoryNodes = new Map<string | number, MemoryInfo>();
+        this._dataView = new Float32Array(this.memory.shareDataBuffer);
         this.memory.allocation(this.byteSize);
         if (data) {
             let m = this.memory.allocation_node(data.length * 4);
             m.setArrayBuffer(0, data);
             this.apply();
         }
+    }
+
+    public resizeBuffer(size: number, data?: ArrayBufferData) {
+        this.createBuffer(this.usage, size, data);
     }
 
     protected createNewBuffer(usage: GPUBufferUsageFlags, size: number): GPUBuffer {
@@ -428,6 +441,9 @@ export class GPUBufferBase {
             mappedAtCreation: false,
         });
 
+        this.memory = new MemoryDO();
+        this.memoryNodes = new Map<string | number, MemoryInfo>();
+        this._dataView = new Float32Array(this.memory.shareDataBuffer);
         this.memory.allocation(totalLength);
         for (let i = 0; i < count; i++) {
             let name = i;

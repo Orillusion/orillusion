@@ -25,7 +25,6 @@ import { WasmMatrix } from '@orillusion/wasm-matrix/WasmMatrix';
 import { Matrix4 } from './math/Matrix4';
 import { FXAAPost } from './gfx/renderJob/post/FXAAPost';
 import { PostProcessingComponent } from './components/post/PostProcessingComponent';
-import { Texture } from './gfx/graphics/webGpu/core/texture/Texture';
 
 /** 
  * Orillusion 3D Engine
@@ -169,6 +168,12 @@ export class Engine3D {
                     scatteringExponent: 2.7,
                     dirHeightLine: 10.0,
                 },
+                godRay: {
+                    blendColor: true,
+                    rayMarchCount: 16,
+                    scatteringExponent: 5,
+                    intensity: 0.5
+                },
                 ssao: {
                     enable: false,
                     radius: 0.15,
@@ -308,12 +313,15 @@ export class Engine3D {
     public static async init(descriptor: { canvasConfig?: CanvasConfig; beforeRender?: Function; renderLoop?: Function; lateRender?: Function, engineSetting?: EngineSetting } = {}) {
         console.log('Engine Version', version);
 
-        this.divB = document.createElement("div");
-        this.divB.style.position = 'absolute'
-        this.divB.style.zIndex = '999'
-        this.divB.style.color = '#FFFFFF'
-        this.divB.style.top = '150px'
-        document.body.appendChild(this.divB);
+        // for dev debug
+        if (import.meta.env.DEV) {
+            this.divB = document.createElement("div");
+            this.divB.style.position = 'absolute'
+            this.divB.style.zIndex = '999'
+            this.divB.style.color = '#FFFFFF'
+            this.divB.style.top = '150px'
+            document.body.appendChild(this.divB);
+        }
 
         this.setting = { ...this.setting, ...descriptor.engineSetting }
 
@@ -355,11 +363,11 @@ export class Engine3D {
         this.renderJobs.set(view, renderJob);
         let presentationSize = webGPUContext.presentationSize;
         // RTResourceMap.createRTTexture(RTResourceConfig.colorBufferTex_NAME, presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float, false);
-        
+
         if (this.setting.pick.mode == `pixel`) {
             let postProcessing = view.scene.getOrAddComponent(PostProcessingComponent);
             postProcessing.addPost(FXAAPost);
-            
+
         } else {
         }
 
@@ -431,9 +439,6 @@ export class Engine3D {
      * @internal
      */
     private static render(time) {
-        webGPUContext.updateSize();
-        Texture.destroyTexture();
-
         this._deltaTime = time - this._time;
         this._time = time;
 
@@ -568,7 +573,6 @@ export class Engine3D {
         }
 
         if (this._lateRender) this._lateRender();
-
     }
 
 

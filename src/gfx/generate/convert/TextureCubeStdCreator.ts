@@ -1,7 +1,7 @@
 import { Texture } from '../../graphics/webGpu/core/texture/Texture';
 import { webGPUContext } from '../../graphics/webGpu/Context3D';
-import { VirtualTexture } from '../../../textures/VirtualTexture';
 import { GPUContext } from '../../renderJob/GPUContext';
+import { RenderTexture } from '../../../textures/RenderTexture';
 
 /**
  * @internal
@@ -70,7 +70,7 @@ fn samplePixel(face:i32, uv01:vec2<f32>) -> vec4<f32> {
     private static blurSettingBuffer: GPUBuffer = null;
     private static pipeline: GPUComputePipeline;
 
-    static createFace(index: number, size: number, inTex: Texture, outTex: VirtualTexture): void {
+    static createFace(index: number, size: number, inTex: Texture, outTex: RenderTexture): void {
         const device = webGPUContext.device;
         if (this.pipeline == null) {
             this.pipeline = device.createComputePipeline({

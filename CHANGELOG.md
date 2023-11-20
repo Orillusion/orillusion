@@ -1,3 +1,26 @@
+## [0.7.1](https://github.com/Orillusion/orillusion/compare/v0.7.0...v0.7.1) (2023-11-14)
+
+
+### Bug Fixes
+
+* Auto sort transparent renderers. ([#318](https://github.com/Orillusion/orillusion/issues/318)) ([5becdc4](https://github.com/Orillusion/orillusion/commit/5becdc48739e4ce7745d15a60c46612f991ae5f2))
+* fix: load gltf sample
+* fix: fix grass sample
+* fix: fix media-extention material
+* fix: fix post sample resize bug
+* fix: fix csm shadow
+* fix: Cancel automatic resizing of rendertexture in GI
+* fix: Wrong offset for bloom
+* fix: reduce texture sample times
+* fix: texture Count Exceeded the maximum limit of 7
+
+### Features
+* **engine:** enable gpu attachments texture auto resize
+* **graphic:** add new graphic samples
+* **sample:** update physics car sample ([#327](https://github.com/Orillusion/orillusion/issues/327)) ([e09b243](https://github.com/Orillusion/orillusion/commit/e09b24386bb517d1277e00dcaa4105999d2dd856))
+
+
+
 # [0.7.0](https://github.com/Orillusion/orillusion/compare/v0.6.9...v0.7.0) (2023-11-01)
 
 

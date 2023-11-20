@@ -1,8 +1,10 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, BloomPost, Color, DirectLight, Engine3D, GPUCullMode, GTAOPost, GlobalFog, GlobalIlluminationComponent, LitMaterial, Material, MorphTargetBlender, Object3D, PointLight, SkinnedMeshRenderer2, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
+import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, BloomPost, Color, DepthOfFieldPost, DirectLight, Engine3D, GPUCullMode, GTAOPost, GlobalFog, GlobalIlluminationComponent, GodRayPost, LitMaterial, Material, MorphTargetBlender, Object3D, PointLight, SkinnedMeshRenderer2, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
+
+
 
 
     public static renderShadowSetting(open: boolean = true) {
@@ -85,6 +87,17 @@ export class GUIUtil {
         GUIHelp.add(bloom, 'upSampleBlurSigma', 0.01, 1, 0.001);
         GUIHelp.add(bloom, 'luminanceThreshole', 0.001, 10.0, 0.001);
         GUIHelp.add(bloom, 'bloomIntensity', 0.001, 10.0, 0.001);
+        open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
+
+    static renderGodRay(godRay: GodRayPost, open: boolean = true, name?: string) {
+        name ||= 'GodRay';
+        GUIHelp.addFolder(name);
+        GUIHelp.add(godRay, 'blendColor');
+        GUIHelp.add(godRay, 'rayMarchCount', 8, 20, 1);
+        GUIHelp.add(godRay, 'scatteringExponent', 1, 40, 1);
+        GUIHelp.add(godRay, 'intensity', 0.01, 5, 0.001);
         open && GUIHelp.open();
         GUIHelp.endFolder();
     }
@@ -534,6 +547,14 @@ export class GUIUtil {
         GUIHelp.add(post, "darkFactor", 0.0, 5, 0.001);
         GUIHelp.add(post, "blendColor");
         GUIHelp.add(post, "multiBounce");
+        GUIHelp.endFolder();
+    }
+
+    static renderDepthOfField(post: DepthOfFieldPost) {
+        GUIHelp.addFolder("DOFPost");
+        GUIHelp.add(post, 'near', 0, 100, 1)
+        GUIHelp.add(post, 'far', 150, 300, 1)
+        GUIHelp.add(post, 'pixelOffset', 0.0, 15, 1)
         GUIHelp.endFolder();
     }
 }

@@ -10,6 +10,8 @@ export let GlobalUniform: string = /*wgsl*/ `
     shadowMatrix: array<mat4x4<f32>, 8u>,
     csmShadowBias: vec4<f32>,
     csmMatrix: array<mat4x4<f32>,${CSM.Cascades}>,
+    
+    shadowLights:mat4x4<f32>,
 
     CameraPos: vec3<f32>,
     frame: f32,
@@ -49,7 +51,6 @@ export let GlobalUniform: string = /*wgsl*/ `
     empty2: i32,
     empty3: i32,
 
-    shadowLights:mat4x4<f32>
   };
 
   @group(0) @binding(0)

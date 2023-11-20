@@ -4,7 +4,6 @@ import { Scene3D } from "../../../core/Scene3D";
 import { View3D } from "../../../core/View3D";
 import { ViewQuad } from "../../../core/ViewQuad";
 import { CEventDispatcher } from "../../../event/CEventDispatcher";
-import { VirtualTexture } from "../../../textures/VirtualTexture";
 import { GPUTextureFormat } from "../../graphics/webGpu/WebGPUConst";
 import { Texture } from "../../graphics/webGpu/core/texture/Texture";
 import { WebGPUDescriptorCreator } from "../../graphics/webGpu/descriptor/WebGPUDescriptorCreator";
@@ -16,11 +15,8 @@ import { OcclusionSystem } from "../occlusion/OcclusionSystem";
 import { RendererPassState } from "./state/RendererPassState";
 import { PassType } from "./state/RendererType";
 import { RenderContext } from "./RenderContext";
-import { ClusterLightingRender } from "./cluster/ClusterLightingRender";
 import { ClusterLightingBuffer } from "./cluster/ClusterLightingBuffer";
-import { RTResourceMap } from "../frame/RTResourceMap";
-import { RTResourceConfig } from "../config/RTResourceConfig";
-import { webGPUContext } from "../../graphics/webGpu/Context3D";
+import { RenderTexture } from "../../..";
 
 
 /**
@@ -69,7 +65,7 @@ export class RendererBase extends CEventDispatcher {
 
     }
 
-    public setIrradiance(probeIrradianceMap: VirtualTexture, probeDepthMap: VirtualTexture) {
+    public setIrradiance(probeIrradianceMap: RenderTexture, probeDepthMap: RenderTexture) {
         this.rendererPassState.irradianceBuffer = [probeIrradianceMap, probeDepthMap];
     }
 

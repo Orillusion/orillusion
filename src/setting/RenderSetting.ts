@@ -5,6 +5,7 @@ import { OutlineSetting } from "./post/OutlineSetting";
 import { SSRSetting } from "./post/SSRSetting";
 import { TAASetting } from "./post/TAASetting";
 import { BloomSetting } from "./post/BloomSetting";
+import { GodRaySetting } from "./post/GodRaySetting";
 
 export type RenderSetting = {
     debug: boolean;
@@ -43,6 +44,7 @@ export type RenderSetting = {
         gtao?: GTAOSetting;
         outline?: OutlineSetting;
         globalFog?: GlobalFogSetting;
+        godRay?: GodRaySetting;
         fxaa?: {
             enable: boolean;
         };

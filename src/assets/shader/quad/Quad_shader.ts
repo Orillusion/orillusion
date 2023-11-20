@@ -50,17 +50,12 @@ export let Quad_vert_wgsl: string = /*wgsl*/ `
 
       @vertex
       fn main(@builtin(instance_index) index : u32,@location(0) position: vec3<f32>, @location(1) TEXCOORD_1: vec2<f32>) -> VertexOutput {
-          let id = u32(index) ;
-          let worldMatrix = models.matrix[id];
-
-          let windowSize = vec2<f32>(globalUniform.windowWidth,globalUniform.windowHeight) ;
-
+        //   let id = u32(index) ;
+        //   let worldMatrix = models.matrix[id];
+        //   let windowSize = vec2<f32>(globalUniform.windowWidth,globalUniform.windowHeight) ;
         //   let pos = worldMatrix[3].xy ;
-
-          let size = vec2<f32>(worldMatrix[0].x,worldMatrix[1].y) / windowSize ;
-
-          let uv = vec2(((TEXCOORD_1.xy * 2.0) - vec2<f32>(1.0)))  ;// / windowSize * size - offset ;
-
+        //   let size = vec2<f32>(worldMatrix[0].x,worldMatrix[1].y) / windowSize ;
+          let uv = vec2(((TEXCOORD_1.xy * 2.0) - vec2<f32>(1.0))) ;// / windowSize * size - offset ;
           return VertexOutput(TEXCOORD_1, vec4<f32>(uv, 0.0, 1.0));
       }
 `

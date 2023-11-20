@@ -6,10 +6,8 @@ export let DepthOfView_cs: string = /*wgsl*/ `
     far: f32,
     pixelOffset: f32,
   }
-
-  @group(0) @binding(0) var<uniform> standUniform: GlobalUniform;
+ 
   @group(0) @binding(1) var<uniform> blurSetting: BlurSetting;
-
   @group(0) @binding(2) var positionBufferTex : texture_2d<f32>;
   @group(0) @binding(3) var normalBufferTex : texture_2d<f32>;
   @group(0) @binding(4) var inTexSampler : sampler;
@@ -30,7 +28,7 @@ export let DepthOfView_cs: string = /*wgsl*/ `
     if(fragCoord.x >= i32(texSize.x) || fragCoord.y >= i32(texSize.y)){
         return;
     }
-    cameraPosition = vec3<f32>(standUniform.cameraWorldMatrix[3].xyz);
+    cameraPosition = globalUniform.CameraPos.xyz ;
     let wPosition:vec3<f32> = textureLoad(positionBufferTex, fragCoord , 0).xyz;
     var distance = length(wPosition - cameraPosition);
     var oc:vec4<f32> = textureLoad(inTex, fragCoord, 0);

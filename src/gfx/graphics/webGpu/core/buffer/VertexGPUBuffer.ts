@@ -1,3 +1,4 @@
+import { MemoryDO } from '../../../../../core/pool/memory/MemoryDO';
 import { MemoryInfo } from '../../../../../core/pool/memory/MemoryInfo';
 import { webGPUContext } from '../../Context3D';
 import { GPUBufferBase } from './GPUBufferBase';
@@ -31,6 +32,8 @@ export class VertexGPUBuffer extends GPUBufferBase {
             mappedAtCreation: false,
         });
 
+        this.memory = new MemoryDO();
+        this.memoryNodes = new Map<string | number, MemoryInfo>();
         this.memory.allocation(this.byteSize);
         this.node = this.memory.allocation_node(this.byteSize);
         // this.outFloat32Array = new Float32Array(size);

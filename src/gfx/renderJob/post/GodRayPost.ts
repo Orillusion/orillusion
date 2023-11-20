@@ -15,7 +15,7 @@ import { RTDescriptor } from '../../graphics/webGpu/descriptor/RTDescriptor';
 import { GBufferFrame } from '../frame/GBufferFrame';
 import { RTFrame } from '../frame/RTFrame';
 import { GodRay_cs } from '../../../assets/shader/compute/GodRay_cs';
-import { GUIHelp } from '@orillusion/debug/GUIHelp';
+import { clamp } from '../../../math/MathUtil';
 
 
 export class GodRayPost extends PostBase {
@@ -50,21 +50,44 @@ export class GodRayPost extends PostBase {
      * @internal
      */
     onAttach(view: View3D,) {
-        // Engine3D.setting.render.postProcessing.gtao.enable = true;
+        Engine3D.setting.render.postProcessing.godRay.enable = true;
         this.createGUI();
     }
     /**
      * @internal
      */Render
     onDetach(view: View3D,) {
-        // Engine3D.setting.render.postProcessing.gtao.enable = false;
+        Engine3D.setting.render.postProcessing.godRay.enable = false;
         this.removeGUI();
     }
 
-    public blendColor: boolean = true;
-    public rayMarchCount: number = 16;
-    public scatteringExponent: number = 5;
-    public intensity: number = 0.5;
+    public get blendColor(): boolean {
+        return Engine3D.setting.render.postProcessing.godRay.blendColor;
+    }
+    public set blendColor(value: boolean) {
+        Engine3D.setting.render.postProcessing.godRay.blendColor = value;
+    }
+    public get rayMarchCount(): number {
+        return Engine3D.setting.render.postProcessing.godRay.rayMarchCount;
+    }
+    public set rayMarchCount(value: number) {
+        value = clamp(value, 8, 20);
+        Engine3D.setting.render.postProcessing.godRay.rayMarchCount = value;
+    }
+    public get scatteringExponent(): number {
+        return Engine3D.setting.render.postProcessing.godRay.scatteringExponent;
+    }
+    public set scatteringExponent(value: number) {
+        value = clamp(value, 1, 40);
+        Engine3D.setting.render.postProcessing.godRay.scatteringExponent = value;
+    }
+    public get intensity(): number {
+        return Engine3D.setting.render.postProcessing.godRay.intensity;
+    }
+    public set intensity(value: number) {
+        value = clamp(value, 0.01, 5);
+        Engine3D.setting.render.postProcessing.godRay.intensity = value;
+    }
 
     private createGUI() {
 
@@ -75,7 +98,7 @@ export class GodRayPost extends PostBase {
 
 
     private createCompute(view: View3D) {
-        let setting = Engine3D.setting.render.postProcessing.gtao;
+        let setting = Engine3D.setting.render.postProcessing.godRay;
 
         this.godRayCompute = new ComputeShader(GodRay_cs);
 
@@ -95,11 +118,9 @@ export class GodRayPost extends PostBase {
         let shadowRenderer = Engine3D.getRenderJob(view).shadowMapPassRenderer;
         this.godRayCompute.setSamplerTexture(`shadowMap`, shadowRenderer.depth2DArrayTexture);
 
-        this.godRayCompute.workerSizeX = Math.ceil(this.godRayTexture.width / 8);
-        this.godRayCompute.workerSizeY = Math.ceil(this.godRayTexture.height / 8);
-        this.godRayCompute.workerSizeZ = 1;
-
         this.godRaySetting = godRaySetting;
+
+        this.onResize();
     }
 
     private createResource() {
@@ -112,6 +133,20 @@ export class GodRayPost extends PostBase {
         let gtaoDec = new RTDescriptor();
         gtaoDec.loadOp = `load`;
         this.rtFrame = new RTFrame([this.godRayTexture], [gtaoDec]);
+    }
+
+    public onResize() {
+        let presentationSize = webGPUContext.presentationSize;
+        let w = presentationSize[0];
+        let h = presentationSize[1];
+
+        this.godRayTexture.resize(w, h);
+        this.historyGodRayData.resizeBuffer(4 * this.godRayTexture.width * this.godRayTexture.height);
+        this.godRayCompute.setStorageBuffer('historyGodRayData', this.historyGodRayData);
+
+        this.godRayCompute.workerSizeX = Math.ceil(this.godRayTexture.width / 8);
+        this.godRayCompute.workerSizeY = Math.ceil(this.godRayTexture.height / 8);
+        this.godRayCompute.workerSizeZ = 1;
     }
 
     /**
@@ -131,28 +166,21 @@ export class GodRayPost extends PostBase {
 
             let globalUniform = GlobalBindGroup.getCameraGroup(view.camera);
             this.godRayCompute.setUniformBuffer('globalUniform', globalUniform.uniformGPUBuffer);
-
-            GUIHelp.addFolder("GodRay");
-            GUIHelp.add(this, "blendColor", 0.0, 1.0, 0.1);
-            GUIHelp.add(this, 'scatteringExponent', 1, 10.0, 0.1);
-            GUIHelp.add(this, 'rayMarchCount', 10, 30.0, 1.0);
-            GUIHelp.add(this, 'intensity', 0.01, 2.0, 0.01);
-
-            GUIHelp.endFolder();
         }
 
-        this.godRaySetting.setFloat('intensity', this.intensity);
-        this.godRaySetting.setFloat('rayMarchCount', this.rayMarchCount);
+        let setting = Engine3D.setting.render.postProcessing.godRay;
 
-        let camera = view.camera;
-        this.godRaySetting.setFloat('viewPortWidth', camera.viewPort.width);
-        this.godRaySetting.setFloat('viewPortHeight', camera.viewPort.height);
+        this.godRaySetting.setFloat('intensity', setting.intensity);
+        this.godRaySetting.setFloat('rayMarchCount', setting.rayMarchCount);
 
-        this.godRaySetting.setFloat('blendColor', this.blendColor ? 1 : 0);
-        this.godRaySetting.setFloat('scatteringExponent', this.scatteringExponent);
-
+        let presentationSize = webGPUContext.presentationSize;
+        let w = presentationSize[0];
+        let h = presentationSize[1];
+        this.godRaySetting.setFloat('viewPortWidth', w);
+        this.godRaySetting.setFloat('viewPortHeight', h);
+        this.godRaySetting.setFloat('blendColor', setting.blendColor ? 1 : 0);
+        this.godRaySetting.setFloat('scatteringExponent', setting.scatteringExponent);
         this.godRaySetting.apply();
-
         GPUContext.computeCommand(command, [this.godRayCompute]);
         GPUContext.lastRenderPassState = this.rendererPassState;
     }
