@@ -84,7 +84,7 @@ export function RegisterComponent(cls, key, p1?, p2?, p3?): any {
     if (!dic) {
         dic = window['__Component__'] = {};
     }
-    dic[cls.name] = cls;
+    dic[key] = cls;
 }
 
 export function GetComponentClass(name: string) {
@@ -100,7 +100,7 @@ export function RegisterShader(cls, key, p1?, p2?, p3?): any {
     if (!dic) {
         dic = window['__shader__'] = {};
     }
-    dic[cls.name] = cls;
+    dic[key] = cls;
 }
 
 export function GetShader(name: string) {

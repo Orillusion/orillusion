@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // <<<<<<< Updated upstream
 // import { Sample_GraphicPath } from "./graphic/Sample_GraphicPath"
 // =======
@@ -7,6 +8,8 @@ import { Sample_GraphicPath3 } from "./graphic/Sample_GraphicPath3";
 import { Sample_GraphicShape } from "./graphic/Sample_GraphicShape";
 // >>>>>>> Stashed changes
 
+=======
+>>>>>>> 033c95aa2b1fc6c68ec72d13ce2c53017fdc0d79
 /******** Load all samples in /src/sample/ ********/
 // {
 //     // find all demos in /sample
@@ -29,6 +32,7 @@ import { Sample_GraphicShape } from "./graphic/Sample_GraphicShape";
 //     menu.innerHTML = list
 //     document.body.appendChild(menu)
 
+<<<<<<< HEAD
 
 //     // change sessionStorage.target on click, and reload iframe
 //     menu.addEventListener('click', (e: Event) => {
@@ -46,6 +50,24 @@ import { Sample_GraphicShape } from "./graphic/Sample_GraphicShape";
 //             sessionStorage.target = target
 //         }
 //     })
+=======
+    // change sessionStorage.target on click, and reload iframe
+    menu.addEventListener('click', (e: Event) => {
+        const button = e.target as HTMLElement
+        if (!button.id)
+            return
+        // remove prev iframe to clear memory
+        document.querySelector('iframe')?.remove()
+        const target = button.id
+        if (target && modules[target]) {
+            addIframe()
+            document.querySelector('.active')?.classList.remove('active')
+            button.classList.add('active')
+            sessionStorage.top = menu.scrollTop
+            sessionStorage.target = target
+        }
+    })
+>>>>>>> 033c95aa2b1fc6c68ec72d13ce2c53017fdc0d79
 
 //     // load target on refresh
 //     if (sessionStorage.target) {
@@ -60,6 +82,7 @@ import { Sample_GraphicShape } from "./graphic/Sample_GraphicShape";
 //         document.querySelector('a')?.click()
 //     }
 
+<<<<<<< HEAD
 //     // create an iframe inside page to load sample
 //     function addIframe() {
 //         const iframe = document.createElement('iframe') as HTMLIFrameElement
@@ -90,3 +113,23 @@ import { Sample_GraphicShape } from "./graphic/Sample_GraphicShape";
 // new Sample_GraphicPath3().run();
 new Sample_GraphicShape().run();
 // >>>>>>> Stashed changes
+=======
+    // create an iframe inside page to load sample
+    function addIframe() {
+        const iframe = document.createElement('iframe') as HTMLIFrameElement
+        iframe.srcdoc = `
+        <style>html,body{margin:0;padding:0;overflow:hidden}canvas{touch-action:none}</style>
+        <script>
+            let target = sessionStorage.target
+            if(target)
+            import('./samples/'+target).then(m=>{
+                for(let i in m){
+                    new m[i]().run()
+                    break
+                }
+            })
+        </script>`
+        document.body.appendChild(iframe)
+    }
+}
+>>>>>>> 033c95aa2b1fc6c68ec72d13ce2c53017fdc0d79

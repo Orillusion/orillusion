@@ -4,7 +4,7 @@ import { PropertyAnimationClip } from "../../math/AnimationCurveClip";
 import { RegisterComponent } from "../../util/SerializeDecoration";
 import { ComponentBase } from "../ComponentBase";
 
-@RegisterComponent
+@RegisterComponent(AnimatorComponent, 'AnimatorComponent')
 export class AnimatorComponent extends ComponentBase {
     public jointMatrixIndexTableBuffer: StorageGPUBuffer;
     public playBlendShapeLoop: boolean = false;
