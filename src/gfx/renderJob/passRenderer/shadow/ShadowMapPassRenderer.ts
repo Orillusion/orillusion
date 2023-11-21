@@ -79,6 +79,7 @@ export class ShadowMapPassRenderer extends RendererBase {
             const dirLight = light as DirectLight;
             let shadowIndex = dirLight.shadowIndex;
             this.rendererPassState = this.rendererPassStates[shadowIndex];
+            shadowSize = this.rendererPassState.depthTexture.width;
 
             let viewRenderList = EntityCollect.instance.getRenderShaderCollect(view);
             for (const renderList of viewRenderList) {
