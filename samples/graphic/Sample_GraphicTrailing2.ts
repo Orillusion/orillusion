@@ -14,7 +14,7 @@ export class Sample_GraphicMesh_Trailing2 {
     view: View3D;
 
     colors: Color[];
-    trail3ds: Object3D[][];
+    trail3ds: Object3D[];
 
     constructor() { }
 
@@ -104,7 +104,7 @@ export class Sample_GraphicMesh_Trailing2 {
             this.height = 10;
             let mr = Graphic3DMesh.drawRibbon("trail", this.scene, bitmapTexture2DArray, 127, this.width * this.height);
             this.parts = mr.object3Ds;
-            this.trail3ds = mr.ribbon3Ds;
+            this.trail3ds = mr.object3Ds;
 
             mr.material.blendMode = BlendMode.ADD;
             // mr.material.transparent = true;
@@ -143,17 +143,17 @@ export class Sample_GraphicMesh_Trailing2 {
                 let ly = 0.1 * Math.random() + 0.1;
                 let lz = 10 * Math.random() + 10;
                 let oy = 1 * Math.random() + 1;
-                for (let j = 0; j < trail3d.length; j++) {
-                    let p = j / (trail3d.length - 1);
+                // for (let j = 0; j < trail3d.length; j++) {
+                //     let p = j / (trail3d.length - 1);
 
-                    let q = Quaternion.HELP_0;
-                    q.fromEulerAngles(0, p * 360 * 4, 0);
-                    q.transformVector(Vector3.RIGHT, dir);
+                //     let q = Quaternion.HELP_0;
+                //     q.fromEulerAngles(0, p * 360 * 4, 0);
+                //     q.transformVector(Vector3.RIGHT, dir);
 
-                    trail3d[j].x = dir.x * lx * p;
-                    trail3d[j].y = j * ly + oy;
-                    trail3d[j].z = dir.z * lz * p;
-                }
+                //     trail3d[j].x = dir.x * lx * p;
+                //     trail3d[j].y = j * ly + oy;
+                //     trail3d[j].z = dir.z * lz * p;
+                // }
             }
         }
     }

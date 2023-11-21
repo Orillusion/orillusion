@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer, BoxGeometry, SphereGeometry, VirtualTexture, GPUTextureFormat, UnLitMaterial, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, PlaneGeometry, Vector3, Graphic3DMesh, Matrix4, Time, BlendMode, Color, PostProcessingComponent, BloomPost, TrailGeometry, AnimationCurve, Keyframe, AnimationCurveT, KeyframeT, DepthOfFieldPost, Quaternion, PingPong, Object3DUtil, GPUPrimitiveTopology, Float32ArrayUtil, Vector4 } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer, BoxGeometry, SphereGeometry, VirtualTexture, GPUTextureFormat, UnLitMaterial, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, PlaneGeometry, Vector3, Graphic3DMesh, Matrix4, Time, BlendMode, Color, PostProcessingComponent, BloomPost, TrailGeometry, AnimationCurve, Keyframe, AnimationCurveT, KeyframeT, DepthOfFieldPost, Quaternion, PingPong, Object3DUtil, GPUPrimitiveTopology, Float32ArrayUtil, Vector4, lineJoin, GeoJsonStruct, GeoJsonUtil, ShapeInfo } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { Stats } from "@orillusion/stats";
 
@@ -20,8 +20,8 @@ export class Sample_GraphicShape {
 
     async run() {
 
-        Matrix4.maxCount = 300000;
-        Matrix4.allocCount = 300000;
+        Matrix4.maxCount = 10000;
+        Matrix4.allocCount = 10000;
 
         await Engine3D.init({ beforeRender: () => this.update() });
 
@@ -74,10 +74,13 @@ export class Sample_GraphicShape {
             this.scene.addChild(this.lightObj3D);
         }
 
+        let geoJsonData = await Engine3D.res.loadJSON("gis/geojson/pudong.geoJson") as GeoJsonStruct;
 
         let texts = [];
-        texts.push(await Engine3D.res.loadTexture("textures/frame64.png") as BitmapTexture2D);
-        // texts.push(await Engine3D.res.loadTexture("textures/line_001064.png") as BitmapTexture2D);
+        // texts.push(await Engine3D.res.loadTexture("textures/frame64.png") as BitmapTexture2D);
+        texts.push(await Engine3D.res.loadTexture("textures/line_001064.png") as BitmapTexture2D);
+
+
 
         let bitmapTexture2DArray = new BitmapTexture2DArray(texts[0].width, texts[0].height, texts.length);
         bitmapTexture2DArray.setTextures(texts);
@@ -86,49 +89,63 @@ export class Sample_GraphicShape {
         mat.baseMap = bitmapTexture2DArray;
         mat.name = "LitMaterial";
 
+        let mat4 = new Matrix4();
+        mat4.rawData.set([]);
+
         GUIHelp.add(this, "cafe", 0.0, 100.0);
         GUIHelp.add(this, "frame", 0.0, 100.0);
         {
             this.width = 1;
             this.height = 1;
-            let mr = Graphic3DMesh.drawShape("s1", this.scene, bitmapTexture2DArray);
-            this.parts = mr.object3Ds;
+
+            let neg = true;
+            // let neg = false;
+            // if (neg) {
+            //     Float32ArrayUtil.wirteVec4(mr.shapes[0].paths, 0, new Vector4(0, 0, -10, 0));
+            //     Float32ArrayUtil.wirteVec4(mr.shapes[0].paths, 1, new Vector4(0, 0, 0, 0));
+            //     Float32ArrayUtil.wirteVec4(mr.shapes[0].paths, 2, new Vector4(10, 0, -10, 0));
+            //     Float32ArrayUtil.wirteVec4(mr.shapes[0].paths, 3, new Vector4(10, 0, -20, 0));
+            //     // Float32ArrayUtil.wirteVec4(mr.shapes[0].paths, 4, new Vector4(10, 0, -20, 0));
+            // } else {
+            //     Float32ArrayUtil.wirteVec4(mr.shapes[0].paths, 0, new Vector4(10, 0, 10, 0));
+            //     Float32ArrayUtil.wirteVec4(mr.shapes[0].paths, 1, new Vector4(0, 0, 0, 0));
+            //     Float32ArrayUtil.wirteVec4(mr.shapes[0].paths, 2, new Vector4(0, 0, -10, 0));
+            //     // Float32ArrayUtil.wirteVec4(mr.shapes[0].paths, 3, new Vector4(10, 0, 10, 0));
+            //     Float32ArrayUtil.wirteVec4(mr.shapes[0].paths, 3, new Vector4(-10, 0, 0, 0));
+            // }
+
+            let lineArray = GeoJsonUtil.getPath(geoJsonData);
+
+            let mr = Graphic3DMesh.drawShape(`path_geojson`, this.scene, bitmapTexture2DArray);
             mr.material.blendMode = BlendMode.SOFT_ADD;
             for (let i = 0; i < this.width * this.height; i++) {
                 mr.setTextureID(i, Math.floor(Math.random() * texts.length));
             }
 
-            mr.shapes[0].shapeType = 3;
-            mr.shapes[0].pathCount = 4;
-            mr.shapes[0].width = 0.5;
-            mr.shapes[0].vSpeed = 10;
+            for (let ii = 0; ii < lineArray.length; ii++) {
+                this.parts = mr.object3Ds;
 
-            let neg = false;
-            if (neg) {
-                Float32ArrayUtil.wirteVec4(mr.shapes[0].paths, 0, new Vector4(0, 0, -10, 0));
-                Float32ArrayUtil.wirteVec4(mr.shapes[0].paths, 1, new Vector4(0, 0, 0, 0));
-                Float32ArrayUtil.wirteVec4(mr.shapes[0].paths, 2, new Vector4(10, 0, -10, 0));
-                Float32ArrayUtil.wirteVec4(mr.shapes[0].paths, 3, new Vector4(10, 0, 10, 0));
-                Float32ArrayUtil.wirteVec4(mr.shapes[0].paths, 4, new Vector4(10, 0, -20, 0));
-            } else {
-                Float32ArrayUtil.wirteVec4(mr.shapes[0].paths, 0, new Vector4(10, 0, -10, 0));
-                Float32ArrayUtil.wirteVec4(mr.shapes[0].paths, 1, new Vector4(0, 0, 0, 0));
-                Float32ArrayUtil.wirteVec4(mr.shapes[0].paths, 2, new Vector4(0, 0, -10, 0));
-                Float32ArrayUtil.wirteVec4(mr.shapes[0].paths, 3, new Vector4(10, 0, 10, 0));
-                Float32ArrayUtil.wirteVec4(mr.shapes[0].paths, 4, new Vector4(-10, 0, 20, 0));
+                let shapeInfo = new ShapeInfo();
+                shapeInfo.shapeType = 3;
+                shapeInfo.lineJoin = lineJoin.bevel;
+                shapeInfo.width = 0.05;
+                shapeInfo.vSpeed = 10;
+                mr.setShape(ii, shapeInfo);
+                let tmp = [];
+                for (let i = 0; i < lineArray[ii].length; i++) {
+                    let p = lineArray[ii][i];
+                    let newPos = new Vector4();
+                    newPos.set(p.x - 121, p.y, p.z - 31, 0.0);
+                    tmp.push(newPos);
+                    newPos.multiplyScalar(100);
+                    mr.shapes[ii].paths.push(newPos);
+                }
+                console.log(`path${ii}`, tmp.length);
+                // Engine3D.views[0].graphic3D.drawLines(`path${ii}`, tmp);
             }
+            mr.updateShape();
+            Engine3D.views[0].graphic3D.drawFillCircle(`zero`, Vector3.ZERO, 0.5);
 
-            // let pos = Vector4.ZERO;
-            // let space = 15;
-            // for (let i = 0; i < mr.shapes[0].pathCount + 1; i++) {
-            //     let newPos = new Vector4();
-            //     newPos.x = pos.x + Math.random() * space + Math.random() * space - space * 0.5;
-            //     newPos.y = pos.y + 0;
-            //     newPos.z = pos.z + Math.random() * space + Math.random() * space - space * 0.5;
-            //     pos.copyFrom(newPos);
-            //     Float32ArrayUtil.wirteVec4(mr.shapes[0].paths, i, newPos);
-            // }
-            mr.updateShape(0, mr.shapes[0]);
         }
     }
 

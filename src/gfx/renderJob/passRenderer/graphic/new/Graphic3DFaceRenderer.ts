@@ -1,5 +1,5 @@
-import { graphicFaceCompute } from "../../../../../assets/shader/graphic/GraphicFaceCompute";
-import { graphicTrailCompute } from "../../../../../assets/shader/graphic/GraphicTrailCompute";
+import { NonSerialize } from "../../../../..";
+import { GraphicLineCompute } from "../../../../../assets/shader/graphic/GraphicLineCompute";
 import { MeshRenderer } from "../../../../../components/renderer/MeshRenderer";
 import { View3D } from "../../../../../core/View3D";
 import { Object3D } from "../../../../../core/entities/Object3D";
@@ -18,6 +18,18 @@ import { ComputeShader } from "../../../../graphics/webGpu/shader/ComputeShader"
 import { GPUContext } from "../../../GPUContext";
 import { Float32ArrayUtil } from "./Float32ArrayUtil";
 
+export enum lineJoin {
+    bevel = 0,
+    miter = 1,
+    round = 2
+}
+
+export enum lineCap {
+    butt = 0,
+    square = 1,
+    round = 2
+}
+
 export class GeometryInfo extends Struct {
     public index: number = 0;
     public faceStart: number = 0;
@@ -29,19 +41,27 @@ export class ShapeInfo extends Struct {
     public shapeIndex: number = 0;; //face,poly,line,cycle,rectangle,box,sphere
     public shapeType: number = 0;
     public width: number = 0;
-    public height: number = 0;
+    public lineCap: number = 0;
     public pathCount: number = 0;
     public uSpeed: number = 0;
     public vSpeed: number = 0;
-    public radiu: number = 0;
-    public paths: Float32Array = new Float32Array(Graphic3DFaceRenderer.maxPathPointCount * 4);
+    public lineJoin: number = 0;
+
+    public startPath: number = 0;
+    public endPath: number = 0;
+    public empty0: number = 0;
+    public empty1: number = 0;
+
+    @NonSerialize
+    public paths: Vector4[] = [];
 }
 
 export class Graphic3DFaceRenderer extends MeshRenderer {
-    public static maxFaceCount: number = 50000;
+    public static maxFaceCount: number = 100000;
     public static maxGeometryCount: number = 1;
-    public static maxShapeCount: number = 1;
-    public static maxPathPointCount: number = 50;
+    public static maxPathPointCount: number = 10000;
+    public static maxShapeCount: number = 1024;
+
     public texture: BitmapTexture2DArray;
     public transformBuffer: StorageGPUBuffer;
 
@@ -50,17 +70,21 @@ export class Graphic3DFaceRenderer extends MeshRenderer {
 
     public geometryInfoBuffer: StructStorageGPUBuffer<GeometryInfo>;
     public shapeBuffer: StructStorageGPUBuffer<ShapeInfo>;
+    public pathBuffer: StorageGPUBuffer;
 
-    object3Ds: any[];
-    shapes: ShapeInfo[];
+    public object3Ds: any[];
+    public shapes: ShapeInfo[];
+    public realDrawShape: number;
+    public needUpdate: boolean = false;
     public init(): void {
         super.init();
     }
 
     public create(tex: BitmapTexture2DArray, num: number) {
-        this._computeGeoShader = new ComputeShader(graphicFaceCompute(Graphic3DFaceRenderer.maxPathPointCount));
+        this._computeGeoShader = new ComputeShader(GraphicLineCompute());
         this.geometryInfoBuffer = new StructStorageGPUBuffer<GeometryInfo>(GeometryInfo, Graphic3DFaceRenderer.maxGeometryCount);
         this.shapeBuffer = new StructStorageGPUBuffer<ShapeInfo>(ShapeInfo, Graphic3DFaceRenderer.maxShapeCount);
+        this.pathBuffer = new StorageGPUBuffer(Graphic3DFaceRenderer.maxPathPointCount * 4);
 
         let geo = new TriGeometry(Graphic3DFaceRenderer.maxFaceCount)
         let mat = new UnLitTexArrayMaterial();
@@ -82,6 +106,7 @@ export class Graphic3DFaceRenderer extends MeshRenderer {
             this.transformBuffer.setColor("baseColor_" + i, new Color());
             this.transformBuffer.setColor("emissiveColor_" + i, new Color(0, 0, 0, 0));
             this.transformBuffer.setVector4("uvRect_" + i, new Vector4(0, 0, 1, 1));
+            console.log("create dynamic geometry", i);
         }
 
         this.transformBuffer.apply();
@@ -96,13 +121,12 @@ export class Graphic3DFaceRenderer extends MeshRenderer {
             const geometryInfo = new GeometryInfo();
             geos.push(geometryInfo);
         }
-        this.shapeBuffer.setStructArray(GeometryInfo, geos);
+        this.geometryInfoBuffer.setStructArray(GeometryInfo, geos);
         this.geometryInfoBuffer.apply();
 
         this.shapes = [];
         for (let i = 0; i < Graphic3DFaceRenderer.maxShapeCount; i++) {
-            const shapeInfo = new ShapeInfo();
-            this.shapes.push(shapeInfo);
+            this.shapes.push(new ShapeInfo());
         }
         this.shapeBuffer.setStructArray(ShapeInfo, this.shapes);
         this.shapeBuffer.apply();
@@ -111,16 +135,40 @@ export class Graphic3DFaceRenderer extends MeshRenderer {
             this._computeGeoShader.setStorageBuffer("vertexBuffer", this.geometry.vertexBuffer.vertexGPUBuffer);
             this._computeGeoShader.setStructStorageBuffer("geometryInfoBuffer", this.geometryInfoBuffer);
             this._computeGeoShader.setStructStorageBuffer("shapeBuffer", this.shapeBuffer);
+            this._computeGeoShader.setStorageBuffer("pathBuffer", this.pathBuffer);
             // this._computeGeoShader.setStorageBuffer("models", GlobalBindGroup.modelMatrixBindGroup.matrixBufferDst);
             this._computeGeoShader.setStorageBuffer("globalUniform", GlobalBindGroup.getCameraGroup(this.transform.scene3D.view.camera).uniformGPUBuffer);
         }
 
-        this.onCompute = (view: View3D, command: GPUCommandEncoder) => this.computeTrail(view, command);
     }
 
-    public updateShape(index: number, shape: ShapeInfo) {
+    public setShape(index: number, shape: ShapeInfo) {
         this.shapeBuffer.setStruct(ShapeInfo, index, shape);
+        this.shapes ||= [];
+        this.shapes[index] = shape;
         this.shapeBuffer.apply();
+    }
+
+    public updateShape() {
+        let offset = 0;
+        this.realDrawShape = 0;
+        for (let i = 0; i < this.shapes.length; i++) {
+            const shapeInfo = this.shapes[i];
+            shapeInfo.pathCount = shapeInfo.paths.length;
+            if (shapeInfo.pathCount > 0) {
+                this.realDrawShape++;
+            }
+            shapeInfo.startPath = offset;
+            offset += shapeInfo.paths.length;
+            for (let j = 0; j < shapeInfo.pathCount; j++) {
+                this.pathBuffer.setVector4(`${i}_path_${j}`, shapeInfo.paths[j]);
+            }
+            this.shapeBuffer.setStruct(ShapeInfo, i, shapeInfo);
+        }
+        this.shapeBuffer.apply();
+        this.pathBuffer.apply();
+
+        this.needUpdate = true;
     }
 
     public setTextureID(i: number, id: number) {
@@ -160,12 +208,17 @@ export class Graphic3DFaceRenderer extends MeshRenderer {
         }
     }
 
+    public onCompute(view: View3D, command: GPUCommandEncoder): void {
+        if (this.needUpdate) {
+            this.needUpdate = false;
+            this.computeTrail(view, command);
+        }
+    }
+
     private computeTrail(view: View3D, command: GPUCommandEncoder) {
-        // this._computeShader.workerSizeX = this.ribbonCount;
-        this._computeGeoShader.workerSizeX = 1;// Math.floor(this.ribbonSegment / Graphic3DRibbonRenderer.maxRibbonSegment);
-        this._computeGeoShader.workerSizeY = 4;// Math.floor(this.ribbonSegment / Graphic3DRibbonRenderer.maxRibbonSegment);
-        // this._computeShader.workerSizeY = 1;// Math.floor(this.ribbonSegment / Graphic3DRibbonRenderer.maxRibbonSegment);
-        // this._computeShader.workerSizeX = 1;
+        this._computeGeoShader.workerSizeX = this.realDrawShape;
+        this._computeGeoShader.workerSizeY = Math.floor(Graphic3DFaceRenderer.maxPathPointCount / 256 + 1);
+        this._computeGeoShader.workerSizeZ = 1;
         GPUContext.computeCommand(command, [this._computeGeoShader]);
     }
 

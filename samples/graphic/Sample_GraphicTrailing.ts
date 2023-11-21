@@ -14,7 +14,7 @@ export class Sample_GraphicMesh_Trailing {
     view: View3D;
 
     colors: Color[];
-    trail3ds: Object3D[][];
+    trail3ds: Object3D[];
 
     constructor() { }
 
@@ -104,7 +104,7 @@ export class Sample_GraphicMesh_Trailing {
             this.height = 20;
             let mr = Graphic3DMesh.drawRibbon("trail", this.scene, bitmapTexture2DArray, 50, this.width * this.height);
             this.parts = mr.object3Ds;
-            this.trail3ds = mr.ribbon3Ds;
+            this.trail3ds = mr.object3Ds;
 
             mr.material.blendMode = BlendMode.ADD;
             // mr.material.transparent = true;
@@ -157,15 +157,15 @@ export class Sample_GraphicMesh_Trailing {
             for (let i = 0; i < this.trail3ds.length; i++) {
                 const trail3d = this.trail3ds[i];
                 let dir = new Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1);
-                for (let j = 0; j < trail3d.length; j++) {
-                    let p = j / (trail3d.length - 1);
-                    let vx = curveX.getValue(p);
-                    let vy = curveY.getValue(p);
-                    let vz = curveZ.getValue(p);
-                    trail3d[j].x = vx * dir.x * 100;
-                    trail3d[j].y = vy * dir.y * 100;
-                    trail3d[j].z = vz * dir.z * 100;
-                }
+                // for (let j = 0; j < trail3d.length; j++) {
+                //     let p = j / (trail3d.length - 1);
+                //     let vx = curveX.getValue(p);
+                //     let vy = curveY.getValue(p);
+                //     let vz = curveZ.getValue(p);
+                //     trail3d[j].x = vx * dir.x * 100;
+                //     trail3d[j].y = vy * dir.y * 100;
+                //     trail3d[j].z = vz * dir.z * 100;
+                // }
             }
         }
     }
