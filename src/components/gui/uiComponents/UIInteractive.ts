@@ -43,7 +43,7 @@ export class UIInteractive extends UIComponentBase implements IUIInteractive {
     }
 
     public rayPick(ray: Ray, panel: UIPanel, screenPos: Vector2, screenSize: Vector2): HitInfo {
-        return GUIPickHelper.rayPick(ray, screenPos, screenSize, panel.space, this._uiTransform, panel.transform.worldMatrix);
+        return GUIPickHelper.rayPick(ray, screenPos, screenSize, panel.space, panel.panelRatio, this._uiTransform, panel.transform.worldMatrix);
     }
 
     public cloneTo(obj: Object3D) {

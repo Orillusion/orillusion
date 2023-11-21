@@ -176,13 +176,11 @@ export class GUIShader {
             scissorRect:vec4<f32>,
 
             screenSize:vec2<f32>,
-            guiSolution:vec2<f32>,
-            
             scissorCornerRadius:f32,
             scissorFadeOutSize:f32,
 
             pixelRatio:f32,
-            empty:f32,
+            v3:vec3<f32>
         }
         
         struct VertexOutput {

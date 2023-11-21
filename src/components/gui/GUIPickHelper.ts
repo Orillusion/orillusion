@@ -34,7 +34,7 @@ export class GUIPickHelper {
         this._worldMatrix = new Matrix4();
     }
 
-    public static rayPick(ray: Ray, screenPos: Vector2, screenSize: Vector2, space: GUISpace, uiTransform: UITransform, worldMatrix: Matrix4): HitInfo {
+    public static rayPick(ray: Ray, screenPos: Vector2, screenSize: Vector2, space: GUISpace, panelRatio: number, uiTransform: UITransform, worldMatrix: Matrix4): HitInfo {
         if (!this._isInit) {
             this.init();
             this._isInit = true;
@@ -64,7 +64,7 @@ export class GUIPickHelper {
                 };
             }
         } else {
-            this.calculateHotArea_View(uiTransform, this._pt0, this._pt1, this._pt2, this._pt3);
+            this.calculateHotArea_View(uiTransform, panelRatio, this._pt0, this._pt1, this._pt2, this._pt3);
 
             //
             let screenSizeX: number = screenSize.x;
@@ -87,7 +87,7 @@ export class GUIPickHelper {
         return null;
     }
 
-    private static calculateHotArea_View(transform: UITransform, pt0: Vector3, pt1: Vector3, pt2: Vector3, pt3: Vector3) {
+    private static calculateHotArea_View(transform: UITransform, panelRatio: number, pt0: Vector3, pt1: Vector3, pt2: Vector3, pt3: Vector3) {
         let uiMtx = transform.getWorldMatrix();
         //2 3
         //0 1
@@ -113,10 +113,10 @@ export class GUIPickHelper {
         pt2.y -= offset;
         pt3.y -= offset;
 
-        pt0.multiplyScalar(GUIConfig.pixelRatio);
-        pt1.multiplyScalar(GUIConfig.pixelRatio);
-        pt2.multiplyScalar(GUIConfig.pixelRatio);
-        pt3.multiplyScalar(GUIConfig.pixelRatio);
+        pt0.multiplyScalar(panelRatio);
+        pt1.multiplyScalar(panelRatio);
+        pt2.multiplyScalar(panelRatio);
+        pt3.multiplyScalar(panelRatio);
     }
 
     private static calculateHotArea_World(transform: UITransform, pt0: Vector3, pt1: Vector3, pt2: Vector3, pt3: Vector3) {
