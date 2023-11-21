@@ -1,12 +1,14 @@
-import { PassType, Shader } from "../../..";
 import { Engine3D } from "../../../Engine3D";
 import { ShaderLib } from "../../../assets/shader/ShaderLib";
 import { GPUCompareFunction, GPUCullMode } from "../../../gfx/graphics/webGpu/WebGPUConst";
 import { Texture } from "../../../gfx/graphics/webGpu/core/texture/Texture";
 import { RenderShaderPass } from "../../../gfx/graphics/webGpu/shader/RenderShaderPass";
+import { Shader } from "../../../gfx/graphics/webGpu/shader/Shader";
+import { PassType } from "../../../gfx/renderJob/passRenderer/state/RendererType";
 import { BlendMode } from "../../../materials/BlendMode";
 import { Material } from "../../../materials/Material";
 import { Vector2 } from "../../../math/Vector2";
+import { Vector3 } from "../../../math/Vector3";
 import { Vector4 } from "../../../math/Vector4";
 import { GUISpace } from "../GUIConfig";
 import { GUIShader } from "./GUIShader";
@@ -32,13 +34,13 @@ export class GUIMaterial extends Material {
         colorPass.passType = PassType.COLOR;
         colorPass.setShaderEntry(`VertMain`, `FragMain`);
 
-        colorPass.setUniformVector2('screenSize', this._screenSize);
-        colorPass.setUniformVector2('guiSolution', this._screenSize);
         colorPass.setUniformVector4('scissorRect', new Vector4());
+        colorPass.setUniformVector2('screenSize', this._screenSize);
         colorPass.setUniformFloat('scissorCornerRadius', 0.0);
         colorPass.setUniformFloat('scissorFadeOutSize', 0.0);
+
         colorPass.setUniformFloat('pixelRatio', 1);
-        colorPass.setUniformFloat('empty', 0);
+        colorPass.setUniformVector3('v3', Vector3.ZERO);
 
         let shaderState = colorPass.shaderState;
         // shaderState.useZ = false;
@@ -53,8 +55,7 @@ export class GUIMaterial extends Material {
         this.shader = newShader;
     }
 
-    public setGUISolution(value: Vector2, pixelRatio: number) {
-        this.shader.setUniformVector2('guiSolution', value);
+    public setPanelRatio(pixelRatio: number) {
         this.shader.setUniformFloat('pixelRatio', pixelRatio);
     }
 

@@ -32,6 +32,7 @@ export class UIPanel extends UIImage {
     protected _geometry: GUIGeometry;
     protected _maxCount: number = 128;
 
+    public panelRatio: number = 1;
     public readonly isUIPanel = true;
 
     public cloneTo(obj: Object3D): void {
@@ -55,6 +56,7 @@ export class UIPanel extends UIImage {
 
     init(param?: any) {
         super.init(param);
+        this._uiTransform.resize(webGPUContext.canvas.width, webGPUContext.canvas.height);
         this.create(this.space);
         this.visible = false;
     }
@@ -153,9 +155,19 @@ export class UIPanel extends UIImage {
         panel._uiRenderer.needSortOnCameraZ = panel.needSortOnCameraZ;
 
         //update material
+        if (this.space == GUISpace.View) {
+            let sW = webGPUContext.canvas.clientWidth;
+            let sH = webGPUContext.canvas.clientHeight;
+            let pW = this._uiTransform.width;
+            let pH = this._uiTransform.height;
+            this.panelRatio = this.updateGUIPixelRatio(sW, sH, pW, pH);
+        } else {
+            this.panelRatio = 1;
+        }
+
         for (let item of panel['_uiRenderer'].materials) {
             let material = item as GUIMaterial;
-            material.setGUISolution(GUIConfig.solution, GUIConfig.pixelRatio);
+            material.setPanelRatio(this.panelRatio);
             material.setScreenSize(webGPUContext.canvas.clientWidth, webGPUContext.canvas.clientHeight);
             material.setScissorEnable(panel.scissorEnable);
             if (panel.scissorEnable) {
@@ -165,9 +177,21 @@ export class UIPanel extends UIImage {
             }
         }
 
-
         //clear flag
         panel.needUpdateGeometry = false;
+    }
+
+    private updateGUIPixelRatio(sW: number, sH: number, pW: number, pH: number) {
+        let xyRatioSolution = pW / pH;
+        let xyRatioCurrent = sW / sH;
+        let panelRatio: number = 1;
+        if (xyRatioSolution < xyRatioCurrent) {
+            panelRatio = sH / pH;
+        } else {
+            panelRatio = sW / pW;
+        }
+
+        return panelRatio;
     }
 
 }

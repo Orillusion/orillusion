@@ -454,16 +454,6 @@ export class Engine3D {
         this.resume();
     }
 
-    private static updateGUIPixelRatio(screenWidth: number, screenHeight: number) {
-        let xyRatioSolution = GUIConfig.solution.x / GUIConfig.solution.y;
-        let xyRatioCurrent = screenWidth / screenHeight;
-        if (xyRatioSolution < xyRatioCurrent) {
-            GUIConfig.pixelRatio = screenHeight / GUIConfig.solution.y;
-        } else {
-            GUIConfig.pixelRatio = screenWidth / GUIConfig.solution.x;
-        }
-    }
-
     private static updateFrame(time: number) {
         Time.delta = time - Time.time;
         Time.time = time;
@@ -478,8 +468,6 @@ export class Engine3D {
             view.scene.waitUpdate();
             view.camera.resetPerspective(webGPUContext.aspect);
         }
-
-        this.updateGUIPixelRatio(webGPUContext.canvas.clientWidth, webGPUContext.canvas.clientHeight);
 
         if (this._beforeRender) this._beforeRender();
 
