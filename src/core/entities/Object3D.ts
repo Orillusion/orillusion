@@ -53,11 +53,10 @@ export class Object3D extends Entity {
      * @return result component
      */
     public addComponent<T extends IComponent>(c: Ctor<T>, param?: any): T {
-        let className = c.name;
-        if (!this.components.has(className)) {
+        if (!this.components.has(c)) {
             let instance: T = new c() as T;
             instance.object3D = this;
-            this.components.set(className, instance);
+            this.components.set(c, instance);
             instance[`__init`](param);
             ComponentCollect.appendWaitStart(instance);
             return instance;
@@ -75,8 +74,7 @@ export class Object3D extends Entity {
      * @returns result component
      */
     public getOrAddComponent<T extends IComponent>(c: Ctor<T>): T {
-        let className = c.name;
-        let component = this.components.get(className);
+        let component = this.components.get(c);
         if (!component) {
             component = this.addComponent(c);
         }
@@ -89,11 +87,10 @@ export class Object3D extends Entity {
      * @param c class of component
      */
     public removeComponent<T extends IComponent>(c: Ctor<T>) {
-        let className = c.name;
-        if (this.components.has(className)) {
-            let component = this.components.get(className);
+        if (this.components.has(c)) {
+            let component = this.components.get(c);
             ComponentCollect.removeWaitStart(this, component);
-            this.components.delete(className);
+            this.components.delete(c);
             component[`__stop`]();
             component.beforeDestroy();
             component.destroy();
@@ -107,8 +104,7 @@ export class Object3D extends Entity {
      * @returns boolean
      */
     public hasComponent<T extends IComponent>(c: Ctor<T>): boolean {
-        let className = c.name;
-        return this.components.has(className);
+        return this.components.has(c);
     }
 
     /**
@@ -118,8 +114,7 @@ export class Object3D extends Entity {
      * @returns result component
      */
     public getComponent<T extends IComponent>(c: Ctor<T>): T {
-        let className = c.name;
-        return this.components.get(className) as T;
+        return this.components.get(c) as T;
     }
 
     /**
@@ -152,8 +147,7 @@ export class Object3D extends Entity {
      */
     public getComponentsInChild<T extends IComponent>(c: Ctor<T>): T[] {
         let list: T[] = [];
-        let className = c.name;
-        let component = this.components.get(className);
+        let component = this.components.get(c);
         if (component) {
             list.push(component as T);
         }
@@ -201,7 +195,7 @@ export class Object3D extends Entity {
      */
     public getComponentsExt<T extends IComponent>(c: Ctor<T>, ret?: T[], includeInactive?: boolean): T[] {
         ret ||= [];
-        let component = this.components.get(c.name);
+        let component = this.components.get(c);
         if (component && (component.enable || includeInactive)) {
             ret.push(component as T);
         } else {
@@ -219,7 +213,7 @@ export class Object3D extends Entity {
         let findComponent;
         for (const component of this.components.values()) {
             if (component && (component.enable || includeInactive)) {
-                if (component[key] == value) {
+                if (component[key] === value) {
                     ret.push(component as T);
                     findComponent = true;
                 }
