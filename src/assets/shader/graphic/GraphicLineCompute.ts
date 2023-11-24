@@ -26,34 +26,42 @@ export let GraphicLineCompute = () => {
         shapeType:f32,
         width:f32,
         lineCap:f32,
+        
         pathCount:f32,
-        uSpeed:f32,
-        vSpeed:f32,
+        uScale:f32,
+        vScale:f32,
         lineJoin:f32,
 
         startPath:f32,
         endPath:f32,
-        empty0:f32,
-        empty1:f32,
+        uSpeed:f32,
+        vSpeed:f32,
+    }
+
+    struct DrawInfo{
+        skipFace:atomic<u32>,
+        skipFace2:atomic<u32>,
+        skipFace3:atomic<u32>,
+        skipFace4:atomic<u32>,
     }
 
     @group(0) @binding(1) var<storage, read_write> vertexBuffer : array<VertexInfo>;
     // @group(0) @binding(2) var<storage, read_write> geometryInfoBuffer : array<GeometryInfo>;
     @group(0) @binding(2) var<storage, read> shapeBuffer : array<ShapeInfo>;
     @group(0) @binding(3) var<storage, read> pathBuffer : array<vec4f>;
+    @group(0) @binding(4) var<storage, read_write> drawBuffer : DrawInfo ;
     // @group(0) @binding(3) var<storage, read> models : array<mat4x4<f32>>;
     var<private> segIndex:u32 ;
     var<private> segCount:u32 ;
     var<private> time:f32 ;
     var<private> pathOffset:u32 ;
     var<private> faceOffset:u32 ;
-    var<private> faceStrip:u32 = 4u ;
+    // var<private> faceStrip:u32 = 1u ;
     var<private> shape:ShapeInfo ;
     @compute @workgroup_size(256,1,1)
     fn CsMain(@builtin(workgroup_id) workgroup_id: vec3<u32> , @builtin(local_invocation_id) local_invocation_id : vec3<u32>){
         shape = shapeBuffer[workgroup_id.x];
-        pathOffset = u32(shape.startPath);
-        faceOffset = u32(shape.startPath) * faceStrip ;
+        pathOffset = u32(shape.startPath) ;
         segCount = u32(shape.pathCount - 1.0);
         segIndex = workgroup_id.y * 256u + local_invocation_id.x ;
         if( segIndex < segCount ){
@@ -61,17 +69,12 @@ export let GraphicLineCompute = () => {
             let uv = vec2f(0.0,0.0);
             switch (u32(shape.shapeType)) {
                 case 0u:{
-                    // drawFace(0u,shape.paths[0].xyz,shape.paths[1].xyz,shape.paths[2].xyz,uv,uv,uv);
                     break;
                 }
                 case 1u:{
-                    // drawFace(0u,shape.paths[0].xyz,shape.paths[1].xyz,shape.paths[2].xyz,uv,uv,uv);
-                    // drawFace(1u,shape.paths[2].xyz,shape.paths[3].xyz,shape.paths[0].xyz,uv,uv,uv);
                     break;
                 }
                 case 2u:{
-                    // drawFace(0u,shape.paths[0].xyz,shape.paths[1].xyz,shape.paths[2].xyz,uv,uv,uv);
-                    // drawFace(1u,shape.paths[2].xyz,shape.paths[3].xyz,shape.paths[0].xyz,uv,uv,uv);
                     break;
                 }
                 case 3u:{
@@ -181,29 +184,26 @@ export let GraphicLineCompute = () => {
             newP5 = newP3 ;
             newP6 = -dir1 * lc1 + p2 ;
         }
-        
 
-        let len0 = (dot(newP0 - p0,d1)) ;
-        let len1 = (dot(newP1 - p0,d1)) ;
-        let len2 = (dot(newP2 - p0,d1)) ;
-        let len3 = (dot(newP3 - p0,d1)) ;
-        let len4 = (dot(newP4 - p0,d1)) ;
-        let len5 = (dot(newP5 - p0,d1)) ;
-        let len6 = (dot(newP6 - p0,d1)) ;
+        let len0 = (dot(newP0 - p1,d1)) ;
+        let len1 = (dot(newP1 - p1,d1)) ;
+        let len2 = (dot(newP2 - p1,d1)) ;
+        let len3 = (dot(newP3 - p1,d1)) ;
 
-        let vRoll = -vec2f(0.0,1.0) ;//* vec2f(shapeInfo.uSpeed,shapeInfo.vSpeed) * time ;
+        let uvScale = vec2f(shapeInfo.uScale,shapeInfo.vScale) ;// * time ;
+        let vRoll = -vec2f(0.0,1.0) * vec2f(shapeInfo.uSpeed,shapeInfo.vSpeed)  * time ;
 
-        let u0 = vec2f(0.0,len0) + vRoll;
-        let u1 = vec2f(1.0,len1) + vRoll;
-        let u2 = vec2f(1.0,len2) + vRoll;
-        let u3 = vec2f(0.0,len3) + vRoll;
+        let u0 = vec2f(0.0,len0) * uvScale + vRoll;
+        let u1 = vec2f(1.0,len1) * uvScale + vRoll;
+        let u2 = vec2f(1.0,len2) * uvScale + vRoll;
+        let u3 = vec2f(0.0,len3) * uvScale + vRoll;
 
-        drawFace(l1 * faceStrip + 0u,newP0,newP1,newP2,u0,u1,u2);
-        drawFace(l1 * faceStrip + 1u,newP0,newP2,newP3,u0,u2,u3);
+        drawFace(newP0,newP1,newP2,u0,u1,u2);
+        drawFace(newP0,newP2,newP3,u0,u2,u3);
 
         if(negD1 != 0.0) {
             let outFaceDir = normalize(d1 + d2);
-            let l = dot(newP4 - p2,outFaceDir) ;
+            let l = dot(newP4 - p2,outFaceDir) * 0.5 ;
 
             switch (u32(shapeInfo.lineJoin)) {
                 case 0u:{
@@ -211,15 +211,15 @@ export let GraphicLineCompute = () => {
                     var uu1 : vec2f ;
                     var uu2 : vec2f ;
                     if(negD1>0.0){
-                        uu0 = vec2f(0.0,0.0) - vRoll; 
-                        uu1 = vec2f(1.0,-l) - vRoll;
-                        uu2 = vec2f(1.0,l) - vRoll;
+                        uu0 = vec2f(1.0,0.0) * uvScale - vRoll; 
+                        uu1 = vec2f(0.0,-l) * uvScale - vRoll;
+                        uu2 = vec2f(0.0,l) * uvScale - vRoll;
                     }else{
-                        uu0 = vec2f(1.0,-l)  + vRoll;
-                        uu1 = vec2f(1.0,l)   + vRoll;
-                        uu2 = vec2f(0.0,0.0) + vRoll;
+                        uu0 = vec2f(1.0,-l) * uvScale + vRoll;
+                        uu1 = vec2f(1.0,l) * uvScale  + vRoll;
+                        uu2 = vec2f(0.0,0.0) * uvScale + vRoll;
                     }
-                    drawFace(l1 * faceStrip + 2u,newP2,newP4,newP3,uu0,uu1,uu2);
+                    drawFace(newP2,newP4,newP3,uu0,uu1,uu2);
                     break;
                 }
                 case 1u:{
@@ -228,7 +228,7 @@ export let GraphicLineCompute = () => {
                     // let len6 = dot(newP3 - p2,outFaceDir) ;
                     // let len7 = dot(newP2 - p2,outFaceDir) ;
         
-                    // let vRoll = -vec2f(0.0,1.0) * vec2f(shapeInfo.uSpeed,shapeInfo.vSpeed) * time ;
+                    // let vRoll = -vec2f(0.0,1.0) * vec2f(shapeInfo.uScale,shapeInfo.vScale) * time ;
                     // let u4 = vec2f(1.0,-len4) + vRoll; //
                     // let u5 = vec2f(0.0,0.0) + vRoll;  //
                     // let u6 = vec2f(1.0,len4) + vRoll;//
@@ -336,19 +336,20 @@ export let GraphicLineCompute = () => {
         let len2 = (dot(newP2 - p0,d1)) ;
         let len3 = (dot(newP3 - p0,d1)) ;
 
-        let vRoll = -vec2f(0.0,1.0) ;//* vec2f(shapeInfo.uSpeed,shapeInfo.vSpeed) * time ;
+        let uvScale = vec2f(shapeInfo.uScale,shapeInfo.vScale) ;// * time ;
+        let vRoll = -vec2f(0.0,1.0) * vec2f(shapeInfo.uSpeed,shapeInfo.vSpeed)  * time ;
 
-        let u0 = vec2f(0.0,len0) + vRoll ;
-        let u1 = vec2f(1.0,len1) + vRoll ;
-        let u2 = vec2f(1.0,len2) + vRoll ;
-        let u3 = vec2f(0.0,len3) + vRoll ;
+        let u0 = vec2f(0.0,len0) * uvScale + vRoll;
+        let u1 = vec2f(1.0,len1) * uvScale + vRoll;
+        let u2 = vec2f(1.0,len2) * uvScale + vRoll;
+        let u3 = vec2f(0.0,len3) * uvScale + vRoll;
 
-        drawFace(l1 * faceStrip + 0u,newP0,newP1,newP2,u0,u1,u2);
-        drawFace(l1 * faceStrip + 1u,newP0,newP2,newP3,u0,u2,u3);
+        drawFace(newP0,newP1,newP2,u0,u1,u2);
+        drawFace(newP0,newP2,newP3,u0,u2,u3);
         
         if(negD1 != 0.0) {
             let outFaceDir = normalize(d1 + d2);
-            let l = dot(newP4 - p2,outFaceDir) ;
+            let l = dot(newP4 - p2,outFaceDir) * 0.5 ;
 
             switch (u32(shapeInfo.lineJoin)) {
                 case 0u:{
@@ -356,30 +357,18 @@ export let GraphicLineCompute = () => {
                     var uu1 : vec2f ;
                     var uu2 : vec2f ;
                     if(negD1>0.0){
-                        uu0 = vec2f(0.0,0.0) - vRoll; 
-                        uu1 = vec2f(1.0,-l) - vRoll;
-                        uu2 = vec2f(1.0,l) - vRoll;
+                        uu0 = vec2f(1.0,0.0) * uvScale - vRoll; 
+                        uu1 = vec2f(0.0,-l) * uvScale - vRoll;
+                        uu2 = vec2f(0.0,l) * uvScale - vRoll;
                     }else{
-                        uu0 = vec2f(1.0,-l)  + vRoll;
-                        uu1 = vec2f(1.0,l)   + vRoll;
-                        uu2 = vec2f(0.0,0.0) + vRoll;
+                        uu0 = vec2f(1.0,-l) * uvScale + vRoll;
+                        uu1 = vec2f(1.0,l) * uvScale  + vRoll;
+                        uu2 = vec2f(0.0,0.0) * uvScale + vRoll;
                     }
-                    drawFace(l1 * 4u + 2u,newP2,newP4,newP3,uu0,uu1,uu2);
+                    drawFace(newP2,newP4,newP3,uu0,uu1,uu2);
                     break;
                 }
                 case 1u:{
-                    // let len4 = dot(newP4 - p2,outFaceDir) ;
-                    // let len5 = dot(newP5 - p2,outFaceDir) ;
-                    // let len6 = dot(newP3 - p2,outFaceDir) ;
-                    // let len7 = dot(newP2 - p2,outFaceDir) ;
-        
-                    // let vRoll = -vec2f(0.0,1.0) * vec2f(shapeInfo.uSpeed,shapeInfo.vSpeed) * time ;
-                    // let u4 = vec2f(1.0,-len4) + vRoll; //
-                    // let u5 = vec2f(0.0,0.0) + vRoll;  //
-                    // let u6 = vec2f(1.0,len4) + vRoll;//
-                    // let u7 = vec2f(1.0,0.0) + vRoll;  //
-                    // drawFace(l1 * 4u + 2u,newP2,newP4,newP3,u4,u6,u5);
-                    // drawFace(l1 * 4u + 3u,newP6,newP5,newP4,u4,u7,u6); 
                     break;
                 }
                 case 2u:{
@@ -389,8 +378,6 @@ export let GraphicLineCompute = () => {
                     break;
                 }
             }
-            // drawFace(l1 * 4u + 2u,newP2,newP4,newP3,u4,u6,u5);
-            // drawFace(l1 * 4u + 3u,newP6,newP5,newP4,u4,u7,u6); 
         }
     }
 
@@ -450,7 +437,7 @@ export let GraphicLineCompute = () => {
             newP1 = d0Right * shapeInfo.width + p1 ;
         }
 
-        if(negD1<0.0){
+        if(negD1 < 0.0){
             ///neg true
             newP2 = d0Right * shapeInfo.width + p2 ;
             newP3 = dir1 * lc1 + p2 ;
@@ -468,7 +455,8 @@ export let GraphicLineCompute = () => {
             newP6 = -dir1 * lc1 + p2 ;
         }else{
             ///neg false
-            newP2 = dir1 * lc1 + p2 ;
+            // newP2 = dir1 * lc1 + p2 ;
+            newP2 = d0Right * shapeInfo.width + p2 ;
             newP3 = -d0Right * shapeInfo.width + p2 ;
 
             newP4 = -d1Right * shapeInfo.width + p2 ;
@@ -481,19 +469,20 @@ export let GraphicLineCompute = () => {
         let len2 = (dot(newP2 - p0,d1)) ;
         let len3 = (dot(newP3 - p0,d1)) ;
 
-        let vRoll = -vec2f(0.0,1.0) ;//* vec2f(shapeInfo.uSpeed,shapeInfo.vSpeed) * time ;
+        let uvScale = vec2f(shapeInfo.uScale,shapeInfo.vScale) ;// * time ;
+        let vRoll = -vec2f(0.0,1.0) * vec2f(shapeInfo.uSpeed,shapeInfo.vSpeed)  * time ;
 
-        let u0 = vec2f(0.0,len0) + vRoll;
-        let u1 = vec2f(1.0,len1) + vRoll;
-        let u2 = vec2f(1.0,len2) + vRoll;
-        let u3 = vec2f(0.0,len3) + vRoll;
+        let u0 = vec2f(0.0,len0) * uvScale + vRoll;
+        let u1 = vec2f(1.0,len1) * uvScale + vRoll;
+        let u2 = vec2f(1.0,len2) * uvScale + vRoll;
+        let u3 = vec2f(0.0,len3) * uvScale + vRoll;
 
-        drawFace(l1 * faceStrip + 0u,newP0,newP1,newP2,u0,u1,u2);
-        drawFace(l1 * faceStrip + 1u,newP0,newP2,newP3,u0,u2,u3);
+        drawFace(newP0,newP1,newP2,u0,u1,u2);
+        drawFace(newP0,newP2,newP3,u0,u2,u3);
 
         if(negD1 != 0.0) {
             let outFaceDir = normalize(d1 + d2);
-            let l = dot(newP4 - p2,outFaceDir) ;
+            let l = dot(newP4 - p2,outFaceDir) * 0.5 ;
 
             switch (u32(shapeInfo.lineJoin)) {
                 case 0u:{
@@ -501,15 +490,15 @@ export let GraphicLineCompute = () => {
                     var uu1 : vec2f ;
                     var uu2 : vec2f ;
                     if(negD1>0.0){
-                        uu0 = vec2f(0.0,0.0) - vRoll; 
-                        uu1 = vec2f(1.0,-l) - vRoll;
-                        uu2 = vec2f(1.0,l) - vRoll;
+                        uu0 = vec2f(1.0,0.0) * uvScale - vRoll; 
+                        uu1 = vec2f(0.0,-l) * uvScale - vRoll;
+                        uu2 = vec2f(0.0,l) * uvScale - vRoll;
                     }else{
-                        uu0 = vec2f(1.0,-l)  + vRoll;
-                        uu1 = vec2f(1.0,l)   + vRoll;
-                        uu2 = vec2f(0.0,0.0) + vRoll;
+                        uu0 = vec2f(1.0,-l) * uvScale + vRoll;
+                        uu1 = vec2f(1.0,l) * uvScale  + vRoll;
+                        uu2 = vec2f(0.0,0.0) * uvScale + vRoll;
                     }
-                    drawFace(l1 * faceStrip + 2u,newP2,newP4,newP3,uu0,uu1,uu2);
+                    // drawFace(newP2,newP4,newP3,uu0,uu1,uu2);
                     break;
                 }
                 case 1u:{
@@ -518,7 +507,7 @@ export let GraphicLineCompute = () => {
                     // let len6 = dot(newP3 - p2,outFaceDir) ;
                     // let len7 = dot(newP2 - p2,outFaceDir) ;
         
-                    // let vRoll = -vec2f(0.0,1.0) * vec2f(shapeInfo.uSpeed,shapeInfo.vSpeed) * time ;
+                    // let vRoll = -vec2f(0.0,1.0) * vec2f(shapeInfo.uScale,shapeInfo.vScale) * time ;
                     // let u4 = vec2f(1.0,-len4) + vRoll; //
                     // let u5 = vec2f(0.0,0.0) + vRoll;  //
                     // let u6 = vec2f(1.0,len4) + vRoll;//
@@ -559,22 +548,23 @@ export let GraphicLineCompute = () => {
         let uScale = 1.0 ;
         let vScale = length(dir);
 
-        let u0 = vec2f(0.0,0.0)  + vec2f(0.0,1.0) * vec2f(shapeInfo.uSpeed,shapeInfo.vSpeed) * time ;
-        let u1 = vec2f(uScale,0.0)  + vec2f(0.0,1.0) * vec2f(shapeInfo.uSpeed,shapeInfo.vSpeed) * time;
-        let u2 = vec2f(uScale,vScale)  + vec2f(0.0,1.0) * vec2f(shapeInfo.uSpeed,shapeInfo.vSpeed) * time;
-        let u3 = vec2f(0.0,vScale) + vec2f(0.0,1.0) * vec2f(shapeInfo.uSpeed,shapeInfo.vSpeed) * time ;
+        let uvScale = vec2f(shapeInfo.uScale,shapeInfo.vScale) ;// * time ;
+        let u0 = vec2f(0.0,0.0) * uvScale ;// + vec2f(0.0,1.0) * vec2f(shapeInfo.uScale,shapeInfo.vScale) * time ;
+        let u1 = vec2f(uScale,0.0) * uvScale ;// + vec2f(0.0,1.0) * vec2f(shapeInfo.uScale,shapeInfo.vScale) * time;
+        let u2 = vec2f(uScale,vScale) * uvScale ;// + vec2f(0.0,1.0) * vec2f(shapeInfo.uScale,shapeInfo.vScale) * time;
+        let u3 = vec2f(0.0,vScale) * uvScale ;//+ vec2f(0.0,1.0) * vec2f(shapeInfo.uScale,shapeInfo.vScale) * time ;
 
-        drawFace(segi * 2u + 0u,first_l,first_r,end_l,u0,u1,u3);
-        drawFace(segi * 2u + 1u,first_r,end_r,end_l,u1,u2,u3);
+        drawFace(first_l,first_r,end_l,u0,u1,u3);
+        drawFace(first_r,end_r,end_l,u1,u2,u3);
     }
 
-    fn drawFace(fID:u32, v1:vec3f , v2:vec3f , v3:vec3f , u1:vec2f , u2:vec2f, u3:vec2f){
+    fn drawFace(v1:vec3f , v2:vec3f , v3:vec3f , u1:vec2f , u2:vec2f, u3:vec2f){
         let uv2 = vec2f(0.0,0.0);
         let n = getNormal(v1,v2,v3);
-        let newFID = fID + faceOffset;
-        writeVertexBuffer(newFID*3u+0u,v1,n,u1,uv2);
-        writeVertexBuffer(newFID*3u+1u,v2,n,u2,uv2);
-        writeVertexBuffer(newFID*3u+2u,v3,n,u3,uv2);
+        var fID = atomicAdd(&drawBuffer.skipFace,1u); 
+        writeVertexBuffer(fID * 3u + 0u, v1,n,u1,uv2);
+        writeVertexBuffer(fID * 3u + 1u,v2,n,u2,uv2);
+        writeVertexBuffer(fID * 3u + 2u,v3,n,u3,uv2);
     }
 
     fn getNormal(v1:vec3f , v2:vec3f , v3:vec3f) -> vec3f{
@@ -596,16 +586,6 @@ export let GraphicLineCompute = () => {
         vertexBuffer[vID].index = f32(0) ;
     }
 
-    fn dirNeg(cosO:f32) -> f32{
-        var neg = 1.0 ;
-        if(cosO == 0.0){
-            neg = 0.0 ;
-        }else if(cosO < 0.0){
-            neg = -1.0 ;
-        }
-        return neg ;
-    }
-  
     `
     return code;
 }

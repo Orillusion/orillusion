@@ -44,7 +44,7 @@ export class GeometryInfo extends Struct {
     public faceCount: number = 0;
 }
 
-export class ShapeInfo extends Struct {
+export class GraphicInfo extends Struct {
     public shapeIndex: number = 0;; //face,poly,line,cycle,rectangle,box,sphere
     public shapeType: number = 0;
     public width: number = 0;
@@ -63,7 +63,7 @@ export class ShapeInfo extends Struct {
     public paths: Vector4[] = [];
 }
 
-export class Graphic3DFaceRenderer extends MeshRenderer {
+export class DynamicFaceRenderer extends MeshRenderer {
     public static maxFaceCount: number = 1000000;
     public static maxGeometryCount: number = 1;
     public static maxPathPointCount: number = 100000;
@@ -72,30 +72,30 @@ export class Graphic3DFaceRenderer extends MeshRenderer {
     public texture: BitmapTexture2DArray;
     public transformBuffer: StorageGPUBuffer;
 
-    private _onChange: boolean = false;
-    private _computeGeoShader: ComputeShader;
-
     public geometryInfoBuffer: StructStorageGPUBuffer<GeometryInfo>;
-    public shapeBuffer: StructStorageGPUBuffer<ShapeInfo>;
+    public graphicBuffer: StructStorageGPUBuffer<GraphicInfo>;
     public pathBuffer: StorageGPUBuffer;
     public drawBuffer: StorageGPUBuffer;
 
     public object3Ds: any[];
-    public shapes: ShapeInfo[];
+    public shapes: GraphicInfo[];
     public realDrawShape: number;
     public needUpdate: boolean = false;
+
+    private _onChange: boolean = false;
+    private _computeGeoShader: ComputeShader;
     public init(): void {
         super.init();
     }
 
     public create(tex: BitmapTexture2DArray, num: number) {
         this._computeGeoShader = new ComputeShader(GraphicLineCompute());
-        this.geometryInfoBuffer = new StructStorageGPUBuffer<GeometryInfo>(GeometryInfo, Graphic3DFaceRenderer.maxGeometryCount);
-        this.shapeBuffer = new StructStorageGPUBuffer<ShapeInfo>(ShapeInfo, Graphic3DFaceRenderer.maxShapeCount);
-        this.pathBuffer = new StorageGPUBuffer(Graphic3DFaceRenderer.maxPathPointCount * 4);
+        this.geometryInfoBuffer = new StructStorageGPUBuffer<GeometryInfo>(GeometryInfo, DynamicFaceRenderer.maxGeometryCount);
+        this.graphicBuffer = new StructStorageGPUBuffer<GraphicInfo>(GraphicInfo, DynamicFaceRenderer.maxShapeCount);
+        this.pathBuffer = new StorageGPUBuffer(DynamicFaceRenderer.maxPathPointCount * 4);
         this.drawBuffer = new StorageGPUBuffer(4);
 
-        let geo = new TriGeometry(Graphic3DFaceRenderer.maxFaceCount)
+        let geo = new TriGeometry(DynamicFaceRenderer.maxFaceCount)
         let mat = new UnLitTexArrayMaterial();
         mat.baseMap = tex;
         this.material = mat;
@@ -123,10 +123,10 @@ export class Graphic3DFaceRenderer extends MeshRenderer {
     }
 
     public startShape(texture: BitmapTexture2DArray) {
-        this.create(texture, Graphic3DFaceRenderer.maxGeometryCount);
+        this.create(texture, DynamicFaceRenderer.maxGeometryCount);
 
         let geos = [];
-        for (let i = 0; i < Graphic3DFaceRenderer.maxGeometryCount; i++) {
+        for (let i = 0; i < DynamicFaceRenderer.maxGeometryCount; i++) {
             const geometryInfo = new GeometryInfo();
             geos.push(geometryInfo);
         }
@@ -134,16 +134,16 @@ export class Graphic3DFaceRenderer extends MeshRenderer {
         this.geometryInfoBuffer.apply();
 
         this.shapes = [];
-        for (let i = 0; i < Graphic3DFaceRenderer.maxShapeCount; i++) {
-            this.shapes.push(new ShapeInfo());
+        for (let i = 0; i < DynamicFaceRenderer.maxShapeCount; i++) {
+            this.shapes.push(new GraphicInfo());
         }
-        this.shapeBuffer.setStructArray(ShapeInfo, this.shapes);
-        this.shapeBuffer.apply();
+        this.graphicBuffer.setStructArray(GraphicInfo, this.shapes);
+        this.graphicBuffer.apply();
 
         this.start = () => {
             this._computeGeoShader.setStorageBuffer("vertexBuffer", this.geometry.vertexBuffer.vertexGPUBuffer);
             this._computeGeoShader.setStructStorageBuffer("geometryInfoBuffer", this.geometryInfoBuffer);
-            this._computeGeoShader.setStructStorageBuffer("shapeBuffer", this.shapeBuffer);
+            this._computeGeoShader.setStructStorageBuffer("shapeBuffer", this.graphicBuffer);
             this._computeGeoShader.setStorageBuffer("pathBuffer", this.pathBuffer);
             this._computeGeoShader.setStorageBuffer("drawBuffer", this.drawBuffer);
             // this._computeGeoShader.setStorageBuffer("models", GlobalBindGroup.modelMatrixBindGroup.matrixBufferDst);
@@ -152,11 +152,11 @@ export class Graphic3DFaceRenderer extends MeshRenderer {
 
     }
 
-    public setShape(index: number, shape: ShapeInfo) {
-        this.shapeBuffer.setStruct(ShapeInfo, index, shape);
+    public setShape(index: number, shape: GraphicInfo) {
+        this.graphicBuffer.setStruct(GraphicInfo, index, shape);
         this.shapes ||= [];
         this.shapes[index] = shape;
-        this.shapeBuffer.apply();
+        this.graphicBuffer.apply();
     }
 
     public updateShape() {
@@ -173,9 +173,9 @@ export class Graphic3DFaceRenderer extends MeshRenderer {
             for (let j = 0; j < shapeInfo.pathCount; j++) {
                 this.pathBuffer.setVector4(`${i}_path_${j}`, shapeInfo.paths[j]);
             }
-            this.shapeBuffer.setStruct(ShapeInfo, i, shapeInfo);
+            this.graphicBuffer.setStruct(GraphicInfo, i, shapeInfo);
         }
-        this.shapeBuffer.apply();
+        this.graphicBuffer.apply();
         this.pathBuffer.apply();
 
         this.needUpdate = true;
@@ -227,7 +227,7 @@ export class Graphic3DFaceRenderer extends MeshRenderer {
 
     private computeTrail(view: View3D, command: GPUCommandEncoder) {
         this._computeGeoShader.workerSizeX = this.realDrawShape;
-        this._computeGeoShader.workerSizeY = Math.floor(Graphic3DFaceRenderer.maxPathPointCount / 256 + 1);
+        this._computeGeoShader.workerSizeY = Math.floor(DynamicFaceRenderer.maxPathPointCount / 256 + 1);
         this._computeGeoShader.workerSizeZ = 1;
         GPUContext.computeCommand(command, [this._computeGeoShader]);
     }
