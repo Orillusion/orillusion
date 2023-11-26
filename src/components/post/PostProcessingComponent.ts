@@ -5,11 +5,11 @@ import { Ctor } from "../../util/Global";
 import { ComponentBase } from "../ComponentBase";
 
 export class PostProcessingComponent extends ComponentBase {
-    private _postList: Map<string, PostBase>;
+    private _postList: Map<any, PostBase>;
 
 
     public init(param?: any): void {
-        this._postList = new Map<string, PostBase>();
+        this._postList = new Map<any, PostBase>();
     }
 
     public start(): void {
@@ -45,27 +45,27 @@ export class PostProcessingComponent extends ComponentBase {
     }
 
     public addPost<T extends PostBase>(c: Ctor<T>): T {
-        if (this._postList.has(c.name)) return;
-        if (!this._postList.has(FXAAPost.name)) {
+        if (this._postList.has(c)) return;
+        if (!this._postList.has(FXAAPost)) {
             let post = new FXAAPost();
-            this._postList.set(post.constructor.name, post);
+            this._postList.set(FXAAPost, post);
             if (this._enable)
                 this.activePost();
-            if (c.name === FXAAPost.name) {
+            if (c === FXAAPost) {
                 return post as T;
             }
         }
         let post = new c();
-        this._postList.set(c.name, post);
+        this._postList.set(c, post);
         if (this._enable)
             this.activePost();
         return post;
     }
 
     public removePost<T extends PostBase>(c: Ctor<T>) {
-        if (!this._postList.has(c.name)) return;
-        let post = this._postList.get(c.name);
-        this._postList.delete(c.name);
+        if (!this._postList.has(c)) return;
+        let post = this._postList.get(c);
+        this._postList.delete(c);
 
         let view = this.transform.view3D;
         let job = Engine3D.getRenderJob(view);
@@ -73,7 +73,7 @@ export class PostProcessingComponent extends ComponentBase {
     }
 
     public getPost<T extends PostBase>(c: Ctor<T>): T {
-        if (!this._postList.has(c.name)) return null;
-        return this._postList.get(c.name) as T;
+        if (!this._postList.has(c)) return null;
+        return this._postList.get(c) as T;
     }
 }
