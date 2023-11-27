@@ -28,6 +28,7 @@ import { Ctor, Parser } from '../util/Global';
 import { ParserBase } from '../loader/parser/ParserBase';
 import { GeometryBase } from '../core/geometry/GeometryBase';
 import { LitMaterial } from '../materials/LitMaterial';
+import { VOXParser } from '../loader/parser/vox/VOXParser';
 
 /**
  * Resource management classes for textures, materials, models, and preset bodies.
@@ -167,6 +168,23 @@ export class Res {
         let parser = await loader.load(url, c, loaderFunctions);
         let ret = parser.data;
         return ret;
+    }
+
+    /**
+     * load a vox file
+     * @param url the url of file
+     * @param loaderFunctions callback
+     * @returns
+     */
+    public async loadVox(url: string, loaderFunctions?: LoaderFunctions): Promise<Object3D> {
+        if (this._prefabPool.has(url)) {
+            return this._prefabPool.get(url) as Object3D;
+        }
+        let loader = new FileLoader();
+        let parser = await loader.load(url, VOXParser, loaderFunctions);
+        let obj = parser.data as Object3D;
+        this._prefabPool.set(url, obj);
+        return obj;
     }
 
     /**

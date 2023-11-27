@@ -18,17 +18,17 @@ import { ComputeShader } from "../../../../graphics/webGpu/shader/ComputeShader"
 import { GPUContext } from "../../../GPUContext";
 import { Float32ArrayUtil } from "./Float32ArrayUtil";
 
-export enum lineJoin {
-    bevel = 0,
-    miter = 1,
-    round = 2
-}
+// export enum lineJoin {
+//     bevel = 0,
+//     miter = 1,
+//     round = 2
+// }
 
-export enum lineCap {
-    butt = 0,
-    square = 1,
-    round = 2
-}
+// export enum lineCap {
+//     butt = 0,
+//     square = 1,
+//     round = 2
+// }
 
 export class DrawInfo extends Struct {
     skipFace: number = 0;
