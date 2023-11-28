@@ -140,7 +140,7 @@ export class VOXParser extends ParserBase {
             let g = this.readByte() / 255.0;
             let b = this.readByte() / 255.0;
             let a = this.readByte() / 255.0;
-            colors[i] = new Color(0.0, 0.0, 1.0, 1.0);
+            colors[i] = new Color(r, g, b, a);
         }
 
         if (childrenSize > 0) {

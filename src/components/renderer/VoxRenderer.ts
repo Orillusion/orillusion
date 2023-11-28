@@ -100,8 +100,8 @@ export class VoxRenderer extends MeshRenderer {
     public onCompute(view: View3D, command: GPUCommandEncoder): void {
         if (this._needUpdate) {
             this._needUpdate = false;
-            this._computeGeoShader.workerSizeX = 1;
-            this._computeGeoShader.workerSizeY = 1;//Math.floor(this._voxelData.voxels.length / 256 + 1);
+            this._computeGeoShader.workerSizeX = Math.floor(this._voxelData.voxels.length / 256 + 1);
+            this._computeGeoShader.workerSizeY = 1;
             this._computeGeoShader.workerSizeZ = 1;
             GPUContext.computeCommand(command, [this._computeGeoShader]);
         }

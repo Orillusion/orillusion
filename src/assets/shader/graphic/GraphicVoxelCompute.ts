@@ -41,41 +41,21 @@ export let GraphicVoxelCompute = () => {
     @group(0) @binding(4) var<storage, read> voxelInfo : VoxelInfo;
     @group(0) @binding(5) var<storage, read_write> drawBuffer : DrawInfo;
 
-    // var<private> voxIndex:u32;
-
-    @compute @workgroup_size(1, 1, 1)
-    fn CsMain(@builtin(workgroup_id) workgroup_id: vec3<u32>, @builtin(local_invocation_id) local_invocation_id : vec3<u32>) {
-        // voxIndex = workgroup_id.y * 256u + local_invocation_id.x;
-
-        // if (voxIndex < voxelInfo.count) {
-        //     let vox = voxelBuffer[voxIndex];
-        //     if (vox == 0) {
-        //         return;
-        //     }
-        //     let x:u32 = voxIndex % voxelInfo.sizeX;
-        //     let y:u32 = voxIndex / voxelInfo.sizeX % voxelInfo.sizeY;
-        //     let z:u32 = voxIndex / (voxelInfo.sizeX * voxelInfo.sizeY);
-        //     var pos: vec3f = vec3f(f32(x) * 0.2, f32(y) * 0.2, f32(z) * 0.2);
-        //     var color: vec4f = vec4f(f32(x)/f32(voxelInfo.sizeX), f32(y)/f32(voxelInfo.sizeY), f32(z)/f32(voxelInfo.sizeZ), 1.0);
-        //     drawBox(pos, vec3f(0.1, 0.1, 0.1), color);
-        // }
-
-        // test
-        let b = vertexBuffer[0];
-        let c = voxelInfo.count;
-        let d = voxelBuffer[0];
-        let e = palatteBuffer[0];
-        for (var voxIndex:u32 = 0; voxIndex < u32(voxelInfo.count); voxIndex++) {
+    @compute @workgroup_size(256, 1, 1)
+    fn CsMain(@builtin(global_invocation_id) globalInvocation_id: vec3<u32>) {
+        var voxIndex = globalInvocation_id.y * 256u + globalInvocation_id.x;
+        if (voxIndex < u32(voxelInfo.count)) {
             let vox = voxelBuffer[voxIndex];
-            if (vox > 0) {
-                let x:u32 = voxIndex % u32(voxelInfo.sizeX);
-                let y:u32 = voxIndex / u32(voxelInfo.sizeX) % u32(voxelInfo.sizeY);
-                let z:u32 = voxIndex / (u32(voxelInfo.sizeX) * u32(voxelInfo.sizeY));
-                var pos: vec3f = vec3f(f32(x) * 0.1 - voxelInfo.sizeX * 0.05, f32(y) * 0.1 - voxelInfo.sizeY * 0.05, f32(z) * 0.1);
-                let colorInfo: ColorInfo = palatteBuffer[vox];
-                var color: vec4f = vec4f(colorInfo.r, colorInfo.g, colorInfo.b, colorInfo.a);
-                drawBox(pos, vec3f(0.1, 0.1, 0.1), color);
+            if (vox == 0) {
+                return;
             }
+            let x:u32 = voxIndex % u32(voxelInfo.sizeX);
+            let y:u32 = voxIndex / u32(voxelInfo.sizeX) % u32(voxelInfo.sizeY);
+            let z:u32 = voxIndex / (u32(voxelInfo.sizeX) * u32(voxelInfo.sizeY));
+            var pos: vec3f = vec3f(f32(x) * 0.1 - voxelInfo.sizeX * 0.05, f32(y) * 0.1 - voxelInfo.sizeY * 0.05, f32(z) * 0.1);
+            let colorInfo: ColorInfo = palatteBuffer[vox];
+            var color: vec4f = vec4f(colorInfo.r, colorInfo.g, colorInfo.b, colorInfo.a);
+            drawBox(pos, vec3f(0.1, 0.1, 0.1), color);
         }
     }
 
