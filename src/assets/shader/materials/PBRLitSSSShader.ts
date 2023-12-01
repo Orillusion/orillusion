@@ -125,9 +125,7 @@ export let PBRLitSSSShader: string = /*wgsl*/ `
             }
         #endif
 
-        #if USE_SHADOWMAPING
-            useShadow();
-        #endif
+        useShadow();
 
         // maskTex =vec4f( gammaToLiner(maskTex.rgb), maskTex.a );
 
