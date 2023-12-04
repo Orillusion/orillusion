@@ -4,9 +4,9 @@ export let GBuffer_pass: string = /*wgsl*/ `
 #include "GlobalUniform"
 
 struct FragmentOutput {
-    @location(0) o_Position: vec4<f32>,
-    @location(1) o_Normal: vec4<f32>,
-    @location(2) o_Color: vec4<f32>
+    @location(auto) o_Position: vec4<f32>,
+    @location(auto) o_Normal: vec4<f32>,
+    @location(auto) o_Color: vec4<f32>
 };
 
 struct MaterialUniform {

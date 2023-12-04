@@ -41,9 +41,9 @@ struct Particle_local {
 };
 
 struct VertexOutput {
-    @location(0) fragUV: vec2<f32>,
-    @location(1) wPos: vec3<f32>,
-    @location(2) wNormal: vec3<f32>,
+    @location(auto) fragUV: vec2<f32>,
+    @location(auto) wPos: vec3<f32>,
+    @location(auto) wNormal: vec3<f32>,
     @builtin(position) member: vec4<f32>
 };
 
@@ -86,9 +86,9 @@ fn inverse( m:mat3x3<f32>) -> mat3x3<f32>{
 @vertex
 fn main(
     @builtin(instance_index) index : u32,
-    @location(0) Vertex_Position: vec3<f32>, 
-    @location(1) Vertex_Normal: vec3<f32>, 
-    @location(2) Vertex_Uv: vec2<f32>) -> VertexOutput {
+    @location(auto) Vertex_Position: vec3<f32>, 
+    @location(auto) Vertex_Normal: vec3<f32>, 
+    @location(auto) Vertex_Uv: vec2<f32>) -> VertexOutput {
     var particleData = storage_particles.particles[index];
     var worldMatrix = models.matrix[u32(particle_Glo.instance_index)];
     var particlePos = particleData.position.xyz + Vertex_Position.xyz ;
@@ -106,7 +106,7 @@ fn main(
  */
 export let Particle_Mass_UnLight_fs_shader = /* wgsl */ `
 struct FragmentOutput {
-    @location(0) o_Target: vec4<f32>
+    @location(auto) o_Target: vec4<f32>
 };
 
 struct ConstUniform {
@@ -138,7 +138,7 @@ var baseMap: texture_2d<f32>;
 var<uniform> matData : MatData ;
 
 @fragment
-fn main( @location(0) fragUV: vec2<f32> , @location(1) wPos: vec3<f32> , @location(2) wNormal: vec3<f32> ) -> FragmentOutput {
+fn main( @location(auto) fragUV: vec2<f32> , @location(auto) wPos: vec3<f32> , @location(auto) wNormal: vec3<f32> ) -> FragmentOutput {
     var baseColor: vec4<f32> = textureSample(baseMap, baseMapSampler, fragUV.xy);
     var color:vec3<f32> = baseColor.xyz + matData.emissive.xyz;
     

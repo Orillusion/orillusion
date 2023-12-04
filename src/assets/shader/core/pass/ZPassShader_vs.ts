@@ -5,9 +5,9 @@ export let ZPassShader_vs: string = /*wgsl*/ `
     #include "GlobalUniform"
     #include "MathShader"
     struct VertexOutput {
-        @location(0) vID: f32 ,
-        @location(1) vPos: vec3<f32> ,
-        @location(2) vClipPos: vec4<f32> ,
+        @location(auto) vID: f32 ,
+        @location(auto) vPos: vec3<f32> ,
+        @location(auto) vClipPos: vec4<f32> ,
         @builtin(position) member: vec4<f32>
     };
 
@@ -31,32 +31,32 @@ export let ZPassShader_vs: string = /*wgsl*/ `
     @vertex
     fn main(
         @builtin(instance_index) index : u32,
-        @location(0) position: vec3<f32>,
-        @location(1) normal: vec3<f32>,
-        @location(2) uv: vec2<f32>,
-        @location(3) TEXCOORD_1: vec2<f32>,
+        @location(auto) position: vec3<f32>,
+        @location(auto) normal: vec3<f32>,
+        @location(auto) uv: vec2<f32>,
+        @location(auto) TEXCOORD_1: vec2<f32>,
 
     #if USE_TANGENT
-        @location(4) TANGENT: vec4<f32>,
+        @location(auto) TANGENT: vec4<f32>,
         #if USE_SKELETON
-            @location(5) joints0: vec4<f32>,
-            @location(6) weights0: vec4<f32>,
+            @location(auto) joints0: vec4<f32>,
+            @location(auto) weights0: vec4<f32>,
             #if USE_JOINT_VEC8
-                @location(7) joints1: vec4<f32>,
-                @location(8) weights1: vec4<f32>,
+                @location(auto) joints1: vec4<f32>,
+                @location(auto) weights1: vec4<f32>,
             #endif
         #elseif USE_MORPHTARGETS
-            ${MorphTarget_shader.getMorphTargetAttr(5)}
+            @location(auto) vIndex: f32,
         #endif
     #elseif USE_SKELETON
-        @location(4) joints0: vec4<f32>,
-        @location(5) weights0: vec4<f32>,
+        @location(auto) joints0: vec4<f32>,
+        @location(auto) weights0: vec4<f32>,
         #if USE_JOINT_VEC8
-            @location(6) joints1: vec4<f32>,
-            @location(7) weights1: vec4<f32>,
+            @location(auto) joints1: vec4<f32>,
+            @location(auto) weights1: vec4<f32>,
         #endif
     #elseif USE_MORPHTARGETS
-        ${MorphTarget_shader.getMorphTargetAttr(4)}
+        @location(auto) vIndex: f32,
     #endif
     ) -> VertexOutput {
     worldMatrix = models.matrix[index];
