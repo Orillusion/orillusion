@@ -37,10 +37,10 @@
 `;
     }
 
-    public static getMorphTargetAttr(beginLocation: number): string {
-        let value = `@location(${beginLocation}) vIndex: f32,`;
-        return value;
-    }
+    // public static getMorphTargetAttr(beginLocation: number): string {
+    //     let value = `@location(${beginLocation}) vIndex: f32,`;
+    //     return value;
+    // }
 
     public static getMorphTargetCalcVertex(): string {
         return /* wgsl */ `

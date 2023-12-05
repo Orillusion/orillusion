@@ -3,13 +3,13 @@ export let Graphic3DShader_vs: string = /*wgsl*/ `
     #include "GlobalUniform"
 
     struct VertexAttributes {
-        @location(0) position: vec4<f32>,
-        @location(1) color: vec4<f32>,
+        @location(auto) position: vec4<f32>,
+        @location(auto) color: vec4<f32>,
     }
 
     struct VertexOutput {
-        @location(0) varying_WPos: vec4<f32>,
-        @location(1) varying_Color: vec4<f32>,
+        @location(auto) varying_WPos: vec4<f32>,
+        @location(auto) varying_Color: vec4<f32>,
         @builtin(position) member: vec4<f32>
     };
 

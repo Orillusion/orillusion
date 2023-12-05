@@ -4,9 +4,9 @@ export class CubeSky_Shader {
     #include "GlobalUniform"
 
     struct VertexOutput {
-      @location(0) fragUV: vec2<f32>,
-      @location(1) vWorldPos: vec4<f32>,
-      @location(2) vWorldNormal: vec3<f32>,
+      @location(auto) fragUV: vec2<f32>,
+      @location(auto) vWorldPos: vec4<f32>,
+      @location(auto) vWorldNormal: vec3<f32>,
       @builtin(position) member: vec4<f32>
     };
 
@@ -15,9 +15,9 @@ export class CubeSky_Shader {
     @vertex
     fn main( 
       @builtin(instance_index) index : u32,
-      @location(0) position: vec3<f32>,
-      @location(1) normal: vec3<f32>,
-      @location(2) uv: vec2<f32>
+      @location(auto) position: vec3<f32>,
+      @location(auto) normal: vec3<f32>,
+      @location(auto) uv: vec2<f32>
     ) -> VertexOutput {
       ORI_VertexOut.fragUV = uv;
       let modelMat = models.matrix[u32(index)];
@@ -50,13 +50,13 @@ export class CubeSky_Shader {
     };
 
     struct FragmentOutput {
-        @location(0) o_Target: vec4<f32>,
+        @location(auto) o_Target: vec4<f32>,
         #if USE_WORLDPOS
-          @location(1) o_Position: vec4<f32>,
+          @location(auto) o_Position: vec4<f32>,
         #endif
         #if USEGBUFFER
-          @location(2) o_Normal: vec4<f32>,
-          @location(3) o_Material: vec4<f32>
+          @location(auto) o_Normal: vec4<f32>,
+          @location(auto) o_Material: vec4<f32>
         #endif
     };
 
@@ -75,7 +75,7 @@ export class CubeSky_Shader {
     }
 
     @fragment
-    fn main(@location(0) fragUV: vec2<f32>, @location(1) vWorldPos: vec4<f32>, @location(2) vWorldNormal: vec3<f32>) -> FragmentOutput {
+    fn main(@location(auto) fragUV: vec2<f32>, @location(auto) vWorldPos: vec4<f32>, @location(auto) vWorldNormal: vec3<f32>) -> FragmentOutput {
         let maxLevel: u32 = textureNumLevels(baseMap);
         var textureColor:vec3<f32> = textureSampleLevel(baseMap, baseMapSampler, normalize(vWorldPos.xyz), global.roughness * f32(maxLevel) ).xyz;
         #if IS_HDR_SKY

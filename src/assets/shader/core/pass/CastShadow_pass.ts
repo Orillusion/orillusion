@@ -5,7 +5,7 @@ export let shadowCastMap_vert: string = /*wgsl*/ `
 #include "GlobalUniform"
 
 struct VertexOutput {
-    @location(0) fragUV: vec2<f32>,
+    @location(auto) fragUV: vec2<f32>,
     @builtin(position) member: vec4<f32>
 };
 
@@ -21,62 +21,62 @@ var<private> worldMatrix: mat4x4<f32>;
 
 struct VertexAttributes{
     @builtin(instance_index) index : u32,
-    @location(0) position: vec3<f32>,
-    @location(1) normal: vec3<f32>,
-    @location(2) uv: vec2<f32>,
-    @location(3) TEXCOORD_1: vec2<f32>,
+    @location(auto) position: vec3<f32>,
+    @location(auto) normal: vec3<f32>,
+    @location(auto) uv: vec2<f32>,
+    @location(auto) TEXCOORD_1: vec2<f32>,
 
     #if USE_METAHUMAN
         #if USE_TANGENT
-            @location(4) TANGENT: vec4<f32>,
-            @location(5) joints0: vec4<f32>,
-            @location(6) weights0: vec4<f32>,
+            @location(auto) TANGENT: vec4<f32>,
+            @location(auto) joints0: vec4<f32>,
+            @location(auto) weights0: vec4<f32>,
             #if USE_JOINT_VEC8
-                @location(7) joints1: vec4<f32>,
-                @location(8) weights1: vec4<f32>,
-                ${MorphTarget_shader.getMorphTargetAttr(9)}
+                @location(auto) joints1: vec4<f32>,
+                @location(auto) weights1: vec4<f32>,
+                @location(auto) vIndex: f32,
             #else
-                ${MorphTarget_shader.getMorphTargetAttr(7)}
+                @location(auto) vIndex: f32,
             #endif
         #else
-            @location(4) joints0: vec4<f32>,
-            @location(5) weights0: vec4<f32>,
+            @location(auto) joints0: vec4<f32>,
+            @location(auto) weights0: vec4<f32>,
             #if USE_JOINT_VEC8
-                @location(6) joints1: vec4<f32>,
-                @location(7) weights1: vec4<f32>,
-                ${MorphTarget_shader.getMorphTargetAttr(8)}
+                @location(auto) joints1: vec4<f32>,
+                @location(auto) weights1: vec4<f32>,
+                @location(auto) vIndex: f32,
             #else
-                ${MorphTarget_shader.getMorphTargetAttr(6)}
+                @location(auto) vIndex: f32,
             #endif
         #endif
     #else
         #if USE_TANGENT
-            @location(4) TANGENT: vec4<f32>,
+            @location(auto) TANGENT: vec4<f32>,
         #endif
 
         #if USE_SKELETON
             #if USE_TANGENT
-                @location(5) joints0: vec4<f32>,
-                @location(6) weights0: vec4<f32>,
+                @location(auto) joints0: vec4<f32>,
+                @location(auto) weights0: vec4<f32>,
                 #if USE_JOINT_VEC8
-                    @location(7) joints1: vec4<f32>,
-                    @location(8) weights1: vec4<f32>,
+                    @location(auto) joints1: vec4<f32>,
+                    @location(auto) weights1: vec4<f32>,
                 #endif
             #else
-                @location(4) joints0: vec4<f32>,
-                @location(5) weights0: vec4<f32>,
+                @location(auto) joints0: vec4<f32>,
+                @location(auto) weights0: vec4<f32>,
                 #if USE_JOINT_VEC8
-                    @location(6) joints1: vec4<f32>,
-                    @location(7) weights1: vec4<f32>,
+                    @location(auto) joints1: vec4<f32>,
+                    @location(auto) weights1: vec4<f32>,
                 #endif
             #endif
         #endif
 
         #if USE_MORPHTARGETS
             #if USE_TANGENT
-                ${MorphTarget_shader.getMorphTargetAttr(5)}
+                @location(auto) vIndex: f32,
             #else
-                ${MorphTarget_shader.getMorphTargetAttr(4)}
+                @location(auto) vIndex: f32,
             #endif
         #endif
 
@@ -114,8 +114,8 @@ export let castPointShadowMap_vert: string = /*wgsl*/ `
 #include "GlobalUniform"
 
 struct VertexOutput {
-    @location(0) fragUV: vec2<f32>,
-    @location(1) worldPos: vec3<f32>,
+    @location(auto) fragUV: vec2<f32>,
+    @location(auto) worldPos: vec3<f32>,
     @builtin(position) member: vec4<f32>
 };
 
@@ -131,55 +131,55 @@ var<private> worldMatrix: mat4x4<f32>;
 
 struct VertexAttributes{
   @builtin(instance_index) index : u32,
-  @location(0) position: vec3<f32>,
-  @location(1) normal: vec3<f32>,
-  @location(2) uv: vec2<f32>,
-  @location(3) TEXCOORD_1: vec2<f32>,
+  @location(auto) position: vec3<f32>,
+  @location(auto) normal: vec3<f32>,
+  @location(auto) uv: vec2<f32>,
+  @location(auto) TEXCOORD_1: vec2<f32>,
 
   
   #if USE_METAHUMAN
     #if USE_TANGENT
-        @location(4) TANGENT: vec4<f32>,
-        @location(5) joints0: vec4<f32>,
-        @location(6) weights0: vec4<f32>,
-        @location(7) joints1: vec4<f32>,
-        @location(8) weights1: vec4<f32>,
-        ${MorphTarget_shader.getMorphTargetAttr(9)}
+        @location(auto) TANGENT: vec4<f32>,
+        @location(auto) joints0: vec4<f32>,
+        @location(auto) weights0: vec4<f32>,
+        @location(auto) joints1: vec4<f32>,
+        @location(auto) weights1: vec4<f32>,
+        @location(auto) vIndex: f32,
     #else
-        @location(4) joints0: vec4<f32>,
-        @location(5) weights0: vec4<f32>,
-        @location(6) joints1: vec4<f32>,
-        @location(7) weights1: vec4<f32>,
-        ${MorphTarget_shader.getMorphTargetAttr(8)}
+        @location(auto) joints0: vec4<f32>,
+        @location(auto) weights0: vec4<f32>,
+        @location(auto) joints1: vec4<f32>,
+        @location(auto) weights1: vec4<f32>,
+        @location(auto) vIndex: f32,
     #endif
     #else
     #if USE_TANGENT
-        @location(4) TANGENT: vec4<f32>,
+        @location(auto) TANGENT: vec4<f32>,
     #endif
 
     #if USE_SKELETON
         #if USE_TANGENT
-            @location(5) joints0: vec4<f32>,
-            @location(6) weights0: vec4<f32>,
+            @location(auto) joints0: vec4<f32>,
+            @location(auto) weights0: vec4<f32>,
             #if USE_JOINT_VEC8
-                @location(7) joints1: vec4<f32>,
-                @location(8) weights1: vec4<f32>,
+                @location(auto) joints1: vec4<f32>,
+                @location(auto) weights1: vec4<f32>,
             #endif
         #else
-            @location(4) joints0: vec4<f32>,
-            @location(5) weights0: vec4<f32>,
+            @location(auto) joints0: vec4<f32>,
+            @location(auto) weights0: vec4<f32>,
             #if USE_JOINT_VEC8
-                @location(6) joints1: vec4<f32>,
-                @location(7) weights1: vec4<f32>,
+                @location(auto) joints1: vec4<f32>,
+                @location(auto) weights1: vec4<f32>,
             #endif
         #endif
     #endif
 
     #if USE_MORPHTARGETS
         #if USE_TANGENT
-            ${MorphTarget_shader.getMorphTargetAttr(5)}
+            @location(auto) vIndex: f32,
         #else
-            ${MorphTarget_shader.getMorphTargetAttr(4)}
+            @location(auto) vIndex: f32,
         #endif
     #endif
 
@@ -228,7 +228,7 @@ export let shadowCastMap_frag: string = /*wgsl*/ `
     #endif
 
     struct FragmentOutput {
-      @location(0) o_Target: vec4<f32>,
+      @location(auto) o_Target: vec4<f32>,
       @builtin(frag_depth) out_depth: f32
     };
 
@@ -241,7 +241,7 @@ export let shadowCastMap_frag: string = /*wgsl*/ `
     var<uniform> materialUniform: MaterialUniform;
 
     @fragment
-    fn main(@location(0) fragUV: vec2<f32> , @location(1) worldPos:vec3<f32> ) -> FragmentOutput {
+    fn main(@location(auto) fragUV: vec2<f32> , @location(auto) worldPos:vec3<f32> ) -> FragmentOutput {
         var distance = length(worldPos.xyz - materialUniform.lightWorldPos ) ;
         distance = distance / materialUniform.cameraFar ;
         var fragOut:FragmentOutput; 
@@ -268,7 +268,7 @@ export let directionShadowCastMap_frag: string = /*wgsl*/ `
     #endif
 
     struct FragmentOutput {
-      @location(0) o_Target: vec4<f32>,
+      @location(auto) o_Target: vec4<f32>,
       @builtin(frag_depth) out_depth: f32
     };
 
@@ -281,7 +281,7 @@ export let directionShadowCastMap_frag: string = /*wgsl*/ `
     var<uniform> materialUniform: MaterialUniform;
 
     @fragment
-    fn main(@location(0) fragUV: vec2<f32> , @location(1) clipPos:vec3<f32> ) -> FragmentOutput {
+    fn main(@location(auto) fragUV: vec2<f32> , @location(auto) clipPos:vec3<f32> ) -> FragmentOutput {
         // var distance = length(worldPos.xyz - materialUniform.lightWorldPos ) ;
         // distance = distance / materialUniform.cameraFar ;
         var fragOut:FragmentOutput; 

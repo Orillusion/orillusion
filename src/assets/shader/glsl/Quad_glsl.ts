@@ -5,12 +5,12 @@ export let QuadGlsl_vs = /* wgsl */ `
     #include "GlobalUniform"
 
     struct VertexOutput {
-        @location(0) fragUV: vec2<f32>,
-            @builtin(position) member: vec4<f32>
+        @location(auto) fragUV: vec2<f32>,
+        @builtin(position) member: vec4<f32>
     };
 
     @vertex
-    fn main(@builtin(instance_index) index : u32, @location(0) position: vec3<f32>, @location(1) TEXCOORD_1: vec2<f32>) -> VertexOutput {
+    fn main(@builtin(instance_index) index : u32, @location(auto) position: vec3<f32>, @location(auto) TEXCOORD_1: vec2<f32>) -> VertexOutput {
         let id = u32(index);
         let worldMatrix = models.matrix[id];
 
