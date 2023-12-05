@@ -55,7 +55,7 @@ export let UnLitTextureArray: string = /*wgsl*/ `
         
         var uv = transformUV1.zw * ORI_VertexVarying.fragUV0 + transformUV1.xy; 
         uv = graphicNode.uvRect.zw * uv.xy + graphicNode.uvRect.xy; 
-        var color = textureSample(baseMap,baseMapSampler,uv, u32(round(graphicNode.texIndex)) ) * graphicNode.baseColor ;
+        var color = textureSample(baseMap,baseMapSampler,uv, u32(round(graphicNode.texIndex)) ) * materialUniform.baseColor * graphicNode.baseColor ;
         // let color = textureSample(baseMap,baseMapSampler,uv, u32(round(ORI_VertexVarying.index)));
 
         // ORI_ViewDir = normalize( globalUniform.CameraPos.xyz - ORI_VertexVarying.vWorldPos.xyz);

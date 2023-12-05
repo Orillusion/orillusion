@@ -51,6 +51,7 @@ export let GlobalUniform: string = /*wgsl*/ `
     empty2: i32,
     empty3: i32,
 
+    frustumPlanes: array<vec4f, 6u>,
   };
 
   @group(0) @binding(0)

@@ -1,6 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer, BoxGeometry, SphereGeometry, VirtualTexture, GPUTextureFormat, UnLitMaterial, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, PlaneGeometry, Vector3, Graphic3DMesh, Matrix4, Time, BlendMode, Color, PostProcessingComponent, BloomPost, TrailGeometry, AnimationCurve, Keyframe, AnimationCurveT, KeyframeT, DepthOfFieldPost, Quaternion, PingPong, Object3DUtil, GPUPrimitiveTopology, Float32ArrayUtil, Vector4, lineJoin, GeoJsonStruct, GeoJsonUtil, GraphicInfo } from "@orillusion/core";
-import { GUIUtil } from "@samples/utils/GUIUtil";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, Graphic3DMesh, Matrix4, BlendMode, Color, Vector4, lineJoin, GeoJsonStruct, GeoJsonUtil, ShapeInfo } from "@orillusion/core";
 import { Stats } from "@orillusion/stats";
 
 export class Sample_GraphicShape {
@@ -117,7 +116,7 @@ export class Sample_GraphicShape {
             for (let ii = 0; ii < lineArray.length; ii++) {
                 this.parts = mr.object3Ds;
 
-                let shapeInfo = new GraphicInfo();
+                let shapeInfo = new ShapeInfo();
                 shapeInfo.shapeType = 3;
                 shapeInfo.lineJoin = lineJoin.bevel;
                 shapeInfo.width = 0.25;

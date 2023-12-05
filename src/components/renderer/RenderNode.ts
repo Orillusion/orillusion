@@ -65,7 +65,7 @@ export class RenderNode extends ComponentBase {
     protected _computes: RenderShaderCompute[];
 
 
-    public init() {
+    public init(param?: any) {
         this.renderOrder = 0;
         this.rendererMask = RendererMask.Default;
         this.instanceID = GetCountInstanceID().toString();

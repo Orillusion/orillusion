@@ -1,4 +1,3 @@
-import { NonSerialize } from "../../../../..";
 import { GraphicLineCompute } from "../../../../../assets/shader/graphic/GraphicLineCompute";
 import { MeshRenderer } from "../../../../../components/renderer/MeshRenderer";
 import { View3D } from "../../../../../core/View3D";
@@ -17,6 +16,7 @@ import { StructStorageGPUBuffer } from "../../../../graphics/webGpu/core/buffer/
 import { ComputeShader } from "../../../../graphics/webGpu/shader/ComputeShader";
 import { GPUContext } from "../../../GPUContext";
 import { Float32ArrayUtil } from "./Float32ArrayUtil";
+import { ShapeInfo } from "./ShapeInfo";
 
 export enum lineJoin {
     bevel = 0,
@@ -44,24 +44,7 @@ export class GeometryInfo extends Struct {
     public faceCount: number = 0;
 }
 
-export class ShapeInfo extends Struct {
-    public shapeIndex: number = 0;; //face,poly,line,cycle,rectangle,box,sphere
-    public shapeType: number = 0;
-    public width: number = 0;
-    public lineCap: number = 0;
-    public pathCount: number = 0;
-    public uScale: number = 0;
-    public vScale: number = 0;
-    public lineJoin: number = 0;
 
-    public startPath: number = 0;
-    public endPath: number = 0;
-    public uSpeed: number = 0;
-    public vSpeed: number = 0;
-
-    @NonSerialize
-    public paths: Vector4[] = [];
-}
 
 export class Graphic3DFaceRenderer extends MeshRenderer {
     public static maxFaceCount: number = 1000000;
