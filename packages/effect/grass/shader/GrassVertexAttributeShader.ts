@@ -21,9 +21,7 @@ export let GrassVertexAttributeShader: string = /*wgsl*/ `
         @location(5) varying_WPos: vec4<f32>,
         @location(6) varying_WNormal: vec3<f32>,
         @location(7) varying_Color: vec4<f32>,
-        #if USE_SHADOWMAPING
-            @location(8) varying_ShadowPos: vec4<f32>,
-        #endif
+        @location(8) varying_ShadowPos: vec4<f32>,
         @builtin(position) member: vec4<f32>
     };
 

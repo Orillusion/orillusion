@@ -11,15 +11,10 @@ export let GrassBaseShader = /*wgsl*/ `
         @location(4) vWorldPos: vec4<f32>,
         @location(5) vWorldNormal: vec3<f32>,
         @location(6) vColor: vec4<f32>,
-
-        #if USE_SHADOWMAPING
-            @location(7) vShadowPos: vec4<f32>,
-        #endif
-
-        #if USE_TANGENT
-            @location(8) TANGENT: vec4<f32>,
-        #endif
-        
+        @location(7) vShadowPos: vec4<f32>,
+      #if USE_TANGENT
+          @location(8) TANGENT: vec4<f32>,
+      #endif
         @builtin(front_facing) face: bool,
         @builtin(position) fragCoord : vec4<f32>
     };

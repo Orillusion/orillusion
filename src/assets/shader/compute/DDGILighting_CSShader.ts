@@ -45,24 +45,23 @@ const PointLightType = 1;
 const DirectLightType = 2;
 const SpotLightType = 3;
 
-@group(0) @binding(1) var outputBuffer : texture_storage_2d<rgba16float, write>;
-@group(0) @binding(2) var prefilterMapSampler: sampler;
-@group(0) @binding(3) var prefilterMap: texture_cube<f32>;
+@group(0) @binding(auto) var outputBuffer : texture_storage_2d<rgba16float, write>;
+@group(0) @binding(auto) var prefilterMapSampler: sampler;
+@group(0) @binding(auto) var prefilterMap: texture_cube<f32>;
 
-@group(1) @binding(0) var positionMapSampler : sampler;
-@group(1) @binding(1) var positionMap : texture_2d<f32>;
+@group(1) @binding(auto) var positionMapSampler : sampler;
+@group(1) @binding(auto) var positionMap : texture_2d<f32>;
 
-@group(1) @binding(2) var normalMapSampler : sampler;
-@group(1) @binding(3) var normalMap : texture_2d<f32>;
+@group(1) @binding(auto) var normalMapSampler : sampler;
+@group(1) @binding(auto) var normalMap : texture_2d<f32>;
 
-@group(1) @binding(4) var colorMapSampler : sampler;
-@group(1) @binding(5) var colorMap : texture_2d<f32>;
+@group(1) @binding(auto) var colorMapSampler : sampler;
+@group(1) @binding(auto) var colorMap : texture_2d<f32>;
 
-@group(1) @binding(6) var shadowMapSampler : sampler_comparison;
-@group(1) @binding(7) var shadowMap : texture_depth_2d_array;
-
-@group(1) @binding(8) var pointShadowMapSampler: sampler;
-@group(1) @binding(9) var pointShadowMap: texture_depth_cube_array ;
+@group(1) @binding(auto) var shadowMapSampler : sampler_comparison;
+@group(1) @binding(auto) var shadowMap : texture_depth_2d_array;
+@group(1) @binding(auto) var pointShadowMapSampler: sampler;
+@group(1) @binding(auto) var pointShadowMap: texture_depth_cube_array ;
 
 @group(2) @binding(0)
 var<storage,read> lightBuffer: array<LightData>;
@@ -104,24 +103,24 @@ fn directShadowMaping(P:vec3<f32>, N:vec3<f32>, shadowBias: f32)  {
   let enableCSM:bool = globalUniform.enableCSM > 0.5;
   var light = lightBuffer[0];
   var visibility = 1.0;
-  var shadowIndex = i32(light.castShadow);
-  if (shadowIndex >= 0 ) {
-    var shadowMatrix:mat4x4<f32>;
-    if(enableCSM && csmCount > 1){
-      for(var csm:i32 = 0; csm < csmCount; csm ++){
-        var csmShadowBias = globalUniform.csmShadowBias[csm];
-        shadowMatrix = globalUniform.csmMatrix[csm];
-        let csmShadowResult = directShadowMapingIndex(light, shadowMatrix, P, N, csm, csmShadowBias);
-        if(csmShadowResult.y < 0.5){
-          visibility = csmShadowResult.x;
-          break;
+    var shadowIndex = i32(light.castShadow);
+    if (shadowIndex >= 0 ) {
+      var shadowMatrix:mat4x4<f32>;
+      if(enableCSM && csmCount > 1){
+        for(var csm:i32 = 0; csm < csmCount; csm ++){
+          var csmShadowBias = globalUniform.csmShadowBias[csm];
+          shadowMatrix = globalUniform.csmMatrix[csm];
+          let csmShadowResult = directShadowMapingIndex(light, shadowMatrix, P, N, csm, csmShadowBias);
+          if(csmShadowResult.y < 0.5){
+            visibility = csmShadowResult.x;
+            break;
+          }
         }
+      }else{
+        shadowMatrix = globalUniform.shadowMatrix[shadowIndex];
+        visibility = directShadowMapingIndex(light, shadowMatrix, P, N, shadowIndex, shadowBias).x;
       }
-    }else{
-      shadowMatrix = globalUniform.shadowMatrix[shadowIndex];
-      visibility = directShadowMapingIndex(light, shadowMatrix, P, N, shadowIndex, shadowBias).x;
     }
-  }
   shadowStrut.directShadowVisibility = visibility;
 }
 

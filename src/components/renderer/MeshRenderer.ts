@@ -8,7 +8,8 @@ import { PassType } from '../../gfx/renderJob/passRenderer/state/RendererType';
 import { MorphTargetData } from '../anim/morphAnim/MorphTargetData';
 import { RenderNode } from './RenderNode';
 import { EditorInspector, RegisterComponent } from '../../util/SerializeDecoration';
-import { Color, Material, mergeFunctions } from '../..';
+import { mergeFunctions } from '../../util/Global';
+import { Material } from '../../materials/Material';
 
 /**
  * The mesh renderer component is a component used to render the mesh

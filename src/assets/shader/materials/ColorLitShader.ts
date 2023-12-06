@@ -18,9 +18,7 @@ export let ColorLitShader: string = /*wgsl*/`
 
             ORI_ShadingInput.Normal = ORI_VertexVarying.vWorldNormal.rgb ;
 
-            #if USE_SHADOWMAPING
-                useShadow();
-            #endif
+            useShadow();
 
             BxDFShading();
         }
