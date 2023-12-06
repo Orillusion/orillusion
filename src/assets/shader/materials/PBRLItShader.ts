@@ -81,9 +81,7 @@ export let PBRLItShader: string = /*wgsl*/ `
             }
         #endif
 
-        #if USE_SHADOWMAPING
-            useShadow();
-        #endif
+        useShadow();
 
         var roughnessChannel:f32 = 1.0 ;
         #if USE_ROUGHNESS_A

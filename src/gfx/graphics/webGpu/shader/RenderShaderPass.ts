@@ -867,7 +867,7 @@ export class RenderShaderPass extends ShaderPassBase {
         }
 
         this.defineValue[`USE_GI`] = useGI;
-        this.defineValue[`USE_CASTSHADOW`] = this.shaderState.castShadow;
+        // this.defineValue[`USE_CASTSHADOW`] = this.shaderState.castShadow;
         this.defineValue[`USE_SHADOWMAPING`] = this.shaderState.acceptShadow;
         this.defineValue[`USE_LIGHT`] = useLight;
         this.defineValue[`USE_VERTXCOLOR`] = useVertexColor;

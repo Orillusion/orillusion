@@ -427,6 +427,8 @@ export class RenderNode extends ComponentBase {
         let worldMatrix = node.object3D.transform._worldMatrix;
         for (let i = 0; i < this.materials.length; i++) {
             const material = this.materials[i];
+            if (!material.castShadow && passType == PassType.SHADOW)
+                continue;
             // material.applyUniform();
             let passes = material.getPass(passType);
             if (!passes || passes.length == 0)
@@ -436,7 +438,6 @@ export class RenderNode extends ComponentBase {
                 for (let matPass of passes) {
                     // if (!matPass.enable)
                     //     continue;
-
                     if (matPass.pipeline) {
                         GPUContext.bindPipeline(encoder, matPass);
                         GPUContext.draw(encoder, 6, 1, 0, worldMatrix.index);
@@ -447,7 +448,6 @@ export class RenderNode extends ComponentBase {
                 for (let matPass of passes) {
                     // if (!matPass.enable)
                     //     continue;
-
                     if (matPass.pipeline) {
                         GPUContext.bindPipeline(encoder, matPass);
                         let subGeometries = node._geometry.subGeometries;

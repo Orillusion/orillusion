@@ -104,9 +104,7 @@ export let Hair_shader_op: string = /*wgsl*/ `
             }
         #endif
 
-        #if USE_SHADOWMAPING
-            useShadow();
-        #endif
+        useShadow();
 
         ORI_ShadingInput.Specular = 1.0 ;
 

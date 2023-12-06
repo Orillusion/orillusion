@@ -55,7 +55,23 @@ export class Material {
     }
 
     public set castShadow(value: boolean) {
-        this._defaultSubShader.shaderState.castShadow = value;
+        let shaderState = this._defaultSubShader.shaderState;
+        if (value != shaderState.castShadow) {
+            shaderState.castShadow = value;
+        }
+    }
+
+    public get acceptShadow(): boolean {
+        return this._defaultSubShader.shaderState.acceptShadow;
+    }
+
+    public set acceptShadow(value: boolean) {
+        let shaderState = this._defaultSubShader.shaderState;
+        if (shaderState.acceptShadow != value) {
+            shaderState.acceptShadow = value;
+            this._defaultSubShader.noticeShaderChange();
+            this._defaultSubShader.noticeValueChange();
+        }
     }
 
     public get blendMode(): BlendMode {
