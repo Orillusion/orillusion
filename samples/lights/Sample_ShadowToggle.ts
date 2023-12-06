@@ -51,10 +51,11 @@ class Sample_ShadowToggle {
     }
 
     initScene() {
+        // add sphere
         {
             let geometry = new SphereGeometry(20, 20, 20);
             let material = new LitMaterial();
-            material.name = 'Box Material';
+            material.name = 'Sphere Material';
             let obj = new Object3D();
             obj.y = 20;
             let mr = obj.addComponent(MeshRenderer);
@@ -62,17 +63,13 @@ class Sample_ShadowToggle {
             mr.material = material;
 
             this.scene.addChild(obj);
-            GUIHelp.addFolder('MeshRenderer - Sphere');
-            GUIHelp.add(mr, 'castShadow');
-            GUIHelp.open();
-            GUIHelp.endFolder();
             GUIUtil.renderLitMaterial(material, true);
         }
-
-        //add wall
+        //add box
         {
             let geometry = new BoxGeometry(40, 10, 80);
             let material = new LitMaterial();
+            material.name = 'Box Material';
             let obj = new Object3D();
             obj.x = 40;
             obj.y = 5;
@@ -80,6 +77,7 @@ class Sample_ShadowToggle {
             mr.geometry = geometry;
             mr.material = material;
             this.scene.addChild(obj);
+            GUIUtil.renderLitMaterial(material, true);
         }
 
         {
