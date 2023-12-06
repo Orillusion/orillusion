@@ -192,12 +192,18 @@ fn dir_to_faceId(pt:vec3<f32>) -> i32 {
       return log2(depth + 1.0) * 2.0 / (log(far + 1.0) / 0.6931471805599453) * 0.5;
     }
 
-    fn log2Depth(depth : f32, near:f32, far:f32) -> f32 {
-      let pt = pow((far / near),depth);
-      return near * pt / (far / near);
+    fn log2Depth(depth:f32, near:f32, far:f32) -> f32 {
+      let Fcoef:f32 = 2.0 / log2(far + 1.0);
+      var result:f32 = (log2(max(1e-6, 1.0 + depth)) * Fcoef - 1.0);
+      result = (1.0 + result) / 2.0;
+      return result * depth;
     }
 
-   
+    fn log2DepthFixPersp(depth:f32, near:f32, far:f32) -> f32 {
+      let flogz:f32 = 1.0 + depth;
+      let Fcoef_half:f32 = (2.0 / log2(far + 1.0)) * 0.5;
+      return log2(flogz) * Fcoef_half;
+    }
 
 
     fn QuaternionToMatrix(q: vec4<f32>) -> mat4x4<f32> {
