@@ -202,7 +202,9 @@ fn dir_to_faceId(pt:vec3<f32>) -> i32 {
     fn log2DepthFixPersp(depth:f32, near:f32, far:f32) -> f32 {
       let flogz:f32 = 1.0 + depth;
       let Fcoef_half:f32 = (2.0 / log2(far + 1.0)) * 0.5;
-      return log2(flogz) * Fcoef_half;
+      var result:f32 = log2(flogz) * Fcoef_half;
+      result = (1.0 + result) / 2.0;
+      return result;
     }
 
 

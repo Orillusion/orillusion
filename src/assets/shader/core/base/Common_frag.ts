@@ -31,7 +31,7 @@ export let Common_frag: string = /*wgsl*/ `
 
     #if USE_OUTDEPTH
       #if USE_LOGDEPTH
-        ORI_FragmentOutput.out_depth = log2DepthFixPersp(ORI_VertexVarying.fragCoord.w, globalUniform.near, globalUniform.far);
+        ORI_FragmentOutput.out_depth = log2DepthFixPersp(ORI_VertexVarying.fragPosition.w, globalUniform.near, globalUniform.far);
       #else
         ORI_FragmentOutput.out_depth = ORI_ShadingInput.FragDepth ;
       #endif
