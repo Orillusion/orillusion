@@ -1,6 +1,6 @@
 import { Color } from "../../../../../math/Color";
 import { Vector4 } from "../../../../../math/Vector4";
-import { GUIHelp } from "@orillusion/debug/GUIHelp";
+// import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { RegisterShader } from "../../../../../util/SerializeDecoration";
 import { Shader } from "../../../../../gfx/graphics/webGpu/shader/Shader";
 import { PBRLitSSSShader } from "../../../../../assets/shader/materials/PBRLitSSSShader";
@@ -44,29 +44,29 @@ export class LitSSSShader extends Shader {
     }
 
     public debug() {
-        GUIHelp.addFolder("face");
-        GUIHelp.addColor({ SkinColor: new Color() }, "SkinColor").onChange((v) => {
-            let newColor = new Color();
-            newColor.copyFromArray(v);
-            this._SkinColor = newColor;
-        });
-        GUIHelp.add({ skinPower: 1 }, "skinPower", 0.0, 10.0).onChange((v) => {
-            this._SkinPower = v;
-        });
-        GUIHelp.add({ skinColorIns: 1 }, "skinColorIns", 0.0, 10.0).onChange((v) => {
-            this._SkinColorIns = v;
-        });
-        GUIHelp.add({ roughness: 1 }, "roughness", 0.0, 1.0).onChange((v) => {
-            this._Roughness = v;
-        });
-        GUIHelp.add({ metallic: 1 }, "metallic", 0.0, 1.0).onChange((v) => {
-            this._Metallic = v;
-        });
-        GUIHelp.add({ curveFactor: 1 }, "curveFactor", 0.0, 10.0).onChange((v) => {
-            this.curveFactor = v;
-        });
+        // GUIHelp.addFolder("face");
+        // GUIHelp.addColor({ SkinColor: new Color() }, "SkinColor").onChange((v) => {
+        //     let newColor = new Color();
+        //     newColor.copyFromArray(v);
+        //     this._SkinColor = newColor;
+        // });
+        // GUIHelp.add({ skinPower: 1 }, "skinPower", 0.0, 10.0).onChange((v) => {
+        //     this._SkinPower = v;
+        // });
+        // GUIHelp.add({ skinColorIns: 1 }, "skinColorIns", 0.0, 10.0).onChange((v) => {
+        //     this._SkinColorIns = v;
+        // });
+        // GUIHelp.add({ roughness: 1 }, "roughness", 0.0, 1.0).onChange((v) => {
+        //     this._Roughness = v;
+        // });
+        // GUIHelp.add({ metallic: 1 }, "metallic", 0.0, 1.0).onChange((v) => {
+        //     this._Metallic = v;
+        // });
+        // GUIHelp.add({ curveFactor: 1 }, "curveFactor", 0.0, 10.0).onChange((v) => {
+        //     this.curveFactor = v;
+        // });
 
-        GUIHelp.endFolder();
+        // GUIHelp.endFolder();
     }
 
     public setDefault() {

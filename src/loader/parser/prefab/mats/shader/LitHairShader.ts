@@ -1,4 +1,4 @@
-import { GUIHelp } from "@orillusion/debug/GUIHelp";
+// import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { ShaderLib } from "../../../../../assets/shader/ShaderLib";
 import { GPUCullMode } from "../../../../../gfx/graphics/webGpu/WebGPUConst";
 import { Texture } from "../../../../../gfx/graphics/webGpu/core/texture/Texture";
@@ -73,44 +73,44 @@ export class LitHairShader extends Shader {
     }
 
     public debug() {
-        GUIHelp.addFolder("Hair");
-        GUIHelp.addColor({ HairColorStart: new Color() }, "HairColorStart").onChange((v) => {
-            let c = new Color();
-            c.copyFromArray(v);
-            this._HairColor0 = c;
-        });
+        // GUIHelp.addFolder("Hair");
+        // GUIHelp.addColor({ HairColorStart: new Color() }, "HairColorStart").onChange((v) => {
+        //     let c = new Color();
+        //     c.copyFromArray(v);
+        //     this._HairColor0 = c;
+        // });
 
-        GUIHelp.addColor({ HairColorEnd: new Color() }, "HairColorEnd").onChange((v) => {
-            let c = new Color();
-            c.copyFromArray(v);
-            this._HairColor1 = c;
-        });
+        // GUIHelp.addColor({ HairColorEnd: new Color() }, "HairColorEnd").onChange((v) => {
+        //     let c = new Color();
+        //     c.copyFromArray(v);
+        //     this._HairColor1 = c;
+        // });
 
-        GUIHelp.addColor({ specularColor: new Color() }, "specularColor").onChange((v) => {
-            let c = new Color();
-            c.copyFromArray(v);
-            this._SpecularColor = c;
-        });
+        // GUIHelp.addColor({ specularColor: new Color() }, "specularColor").onChange((v) => {
+        //     let c = new Color();
+        //     c.copyFromArray(v);
+        //     this._SpecularColor = c;
+        // });
 
-        GUIHelp.add({ roughness: 1 }, "roughness", 0.0, 1.0).onChange((v) => {
-            this._Roughness = v;
-        });
-        GUIHelp.add({ metallic: 1 }, "metallic", 0.0, 1.0).onChange((v) => {
-            this._Metallic = v;
-        });
+        // GUIHelp.add({ roughness: 1 }, "roughness", 0.0, 1.0).onChange((v) => {
+        //     this._Roughness = v;
+        // });
+        // GUIHelp.add({ metallic: 1 }, "metallic", 0.0, 1.0).onChange((v) => {
+        //     this._Metallic = v;
+        // });
 
-        GUIHelp.add({ alphaCutoff: 1 }, "alphaCutoff", 0.0, 1.0).onChange((v) => {
-            this._AlphaCutoff = v;
-        });
+        // GUIHelp.add({ alphaCutoff: 1 }, "alphaCutoff", 0.0, 1.0).onChange((v) => {
+        //     this._AlphaCutoff = v;
+        // });
 
-        GUIHelp.add({ backlit: 1 }, "backlit", 0.0, 1.0, 0.0001).onChange((v) => {
-            this._BackLit = v;
-        });
+        // GUIHelp.add({ backlit: 1 }, "backlit", 0.0, 1.0, 0.0001).onChange((v) => {
+        //     this._BackLit = v;
+        // });
 
-        GUIHelp.add({ area: 0.1 }, "area", 0.0, 1.0, 0.0001).onChange((v) => {
-            this._Area = v;
-        });
-        GUIHelp.endFolder();
+        // GUIHelp.add({ area: 0.1 }, "area", 0.0, 1.0, 0.0001).onChange((v) => {
+        //     this._Area = v;
+        // });
+        // GUIHelp.endFolder();
     }
 
     public setDefault() {
