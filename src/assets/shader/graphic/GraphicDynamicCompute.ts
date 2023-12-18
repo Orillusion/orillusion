@@ -54,6 +54,15 @@ export let graphicDynamicCompute = (subCode: string) => {
         writeVertexBuffer(gID , fID * 3u + 2u, v3, n, u3, uv2);
     }
 
+    fn drawFace2(gID:u32, fID:u32, v1:vec3f , v2:vec3f , v3:vec3f , u1:vec2f , u2:vec2f, u3:vec2f){
+        let uv2 = vec2f(0.0,0.0);
+        let n = getNormal(v1,v2,v3);
+        writeVertexBuffer(gID , fID * 3u + 0u, v1, n, u1, uv2);
+        writeVertexBuffer(gID , fID * 3u + 1u, v2, n, u2, uv2);
+        writeVertexBuffer(gID , fID * 3u + 2u, v3, n, u3, uv2);
+    }
+
+
     fn drawRect(gID:u32,center:vec3f,width:f32,height:f32,rotX:f32,rotY:f32,rotZ:f32){
         let minX = -width * 0.5;
         let maxX = width * 0.5;

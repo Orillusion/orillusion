@@ -3,7 +3,7 @@ import { NonSerialize } from "../../../../../util/SerializeDecoration";
 import { Struct } from "../../../../../util/struct/Struct";
 
 export class ShapeInfo extends Struct {
-    public shapeIndex: number = 0;; //face,poly,line,cycle,rectangle,box,sphere
+    public shapeIndex: number = 0; //face,poly,line,cycle,rectangle,box,sphere
     public shapeType: number = 0;
     public width: number = 0;
     public lineCap: number = 0;

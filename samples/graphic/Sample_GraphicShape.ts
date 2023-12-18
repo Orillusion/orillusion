@@ -117,7 +117,7 @@ export class Sample_GraphicShape {
                 this.parts = mr.object3Ds;
 
                 let shapeInfo = new ShapeInfo();
-                shapeInfo.shapeType = 3;
+                shapeInfo.shapeType = 2;
                 shapeInfo.lineJoin = lineJoin.bevel;
                 shapeInfo.width = 0.25;
                 shapeInfo.uScale = 1;
@@ -132,7 +132,7 @@ export class Sample_GraphicShape {
                     newPos.set(p.x - 121, p.y, p.z - 31, 0.0);
                     tmp.push(newPos);
                     newPos.multiplyScalar(25);
-                    mr.shapes[ii].paths.push(newPos);
+                    shapeInfo.paths.push(newPos);
                 }
 
                 // mr.shapes[ii].paths.push(new Vector4(0.0, 0.0, 0.0));
