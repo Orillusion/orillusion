@@ -4,6 +4,7 @@ import { RoundRectShape3D } from "./renderer/shape3d/RoundRectShape3D";
 import { EllipseShape3D } from "./renderer/shape3d/EllipseShape3D";
 import { Shape3DStruct } from "./renderer/shape3d/Shape3D";
 import { CircleShape3D } from "./renderer/shape3d/CircleShape3D";
+import { LineShape3D } from "./renderer/shape3d/LineShape3D";
 
 export class Shape3DPathComponent extends ComponentBase implements CanvasPath {
 
@@ -57,7 +58,9 @@ export class Shape3DPathComponent extends ComponentBase implements CanvasPath {
     }
 
     line(x: number, y: number, points: Vector2[]) {
-
+        let line = this._renderer.createShape(LineShape3D);
+        line.points = points;
+        return line;
     }
 
     lineTo(x: number, y: number): void {

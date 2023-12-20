@@ -59,13 +59,13 @@ export class RoundRectShape3D extends Shape3D {
     }
 
     protected calcRequireSource(): void {
-        this._keyPointCount = (1 + this._cornerSegment) * 4;
+        this._destPointCount = (1 + this._cornerSegment) * 4;
         this._faceCount = 0;
         if (this._line) {
-            this._faceCount += this._keyPointCount * 2;
+            this._faceCount += this._destPointCount * 2;
         }
         if (this._fill) {
-            this._faceCount += this._keyPointCount;
+            this._faceCount += this._destPointCount;
         }
     }
 

@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, Graphic3DMesh, Matrix4, BlendMode, Color, Vector4, lineJoin, GeoJsonStruct, GeoJsonUtil, ShapeInfo } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, Graphic3DMesh, Matrix4, BlendMode, Color, Vector4, LineJoin, GeoJsonStruct, GeoJsonUtil, ShapeInfo } from "@orillusion/core";
 import { Stats } from "@orillusion/stats";
 
 export class Sample_GraphicShape {
@@ -118,7 +118,7 @@ export class Sample_GraphicShape {
 
                 let shapeInfo = new ShapeInfo();
                 shapeInfo.shapeType = 2;
-                shapeInfo.lineJoin = lineJoin.bevel;
+                shapeInfo.lineJoin = LineJoin.bevel;
                 shapeInfo.width = 0.25;
                 shapeInfo.uScale = 1;
                 shapeInfo.vScale = 10;

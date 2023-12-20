@@ -7,10 +7,11 @@ import { Sample_GraphicMesh_Trailing2 } from "./graphic/Sample_GraphicTrailing2"
 import { Sample_GraphicTrailing3 } from "./graphic/Sample_GraphicTrailing3";
 import { Sample_ShapeCircle } from "./graphic/Sample_ShapeCircle";
 import { Sample_ShapeEllipse } from "./graphic/Sample_ShapeEllipse";
+import { Sample_ShapeLine } from "./graphic/Sample_ShapeLine";
 import { Sample_ShapeRoundRect } from "./graphic/Sample_ShapeRoundRect";
 
 
 // new Sample_ShapeCircle().run();
 // new Sample_ShapeRoundRect().run();
-new Sample_ShapeEllipse().run();
-// new Sample_GraphicMesh_Color().run();
+// new Sample_ShapeEllipse().run();
+new Sample_ShapeLine().run();

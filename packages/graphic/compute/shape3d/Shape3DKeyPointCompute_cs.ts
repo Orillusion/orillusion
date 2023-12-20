@@ -8,11 +8,13 @@ export let Shape3DKeyPointCompute_cs = /*wgsl*/`
       globalIndex = workgroup_id.x * 256u + local_invocation_id.x ;
       
       let vertexBuffer0 = vertexBuffer[0];
+      let sss = srcPathBuffer[0];
       let usedShapeCount = u32(rendererData.usedShapeCount);
       let skipFace3 = drawBuffer.skipFace3 ;
       if(globalIndex < usedShapeCount){
          let nodeData = nodeBuffer[globalIndex];
-         let shapeType = u32(round(nodeData.base.shapeType));
+         shapeType = u32(round(nodeData.base.shapeType));
+         shapeIndex = u32(round(nodeData.base.shapeIndex));
          switch(shapeType){
             case RoundRectShapeType:
             {
@@ -27,6 +29,11 @@ export let Shape3DKeyPointCompute_cs = /*wgsl*/`
             case EllipseShapeType:
             {
                writeEllipsePath(nodeData);
+               break;
+            }
+            case LineShapeType:
+            {
+               writeLinePath(nodeData);
                break;
             }
             default:

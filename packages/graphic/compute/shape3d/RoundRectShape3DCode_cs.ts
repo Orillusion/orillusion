@@ -23,29 +23,30 @@ fn getRoundRectShape3D(node:ShapeData) -> RoundRectShape3D{
 
 fn drawRoundRectFace(nodeData:ShapeData, keyPoint:Path3DKeyPoint){
    let shapeData:RoundRectShape3D = getRoundRectShape3D(nodeData);
-   drawShapeFace(nodeData, keyPoint, shapeData.useLineWidth, 10.0);
+   drawShapeFace(nodeData, keyPoint, shapeData.useLineWidth, vec2<f32>(nodeData.base.uScale, nodeData.base.vScale));
 }
 
 
 fn writeRoundRectPath(nodeData:ShapeData){
    let shapeData:RoundRectShape3D = getRoundRectShape3D(nodeData);
-   let keyPointCount = shapeData.base.keyPointCount;
-   let keyPointStart = shapeData.base.keyPointStart;
+   let shapeBase = shapeData.base;
+   let destPointCount = shapeBase.destPointCount;
+   let destPointStart = shapeBase.destPointStart;
    var halfWidth = shapeData.width * 0.5;
    var halfHeight = shapeData.height * 0.5;
    let segmentCount = u32(round(shapeData.cornerSegment)) + 1u;
    var pathRadius = shapeData.pathRadius;
-   let shapeIndex = shapeData.base.shapeIndex;
+   let shapeIndex = shapeBase.shapeIndex;
    if(segmentCount >= 2u){
-      writeRoundCorners(keyPointStart, keyPointCount, 0.0, vec3f(halfWidth, 0.0, halfHeight), segmentCount, pathRadius, shapeIndex);
-      writeRoundCorners(keyPointStart, keyPointCount, 0.25, vec3f(-halfWidth, 0.0, halfHeight), segmentCount, pathRadius, shapeIndex);
-      writeRoundCorners(keyPointStart, keyPointCount, 0.5, vec3f(-halfWidth, 0.0, -halfHeight), segmentCount, pathRadius, shapeIndex);
-      writeRoundCorners(keyPointStart, keyPointCount, 0.75, vec3f(halfWidth, 0.0, -halfHeight), segmentCount, pathRadius, shapeIndex);
+      writeRoundCorners(destPointStart, destPointCount, 0.0, vec3f(halfWidth, 0.0, halfHeight), segmentCount, pathRadius, shapeIndex);
+      writeRoundCorners(destPointStart, destPointCount, 0.25, vec3f(-halfWidth, 0.0, halfHeight), segmentCount, pathRadius, shapeIndex);
+      writeRoundCorners(destPointStart, destPointCount, 0.5, vec3f(-halfWidth, 0.0, -halfHeight), segmentCount, pathRadius, shapeIndex);
+      writeRoundCorners(destPointStart, destPointCount, 0.75, vec3f(halfWidth, 0.0, -halfHeight), segmentCount, pathRadius, shapeIndex);
    }else{
-      writeFlatCorner(keyPointStart, 0u, vec3f(halfWidth, 0.0, halfHeight), shapeIndex);
-      writeFlatCorner(keyPointStart, 1u, vec3f(-halfWidth, 0.0, halfHeight), shapeIndex);
-      writeFlatCorner(keyPointStart, 2u, vec3f(-halfWidth, 0.0, -halfHeight), shapeIndex);
-      writeFlatCorner(keyPointStart, 3u, vec3f(halfWidth, 0.0, -halfHeight), shapeIndex);
+      writeFlatCorner(destPointStart, 0u, vec3f(halfWidth, 0.0, halfHeight), shapeIndex);
+      writeFlatCorner(destPointStart, 1u, vec3f(-halfWidth, 0.0, halfHeight), shapeIndex);
+      writeFlatCorner(destPointStart, 2u, vec3f(-halfWidth, 0.0, -halfHeight), shapeIndex);
+      writeFlatCorner(destPointStart, 3u, vec3f(halfWidth, 0.0, -halfHeight), shapeIndex);
    }
 }
 
@@ -60,9 +61,9 @@ fn writeFlatCorner(pointStart:f32, cornerIndex:u32, pos:vec3f, shapeIndex:f32){
    destPathBuffer[pathIndex].pointIndex = f32(pathIndex);
 }
 
-fn writeRoundCorners(pointStart:f32, keyPointCount:f32, progress:f32, offset:vec3f, count:u32, radius:f32, shapeIndex:f32){
+fn writeRoundCorners(pointStart:f32, destPointCount:f32, progress:f32, offset:vec3f, count:u32, radius:f32, shapeIndex:f32){
    let angleFrom:f32 = pi_2 * progress;
-   let pointIndex = pointStart + keyPointCount * progress;
+   let pointIndex = pointStart + destPointCount * progress;
 
    let angleOffset = pi_2 * 0.25 / f32(count - 1u);
    for(var i:u32 = 0; i < count; i += 1u){

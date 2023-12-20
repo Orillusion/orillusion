@@ -45,7 +45,7 @@ export class EllipseShape3D extends Shape3D {
     }
 
     protected calcRequireSource(): void {
-        this._keyPointCount = this._segment;
+        this._destPointCount = this._segment;
         this._faceCount = 0;
         if (this._line) {
             this._faceCount += 2 * this._segment;

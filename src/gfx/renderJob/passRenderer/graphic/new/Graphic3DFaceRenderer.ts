@@ -18,13 +18,13 @@ import { GPUContext } from "../../../GPUContext";
 import { Float32ArrayUtil } from "./Float32ArrayUtil";
 import { ShapeInfo } from "./ShapeInfo";
 
-export enum lineJoin {
+export enum LineJoin {
     bevel = 0,
     miter = 1,
     round = 2
 }
 
-export enum lineCap {
+export enum LineCap {
     butt = 0,
     square = 1,
     round = 2

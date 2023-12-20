@@ -25,28 +25,29 @@ fn drawCircleFace(nodeData:ShapeData, keyPoint:Path3DKeyPoint){
     let shapeData:CircleShape3D = getCircleShape3D(nodeData);
     var radius = max(0.0, shapeData.radius);
     var lineWidth = min(nodeData.base.lineWidth, radius * 2.0);
-    drawShapeFace(nodeData, keyPoint, lineWidth, 10.0);
+    drawShapeFace(nodeData, keyPoint, lineWidth, vec2<f32>(nodeData.base.uScale, nodeData.base.vScale));
 }
 
 fn writeCirclePath(nodeData:ShapeData){
     let shapeData:CircleShape3D = getCircleShape3D(nodeData);
-    let keyPointCount = shapeData.base.keyPointCount;
-    let keyPointStart = shapeData.base.keyPointStart;
+    let shapeBase = shapeData.base;
+    let destPointCount = shapeBase.destPointCount;
+    let destPointStart = shapeBase.destPointStart;
     var radius = max(0.0, shapeData.radius);
     var lineWidth = min(nodeData.base.lineWidth, radius * 2.0);
-    if(shapeData.base.line > 0.5){
+    if(shapeBase.line > 0.5){
         radius -= lineWidth * 0.5;
     }
-    for(var i = 0.0; i < keyPointCount; i += 1.0)
+    for(var i = 0.0; i < destPointCount; i += 1.0)
     {
-        writeCirclePoint(i + keyPointStart, shapeData, radius);
+        writeCirclePoint(i + destPointStart, shapeData, radius);
     }
 }
 
 fn writeCirclePoint(pointIndex:f32, shapeData:CircleShape3D, radius:f32)
 {
     let pathIndex = u32(round(pointIndex));
-    let angle = pi_2 * (pointIndex - shapeData.base.keyPointStart) / shapeData.segment;
+    let angle = pi_2 * (pointIndex - shapeData.base.destPointStart) / shapeData.segment;
     let pos = vec3<f32>(cos(angle), 0.0, sin(angle));
     
     destPathBuffer[pathIndex].pos = pos * radius;
