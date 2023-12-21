@@ -4,7 +4,7 @@ import { Stats } from "@orillusion/stats";
 import { EllipseShape3D, Shape3DPathComponent } from "@orillusion/graphic";
 import { GUIShape3D } from "@samples/utils/GUIShape3D";
 
-export class Sample_ShapeLine {
+export class Sample_ShapeQuadraticCurve {
     lightObj3D: Object3D;
     scene: Scene3D;
     view: View3D;
@@ -85,23 +85,16 @@ export class Sample_ShapeLine {
                 mr.setTextureID(i, Math.floor(Math.random() * texts.length));
             }
 
-            let points: Vector2[] = [];
-            points.push(new Vector2(0.46, 1));
-            points.push(new Vector2(3, 4));
-            points.push(new Vector2(1.04, 1));
-            points.push(new Vector2(9, 5.5));
-            points.push(new Vector2(12, 4.5));
-            points.push(new Vector2(12, 6.5));
 
-            let line = path.line(0, 0, points);
-            line.lineWidth = 1;
-            line.lineJoin = LineJoin.bevel;
-            line.corner = 3;
-            line.fill = false;
-            line.line = true;
-            line.isClosed = false;
 
-            GUIShape3D.renderLine(line, 5);
+            let curve = path.quadraticCurve(0, 0, 5, 0, 10, 10);
+            curve.lineWidth = 1;
+            curve.fill = false;
+            curve.line = true;
+            curve.isClosed = false;
+            curve.segment = 4;
+
+            GUIShape3D.renderQuadraticCurve(curve, 5);
         }
     }
 

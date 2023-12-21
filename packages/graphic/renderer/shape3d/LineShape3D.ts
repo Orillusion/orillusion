@@ -1,17 +1,9 @@
 import { Vector2, LineJoin } from "@orillusion/core";
 import { Shape3D, ShapeTypeEnum } from "./Shape3D";
 export class LineShape3D extends Shape3D {
-    private _corner: number = 10;
-    private _lineJoin: LineJoin = LineJoin.miter;
+    protected _corner: number = 8;
+    protected _lineJoin: LineJoin = LineJoin.miter;
     public readonly shapeType: number = Number(ShapeTypeEnum.Line);
-
-    public set(points: Vector2[], lineWidth: number, fill: boolean, line: boolean, corner: number = 10) {
-        this.points = points;
-        this.lineWidth = lineWidth;
-        this.line = line;
-        this.fill = fill;
-        this.corner = corner;
-    }
 
     public get corner(): number {
         return this._corner;
@@ -65,5 +57,16 @@ export class LineShape3D extends Shape3D {
 
     protected writeShapeData() {
         super.writeShapeData(this._lineJoin, this._corner);
+    }
+
+    protected mixVector2(src: Vector2, dest: Vector2, t: number, ret?: Vector2) {
+        ret ||= new Vector2();
+        ret.x = this.mixFloat(src.x, dest.x, t);
+        ret.y = this.mixFloat(src.y, dest.y, t);
+        return ret;
+    }
+
+    protected mixFloat(src: number, dest: number, t: number) {
+        return src * (1 - t) + dest * t;
     }
 }

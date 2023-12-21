@@ -5,10 +5,11 @@ import { EllipseShape3D } from "./renderer/shape3d/EllipseShape3D";
 import { Shape3DStruct } from "./renderer/shape3d/Shape3D";
 import { CircleShape3D } from "./renderer/shape3d/CircleShape3D";
 import { LineShape3D } from "./renderer/shape3d/LineShape3D";
+import { QuadraticCurveShape3D } from "./renderer/shape3d/QuadraticCurveShape3D";
+import { CurveShape3D } from "./renderer/shape3d/CurveShape3D";
 
 export class Shape3DPathComponent extends ComponentBase implements CanvasPath {
 
-    private _basePosition: Vector2 = new Vector2();
     private _renderer: Shape3DRenderer;
     public init(param?: any): void {
         super.init(param);
@@ -36,7 +37,6 @@ export class Shape3DPathComponent extends ComponentBase implements CanvasPath {
     }
 
     bezierCurveTo(cp1x: number, cp1y: number, cp2x: number, cp2y: number, x: number, y: number): void {
-        this._basePosition.set(x, y);
         throw new Error("Method not implemented.");
     }
 
@@ -64,16 +64,30 @@ export class Shape3DPathComponent extends ComponentBase implements CanvasPath {
     }
 
     lineTo(x: number, y: number): void {
-        this._basePosition.set(x, y);
     }
 
     moveTo(x: number, y: number): void {
-        this._basePosition.set(x, y);
+    }
+
+    quadraticCurve(fx: number, fy: number, cpx: number, cpy: number, tx: number, ty: number): QuadraticCurveShape3D {
+        let curve = this._renderer.createShape(QuadraticCurveShape3D);
+        curve.start = new Vector2(fx, fy);
+        curve.end = new Vector2(tx, ty);
+        curve.cp = new Vector2(cpx, cpy);
+        return curve;
+    }
+
+    curve(fx: number, fy: number, cp1x: number, cp1y: number, cp2x: number, cp2y: number, tx: number, ty: number): CurveShape3D {
+        let curve = this._renderer.createShape(CurveShape3D);
+        curve.start = new Vector2(fx, fy);
+        curve.end = new Vector2(tx, ty);
+        curve.cp1 = new Vector2(cp1x, cp1y);
+        curve.cp2 = new Vector2(cp2x, cp2y);
+        return curve;
     }
 
     quadraticCurveTo(cpx: number, cpy: number, x: number, y: number): void {
-        this._basePosition.set(x, y);
-        throw new Error("Method not implemented.");
+
     }
 
     rect(x: number, y: number, w: number, h: number): RoundRectShape3D {
