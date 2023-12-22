@@ -40,11 +40,11 @@ fn writeCirclePath(nodeData:ShapeData){
     }
     for(var i = 0.0; i < destPointCount; i += 1.0)
     {
-        writeCirclePoint(i + destPointStart, shapeData, radius);
+        writeCirclePoint(i + destPointStart, shapeData, radius, i);
     }
 }
 
-fn writeCirclePoint(pointIndex:f32, shapeData:CircleShape3D, radius:f32)
+fn writeCirclePoint(pointIndex:f32, shapeData:CircleShape3D, radius:f32, localPointIndex:f32)
 {
     let pathIndex = u32(round(pointIndex));
     let angle = pi_2 * (pointIndex - shapeData.base.destPointStart) / shapeData.segment;
@@ -54,7 +54,7 @@ fn writeCirclePoint(pointIndex:f32, shapeData:CircleShape3D, radius:f32)
     destPathBuffer[pathIndex].up = vec3<f32>(0.0, 1.0, 0.0);
     destPathBuffer[pathIndex].right = normalize(pos);
     destPathBuffer[pathIndex].shapeIndex = f32(shapeIndex);
-    destPathBuffer[pathIndex].pointIndex = pointIndex;
+    destPathBuffer[pathIndex].pointIndex = localPointIndex;
 }
 
 `

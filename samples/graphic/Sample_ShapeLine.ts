@@ -88,11 +88,16 @@ export class Sample_ShapeLine {
 
         let line = this.createLine();
         let circle = this.createCircle();
-        // let ellipse = this.createEllipse();
+        let line2 = this.createLine();
+
+        let ellipse = this.createEllipse();
+        let roundRect = this.createRoundRect();
 
         this.setShapePos(circle, 0, 0, 0);
-        this.setShapePos(line, 0, 0, 1);
-        // this.setShapePos(ellipse, -10, -10, 2);
+        this.setShapePos(line, 10, 0, 1);
+        this.setShapePos(ellipse, -10, -10, 2);
+        this.setShapePos(roundRect, 10, 10, 3);
+        this.setShapePos(line2, -10, 10, 4);
     }
 
     private setShapePos(shape: Shape3D, x: number, y: number, order: number) {
@@ -115,9 +120,9 @@ export class Sample_ShapeLine {
         line.lineWidth = 1;
         line.lineJoin = LineJoin.bevel;
         line.corner = 3;
-        line.fill = false;
-        line.line = true;
-        line.isClosed = false;
+        line.fill = Math.random() > 0.5;
+        line.line = !line.fill || Math.random() > 0.5;
+        line.isClosed = Math.random() > 0.5;
 
         GUIShape3D.renderLine(line, 5, false);
         return line;
@@ -137,14 +142,26 @@ export class Sample_ShapeLine {
 
     private createEllipse(): Shape3D {
         let ellipse = this.path.ellipse(10, 6, 0, 0, 0);
-        ellipse.lineWidth = 1;
+        ellipse.lineWidth = 0.4;
         ellipse.segment = 40;
         ellipse.fill = true;
         ellipse.line = true;
 
-        GUIShape3D.renderEllipse(ellipse, 50);
+        GUIShape3D.renderEllipse(ellipse, 50, false);
         return ellipse;
     }
+
+    private createRoundRect(): Shape3D {
+        let roundRect = this.path.roundRect(10, 6, 2);
+        roundRect.lineWidth = 0.5;
+        roundRect.radius = 3;
+        roundRect.fill = true;
+        roundRect.line = true;
+
+        GUIShape3D.renderRoundRect(roundRect, 50, false);
+        return roundRect;
+    }
+
 
     update() {
     }

@@ -48,7 +48,7 @@ struct Path3DKeyPoint{
    right:vec3<f32>,
    up:vec3<f32>,
    shapeIndex:f32,
-   pointIndex:f32,
+   pointIndex:f32,//localIndex
    distance:f32,
 }
 

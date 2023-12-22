@@ -55,7 +55,6 @@ export class Shape3D {
     protected _indecies: number[];
     private _uScale: number = 0.1;
     private _vScale: number = 0.1;
-    protected _faceCount: number = 0;
     public readonly shapeIndex: number = 0;
     protected _isClosed: boolean = true;
     protected _fill: boolean = true;
@@ -233,24 +232,25 @@ export class Shape3D {
 
         //write source points
         if (this._srcPointCount) {
-            let start = this._srcPointStart * 4;
+            let index = this._srcPointStart * 4;
             let array = this._sharedSrcPoints;
             for (let point of this._points) {
-                array[start + 0] = point.x;
-                array[start + 1] = point.y;
-                start += 4;
+                array[index + 0] = point.x;
+                array[index + 1] = point.y;
+                index += 4;
             }
         }
 
         //write source indecies
         if (this._srcIndexCount && this._indecies) {
-            let start = this._srcIndexStart * 4;
+            let index = this._srcIndexStart * 4;
+            let triangleCount = this._srcIndexCount / 3;
             let array = this._sharedSrcIndecies;
-            for (let i = 0; i < this._srcIndexCount; i++) {
-                array[start + 0] = this._indecies[i * 3 + 0];
-                array[start + 1] = this._indecies[i * 3 + 1];
-                array[start + 2] = this._indecies[i * 3 + 2];
-                start += 4;
+            for (let i = 0; i < triangleCount; i++) {
+                array[index + 0] = this._indecies[i * 3 + 0];
+                array[index + 1] = this._indecies[i * 3 + 1];
+                array[index + 2] = this._indecies[i * 3 + 2];
+                index += 4;
             }
         }
     }

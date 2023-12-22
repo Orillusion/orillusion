@@ -93,7 +93,7 @@ export class Shape3DRenderer extends DynamicFaceRenderer {
         this._pathCompute.setStorageBuffer("srcPathBuffer", this._srcPathBuffer);
         this._pathCompute.setStorageBuffer("destPathBuffer", this._destPathBuffer);
         this._pathCompute.setUniformBuffer("rendererData", this._rendererData);
-        this._pathCompute.workerSizeX = 1;
+        this._pathCompute.workerSizeX = Math.floor(this.maxNodeCount / 256) + 1;
 
         this._onChangeKernelGroup.push(this._pathCompute);
 
@@ -133,6 +133,7 @@ export class Shape3DRenderer extends DynamicFaceRenderer {
 
             usedDestPointCount += shapeData.destPointCount;
             usedSrcIndecies += shapeData.srcIndexCount;
+            usedSrcPoints += shapeData.srcPointCount;
         }
 
         if (isRenderChange) {
@@ -155,7 +156,6 @@ export class Shape3DRenderer extends DynamicFaceRenderer {
             this._srcIndexBuffer.apply();
 
             this._vertexCompute.workerSizeX = Math.floor(usedDestPointCount / 256) + 1;
-            this._pathCompute.workerSizeX = Math.floor(this.maxNodeCount / 256) + 1;
 
             this.updateShape();
 

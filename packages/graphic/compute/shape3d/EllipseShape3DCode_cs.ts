@@ -43,11 +43,11 @@ fn writeEllipsePath(nodeData:ShapeData){
     }
     for(var i = 0.0; i < destPointCount; i += 1.0)
     {
-        writeEllipsePoint(i + destPointStart, shapeData, rx, ry);
+        writeEllipsePoint(i + destPointStart, shapeData, rx, ry, i);
     }
 }
 
-fn writeEllipsePoint(pointIndex:f32, shapeData:EllipseShape3D, rx:f32, ry:f32)
+fn writeEllipsePoint(pointIndex:f32, shapeData:EllipseShape3D, rx:f32, ry:f32, localPointIndex:f32)
 {
     let pathIndex = u32(round(pointIndex));
     let angle = pi_2 * (pointIndex - shapeData.base.destPointStart) / shapeData.segment;
@@ -57,7 +57,7 @@ fn writeEllipsePoint(pointIndex:f32, shapeData:EllipseShape3D, rx:f32, ry:f32)
     destPathBuffer[pathIndex].up = vec3<f32>(0.0, 1.0, 0.0);
     destPathBuffer[pathIndex].right = normalize(pos);
     destPathBuffer[pathIndex].shapeIndex = f32(shapeIndex);
-    destPathBuffer[pathIndex].pointIndex = pointIndex;
+    destPathBuffer[pathIndex].pointIndex = localPointIndex;
 }
 
 `

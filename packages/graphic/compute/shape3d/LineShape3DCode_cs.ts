@@ -23,10 +23,13 @@ fn getLineShape3D(node:ShapeData) -> LineShape3D{
  
 fn drawLineFace(nodeData:ShapeData, currentPoint:Path3DKeyPoint){
     let shapeData:LineShape3D = getLineShape3D(nodeData);
-    let needDrawLine = nodeData.base.isClosed > 0.5 
-                    || round(currentPoint.pointIndex) < round(shapeData.base.destPointCount - 1.0);
+
+    var needDrawLine = nodeData.base.isClosed > 0.5;
+    needDrawLine = needDrawLine || round(currentPoint.pointIndex) < round(shapeData.base.destPointCount - 1.0);
+    needDrawLine = needDrawLine && nodeData.base.line > 0.5;
     
-    let needDrawArea = shapeData.base.srcIndexCount > 0.5 && currentPoint.pointIndex <= 0.5;
+    let isFirstPointOfShape = round(currentPoint.pointIndex) == 0.0;
+    let needDrawArea = shapeData.base.fill > 0.5 && shapeData.base.srcIndexCount > 0.5 && isFirstPointOfShape;
     
     if(needDrawLine){
         drawLineCorner(shapeData, currentPoint);
@@ -49,14 +52,14 @@ fn drawLineFilledArea(shapeData:LineShape3D){
     var u1:vec2f;
     var u2:vec2f;
 
-    let indexStart = u32(round(baseData.srcIndexStart));
-    let indexCount = u32(round(baseData.srcIndexCount));
-    let triangleCount = indexCount / 3u;
+    let srcIndexStart = u32(round(baseData.srcIndexStart));
+    let srcIndexCount = u32(round(baseData.srcIndexCount));
+    let triangleCount = srcIndexCount / 3u;
 
     let pointStart = u32(round(baseData.srcPointStart));
 
     for(var i = 0u; i < triangleCount; i += 1u){
-        let indecies:vec4<u32> = srcIndexBuffer[indexStart + i];
+        let indecies:vec4<u32> = srcIndexBuffer[srcIndexStart + i];
         let i0 = indecies.x + pointStart;
         let i1 = indecies.y + pointStart;
         let i2 = indecies.z + pointStart;
@@ -98,7 +101,9 @@ fn drawLineCorner(shapeData:LineShape3D, currentPoint:Path3DKeyPoint){
     if(nextPointIndex >= destCount){
         nextPointIndex = 0u;
     }
-    let nextPoint:Path3DKeyPoint = destPathBuffer[nextPointIndex + destStart];
+
+    nextPointIndex += destStart;
+    let nextPoint:Path3DKeyPoint = destPathBuffer[nextPointIndex];
 
     if(baseData.line > 0.5) {
         let lineJoin = u32(round(shapeData.lineJoin));
@@ -270,7 +275,7 @@ fn writeLinePath(nodeData:ShapeData){
     let shapeData:LineShape3D = getLineShape3D(nodeData);
     let shapeBase = shapeData.base;
     let destPointCount = shapeBase.destPointCount;
-    let destPointStart = shapeBase.destPointStart;
+    let destPointStart = u32(round(shapeBase.destPointStart));
     let srcPointCount = u32(round(shapeBase.srcPointCount));
     let srcPointStart = shapeBase.srcPointStart;
 
@@ -284,9 +289,10 @@ fn writeLinePath(nodeData:ShapeData){
     var up = vec3<f32>(0.0, 1.0, 0.0);
     var forward:vec3<f32>;
 
-    var curIndex:u32 = u32(round(srcPointStart));
+    var curSrcIndex:u32 = u32(round(srcPointStart));
+    var curDestIndex:u32 = destPointStart;
 
-    currentPoint = srcPathBuffer[curIndex].xyy;
+    currentPoint = srcPathBuffer[curSrcIndex].xyy;
     currentPoint.y = 0.0;
     let firstPoint = currentPoint;
 
@@ -298,7 +304,7 @@ fn writeLinePath(nodeData:ShapeData){
 
     for(var i = 0u; i < srcPointCount; i += 1u)
     {
-        nextPoint = srcPathBuffer[curIndex + 1u].xyz;
+        nextPoint = srcPathBuffer[curSrcIndex + 1u].xyz;
         nextPoint.z = nextPoint.y;
         nextPoint.y = 0.0;
 
@@ -320,23 +326,24 @@ fn writeLinePath(nodeData:ShapeData){
             right = cross(up, forward);
         }
 
-        writeLinePoint(curIndex, shapeData, currentPoint, right, shapeBase.lineWidth);
+        writeLinePoint(curDestIndex, shapeData, currentPoint, right, f32(i));
         lastRight = right;
 
         lastPoint = currentPoint;
         currentPoint = nextPoint;
-        curIndex += 1u;
+        curSrcIndex += 1u;
+        curDestIndex += 1u;
     }
 }
 
-fn writeLinePoint(pointIndex:u32, shapeData:LineShape3D, pos:vec3<f32>, right:vec3<f32>, lineWidth:f32)
+fn writeLinePoint(pointIndex:u32, shapeData:LineShape3D, pos:vec3<f32>, right:vec3<f32>, localPointIndex:f32)
 {
     let pathIndex = pointIndex;
     destPathBuffer[pathIndex].pos = pos;
     destPathBuffer[pathIndex].up = vec3<f32>(0.0, 1.0, 0.0);
     destPathBuffer[pathIndex].right = right;
     destPathBuffer[pathIndex].shapeIndex = f32(shapeIndex);
-    destPathBuffer[pathIndex].pointIndex = f32(pointIndex);
+    destPathBuffer[pathIndex].pointIndex = localPointIndex;
 }
 
 `

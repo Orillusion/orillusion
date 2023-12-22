@@ -9,10 +9,14 @@ export let Shape3DVertexCompute_cs = /*wgsl*/`
       if(globalIndex < u32(rendererData.usedDestPointCount) )
       {
          let keyPoint = destPathBuffer[globalIndex];
+         let srcPathBuffer0 = srcPathBuffer[0];
+
          shapeIndex = u32(round(keyPoint.shapeIndex));
          var nodeData = nodeBuffer[shapeIndex];
          shapeType = u32(round(nodeData.base.shapeType));
-         
+         if(shapeType == 0u){
+            return;
+         }
          var offsetY = rendererData.zFightingScale / (rendererData.maxNodeCount + 1.0);
          lineOffsetY = (nodeData.base.shapeOrder + 0.5) * offsetY;
          fillOffsetY = nodeData.base.shapeOrder * offsetY;

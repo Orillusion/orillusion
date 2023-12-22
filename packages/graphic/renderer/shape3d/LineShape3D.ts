@@ -29,29 +29,7 @@ export class LineShape3D extends Shape3D {
 
     public calcRequireSource(): void {
         this._destPointCount = this._srcPointCount;
-        this._faceCount = 0;
-        if (this._line) {
-            if (this._lineJoin == LineJoin.miter) {
-                if (this._isClosed) {
-                    this._faceCount = this._srcPointCount * 4;
-                } else {
-                    this._faceCount = (this._srcPointCount - 2) * 4 + 2;
-                }
-            } else if (this._lineJoin == LineJoin.bevel) {
-                if (this._isClosed) {
-                    this._faceCount = this._srcPointCount * 3;
-                } else {
-                    this._faceCount = (this._srcPointCount - 2) * 3 + 2;
-                }
-            } else {
-                let cornerCount = Math.max(2, this._corner);
-                if (this._isClosed) {
-                    this._faceCount = this._srcPointCount * (2 + cornerCount);
-                } else {
-                    this._faceCount = (this._srcPointCount - 2) * (2 + cornerCount) + 2;
-                }
-            }
-        }
+
         if (this._fill && this._points.length > 2) {
             let coords: number[] = [];
             for (let point of this._points) {
@@ -59,7 +37,6 @@ export class LineShape3D extends Shape3D {
             }
             this._indecies = earcut(coords);
             this._srcIndexCount = this._indecies?.length || 0;
-            this._faceCount += (this._srcIndexCount) / 3;
         } else {
             this._indecies = null;
             this._srcIndexCount = 0;

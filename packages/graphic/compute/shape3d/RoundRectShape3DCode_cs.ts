@@ -57,7 +57,7 @@ fn writeFlatCorner(pointStart:f32, cornerIndex:u32, pos:vec3f){
    destPathBuffer[pathIndex].up = vec3<f32>(0.0, 1.0, 0.0);
    destPathBuffer[pathIndex].right = vec3<f32>(cos(angle), 0.0, sin(angle)) * 1.41421;
    destPathBuffer[pathIndex].shapeIndex = f32(shapeIndex);
-   destPathBuffer[pathIndex].pointIndex = f32(pathIndex);
+   destPathBuffer[pathIndex].pointIndex = f32(cornerIndex);
 }
 
 fn writeRoundCorners(pointStart:f32, destPointCount:f32, progress:f32, offset:vec3f, count:u32, radius:f32){
@@ -73,7 +73,7 @@ fn writeRoundCorners(pointStart:f32, destPointCount:f32, progress:f32, offset:ve
       destPathBuffer[pathIndex].right = normalize(pos);
       destPathBuffer[pathIndex].up = vec3<f32>(0.0, 1.0, 0.0);
       destPathBuffer[pathIndex].shapeIndex = f32(shapeIndex);
-      destPathBuffer[pathIndex].pointIndex = pointIndex;
+      destPathBuffer[pathIndex].pointIndex = pointIndex - pointStart;
    }
 }
 

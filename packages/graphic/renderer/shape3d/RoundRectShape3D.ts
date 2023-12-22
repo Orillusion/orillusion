@@ -60,13 +60,6 @@ export class RoundRectShape3D extends Shape3D {
 
     public calcRequireSource(): void {
         this._destPointCount = (1 + this._cornerSegment) * 4;
-        this._faceCount = 0;
-        if (this._line) {
-            this._faceCount += this._destPointCount * 2;
-        }
-        if (this._fill) {
-            this._faceCount += this._destPointCount;
-        }
     }
 
     public get isRect() {
