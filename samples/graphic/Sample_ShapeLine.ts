@@ -3,6 +3,7 @@ import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCam
 import { Stats } from "@orillusion/stats";
 import { EllipseShape3D, Shape3DPathComponent } from "@orillusion/graphic";
 import { GUIShape3D } from "@samples/utils/GUIShape3D";
+import { Shape3D } from "@orillusion/graphic/renderer/shape3d/Shape3D";
 
 export class Sample_ShapeLine {
     lightObj3D: Object3D;
@@ -59,6 +60,7 @@ export class Sample_ShapeLine {
         await this.addNode(0);
     }
 
+    private path: Shape3DPathComponent;
     private async addNode(grassGroup: number) {
         let texts = [];
         // texts.push(await Engine3D.res.loadTexture("textures/line.png") as BitmapTexture2D);
@@ -78,31 +80,70 @@ export class Sample_ShapeLine {
         let bitmapTexture2DArray = new BitmapTexture2DArray(texts[0].width, texts[0].height, texts.length);
         bitmapTexture2DArray.setTextures(texts);
 
-        {
-            let path = Shape3DPathComponent.create(`path_` + grassGroup, bitmapTexture2DArray, this.scene);
-            let mr = path.renderer;
-            for (let i = 0; i < 1; i++) {
-                mr.setTextureID(i, Math.floor(Math.random() * texts.length));
-            }
-
-            let points: Vector2[] = [];
-            points.push(new Vector2(0.46, 1));
-            points.push(new Vector2(3, 4));
-            points.push(new Vector2(1.04, 1));
-            points.push(new Vector2(9, 5.5));
-            points.push(new Vector2(12, 4.5));
-            points.push(new Vector2(12, 6.5));
-
-            let line = path.line(0, 0, points);
-            line.lineWidth = 1;
-            line.lineJoin = LineJoin.bevel;
-            line.corner = 3;
-            line.fill = false;
-            line.line = true;
-            line.isClosed = false;
-
-            GUIShape3D.renderLine(line, 5);
+        this.path = Shape3DPathComponent.create(`path_` + grassGroup, bitmapTexture2DArray, this.scene);
+        let mr = this.path.renderer;
+        for (let i = 0; i < 1; i++) {
+            mr.setTextureID(i, Math.floor(Math.random() * texts.length));
         }
+
+        let line = this.createLine();
+        let circle = this.createCircle();
+        // let ellipse = this.createEllipse();
+
+        this.setShapePos(circle, 0, 0, 0);
+        this.setShapePos(line, 0, 0, 1);
+        // this.setShapePos(ellipse, -10, -10, 2);
+    }
+
+    private setShapePos(shape: Shape3D, x: number, y: number, order: number) {
+        let object3D = this.path.renderer.getShapeObject3D(shape);
+        object3D.x = x;
+        object3D.z = y;
+        shape.shapeOrder = order;
+    }
+
+    private createLine(): Shape3D {
+        let points: Vector2[] = [];
+        points.push(new Vector2(-6, -2));
+        points.push(new Vector2(-5, -5));
+        points.push(new Vector2(6, -4));
+        points.push(new Vector2(1, 9));
+        points.push(new Vector2(-1, 4));
+        points.push(new Vector2(-4, 3.5));
+
+        let line = this.path.line(points);
+        line.lineWidth = 1;
+        line.lineJoin = LineJoin.bevel;
+        line.corner = 3;
+        line.fill = false;
+        line.line = true;
+        line.isClosed = false;
+
+        GUIShape3D.renderLine(line, 5, false);
+        return line;
+    }
+
+    private createCircle(): Shape3D {
+        let circle = this.path.circle(4, 0, 0);
+        circle.lineWidth = 0.5;
+        circle.segment = 30;
+        circle.fill = true;
+        circle.line = true;
+
+        GUIShape3D.renderCircle(circle, 50, false);
+        return circle;
+    }
+
+
+    private createEllipse(): Shape3D {
+        let ellipse = this.path.ellipse(10, 6, 0, 0, 0);
+        ellipse.lineWidth = 1;
+        ellipse.segment = 40;
+        ellipse.fill = true;
+        ellipse.line = true;
+
+        GUIShape3D.renderEllipse(ellipse, 50);
+        return ellipse;
     }
 
     update() {

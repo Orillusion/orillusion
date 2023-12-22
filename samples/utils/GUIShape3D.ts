@@ -7,7 +7,7 @@ import { LineJoin } from "../../src";
 export class GUIShape3D {
 
     public static renderRoundRect(shape: RoundRectShape3D, maxSize: number, open: boolean = true, name?: string) {
-        name ||= 'Rect3D_' + shape.instanceID;
+        name ||= 'Rect3D_' + shape.shapeIndex;
         GUIHelp.addFolder(name);
 
         GUIHelp.add(shape, 'width', 0, maxSize, 0.1);
@@ -20,7 +20,7 @@ export class GUIShape3D {
     }
 
     public static renderCircle(shape: CircleShape3D, maxSize: number, open: boolean = true, name?: string) {
-        name ||= 'Circle3D_' + shape.instanceID;
+        name ||= 'Circle3D_' + shape.shapeIndex;
         GUIHelp.addFolder(name);
         GUIHelp.add(shape, 'radius', 0, maxSize, 0.1);
         GUIHelp.add(shape, 'segment', 0, 100, 1);
@@ -31,7 +31,7 @@ export class GUIShape3D {
     }
 
     public static renderLine(shape: LineShape3D, maxSize: number, open: boolean = true, name?: string) {
-        name ||= 'Line3D_' + shape.instanceID;
+        name ||= 'Line3D_' + shape.shapeIndex;
         GUIHelp.addFolder(name);
         GUIHelp.add(shape, 'corner', 0, 50, 1);
         let lineJoin = {}
@@ -57,7 +57,7 @@ export class GUIShape3D {
     }
 
     public static renderQuadraticCurve(shape: QuadraticCurveShape3D, maxSize: number, open: boolean = true, name?: string) {
-        name ||= 'QuadraticCurve_' + shape.instanceID;
+        name ||= 'QuadraticCurve_' + shape.shapeIndex;
         GUIHelp.addFolder(name);
         GUIHelp.add(shape, 'segment', 1, 100, 1);
         GUIHelp.add(shape, 'corner', 0, 50, 1);
@@ -98,7 +98,7 @@ export class GUIShape3D {
     }
 
     public static renderCurve(shape: CurveShape3D, maxSize: number, open: boolean = true, name?: string) {
-        name ||= 'Curve_' + shape.instanceID;
+        name ||= 'Curve_' + shape.shapeIndex;
         GUIHelp.addFolder(name);
         GUIHelp.add(shape, 'segment', 1, 100, 1);
         GUIHelp.add(shape, 'corner', 0, 50, 1);
@@ -148,7 +148,7 @@ export class GUIShape3D {
 
 
     public static renderEllipse(shape: EllipseShape3D, maxSize: number, open: boolean = true, name?: string) {
-        name ||= 'Ellipse3D_' + shape.instanceID;
+        name ||= 'Ellipse3D_' + shape.shapeIndex;
         GUIHelp.addFolder(name);
         GUIHelp.add(shape, 'rx', 0, maxSize, 0.01);
         GUIHelp.add(shape, 'ry', 0, maxSize, 0.01);

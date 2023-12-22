@@ -6,13 +6,17 @@ export let Shape3DVertexCompute_cs = /*wgsl*/`
    fn compute(workgroup_id:vec3<u32>,local_invocation_id:vec3<u32>) {
       var time = globalUniform.time;
       globalIndex = workgroup_id.x * 256u + local_invocation_id.x;
-      let sss = srcPathBuffer[0];
       if(globalIndex < u32(rendererData.usedDestPointCount) )
       {
          let keyPoint = destPathBuffer[globalIndex];
-         var nodeData = nodeBuffer[u32(keyPoint.shapeIndex)];
+         shapeIndex = u32(round(keyPoint.shapeIndex));
+         var nodeData = nodeBuffer[shapeIndex];
          shapeType = u32(round(nodeData.base.shapeType));
-         shapeIndex = u32(round(nodeData.base.shapeIndex));
+         
+         var offsetY = rendererData.zFightingScale / (rendererData.maxNodeCount + 1.0);
+         lineOffsetY = (nodeData.base.shapeOrder + 0.5) * offsetY;
+         fillOffsetY = nodeData.base.shapeOrder * offsetY;
+
          switch(shapeType){
             case RoundRectShapeType:
             {

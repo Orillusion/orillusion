@@ -53,7 +53,7 @@ fn writeCirclePoint(pointIndex:f32, shapeData:CircleShape3D, radius:f32)
     destPathBuffer[pathIndex].pos = pos * radius;
     destPathBuffer[pathIndex].up = vec3<f32>(0.0, 1.0, 0.0);
     destPathBuffer[pathIndex].right = normalize(pos);
-    destPathBuffer[pathIndex].shapeIndex = shapeData.base.shapeIndex;
+    destPathBuffer[pathIndex].shapeIndex = f32(shapeIndex);
     destPathBuffer[pathIndex].pointIndex = pointIndex;
 }
 

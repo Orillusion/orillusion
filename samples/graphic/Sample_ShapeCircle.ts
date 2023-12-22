@@ -85,7 +85,7 @@ export class Sample_ShapeCircle {
                 mr.setTextureID(i, Math.floor(Math.random() * texts.length));
             }
 
-            let circle = path.circle(0, 0, 10, 0, 0);
+            let circle = path.circle(10, 0, 0);
             circle.lineWidth = 1;
             circle.segment = 30;
             circle.fill = true;

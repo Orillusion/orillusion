@@ -8,42 +8,40 @@ export let Shape3DKeyPointCompute_cs = /*wgsl*/`
       globalIndex = workgroup_id.x * 256u + local_invocation_id.x ;
       
       let vertexBuffer0 = vertexBuffer[0];
-      let sss = srcPathBuffer[0];
-      let usedShapeCount = u32(rendererData.usedShapeCount);
-      let skipFace3 = drawBuffer.skipFace3 ;
-      if(globalIndex < usedShapeCount){
-         let nodeData = nodeBuffer[globalIndex];
-         shapeType = u32(round(nodeData.base.shapeType));
-         shapeIndex = u32(round(nodeData.base.shapeIndex));
-         switch(shapeType){
-            case RoundRectShapeType:
-            {
-               writeRoundRectPath(nodeData);
-               break;
-            }
-            case CircleShapeType:
-            {
-               writeCirclePath(nodeData);
-               break;
-            }
-            case EllipseShapeType:
-            {
-               writeEllipsePath(nodeData);
-               break;
-            }
-            case LineShapeType:
-            {
-               writeLinePath(nodeData);
-               break;
-            }
-            default:
-            {
-               break;
-            }
+      let srcPathBuffer0 = srcPathBuffer[0];
+      let srcIndexBuffer0 = srcIndexBuffer[0];
+      let maxNodeCount = u32(rendererData.maxNodeCount);
+      let skipFace3 = drawBuffer.skipFace3;
+
+      let nodeData = nodeBuffer[globalIndex];
+      shapeType = u32(round(nodeData.base.shapeType));
+      shapeIndex = globalIndex;
+      switch(shapeType){
+         case RoundRectShapeType:
+         {
+            writeRoundRectPath(nodeData);
+            break;
+         }
+         case CircleShapeType:
+         {
+            writeCirclePath(nodeData);
+            break;
+         }
+         case EllipseShapeType:
+         {
+            writeEllipsePath(nodeData);
+            break;
+         }
+         case LineShapeType:
+         {
+            writeLinePath(nodeData);
+            break;
+         }
+         default:
+         {
+            break;
          }
       }
-      
-
       
    }
 

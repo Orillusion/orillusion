@@ -23,11 +23,59 @@ fn getLineShape3D(node:ShapeData) -> LineShape3D{
  
 fn drawLineFace(nodeData:ShapeData, currentPoint:Path3DKeyPoint){
     let shapeData:LineShape3D = getLineShape3D(nodeData);
-    let drawEnable = nodeData.base.isClosed > 0.5 
+    let needDrawLine = nodeData.base.isClosed > 0.5 
                     || round(currentPoint.pointIndex) < round(shapeData.base.destPointCount - 1.0);
-    if(drawEnable){
+    
+    let needDrawArea = shapeData.base.srcIndexCount > 0.5 && currentPoint.pointIndex <= 0.5;
+    
+    if(needDrawLine){
         drawLineCorner(shapeData, currentPoint);
     }
+    if(needDrawArea){
+        drawLineFilledArea(shapeData);
+    }
+}
+
+fn drawLineFilledArea(shapeData:LineShape3D){
+    let baseData = shapeData.base;
+    let uvScale:vec2<f32> = vec2<f32>(baseData.uScale, baseData.vScale);
+
+    var p0:vec3f;
+    var p1:vec3f;
+    var p2:vec3f;
+    var p3:vec3f;
+    
+    var u0:vec2f;
+    var u1:vec2f;
+    var u2:vec2f;
+
+    let indexStart = u32(round(baseData.srcIndexStart));
+    let indexCount = u32(round(baseData.srcIndexCount));
+    let triangleCount = indexCount / 3u;
+
+    let pointStart = u32(round(baseData.srcPointStart));
+
+    for(var i = 0u; i < triangleCount; i += 1u){
+        let indecies:vec4<u32> = srcIndexBuffer[indexStart + i];
+        let i0 = indecies.x + pointStart;
+        let i1 = indecies.y + pointStart;
+        let i2 = indecies.z + pointStart;
+
+        p0 = srcPathBuffer[i0].xyy;
+        p1 = srcPathBuffer[i1].xyy;
+        p2 = srcPathBuffer[i2].xyy;
+
+        p0.y = fillOffsetY;
+        p1.y = fillOffsetY;
+        p2.y = fillOffsetY;
+
+        u0 = vec2f(p0.x, p0.z) * uvScale;
+        u1 = vec2f(p1.x, p1.z) * uvScale;
+        u2 = vec2f(p2.x, p2.z) * uvScale;
+    
+        drawFace(shapeIndex,p1,p0,p2,u1,u0,u2);
+    }
+
 }
 
 fn drawLineCorner(shapeData:LineShape3D, currentPoint:Path3DKeyPoint){
@@ -41,7 +89,6 @@ fn drawLineCorner(shapeData:LineShape3D, currentPoint:Path3DKeyPoint){
     var u2:vec2f;
 
     let baseData = shapeData.base;
-    let uvScale:vec2<f32> = vec2<f32>(baseData.uScale, baseData.vScale);
  
     let destStart = u32(round(baseData.destPointStart));
     let destCount = u32(round(baseData.destPointCount));
@@ -51,21 +98,8 @@ fn drawLineCorner(shapeData:LineShape3D, currentPoint:Path3DKeyPoint){
     if(nextPointIndex >= destCount){
         nextPointIndex = 0u;
     }
-
     let nextPoint:Path3DKeyPoint = destPathBuffer[nextPointIndex + destStart];
 
-    if(baseData.fill > 0.5){
-        p0 = zero_pos;
-        p1 = currentPoint.pos;
-        p2 = nextPoint.pos;
- 
-        u0 = vec2f(p0.x, p0.z) * uvScale;
-        u1 = vec2f(p1.x, p1.z) * uvScale;
-        u2 = vec2f(p2.x, p2.z) * uvScale;
- 
-        drawFace(shapeIndex,p1,p0,p2,u1,u0,u2);
-    }
-    
     if(baseData.line > 0.5) {
         let lineJoin = u32(round(shapeData.lineJoin));
         var useCorner = 0u;
@@ -79,13 +113,19 @@ fn drawLineCorner(shapeData:LineShape3D, currentPoint:Path3DKeyPoint){
         //0-1
         //2-3
         let halfLineWidth = shapeData.base.lineWidth * 0.5;
-        let p0 = currentPoint.pos - currentPoint.right * halfLineWidth;
-        let p1 = currentPoint.pos + currentPoint.right * halfLineWidth;
+        var p0 = currentPoint.pos - currentPoint.right * halfLineWidth;
+        var p1 = currentPoint.pos + currentPoint.right * halfLineWidth;
     
-        let p2 = nextPoint.pos - currentPoint.right * halfLineWidth;
-        let p3 = nextPoint.pos + currentPoint.right * halfLineWidth;
+        var p2 = nextPoint.pos - currentPoint.right * halfLineWidth;
+        var p3 = nextPoint.pos + currentPoint.right * halfLineWidth;
+        
         let u0 = vec2f(0.5, 0.5);
     
+        p0.y = lineOffsetY;
+        p1.y = lineOffsetY;
+        p2.y = lineOffsetY;
+        p3.y = lineOffsetY;
+
         drawFace(shapeIndex,p1,p0,p2,u0,u0,u0);
         drawFace(shapeIndex,p1,p2,p3,u0,u0,u0);
 
@@ -135,6 +175,12 @@ fn drawLineCornerMiter(shapeData:LineShape3D, currentPoint:Path3DKeyPoint, nextP
             p2 = nextPoint.pos + nextPoint.right * halfLineWidth;
             p3 = nextPoint.pos + currentPoint.right * halfLineWidth;
         }
+
+        p0.y = lineOffsetY;
+        p1.y = lineOffsetY;
+        p2.y = lineOffsetY;
+        p3.y = lineOffsetY;
+
         drawFace(shapeIndex,p0,p1,p3,u0,u0,u0);
         drawFace(shapeIndex,p0,p2,p1,u0,u0,u0);
     }
@@ -155,7 +201,7 @@ fn drawLineCornerBevel(shapeData:LineShape3D, currentPoint:Path3DKeyPoint, nextP
         let isPositive = cross(currentPoint.right, nextPoint.right).y >= 0.0;
         
         var p0 = nextPoint.pos;
-        //var p1:vec3f;
+        var p1:vec3f;
         var p2:vec3f;
         var p3:vec3f;
 
@@ -168,6 +214,12 @@ fn drawLineCornerBevel(shapeData:LineShape3D, currentPoint:Path3DKeyPoint, nextP
             p2 = nextPoint.pos + nextPoint.right * halfLineWidth;
             p3 = nextPoint.pos + currentPoint.right * halfLineWidth;
         }
+
+        p0.y = lineOffsetY;
+        p1.y = lineOffsetY;
+        p2.y = lineOffsetY;
+        p3.y = lineOffsetY;
+
         drawFace(shapeIndex,p0,p2,p3,u0,u0,u0);
     }
 }
@@ -185,8 +237,8 @@ fn drawLineCornerRound(shapeData:LineShape3D, currentPoint:Path3DKeyPoint, nextP
         let isPositive = cross(currentPoint.right, nextPoint.right).y >= 0.0;
         let cornerAngle = acos(dot(currentPoint.right, nextPoint.right)) ;
         let rotateMat = buildRotateYMat3(cornerAngle / f32(useCorner));
-        let p0 = nextPoint.pos;
-        
+        var p0 = nextPoint.pos;
+        var p1:vec3f;
         var p2:vec3f;
         var p3:vec3f;
 
@@ -201,6 +253,12 @@ fn drawLineCornerRound(shapeData:LineShape3D, currentPoint:Path3DKeyPoint, nextP
             p3 = nextPoint.pos + rotateFrom * halfLineWidth;
             rotateFrom = rotateMat * rotateFrom;
             p2 = nextPoint.pos + rotateFrom * halfLineWidth;
+
+            p0.y = lineOffsetY;
+            p1.y = lineOffsetY;
+            p2.y = lineOffsetY;
+            p3.y = lineOffsetY;
+
             drawFace(shapeIndex,p0,p2,p3,u0,u0,u0);
         }
         

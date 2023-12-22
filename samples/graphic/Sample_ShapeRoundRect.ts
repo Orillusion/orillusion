@@ -85,7 +85,7 @@ export class Sample_ShapeRoundRect {
                 mr.setTextureID(i, Math.floor(Math.random() * texts.length));
             }
 
-            let roundRect = path.roundRect(0, 0, 20, 15, 4);
+            let roundRect = path.roundRect(20, 15, 4);
             roundRect.lineWidth = 1;
             roundRect.radius = 3;
             roundRect.fill = true;

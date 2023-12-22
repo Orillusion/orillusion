@@ -58,7 +58,7 @@ export class QuadraticCurveShape3D extends LineShape3D {
         this._isChange = true;
     }
 
-    protected calcRequireSource(): void {
+    public calcRequireSource(): void {
         this._curveChange && this.genCurvePoints();
         super.calcRequireSource();
     }

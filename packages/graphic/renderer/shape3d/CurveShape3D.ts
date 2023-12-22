@@ -67,7 +67,7 @@ export class CurveShape3D extends LineShape3D {
         this._isChange = true;
     }
 
-    protected calcRequireSource(): void {
+    public calcRequireSource(): void {
         this._curveChange && this.genCurvePoints();
         super.calcRequireSource();
     }
@@ -84,7 +84,6 @@ export class CurveShape3D extends LineShape3D {
             }
             list.length = this._segment + 1;
             this._destPointCount = this._srcPointCount = list.length;
-
         }
         return this._points;
     }

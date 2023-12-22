@@ -17,12 +17,17 @@ const LineShapeType : u32 = 4u;
 
 struct ShapeDataBase{
    shapeType: f32,
-   shapeIndex:f32,
+   shapeOrder:f32,
    destPointStart:f32,
    destPointCount:f32,
 
    srcPointStart:f32,
    srcPointCount:f32,
+   srcIndexStart:f32,
+   srcIndexCount:f32,
+
+   empty0:f32,
+   empty1:f32,
    uScale:f32,
    vScale:f32,
    
@@ -48,10 +53,10 @@ struct Path3DKeyPoint{
 }
 
 struct RenderData{
-   usedShapeCount:f32,
+   maxNodeCount:f32,
    usedDestPointCount:f32,
    maxFaceCount:f32,
-   usedFaceCount:f32,
+   zFightingScale:f32,
  }
 
  fn drawShapeFace(shapeData:ShapeData, keyPoint:Path3DKeyPoint, lineWidth:f32, uvScale:vec2<f32>){
@@ -66,7 +71,6 @@ struct RenderData{
 
    let shapeBase = shapeData.base;
 
-   let shapeIndex = u32(shapeBase.shapeIndex);
    var nextPointIndex:u32 = globalIndex + 1u;
    let destStart = u32(round(shapeBase.destPointStart));
    let destCount = u32(round(shapeBase.destPointCount));
@@ -83,6 +87,10 @@ struct RenderData{
        u1 = vec2f(p1.x, p1.z) * uvScale;
        u2 = vec2f(p2.x, p2.z) * uvScale;
 
+       p0.y = fillOffsetY;
+       p1.y = fillOffsetY;
+       p2.y = fillOffsetY;
+
        drawFace(shapeIndex,p1,p0,p2,u1,u0,u2);
    }
    
@@ -92,6 +100,11 @@ struct RenderData{
        p2 = nextKeyPoint.pos;
        p3 = nextKeyPoint.pos + nextKeyPoint.right * lineWidth;
       
+       p0.y = lineOffsetY;
+       p1.y = lineOffsetY;
+       p2.y = lineOffsetY;
+       p3.y = lineOffsetY;
+
        u0 = vec2f(0.5, 0.5);
 
        drawFace(shapeIndex,p1,p0,p2,u0,u0,u0);
@@ -101,9 +114,10 @@ struct RenderData{
 }
 
 @group(0) @binding(3) var<storage, read> nodeBuffer : array<ShapeData>;
-@group(0) @binding(4) var<storage, read_write> srcPathBuffer : array<vec4<f32>>;
-@group(0) @binding(5) var<storage, read_write> destPathBuffer : array<Path3DKeyPoint>;
-@group(0) @binding(6) var<uniform> rendererData: RenderData;
+@group(0) @binding(4) var<storage, read_write> srcIndexBuffer : array<vec4<u32>>;
+@group(0) @binding(5) var<storage, read_write> srcPathBuffer : array<vec4<f32>>;
+@group(0) @binding(6) var<storage, read_write> destPathBuffer : array<Path3DKeyPoint>;
+@group(0) @binding(7) var<uniform> rendererData: RenderData;
 
 var<private> globalIndex : u32;
 var<private> zero_pos : vec3f = vec3f(0.0,0.0,0.0);
@@ -111,5 +125,7 @@ var<private> zero_uv : vec2f = vec2f(0.0,0.0);
 var<private> pi_2 : f32 = 6.2831853071795864;
 var<private> shapeIndex : u32 = 0;
 var<private> shapeType : u32 = 0;
+var<private> lineOffsetY : f32 = 0.0;
+var<private> fillOffsetY : f32 = 0.0;
 
 `

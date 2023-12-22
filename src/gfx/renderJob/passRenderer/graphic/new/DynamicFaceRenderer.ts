@@ -9,7 +9,7 @@ export class DynamicFaceRenderer extends MeshRenderer {
     public nodeStructBuffer: StructStorageGPUBuffer<DynamicDrawStruct>;
     public drawAtomicBuffer: StorageGPUBuffer;
 
-    public object3Ds: any[];
+    protected object3Ds: Object3D[];
     public nodes: DynamicDrawStruct[];
 
     protected _initCompute: boolean = false;
@@ -64,7 +64,7 @@ export class DynamicFaceRenderer extends MeshRenderer {
     protected createComputeKernel() {
     }
 
-    public set<T extends DynamicDrawStruct>(nodeStruct: Ctor<T>, tex: BitmapTexture2DArray) {
+    public set<T extends DynamicDrawStruct>(nodeStruct: Ctor<T>, tex: BitmapTexture2DArray, standAloneMatrix?: boolean) {
         this._nodeStruct = nodeStruct;
         this.nodeMat.baseMap = tex;
 
@@ -77,11 +77,18 @@ export class DynamicFaceRenderer extends MeshRenderer {
         this.nodeStructBuffer.apply();
 
         this.object3Ds = [];
+        let bindObject3D: Object3D;
         for (let i = 0; i < this.maxNodeCount; i++) {
-            // const element = new Object3D();
-            // this.object3Ds.push(element);
-            // this.object3D.addChild(element); 
-            this.transformBuffer.setFloat("matrix_" + i, this.object3D.transform.worldMatrix.index);
+            if (standAloneMatrix) {
+                const element = new Object3D();
+                this.object3Ds.push(element);
+                this.object3D.addChild(element);
+                bindObject3D = element;
+            } else {
+                bindObject3D = this.object3D;
+            }
+
+            this.transformBuffer.setFloat("matrix_" + i, bindObject3D.transform.worldMatrix.index);
             this.transformBuffer.setFloat("texId_" + i, 1);
             this.transformBuffer.setFloat("texId2_" + i, 1);
             this.transformBuffer.setFloat("texId3_" + i, 1);

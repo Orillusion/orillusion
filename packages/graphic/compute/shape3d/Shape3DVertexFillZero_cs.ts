@@ -9,6 +9,7 @@ export let Shape3DVertexFillZero_cs = /*wgsl*/`
       let skipFace2 = drawBuffer.skipFace2;
       let destPathBuffer0 = destPathBuffer[0];
       let srcPathBuffer0 = srcPathBuffer[0];
+      let srcIndexBuffer0 = srcIndexBuffer[0];
       let vertexBuffer0 = vertexBuffer[0];
       var nodeData = nodeBuffer[0];
       if(globalIndex < u32(rendererData.maxFaceCount))

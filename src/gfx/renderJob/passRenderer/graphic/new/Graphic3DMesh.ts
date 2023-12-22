@@ -49,14 +49,15 @@ export class Graphic3DMesh {
         }
     }
 
-    public static drawNode<T extends DynamicFaceRenderer>(id: string, c: Ctor<T>, nodeStruct: Ctor<DynamicDrawStruct>, scene: Scene3D, texture: BitmapTexture2DArray, maxNodeCount: number, maxFaceCount?: number) {
+    public static drawNode<T extends DynamicFaceRenderer>(id: string, c: Ctor<T>, nodeStruct: Ctor<DynamicDrawStruct>,
+        scene: Scene3D, texture: BitmapTexture2DArray, maxNodeCount: number, maxFaceCount?: number, standAloneMatrix?: boolean) {
         if (!this.nodeMap.has(id)) {
             let object = new Object3D();
             let renderNode = object.addComponent(c, {
                 maxFaceCount: maxFaceCount ? maxFaceCount : 4294967295 / 3, //use index buffer u32
                 maxNodeCount: maxNodeCount,
             }) as T;
-            renderNode.set(nodeStruct, texture);
+            renderNode.set(nodeStruct, texture, standAloneMatrix);
             this.nodeMap.set(id, renderNode);
             scene.addChild(object);
             return renderNode;

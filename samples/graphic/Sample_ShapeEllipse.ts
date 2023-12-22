@@ -85,7 +85,7 @@ export class Sample_ShapeEllipse {
                 mr.setTextureID(i, Math.floor(Math.random() * texts.length));
             }
 
-            let ellipse = path.ellipse(0, 0, 10, 6, 0, 0, 0);
+            let ellipse = path.ellipse(10, 6, 0, 0, 0);
             ellipse.lineWidth = 1;
             ellipse.segment = 40;
             ellipse.fill = true;

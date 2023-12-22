@@ -56,7 +56,7 @@ fn writeEllipsePoint(pointIndex:f32, shapeData:EllipseShape3D, rx:f32, ry:f32)
     destPathBuffer[pathIndex].pos = vec3<f32>(cos(angle) * rx, 0.0, sin(angle) * ry);
     destPathBuffer[pathIndex].up = vec3<f32>(0.0, 1.0, 0.0);
     destPathBuffer[pathIndex].right = normalize(pos);
-    destPathBuffer[pathIndex].shapeIndex = shapeData.base.shapeIndex;
+    destPathBuffer[pathIndex].shapeIndex = f32(shapeIndex);
     destPathBuffer[pathIndex].pointIndex = pointIndex;
 }
 

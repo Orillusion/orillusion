@@ -8,7 +8,7 @@ import { LineShape3D } from "./renderer/shape3d/LineShape3D";
 import { QuadraticCurveShape3D } from "./renderer/shape3d/QuadraticCurveShape3D";
 import { CurveShape3D } from "./renderer/shape3d/CurveShape3D";
 
-export class Shape3DPathComponent extends ComponentBase implements CanvasPath {
+export class Shape3DPathComponent extends ComponentBase {
 
     private _renderer: Shape3DRenderer;
     public init(param?: any): void {
@@ -19,7 +19,7 @@ export class Shape3DPathComponent extends ComponentBase implements CanvasPath {
     public static create(name: string, textureList: BitmapTexture2DArray, scene: Scene3D): Shape3DPathComponent {
         let renderer = Graphic3DMesh.drawNode<Shape3DRenderer>(
             name, Shape3DRenderer, Shape3DStruct,
-            scene, textureList, 1000, 1000 * 12);
+            scene, textureList, 1000, 1000 * 12, true);
         let pathComponent = renderer.object3D.addComponent(Shape3DPathComponent);
         return pathComponent;
     }
@@ -36,37 +36,23 @@ export class Shape3DPathComponent extends ComponentBase implements CanvasPath {
         throw new Error("Method not implemented.");
     }
 
-    bezierCurveTo(cp1x: number, cp1y: number, cp2x: number, cp2y: number, x: number, y: number): void {
-        throw new Error("Method not implemented.");
-    }
-
-    closePath(): void {
-        throw new Error("Method not implemented.");
-    }
-
-    ellipse(x: number, y: number, radiusX: number, radiusY: number, rotation: number, startAngle: number, endAngle: number, counterclockwise?: boolean): EllipseShape3D {
+    ellipse(radiusX: number, radiusY: number, rotation: number, startAngle: number, endAngle: number, counterclockwise?: boolean): EllipseShape3D {
         let ellipse = this._renderer.createShape(EllipseShape3D);
         ellipse.rx = radiusX;
         ellipse.ry = radiusY;
         return ellipse;
     }
 
-    circle(x: number, y: number, radius: number, startAngle: number, endAngle: number, counterclockwise?: boolean): CircleShape3D {
+    circle(radius: number, startAngle: number, endAngle: number, counterclockwise?: boolean): CircleShape3D {
         let circle = this._renderer.createShape(CircleShape3D);
         circle.radius = radius;
         return circle;
     }
 
-    line(x: number, y: number, points: Vector2[]) {
+    line(points: Vector2[]) {
         let line = this._renderer.createShape(LineShape3D);
         line.points = points;
         return line;
-    }
-
-    lineTo(x: number, y: number): void {
-    }
-
-    moveTo(x: number, y: number): void {
     }
 
     quadraticCurve(fx: number, fy: number, cpx: number, cpy: number, tx: number, ty: number): QuadraticCurveShape3D {
@@ -86,11 +72,8 @@ export class Shape3DPathComponent extends ComponentBase implements CanvasPath {
         return curve;
     }
 
-    quadraticCurveTo(cpx: number, cpy: number, x: number, y: number): void {
 
-    }
-
-    rect(x: number, y: number, w: number, h: number): RoundRectShape3D {
+    rect(w: number, h: number): RoundRectShape3D {
         let rect = this._renderer.createShape(RoundRectShape3D);
         rect.width = w;
         rect.height = h;
@@ -98,7 +81,7 @@ export class Shape3DPathComponent extends ComponentBase implements CanvasPath {
         return rect;
     }
 
-    roundRect(x: number, y: number, w: number, h: number, radii?: number) {
+    roundRect(w: number, h: number, radii?: number) {
         let roundRect = this._renderer.createShape(RoundRectShape3D);
         roundRect.width = w;
         roundRect.height = h;
@@ -106,6 +89,5 @@ export class Shape3DPathComponent extends ComponentBase implements CanvasPath {
         return roundRect;
 
     }
-
 
 }

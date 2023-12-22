@@ -36,32 +36,31 @@ fn writeRoundRectPath(nodeData:ShapeData){
    var halfHeight = shapeData.height * 0.5;
    let segmentCount = u32(round(shapeData.cornerSegment)) + 1u;
    var pathRadius = shapeData.pathRadius;
-   let shapeIndex = shapeBase.shapeIndex;
    if(segmentCount >= 2u){
-      writeRoundCorners(destPointStart, destPointCount, 0.0, vec3f(halfWidth, 0.0, halfHeight), segmentCount, pathRadius, shapeIndex);
-      writeRoundCorners(destPointStart, destPointCount, 0.25, vec3f(-halfWidth, 0.0, halfHeight), segmentCount, pathRadius, shapeIndex);
-      writeRoundCorners(destPointStart, destPointCount, 0.5, vec3f(-halfWidth, 0.0, -halfHeight), segmentCount, pathRadius, shapeIndex);
-      writeRoundCorners(destPointStart, destPointCount, 0.75, vec3f(halfWidth, 0.0, -halfHeight), segmentCount, pathRadius, shapeIndex);
+      writeRoundCorners(destPointStart, destPointCount, 0.0, vec3f(halfWidth, 0.0, halfHeight), segmentCount, pathRadius);
+      writeRoundCorners(destPointStart, destPointCount, 0.25, vec3f(-halfWidth, 0.0, halfHeight), segmentCount, pathRadius);
+      writeRoundCorners(destPointStart, destPointCount, 0.5, vec3f(-halfWidth, 0.0, -halfHeight), segmentCount, pathRadius);
+      writeRoundCorners(destPointStart, destPointCount, 0.75, vec3f(halfWidth, 0.0, -halfHeight), segmentCount, pathRadius);
    }else{
-      writeFlatCorner(destPointStart, 0u, vec3f(halfWidth, 0.0, halfHeight), shapeIndex);
-      writeFlatCorner(destPointStart, 1u, vec3f(-halfWidth, 0.0, halfHeight), shapeIndex);
-      writeFlatCorner(destPointStart, 2u, vec3f(-halfWidth, 0.0, -halfHeight), shapeIndex);
-      writeFlatCorner(destPointStart, 3u, vec3f(halfWidth, 0.0, -halfHeight), shapeIndex);
+      writeFlatCorner(destPointStart, 0u, vec3f(halfWidth, 0.0, halfHeight));
+      writeFlatCorner(destPointStart, 1u, vec3f(-halfWidth, 0.0, halfHeight));
+      writeFlatCorner(destPointStart, 2u, vec3f(-halfWidth, 0.0, -halfHeight));
+      writeFlatCorner(destPointStart, 3u, vec3f(halfWidth, 0.0, -halfHeight));
    }
 }
 
-fn writeFlatCorner(pointStart:f32, cornerIndex:u32, pos:vec3f, shapeIndex:f32){
+fn writeFlatCorner(pointStart:f32, cornerIndex:u32, pos:vec3f){
    let angle = (f32(cornerIndex) + 0.5) * 0.25 * pi_2;
    let pathIndex = u32(round(pointStart)) + cornerIndex;
    
    destPathBuffer[pathIndex].pos = pos;
    destPathBuffer[pathIndex].up = vec3<f32>(0.0, 1.0, 0.0);
    destPathBuffer[pathIndex].right = vec3<f32>(cos(angle), 0.0, sin(angle)) * 1.41421;
-   destPathBuffer[pathIndex].shapeIndex = shapeIndex;
+   destPathBuffer[pathIndex].shapeIndex = f32(shapeIndex);
    destPathBuffer[pathIndex].pointIndex = f32(pathIndex);
 }
 
-fn writeRoundCorners(pointStart:f32, destPointCount:f32, progress:f32, offset:vec3f, count:u32, radius:f32, shapeIndex:f32){
+fn writeRoundCorners(pointStart:f32, destPointCount:f32, progress:f32, offset:vec3f, count:u32, radius:f32){
    let angleFrom:f32 = pi_2 * progress;
    let pointIndex = pointStart + destPointCount * progress;
 
@@ -73,7 +72,7 @@ fn writeRoundCorners(pointStart:f32, destPointCount:f32, progress:f32, offset:ve
       destPathBuffer[pathIndex].pos = offset + pos * radius;
       destPathBuffer[pathIndex].right = normalize(pos);
       destPathBuffer[pathIndex].up = vec3<f32>(0.0, 1.0, 0.0);
-      destPathBuffer[pathIndex].shapeIndex = shapeIndex;
+      destPathBuffer[pathIndex].shapeIndex = f32(shapeIndex);
       destPathBuffer[pathIndex].pointIndex = pointIndex;
    }
 }

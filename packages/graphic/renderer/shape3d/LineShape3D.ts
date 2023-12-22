@@ -1,5 +1,7 @@
 import { Vector2, LineJoin } from "@orillusion/core";
 import { Shape3D, ShapeTypeEnum } from "./Shape3D";
+import earcut from 'earcut';
+
 export class LineShape3D extends Shape3D {
     protected _corner: number = 8;
     protected _lineJoin: LineJoin = LineJoin.miter;
@@ -25,7 +27,7 @@ export class LineShape3D extends Shape3D {
         }
     }
 
-    protected calcRequireSource(): void {
+    public calcRequireSource(): void {
         this._destPointCount = this._srcPointCount;
         this._faceCount = 0;
         if (this._line) {
@@ -50,8 +52,17 @@ export class LineShape3D extends Shape3D {
                 }
             }
         }
-        if (this._fill) {
-            this._faceCount += this._corner;
+        if (this._fill && this._points.length > 2) {
+            let coords: number[] = [];
+            for (let point of this._points) {
+                coords.push(point.x, point.y);
+            }
+            this._indecies = earcut(coords);
+            this._srcIndexCount = this._indecies?.length || 0;
+            this._faceCount += (this._srcIndexCount) / 3;
+        } else {
+            this._indecies = null;
+            this._srcIndexCount = 0;
         }
     }
 

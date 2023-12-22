@@ -52,6 +52,7 @@
         "typedoc-plugin-markdown": "^3.15.3",
         "typescript": "^5.0.4",
         "vite": "^4.3.9",
-        "xvfb-maybe": "^0.2.1"
+        "xvfb-maybe": "^0.2.1",
+        "earcut": "^2.2.4"
     }
 }
