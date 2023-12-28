@@ -17,7 +17,6 @@ export class Shape3DRenderer extends DynamicFaceRenderer {
     private _rendererData: UniformGPUBuffer;
     private _shapeMap: OrderMap<number, Shape3D>;
     private _freeShapes: number[] = [];
-
     private _zFightingScale: number = 1.0;
     public init(param?: any): void {
         super.init(param);
@@ -82,7 +81,7 @@ export class Shape3DRenderer extends DynamicFaceRenderer {
         this._rendererData.setFloat('maxNodeCount', this.maxNodeCount);
         this._rendererData.setFloat('usedDestPointCount', 0);
         this._rendererData.setFloat('maxFaceCount', this.maxFaceCount);
-        this._rendererData.setFloat('zFightingScale', this._zFightingScale);
+        this._rendererData.setFloat('zFightingRange', this._zFightingScale);
 
         super.initBaseBuffer();
     }
@@ -139,6 +138,14 @@ export class Shape3DRenderer extends DynamicFaceRenderer {
         if (isRenderChange) {
             for (let shapeData of this._shapeMap.valueList) {
                 shapeData.writeData();
+                let shapeIndex = shapeData.shapeIndex;
+                this.setUVRect(shapeIndex, shapeData.fillUVRect);
+                this.setUVRect2(shapeIndex, shapeData.lineUVRect);
+                this.setUVSpeed(shapeIndex, shapeData.uvSpeed);
+                this.setBaseColor(shapeIndex, shapeData.fillColor);
+                this.setLineColor(shapeIndex, shapeData.lineColor);
+                this.setTextureID(shapeIndex, shapeData.fillTextureID);
+                this.setLineTextureID(shapeIndex, shapeData.lineTextureID);
             }
         }
 
@@ -146,7 +153,7 @@ export class Shape3DRenderer extends DynamicFaceRenderer {
             this._rendererData.setFloat('maxNodeCount', this.maxNodeCount);
             this._rendererData.setFloat('usedDestPointCount', usedDestPointCount);
             this._rendererData.setFloat('maxFaceCount', this.maxFaceCount);
-            this._rendererData.setFloat('zFightingScale', this._zFightingScale);
+            this._rendererData.setFloat('zFightingRange', this._zFightingScale);
             this._rendererData.apply();
 
             this._srcPathBuffer.setFloat32Array('points', this._srcPathFloat32Array);
@@ -162,7 +169,6 @@ export class Shape3DRenderer extends DynamicFaceRenderer {
             this._shapeMap.isChange = false;
         }
     }
-
 
     public onUpdate(view?: View3D): void {
         this.updateShapeRenderer();

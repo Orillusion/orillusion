@@ -78,6 +78,7 @@ export class Shape3DPathComponent extends ComponentBase {
         rect.width = w;
         rect.height = h;
         rect.radius = 0;
+        rect.cornerSegment = 0;
         return rect;
     }
 

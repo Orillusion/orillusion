@@ -9,7 +9,9 @@ export let Shape3DVertexCompute_cs = /*wgsl*/`
       if(globalIndex < u32(rendererData.usedDestPointCount) )
       {
          let keyPoint = destPathBuffer[globalIndex];
-         let srcPathBuffer0 = srcPathBuffer[0];
+         if(false){
+            let srcPathBuffer0 = srcPathBuffer[0]; 
+         }
 
          shapeIndex = u32(round(keyPoint.shapeIndex));
          var nodeData = nodeBuffer[shapeIndex];
@@ -17,9 +19,9 @@ export let Shape3DVertexCompute_cs = /*wgsl*/`
          if(shapeType == 0u){
             return;
          }
-         var offsetY = rendererData.zFightingScale / (rendererData.maxNodeCount + 1.0);
-         lineOffsetY = (nodeData.base.shapeOrder + 0.5) * offsetY;
-         fillOffsetY = nodeData.base.shapeOrder * offsetY;
+         zFightingRangeEachShape = rendererData.zFightingRange / (rendererData.maxNodeCount + 1.0);
+         lineOffsetY = (nodeData.base.shapeOrder + 0.5) * zFightingRangeEachShape;
+         fillOffsetY = nodeData.base.shapeOrder * zFightingRangeEachShape;
 
          switch(shapeType){
             case RoundRectShapeType:

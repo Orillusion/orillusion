@@ -35,7 +35,7 @@ export class Graphic3DMeshRenderer extends MeshRenderer {
         mat.baseMap = tex;
         this.material = mat;
 
-        this.transformBuffer = new StorageGPUBuffer(num * (4 * 4), 0);
+        this.transformBuffer = new StorageGPUBuffer(num * (7 * 4), 0);
         this.material.setStorageBuffer("graphicBuffer", this.transformBuffer);
 
         this.object3Ds = [];
@@ -49,8 +49,11 @@ export class Graphic3DMeshRenderer extends MeshRenderer {
             this.transformBuffer.setFloat("texId2_" + i, 1);
             this.transformBuffer.setFloat("texId3_" + i, 1);
             this.transformBuffer.setColor("baseColor_" + i, new Color());
+            this.transformBuffer.setColor("lineColor_" + i, new Color());
             this.transformBuffer.setColor("emissiveColor_" + i, new Color(0, 0, 0, 0));
             this.transformBuffer.setVector4("uvRect_" + i, new Vector4(0, 0, 1, 1));
+            this.transformBuffer.setVector4("uvRect2_" + i, new Vector4(0, 0, 1, 1));
+            this.transformBuffer.setVector4("uvSpeed_" + i, new Vector4(0, 0, 0, 0));
         }
 
         this.transformBuffer.apply();

@@ -7,11 +7,13 @@ export let Shape3DKeyPointCompute_cs = /*wgsl*/`
       var time = globalUniform.time;
       globalIndex = workgroup_id.x * 256u + local_invocation_id.x ;
       
-      let vertexBuffer0 = vertexBuffer[0];
-      let srcPathBuffer0 = srcPathBuffer[0];
-      let srcIndexBuffer0 = srcIndexBuffer[0];
-      let maxNodeCount = u32(rendererData.maxNodeCount);
-      let skipFace3 = drawBuffer.skipFace3;
+      if(false){
+         let vertexBuffer0 = vertexBuffer[0];
+         let srcPathBuffer0 = srcPathBuffer[0];
+         let srcIndexBuffer0 = srcIndexBuffer[0];
+         let maxNodeCount = u32(rendererData.maxNodeCount);
+         let skipFace3 = drawBuffer.skipFace3;
+      }
 
       let nodeData = nodeBuffer[globalIndex];
       shapeType = u32(round(nodeData.base.shapeType));

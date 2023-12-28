@@ -53,9 +53,21 @@ export let UnLitTextureArray: string = /*wgsl*/ `
 
         graphicNode = graphicBuffer[u32(round(ORI_VertexVarying.index))];
         
-        var uv = transformUV1.zw * ORI_VertexVarying.fragUV0 + transformUV1.xy; 
-        uv = graphicNode.uvRect.zw * uv.xy + graphicNode.uvRect.xy; 
-        var color = textureSample(baseMap,baseMapSampler,uv, u32(round(graphicNode.texIndex)) ) * materialUniform.baseColor * graphicNode.baseColor ;
+        var uv = transformUV1.zw * ORI_VertexVarying.fragUV0 + transformUV1.xy;
+        if(ORI_VertexVarying.fragUV1.x > 0.5){
+            uv = graphicNode.uvRect.zw * uv.xy + graphicNode.uvRect.xy;
+            uv += graphicNode.uvSpeed.zw * globalUniform.time;
+        }else{
+            uv = graphicNode.uvRect2.zw * uv.xy + graphicNode.uvRect2.xy;
+            uv += graphicNode.uvSpeed.xy * globalUniform.time;
+        }
+        var graphicTextureID = graphicNode.texIndex;
+        var graphicNodeColor = graphicNode.baseColor;
+        if(ORI_VertexVarying.fragUV1.x > 0.5){
+            graphicTextureID = graphicNode.tex2Index;
+            graphicNodeColor = graphicNode.lineColor;
+        }
+        var color = textureSample(baseMap,baseMapSampler,uv, u32(round(graphicTextureID)) ) * materialUniform.baseColor * graphicNodeColor ;
         // let color = textureSample(baseMap,baseMapSampler,uv, u32(round(ORI_VertexVarying.index)));
 
         // ORI_ViewDir = normalize( globalUniform.CameraPos.xyz - ORI_VertexVarying.vWorldPos.xyz);

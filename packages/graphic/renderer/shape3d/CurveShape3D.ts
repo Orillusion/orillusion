@@ -8,7 +8,7 @@ export class CurveShape3D extends LineShape3D {
     private _cp1: Vector2 = new Vector2(50, 0);
     private _cp2: Vector2 = new Vector2(50, 100);
     private _end: Vector2 = new Vector2(100, 100);
-    private _segment: number = 2;
+    private _segment: number = 4;
     private readonly MaxRoundCorner: number = 6;
 
     public get start(): Vector2 {

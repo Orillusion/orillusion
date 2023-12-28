@@ -1,7 +1,6 @@
 
 import { BitmapTexture2DArray, Color, ComputeShader, Ctor, GPUContext, GlobalBindGroup, MeshRenderer, Object3D, StorageGPUBuffer, Struct, StructStorageGPUBuffer, TriGeometry, UnLitTexArrayMaterial, Vector4, View3D } from "@orillusion/core";
 import { DynamicDrawStruct } from "./DynamicDrawStruct";
-import { GrassNodeStruct } from "@orillusion/graphic";
 
 export class DynamicFaceRenderer extends MeshRenderer {
     public texture: BitmapTexture2DArray;
@@ -49,7 +48,7 @@ export class DynamicFaceRenderer extends MeshRenderer {
         this.material = this.nodeMat = new UnLitTexArrayMaterial();
         // this.material.doubleSide = true;
 
-        this.transformBuffer = new StorageGPUBuffer(this.maxNodeCount * (4 * 4), 0);
+        this.transformBuffer = new StorageGPUBuffer(this.maxNodeCount * (7 * 4), 0);
         this.material.setStorageBuffer("graphicBuffer", this.transformBuffer);
     }
 
@@ -89,13 +88,16 @@ export class DynamicFaceRenderer extends MeshRenderer {
             }
 
             this.transformBuffer.setFloat("matrix_" + i, bindObject3D.transform.worldMatrix.index);
-            this.transformBuffer.setFloat("texId_" + i, 1);
-            this.transformBuffer.setFloat("texId2_" + i, 1);
-            this.transformBuffer.setFloat("texId3_" + i, 1);
+            this.transformBuffer.setFloat("texId_" + i, 0);
+            this.transformBuffer.setFloat("texId2_" + i, 0);
+            this.transformBuffer.setFloat("texId3_" + i, 0);
             this.transformBuffer.setColor("baseColor_" + i, Color.randomRGB(0.5, 0.5, 0.5));
+            this.transformBuffer.setColor("lineColor_" + i, Color.randomRGB(0.5, 0.5, 0.5));
             // this.transformBuffer.setColor("baseColor_" + i, Color.randomGray(0.6, 0.4));
             this.transformBuffer.setColor("emissiveColor_" + i, new Color(0, 0, 0, 0));
             this.transformBuffer.setVector4("uvRect_" + i, new Vector4(0, 0, 1, 1));
+            this.transformBuffer.setVector4("uvRect2_" + i, new Vector4(0, 0, 1, 1));
+            this.transformBuffer.setVector4("uvSpeed_" + i, new Vector4(0, 0, 0, 0));
             // console.log("create dynamic geometry", i);
         }
 
@@ -143,8 +145,18 @@ export class DynamicFaceRenderer extends MeshRenderer {
         this._onBufferChange = true;
     }
 
+    public setLineTextureID(i: number, id: number) {
+        this.transformBuffer.setFloat("texId2_" + i, id);
+        this._onBufferChange = true;
+    }
+
     public setBaseColor(i: number, color: Color) {
         this.transformBuffer.setColor("baseColor_" + i, color);
+        this._onBufferChange = true;
+    }
+
+    public setLineColor(index: number, color: Color) {
+        this.transformBuffer.setColor("lineColor_" + index, color);
         this._onBufferChange = true;
     }
 
@@ -155,6 +167,22 @@ export class DynamicFaceRenderer extends MeshRenderer {
 
     public setUVRect(i: number, v: Vector4) {
         this.transformBuffer.setVector4("uvRect_" + i, v);
+        this._onBufferChange = true;
+    }
+
+    public setUVRect2(i: number, v: Vector4) {
+        this.transformBuffer.setVector4("uvRect2_" + i, v);
+        this._onBufferChange = true;
+    }
+
+    /**
+     *
+     * @param {number} i index
+     * @param {Vector4} v {x:fill speed u, y: fill speed v, z:line speed u, w: line speed v}
+     * @memberof DynamicFaceRenderer
+     */
+    public setUVSpeed(i: number, v: Vector4) {
+        this.transformBuffer.setVector4("uvSpeed_" + i, v);
         this._onBufferChange = true;
     }
 

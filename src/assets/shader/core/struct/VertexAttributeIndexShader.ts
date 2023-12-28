@@ -39,8 +39,11 @@ export let VertexAttributeIndexShader: string = /*wgsl*/ `
         tex2Index:f32,
         tex3Index:f32,
         baseColor:vec4f,
+        lineColor:vec4f,
         emissiveColor:vec4f,
         uvRect:vec4f,
+        uvRect2:vec4f,
+        uvSpeed:vec4f,
     }
 
     var<private> ORI_VertexOut: VertexOutput ;

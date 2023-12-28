@@ -1,8 +1,6 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { CircleShape3D, CurveShape3D, EllipseShape3D, QuadraticCurveShape3D, RoundRectShape3D } from "@orillusion/graphic";
-import { LineShape3D } from "@orillusion/graphic/renderer/shape3d/LineShape3D";
-import { Shape3D } from "@orillusion/graphic/renderer/shape3d/Shape3D";
-import { LineJoin } from "../../src";
+import { CircleShape3D, CurveShape3D, EllipseShape3D, QuadraticCurveShape3D, RoundRectShape3D, LineShape3D, Shape3D } from "@orillusion/graphic";
+import { Color, LineJoin, Vector4 } from "@orillusion/core";
 
 export class GUIShape3D {
 
@@ -163,7 +161,35 @@ export class GUIShape3D {
         GUIHelp.add(shape, 'fill');
         GUIHelp.add(shape, 'isClosed');
         GUIHelp.add(shape, 'lineWidth', 0, maxSize, 0.01);
-        GUIHelp.add(shape, 'uScale', uvMin, uvMax, uvMin);
-        GUIHelp.add(shape, 'vScale', uvMin, uvMax, uvMin);
+
+        // GUIHelp.add(shape, 'lineUVRect');
+        this.renderUVRect('UVRect.', shape, 'lineUVRect', 0, 10);
+        this.renderUVRect('UVRect2.', shape, 'fillUVRect', 0, 10);
+        this.renderUVRect('UVSpeed.', shape, 'uvSpeed', -0.1, 0.1);
+
+        GUIHelp.addColor(shape, 'lineColor').onChange(v => {
+            let [r, g, b, a] = v;
+            shape.lineColor = new Color(r / 255, g / 255, b / 255, a / 255)
+        })
+        GUIHelp.addColor(shape, 'fillColor').onChange(v => {
+            let [r, g, b, a] = v;
+            shape.fillColor = new Color(r / 255, g / 255, b / 255, a / 255)
+        })
+        GUIHelp.add(shape, 'lineTextureID', 0, 9, 1);
+        GUIHelp.add(shape, 'fillTextureID', 0, 9, 1);
+    }
+
+    private static renderUVRect(name: string, shape3d: Shape3D, shapeKey: string, min: number, max: number) {
+        let keys = ['x', 'y', 'z', 'w'];
+        let data = {};
+        let vec4: Vector4 = shape3d[shapeKey];
+        for (let property of keys) {
+            data[name + property] = vec4[property];
+            GUIHelp.add(data, name + property, min, max, 0.01).onChange(v => {
+                vec4[property] = v;
+                shape3d[shapeKey] = vec4;
+            });
+
+        }
     }
 }

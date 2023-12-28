@@ -10,6 +10,7 @@ ${RoundRectShape3DCode_cs}
 ${EllipseShape3DCode_cs}
 ${LineShape3DCode_cs}
 
+const NoneShape:u32 = 0u;
 const CircleShapeType : u32 = 1u;
 const RoundRectShapeType : u32 = 2u;
 const EllipseShapeType : u32 = 3u;
@@ -25,11 +26,6 @@ struct ShapeDataBase{
    srcPointCount:f32,
    srcIndexStart:f32,
    srcIndexCount:f32,
-
-   empty0:f32,
-   empty1:f32,
-   uScale:f32,
-   vScale:f32,
    
    isClosed:f32,
    fill: f32,
@@ -49,25 +45,26 @@ struct Path3DKeyPoint{
    up:vec3<f32>,
    shapeIndex:f32,
    pointIndex:f32,//localIndex
-   distance:f32,
+   overallLength:f32,
 }
 
 struct RenderData{
    maxNodeCount:f32,
    usedDestPointCount:f32,
    maxFaceCount:f32,
-   zFightingScale:f32,
+   zFightingRange:f32,
  }
 
- fn drawShapeFace(shapeData:ShapeData, keyPoint:Path3DKeyPoint, lineWidth:f32, uvScale:vec2<f32>){
-   var p0:vec3f;
-   var p1:vec3f;
-   var p2:vec3f;
-   var p3:vec3f;
+ fn drawShapeFace(shapeData:ShapeData, keyPoint:Path3DKeyPoint, lineWidth:f32){
+   var p0:vec3<f32>;
+   var p1:vec3<f32>;
+   var p2:vec3<f32>;
+   var p3:vec3<f32>;
    
-   var u0:vec2f;
-   var u1:vec2f;
-   var u2:vec2f;
+   var u0:vec2<f32>;
+   var u1:vec2<f32>;
+   var u2:vec2<f32>;
+   var u3:vec2<f32>;
 
    let shapeBase = shapeData.base;
 
@@ -83,9 +80,9 @@ struct RenderData{
        p1 = keyPoint.pos;
        p2 = nextKeyPoint.pos;
 
-       u0 = vec2f(p0.x, p0.z) * uvScale;
-       u1 = vec2f(p1.x, p1.z) * uvScale;
-       u2 = vec2f(p2.x, p2.z) * uvScale;
+       u0 = vec2<f32>(p0.x, p0.z);
+       u1 = vec2<f32>(p1.x, p1.z);
+       u2 = vec2<f32>(p2.x, p2.z);
 
        p0.y = fillOffsetY;
        p1.y = fillOffsetY;
@@ -95,20 +92,59 @@ struct RenderData{
    }
    
    if(shapeBase.line > 0.5) {
+       let commonRight = normalize(keyPoint.right + nextKeyPoint.right) * lineWidth;
        p0 = keyPoint.pos;
        p1 = keyPoint.pos + keyPoint.right * lineWidth;
        p2 = nextKeyPoint.pos;
        p3 = nextKeyPoint.pos + nextKeyPoint.right * lineWidth;
       
+       var p0b = p0 + commonRight;
+       var p2b = p2 + commonRight;
+
        p0.y = lineOffsetY;
        p1.y = lineOffsetY;
        p2.y = lineOffsetY;
        p3.y = lineOffsetY;
+       p0b.y = lineOffsetY;
+       p2b.y = lineOffsetY;
+      
+       let overrallLength_start = keyPoint.overallLength;
+       let length_p0_p2 = length(p0 - p2);
+       let length_corner = length(p1 - p0b) * 0.5;
+       let ratioLength = length_p0_p2 / (length_corner * 2.0 + length_p0_p2);
 
-       u0 = vec2f(0.5, 0.5);
+       var overallLength_p0b = overrallLength_start + length_corner * ratioLength;
+       var overallLength_p2b = overallLength_p0b + length_p0_p2 * ratioLength;
+       var overallLength_p3 = overrallLength_start + length_p0_p2;
 
-       drawFace(shapeIndex,p1,p0,p2,u0,u0,u0);
-       drawFace(shapeIndex,p1,p2,p3,u0,u0,u0);
+       var u0b:vec2<f32>;
+       var u0a:vec2<f32>;
+       var u2b:vec2<f32>;
+       var u2a:vec2<f32>;
+
+       u0.x = 0.0;
+       u0.y = overrallLength_start;
+       u0a.x = 0.0;
+       u0a.y = overallLength_p0b;
+       u2.x = 0.0;
+       u2.y = overallLength_p3;
+       u2a.x = 0.0;
+       u2a.y = overallLength_p2b;
+
+       u1.x = 1.0;
+       u1.y = overrallLength_start;
+       u0b.x = 1.0;
+       u0b.y = overallLength_p0b;
+       u2b.x = 1.0;
+       u2b.y = overallLength_p2b;
+       u3.x = 1.0;
+       u3.y = overallLength_p3;
+
+       drawLine(shapeIndex,p1,p0,p0b,u1,u0a,u0b);
+       drawLine(shapeIndex,p0b,p0,p2b,u0b,u0a,u2b);
+       drawLine(shapeIndex,p2b,p0,p2,u2b,u0a,u2a);
+       drawLine(shapeIndex,p2b,p2,p3,u2b,u2a,u3);
+  
    }
 
 }
@@ -120,12 +156,13 @@ struct RenderData{
 @group(0) @binding(7) var<uniform> rendererData: RenderData;
 
 var<private> globalIndex : u32;
-var<private> zero_pos : vec3f = vec3f(0.0,0.0,0.0);
+var<private> zero_pos : vec3<f32> = vec3<f32>(0.0,0.0,0.0);
 var<private> zero_uv : vec2f = vec2f(0.0,0.0);
 var<private> pi_2 : f32 = 6.2831853071795864;
 var<private> shapeIndex : u32 = 0;
 var<private> shapeType : u32 = 0;
 var<private> lineOffsetY : f32 = 0.0;
 var<private> fillOffsetY : f32 = 0.0;
+var<private> zFightingRangeEachShape : f32 = 0.0;
 
 `

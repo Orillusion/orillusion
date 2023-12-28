@@ -1,4 +1,4 @@
-import { DynamicDrawStruct, Matrix3, LineJoin, Vector2 } from "@orillusion/core";
+import { DynamicDrawStruct, Matrix3, LineJoin, Vector2, Color, Vector4 } from "@orillusion/core";
 
 export class Shape3DStruct extends DynamicDrawStruct {
     public shapeType: number = 0;
@@ -10,11 +10,6 @@ export class Shape3DStruct extends DynamicDrawStruct {
     public srcPointCount: number = 0;
     public srcIndexStart: number = 0;
     public srcIndexCount: number = 0;
-
-    public empty0: number = 0;
-    public empty1: number = 0;
-    public uScale: number = 1.0;
-    public vScale: number = 1.0;
 
     public isClosed: number = 0;
     public fill: number = 0;
@@ -53,14 +48,22 @@ export class Shape3D {
     private _shapeOrder: number = 0;
     protected _points: Vector2[];
     protected _indecies: number[];
-    private _uScale: number = 0.1;
-    private _vScale: number = 0.1;
     public readonly shapeIndex: number = 0;
     protected _isClosed: boolean = true;
     protected _fill: boolean = true;
     protected _line: boolean = true;
     protected _lineWidth: number = 5;
     protected _isChange: boolean = true;
+    private _lineTextureID: number = 0;
+    private _fillTextureID: number = 0;
+    private _lineColor: Color = new Color(1, 0, 1, 1);
+    private _fillColor: Color = new Color(0, 1, 0, 1);
+    private _lineUVSpeed: Vector2 = new Vector2();
+    private _fillUVSpeed: Vector2 = new Vector2();
+    private _fillUVRect: Vector4 = new Vector4(0, 0, 1, 1);
+    private _lineUVRect: Vector4 = new Vector4(0, 0, 1, 1);
+    private _uvSpeed: Vector4 = new Vector4();
+
     public readonly shapeType: number = ShapeTypeEnum.None;
 
     constructor(structs: Shape3DStruct, srcPoints: Float32Array, srcIndecies: Uint32Array, matrixIndex: number) {
@@ -78,6 +81,43 @@ export class Shape3D {
         this.writeCommonData();
         this.writeShapeData();
         this._isChange = false;
+    }
+
+    public set lineColor(value: Color) {
+        this._lineColor.copyFrom(value);
+        this._isChange = true;
+    }
+
+    public get lineColor() {
+        return this._lineColor;
+    }
+
+    public set fillColor(value: Color) {
+        this._fillColor.copyFrom(value);
+        this._isChange = true;
+    }
+
+    public get fillColor() {
+        return this._fillColor;
+    }
+
+    public get lineTextureID(): number {
+        return this._lineTextureID;
+    }
+    public set lineTextureID(value: number) {
+        if (this._lineTextureID != value) {
+            this._lineTextureID = value;
+            this._isChange = true;
+        }
+    }
+    public get fillTextureID(): number {
+        return this._fillTextureID;
+    }
+    public set fillTextureID(value: number) {
+        if (this._fillTextureID != value) {
+            this._fillTextureID = value;
+            this._isChange = true;
+        }
     }
 
     public get shapeOrder(): number {
@@ -117,25 +157,6 @@ export class Shape3D {
 
     public get srcIndexCount(): number {
         return this._srcIndexCount;
-    }
-
-    public get uScale(): number {
-        return this._uScale;
-    }
-    public set uScale(value: number) {
-        if (value != this._uScale) {
-            this._isChange = true;
-            this._uScale = value;
-        }
-    }
-    public get vScale(): number {
-        return this._vScale;
-    }
-    public set vScale(value: number) {
-        if (value != this._vScale) {
-            this._isChange = true;
-            this._vScale = value;
-        }
     }
 
     public get destPointStart(): number {
@@ -200,6 +221,43 @@ export class Shape3D {
         }
     }
 
+    public get lineUVSpeed(): Vector2 {
+        return this._lineUVSpeed;
+    }
+    public set lineUVSpeed(value: Vector2) {
+        this._lineUVSpeed.copyFrom(value);
+        this._isChange = true;
+    }
+    public get lineUVRect(): Vector4 {
+        return this._lineUVRect;
+    }
+    public set lineUVRect(value: Vector4) {
+        this._lineUVRect.copyFrom(value);
+        this._isChange = true;
+    }
+    public get fillUVSpeed(): Vector2 {
+        return this._fillUVSpeed;
+    }
+    public set fillUVSpeed(value: Vector2) {
+        this._fillUVSpeed.copyFrom(value);
+        this._isChange = true;
+    }
+    public get fillUVRect(): Vector4 {
+        return this._fillUVRect;
+    }
+    public set fillUVRect(value: Vector4) {
+        this._fillUVRect.copyFrom(value);
+        this._isChange = true;
+    }
+
+    public get uvSpeed(): Vector4 {
+        return this._uvSpeed;
+    }
+    public set uvSpeed(value: Vector4) {
+        this._uvSpeed.copyFrom(value);
+        this._isChange = true;
+    }
+
     public clean() {
         let data = this._shapeStruct;
         for (let key in data) {
@@ -219,11 +277,6 @@ export class Shape3D {
         data.srcPointCount = this._srcPointCount;
         data.srcIndexStart = this._srcIndexStart;
         data.srcIndexCount = this._srcIndexCount;
-
-        // data.empty0 = 0;
-        // data.empty1 = 0;
-        data.uScale = this._uScale;
-        data.vScale = this._vScale;
 
         data.isClosed = this._isClosed ? 1 : 0;
         data.fill = this._fill ? 1 : 0;
