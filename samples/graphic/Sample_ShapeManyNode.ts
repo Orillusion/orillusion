@@ -1,7 +1,7 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, BitmapTexture2DArray, BitmapTexture2D, Graphic3DMesh, Matrix4, Color, Time, sin, MeshRenderer, Vector2, OrderMap, Vector3 } from "@orillusion/core";
 import { Stats } from "@orillusion/stats";
-import { Shape3DPathComponent } from "@orillusion/graphic";
+import { Shape3DMaker } from "@orillusion/graphic";
 import { Shape3D } from "@orillusion/graphic/renderer/shape3d/Shape3D";
 import { GUIShape3D } from "@samples/utils/GUIShape3D";
 
@@ -66,8 +66,8 @@ export class Sample_ShapeManyNode {
         let bitmapTexture2DArray = new BitmapTexture2DArray(texts[0].width, texts[0].height, texts.length);
         bitmapTexture2DArray.setTextures(texts);
 
-        this.path = Shape3DPathComponent.create(`path_` + grassGroup, bitmapTexture2DArray, this.scene);
-        let mr = this.path.renderer;
+        this.maker = Shape3DMaker.makeRenderer(`path_` + grassGroup, bitmapTexture2DArray, this.scene);
+        let mr = this.maker.renderer;
         for (let i = 0; i < 1; i++) {
             mr.setTextureID(i, Math.floor(Math.random() * texts.length));
         }
@@ -80,7 +80,6 @@ export class Sample_ShapeManyNode {
                 let x = (i - tileX * 0.5) * 5;
                 let y = (j - tileZ * 0.5) * 5;
                 let circle = this.createShapeAt(x, y, i * tileX + j);
-                console.log(circle.shapeIndex);
             }
         }
 
@@ -100,10 +99,10 @@ export class Sample_ShapeManyNode {
             return;
         let randomIndex = Math.floor(this.usingShapes.keyList.length * Math.random());
         let shape = this.usingShapes.keyList[randomIndex];
-        let obj = this.path.renderer.getShapeObject3D(shape);
+        let obj = this.maker.renderer.getShapeObject3D(shape);
         this.usingShapes.delete(shape);
         this.removedShapePosition.push(new Vector3(obj.x, obj.z, shape.shapeIndex));
-        this.path.renderer.removeShape(shape.shapeIndex);
+        this.maker.renderer.removeShape(shape.shapeIndex);
     }
 
     private decreaseShapeOrder() {
@@ -122,14 +121,14 @@ export class Sample_ShapeManyNode {
     }
 
     private createShapeAt(x: number, y: number, index: number): Shape3D {
-        let circle = this.path.circle(10, 0, 0);
+        let circle = this.maker.circle(10, 0, 0);
         circle.lineWidth = 0.15;
         circle.segment = 30;
         circle.radius = 3;
         circle.fill = true;
         circle.line = true;
         circle.shapeOrder = index;
-        let object3D = this.path.renderer.getShapeObject3D(circle);
+        let object3D = this.maker.renderer.getShapeObject3D(circle);
         object3D.x = x
         object3D.z = y;
         this.usingShapes.set(circle, Math.random() - 0.5);
@@ -138,11 +137,11 @@ export class Sample_ShapeManyNode {
 
     usingShapes: OrderMap<Shape3D, number> = new OrderMap<Shape3D, number>(null, true, true);
     removedShapePosition: Vector3[] = [];
-    path: Shape3DPathComponent;
+    maker: Shape3DMaker;
     bigShape: Shape3D;
 
     private createBigShape(x: number, y: number, index: number): Shape3D {
-        let rect = this.path.roundRect(10, 0, 0);
+        let rect = this.maker.roundRect(10, 0, 0);
         rect.lineWidth = 0.15;
         rect.cornerSegment = 10;
         rect.radius = 1;
@@ -157,7 +156,7 @@ export class Sample_ShapeManyNode {
     update() {
         for (let shape of this.usingShapes.keys()) {
             let speed = this.usingShapes.get(shape);
-            let obj = this.path.renderer.getShapeObject3D(shape);
+            let obj = this.maker.renderer.getShapeObject3D(shape);
             obj.rotationY = Time.time * speed * 0.1;
         }
 

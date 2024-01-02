@@ -1,6 +1,7 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { CircleShape3D, CurveShape3D, EllipseShape3D, QuadraticCurveShape3D, RoundRectShape3D, LineShape3D, Shape3D } from "@orillusion/graphic";
-import { Color, LineJoin, Vector4 } from "@orillusion/core";
+import { CircleShape3D, CurveShape3D, EllipseShape3D, QuadraticCurveShape3D, RoundRectShape3D, LineShape3D, Shape3D, CircleArcType } from "@orillusion/graphic";
+import { Color, LineJoin, Vector2, Vector4 } from "@orillusion/core";
+import { GUIUtil } from "./GUIUtil";
 
 export class GUIShape3D {
 
@@ -22,6 +23,15 @@ export class GUIShape3D {
         GUIHelp.addFolder(name);
         GUIHelp.add(shape, 'radius', 0, maxSize, 0.1);
         GUIHelp.add(shape, 'segment', 0, 100, 1);
+        GUIHelp.add(shape, 'startAngle', 0, 360, 1);
+        GUIHelp.add(shape, 'endAngle', 0, 360, 1);
+        let arcType = {}
+        arcType['sector'] = CircleArcType.Sector;
+        arcType['moon'] = CircleArcType.Moon;
+        GUIHelp.add({ arcType: shape.arcType }, 'arcType', arcType).onChange((v) => {
+            shape.arcType = Number.parseInt(v);
+        });
+
         this.renderCommonShape3D(shape, maxSize);
 
         open && GUIHelp.open();
@@ -67,30 +77,9 @@ export class GUIShape3D {
             shape.lineJoin = Number.parseInt(v);
         });
         this.renderCommonShape3D(shape, maxSize);
-        {
-            GUIHelp.add(shape.start, 'x', -10, 10, 0.01).onChange(
-                (v) => { shape.start = shape.start; }
-            );
-            GUIHelp.add(shape.start, 'y', -10, 10, 0.01).onChange(
-                (v) => { shape.start = shape.start; }
-            );
-        }
-        {
-            GUIHelp.add(shape.cp, 'x', -10, 10, 0.01).onChange(
-                (v) => { shape.cp = shape.cp; }
-            );
-            GUIHelp.add(shape.cp, 'y', -10, 10, 0.01).onChange(
-                (v) => { shape.cp = shape.cp; }
-            );
-        }
-        {
-            GUIHelp.add(shape.end, 'x', -10, 10, 0.01).onChange(
-                (v) => { shape.end = shape.end; }
-            );
-            GUIHelp.add(shape.end, 'y', -10, 10, 0.01).onChange(
-                (v) => { shape.end = shape.end; }
-            );
-        }
+        GUIUtil.RenderVector2('Start.', shape, 'start', -10, 10, 0.01);
+        GUIUtil.RenderVector2('End2.', shape, 'end', -10, 10, 0.01);
+        GUIUtil.RenderVector2('CP.', shape, 'cp', -10, 10, 0.01);
         open && GUIHelp.open();
         GUIHelp.endFolder();
     }
@@ -108,38 +97,12 @@ export class GUIShape3D {
             shape.lineJoin = Number.parseInt(v);
         });
         this.renderCommonShape3D(shape, maxSize);
-        {
-            GUIHelp.add(shape.start, 'x', -10, 10, 0.01).onChange(
-                (v) => { shape.start = shape.start; }
-            );
-            GUIHelp.add(shape.start, 'y', -10, 10, 0.01).onChange(
-                (v) => { shape.start = shape.start; }
-            );
-        }
-        {
-            GUIHelp.add(shape.cp1, 'x', -10, 10, 0.01).onChange(
-                (v) => { shape.cp1 = shape.cp1; }
-            );
-            GUIHelp.add(shape.cp1, 'y', -10, 10, 0.01).onChange(
-                (v) => { shape.cp1 = shape.cp1; }
-            );
-        }
-        {
-            GUIHelp.add(shape.cp2, 'x', -10, 10, 0.01).onChange(
-                (v) => { shape.cp2 = shape.cp2; }
-            );
-            GUIHelp.add(shape.cp2, 'y', -10, 10, 0.01).onChange(
-                (v) => { shape.cp2 = shape.cp2; }
-            );
-        }
-        {
-            GUIHelp.add(shape.end, 'x', -10, 10, 0.01).onChange(
-                (v) => { shape.end = shape.end; }
-            );
-            GUIHelp.add(shape.end, 'y', -10, 10, 0.01).onChange(
-                (v) => { shape.end = shape.end; }
-            );
-        }
+
+        GUIUtil.RenderVector2('Start.', shape, 'start', -10, 10, 0.01);
+        GUIUtil.RenderVector2('End2.', shape, 'end', -10, 10, 0.01);
+        GUIUtil.RenderVector2('CP1.', shape, 'cp1', -10, 10, 0.01);
+        GUIUtil.RenderVector2('CP2.', shape, 'cp2', -10, 10, 0.01);
+
         open && GUIHelp.open();
         GUIHelp.endFolder();
     }
@@ -151,6 +114,18 @@ export class GUIShape3D {
         GUIHelp.add(shape, 'rx', 0, maxSize, 0.01);
         GUIHelp.add(shape, 'ry', 0, maxSize, 0.01);
         GUIHelp.add(shape, 'segment', 0, 100, 1);
+        GUIHelp.add(shape, 'rotation', -Math.PI, Math.PI, 0.01);
+
+        GUIHelp.add(shape, 'startAngle', 0, 360, 1);
+        GUIHelp.add(shape, 'endAngle', 0, 360, 1);
+
+        let arcType = {}
+        arcType['sector'] = CircleArcType.Sector;
+        arcType['moon'] = CircleArcType.Moon;
+        GUIHelp.add({ arcType: shape.arcType }, 'arcType', arcType).onChange((v) => {
+            shape.arcType = Number.parseInt(v);
+        });
+
         this.renderCommonShape3D(shape, maxSize);
         open && GUIHelp.open();
         GUIHelp.endFolder();
@@ -162,34 +137,16 @@ export class GUIShape3D {
         GUIHelp.add(shape, 'isClosed');
         GUIHelp.add(shape, 'lineWidth', 0, maxSize, 0.01);
 
-        // GUIHelp.add(shape, 'lineUVRect');
-        this.renderUVRect('UVRect.', shape, 'lineUVRect', 0, 10);
-        this.renderUVRect('UVRect2.', shape, 'fillUVRect', 0, 10);
-        this.renderUVRect('UVSpeed.', shape, 'uvSpeed', -0.1, 0.1);
+        GUIUtil.RenderVector4('UVRect.', shape, 'fillUVRect', 0, 10, 0.01);
+        GUIUtil.RenderVector4('UVRect2.', shape, 'lineUVRect', 0, 10, 0.01);
+        GUIUtil.RenderVector4('UVSpeed.', shape, 'uvSpeed', -0.01, 0.01, 0.0001);
 
-        GUIHelp.addColor(shape, 'lineColor').onChange(v => {
-            let [r, g, b, a] = v;
-            shape.lineColor = new Color(r / 255, g / 255, b / 255, a / 255)
-        })
-        GUIHelp.addColor(shape, 'fillColor').onChange(v => {
-            let [r, g, b, a] = v;
-            shape.fillColor = new Color(r / 255, g / 255, b / 255, a / 255)
-        })
+        GUIUtil.RenderColor(shape, 'lineColor');
+        GUIUtil.RenderColor(shape, 'fillColor');
+
         GUIHelp.add(shape, 'lineTextureID', 0, 9, 1);
         GUIHelp.add(shape, 'fillTextureID', 0, 9, 1);
     }
 
-    private static renderUVRect(name: string, shape3d: Shape3D, shapeKey: string, min: number, max: number) {
-        let keys = ['x', 'y', 'z', 'w'];
-        let data = {};
-        let vec4: Vector4 = shape3d[shapeKey];
-        for (let property of keys) {
-            data[name + property] = vec4[property];
-            GUIHelp.add(data, name + property, min, max, 0.01).onChange(v => {
-                vec4[property] = v;
-                shape3d[shapeKey] = vec4;
-            });
 
-        }
-    }
 }

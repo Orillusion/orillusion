@@ -1,51 +1,60 @@
-import { BitmapTexture2DArray, ComponentBase, Graphic3DMesh, Scene3D, Vector2 } from "@orillusion/core";
-import { Shape3DRenderer } from "./renderer/Shape3DRenderer";
-import { RoundRectShape3D } from "./renderer/shape3d/RoundRectShape3D";
-import { EllipseShape3D } from "./renderer/shape3d/EllipseShape3D";
-import { Shape3DStruct } from "./renderer/shape3d/Shape3D";
-import { CircleShape3D } from "./renderer/shape3d/CircleShape3D";
-import { LineShape3D } from "./renderer/shape3d/LineShape3D";
-import { QuadraticCurveShape3D } from "./renderer/shape3d/QuadraticCurveShape3D";
-import { CurveShape3D } from "./renderer/shape3d/CurveShape3D";
+import { BitmapTexture2DArray, Graphic3DMesh, Scene3D, Vector2 } from "@orillusion/core";
+import { Shape3DRenderer } from "./Shape3DRenderer";
+import { RoundRectShape3D } from "./shape3d/RoundRectShape3D";
+import { EllipseShape3D } from "./shape3d/EllipseShape3D";
+import { Shape3DStruct } from "./shape3d/Shape3D";
+import { CircleShape3D } from "./shape3d/CircleShape3D";
+import { LineShape3D } from "./shape3d/LineShape3D";
+import { QuadraticCurveShape3D } from "./shape3d/QuadraticCurveShape3D";
+import { CurveShape3D } from "./shape3d/CurveShape3D";
 
-export class Shape3DPathComponent extends ComponentBase {
+export class Shape3DMaker {
 
     private _renderer: Shape3DRenderer;
-    public init(param?: any): void {
-        super.init(param);
-        this._renderer = this.object3D.getComponent(Shape3DRenderer);
+
+    constructor(renderer: Shape3DRenderer) {
+        this._renderer = renderer;
     }
 
-    public static create(name: string, textureList: BitmapTexture2DArray, scene: Scene3D): Shape3DPathComponent {
+    /**
+     *
+     * @static
+     * @param {string} name key of Shape3DRenderer.
+     * @param {BitmapTexture2DArray} textureList textures used by node.
+     * @param {Scene3D} scene Scene3D
+     * @param {number} [maxNodeCount=24] Can accommodate the maximum number of nodes
+     * @param {number} [triangleEachNode=24] The maximum number of triangles included is triangleEachNode * maxNodeCount
+     * @return {*}  {Shape3DMaker}
+     * @memberof Shape3DMaker
+     */
+    public static makeRenderer(name: string, textureList: BitmapTexture2DArray, scene: Scene3D, maxNodeCount: number = 1000, triangleEachNode: number = 24): Shape3DMaker {
         let renderer = Graphic3DMesh.drawNode<Shape3DRenderer>(
             name, Shape3DRenderer, Shape3DStruct,
-            scene, textureList, 1000, 1000 * 12, true);
-        let pathComponent = renderer.object3D.addComponent(Shape3DPathComponent);
-        return pathComponent;
+            scene, textureList, maxNodeCount, maxNodeCount * triangleEachNode, true);
+
+        let maker = new Shape3DMaker(renderer);
+        return maker;
     }
 
     public get renderer() {
         return this._renderer;
     }
 
-    arc(x: number, y: number, radius: number, startAngle: number, endAngle: number, counterclockwise?: boolean): void {
-        throw new Error("Method not implemented.");
-    }
-
-    arcTo(x1: number, y1: number, x2: number, y2: number, radius: number): void {
-        throw new Error("Method not implemented.");
-    }
-
     ellipse(radiusX: number, radiusY: number, rotation: number, startAngle: number, endAngle: number, counterclockwise?: boolean): EllipseShape3D {
         let ellipse = this._renderer.createShape(EllipseShape3D);
         ellipse.rx = radiusX;
         ellipse.ry = radiusY;
+        ellipse.rotation = rotation;
+        ellipse.startAngle = startAngle || 0;
+        ellipse.endAngle = endAngle || 360;
         return ellipse;
     }
 
     circle(radius: number, startAngle: number, endAngle: number, counterclockwise?: boolean): CircleShape3D {
         let circle = this._renderer.createShape(CircleShape3D);
         circle.radius = radius;
+        circle.startAngle = startAngle || 0;
+        circle.endAngle = endAngle || 360;
         return circle;
     }
 

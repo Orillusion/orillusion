@@ -35,6 +35,11 @@ export enum ShapeTypeEnum {
     Line = 4,
 }
 
+export enum CircleArcType {
+    Sector = 0,
+    Moon = 1
+}
+
 export class Shape3D {
     protected readonly _shapeStruct: Shape3DStruct;
     protected readonly _sharedSrcIndecies: Uint32Array;

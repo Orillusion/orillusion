@@ -55,10 +55,10 @@ export let UnLitTextureArray: string = /*wgsl*/ `
         
         var uv = transformUV1.zw * ORI_VertexVarying.fragUV0 + transformUV1.xy;
         if(ORI_VertexVarying.fragUV1.x > 0.5){
-            uv = graphicNode.uvRect.zw * uv.xy + graphicNode.uvRect.xy;
+            uv = graphicNode.uvRect2.zw * uv.xy + graphicNode.uvRect2.xy;
             uv += graphicNode.uvSpeed.zw * globalUniform.time;
         }else{
-            uv = graphicNode.uvRect2.zw * uv.xy + graphicNode.uvRect2.xy;
+            uv = graphicNode.uvRect.zw * uv.xy + graphicNode.uvRect.xy;
             uv += graphicNode.uvSpeed.xy * globalUniform.time;
         }
         var graphicTextureID = graphicNode.texIndex;

@@ -77,6 +77,11 @@ export class DynamicFaceRenderer extends MeshRenderer {
 
         this.object3Ds = [];
         let bindObject3D: Object3D;
+        let white: Color = new Color(1, 1, 1, 1);
+        let black: Color = new Color(0, 0, 0, 0);
+        let uvRect: Vector4 = new Vector4(0, 0, 0.1, 0.1);
+        let uvSpeed: Vector4 = new Vector4(0, 0, 0, 0);
+
         for (let i = 0; i < this.maxNodeCount; i++) {
             if (standAloneMatrix) {
                 const element = new Object3D();
@@ -91,14 +96,12 @@ export class DynamicFaceRenderer extends MeshRenderer {
             this.transformBuffer.setFloat("texId_" + i, 0);
             this.transformBuffer.setFloat("texId2_" + i, 0);
             this.transformBuffer.setFloat("texId3_" + i, 0);
-            this.transformBuffer.setColor("baseColor_" + i, Color.randomRGB(0.5, 0.5, 0.5));
-            this.transformBuffer.setColor("lineColor_" + i, Color.randomRGB(0.5, 0.5, 0.5));
-            // this.transformBuffer.setColor("baseColor_" + i, Color.randomGray(0.6, 0.4));
-            this.transformBuffer.setColor("emissiveColor_" + i, new Color(0, 0, 0, 0));
-            this.transformBuffer.setVector4("uvRect_" + i, new Vector4(0, 0, 1, 1));
-            this.transformBuffer.setVector4("uvRect2_" + i, new Vector4(0, 0, 1, 1));
-            this.transformBuffer.setVector4("uvSpeed_" + i, new Vector4(0, 0, 0, 0));
-            // console.log("create dynamic geometry", i);
+            this.transformBuffer.setColor("baseColor_" + i, white);
+            this.transformBuffer.setColor("lineColor_" + i, white);
+            this.transformBuffer.setColor("emissiveColor_" + i, black);
+            this.transformBuffer.setVector4("uvRect_" + i, uvRect);
+            this.transformBuffer.setVector4("uvRect2_" + i, uvRect);
+            this.transformBuffer.setVector4("uvSpeed_" + i, uvSpeed);
         }
 
         this.transformBuffer.apply();

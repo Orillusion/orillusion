@@ -55,7 +55,7 @@ struct RenderData{
    zFightingRange:f32,
  }
 
- fn drawShapeFace(shapeData:ShapeData, keyPoint:Path3DKeyPoint, lineWidth:f32){
+ fn drawShapeFace(shapeData:ShapeData, keyPoint:Path3DKeyPoint, lineWidth:f32, cPoint:vec3<f32>){
    var p0:vec3<f32>;
    var p1:vec3<f32>;
    var p2:vec3<f32>;
@@ -76,7 +76,7 @@ struct RenderData{
    }
    let nextKeyPoint:Path3DKeyPoint = destPathBuffer[nextPointIndex];
    if(shapeBase.fill > 0.5){
-       p0 = zero_pos;
+       p0 = cPoint;
        p1 = keyPoint.pos;
        p2 = nextKeyPoint.pos;
 

@@ -23,7 +23,7 @@ fn getRoundRectShape3D(node:ShapeData) -> RoundRectShape3D{
 
 fn drawRoundRectFace(nodeData:ShapeData, keyPoint:Path3DKeyPoint){
    let shapeData:RoundRectShape3D = getRoundRectShape3D(nodeData);
-   drawShapeFace(nodeData, keyPoint, shapeData.useLineWidth);
+   drawShapeFace(nodeData, keyPoint, shapeData.useLineWidth, zero_pos);
 }
 
 
