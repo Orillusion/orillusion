@@ -159,7 +159,7 @@ export class Sample_Shape3D {
     }
 
     private createCircle(): CircleShape3D {
-        let circle = this.maker.circle(5, 0, 0);
+        let circle = this.maker.arc(5, 0, 0);
         circle.lineWidth = 1;
         circle.segment = 16;
         circle.fill = true;

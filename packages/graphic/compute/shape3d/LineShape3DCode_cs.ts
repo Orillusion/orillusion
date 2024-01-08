@@ -32,19 +32,60 @@ fn drawLineFace(nodeData:ShapeData, currentPoint:Path3DKeyPoint){
 
     if(baseData.line > 0.5){
         let isLastPointOfShape = round(currentPoint.pointIndex) == round(baseData.destPointCount - 1.0);
+        let isCurrentValid = currentPoint.invalidPoint < 0.5;
         if(baseData.isClosed < 0.5){
+            let destStart = u32(round(baseData.destPointStart));
+            let destCount = u32(round(baseData.destPointCount));
+            let pointIndex = u32(round(currentPoint.pointIndex));
+        
+            var nextPointIndex:u32 = pointIndex + 1u;
+            if(nextPointIndex >= destCount){
+                nextPointIndex = 0u;
+            }
+            var prevPointIndex:u32 = destCount - 1u;
+            if(pointIndex > 0u){
+                prevPointIndex = pointIndex - 1u;
+            }
+            nextPointIndex += destStart;
+            prevPointIndex += destStart;
+        
+            let nextPoint:Path3DKeyPoint = destPathBuffer[nextPointIndex];
+            let prevPoint:Path3DKeyPoint = destPathBuffer[prevPointIndex];
+
             if(isFirstPointOfShape){
-                drawLineStart(shapeData, currentPoint);
-            }else if(isLastPointOfShape){
-                drawLineEnd(shapeData, currentPoint);
+                if(isCurrentValid){
+                    drawLineStart(shapeData, currentPoint);
+                }
             }else{
-                drawLineCorner(shapeData, currentPoint);
+                if(isLastPointOfShape){
+                    drawLineEnd(shapeData, currentPoint);
+                }else{
+                    let lineJoin = u32(round(shapeData.lineJoin));
+                    var cornerPointExt = 0u;
+                    if(lineJoin == 0){ cornerPointExt = 1u;}
+                    else if(lineJoin == 1){ cornerPointExt = 0u;}
+                    else {
+                        cornerPointExt = u32(round(shapeData.corner));
+                        cornerPointExt = clamp(cornerPointExt, 2u, 8u);
+                    }
+                    
+                    if(isCurrentValid){
+                        if(prevPoint.invalidPoint > 0.5){
+                            drawLineStart(shapeData, currentPoint);
+                        }else{
+                            drawLineCorner(shapeData, currentPoint);
+                        }
+                    }else{
+                        if(prevPoint.invalidPoint < 0.5){
+                            drawLineEnd(shapeData, currentPoint);
+                        }
+                    }
+                }
             }
         }else{
             drawLineCorner(shapeData, currentPoint);
         }
     }
-    
 }
 
 fn drawLineStart(shapeData:LineShape3D, currentPoint:Path3DKeyPoint){
@@ -53,7 +94,7 @@ fn drawLineStart(shapeData:LineShape3D, currentPoint:Path3DKeyPoint){
     let destStart = u32(round(baseData.destPointStart));
     let halfLineWidth = shapeData.base.lineWidth * 0.5;
 
-    let nextPoint:Path3DKeyPoint = destPathBuffer[1u + destStart];
+    let nextPoint:Path3DKeyPoint = destPathBuffer[1u + destStart + u32(round(currentPoint.pointIndex))];
     var p0 = currentPoint.pos - currentPoint.right * halfLineWidth;
     var p1 = currentPoint.pos + currentPoint.right * halfLineWidth;
     let deltaPos = (nextPoint.pos - currentPoint.pos) * 0.5;
@@ -81,12 +122,12 @@ fn drawLineEnd(shapeData:LineShape3D, currentPoint:Path3DKeyPoint){
     let destStart = u32(round(baseData.destPointStart));
     let pointIndex = u32(round(currentPoint.pointIndex));
     
-    let lastPoint:Path3DKeyPoint = destPathBuffer[pointIndex - 1u + destStart];
+    let prevPoint:Path3DKeyPoint = destPathBuffer[pointIndex - 1u + destStart];
     let halfLineWidth = shapeData.base.lineWidth * 0.5;
 
     var p0 = currentPoint.pos - currentPoint.right * halfLineWidth;
     var p1 = currentPoint.pos + currentPoint.right * halfLineWidth;
-    let deltaPos = (lastPoint.pos - currentPoint.pos) * 0.5;
+    let deltaPos = (prevPoint.pos - currentPoint.pos) * 0.5;
     
     var p2 = p0 + deltaPos;
     var p3 = p1 + deltaPos;
@@ -97,7 +138,7 @@ fn drawLineEnd(shapeData:LineShape3D, currentPoint:Path3DKeyPoint){
     p3.y = lineOffsetY;
     
     let halfLength = length(deltaPos);
-    var tempV = lastPoint.overallLength + halfLength;
+    var tempV = prevPoint.overallLength + halfLength;
 
     let u2 = vec2f(0.0, tempV);
     let u3 = vec2f(1.0, tempV);
@@ -193,12 +234,12 @@ fn drawLineCorner(shapeData:LineShape3D, currentPoint:Path3DKeyPoint){
     lastPointIndex += destStart;
 
     let nextPoint:Path3DKeyPoint = destPathBuffer[nextPointIndex];
-    let lastPoint:Path3DKeyPoint = destPathBuffer[lastPointIndex];
+    let prevPoint:Path3DKeyPoint = destPathBuffer[lastPointIndex];
     let halfLineWidth = shapeData.base.lineWidth * 0.5;
-    let isPositive = cross(lastPoint.right, currentPoint.right).y >= 0.0;
-    let cornerAngle = acos(dot(lastPoint.right, currentPoint.right)) * 0.5;
+    let isPositive = cross(prevPoint.right, currentPoint.right).y >= 0.0;
+    let cornerAngle = max(0.0000001, acos(dot(prevPoint.right, currentPoint.right)) * 0.5);
     let edgeLength = halfLineWidth / cos(cornerAngle);
-    let cornerRight = normalize(lastPoint.right + currentPoint.right);
+    let cornerRight = normalize(prevPoint.right + currentPoint.right);
     let cornerLength = tan(cornerAngle) * halfLineWidth;
 
     var cornerUVLength = 0f;//corner cost uv length
@@ -212,17 +253,17 @@ fn drawLineCorner(shapeData:LineShape3D, currentPoint:Path3DKeyPoint){
     }
     
     //prev half segment
-    let halfDis_Last_Current = length(currentPoint.pos - lastPoint.pos) * 0.5;
-    let lastCenterCoord = (currentPoint.pos + lastPoint.pos) * 0.5;
+    let halfDis_Last_Current = length(currentPoint.pos - prevPoint.pos) * 0.5;
+    let lastCenterCoord = (currentPoint.pos + prevPoint.pos) * 0.5;
     let lastLengthUVRatio = halfDis_Last_Current / (cornerUVLength + halfDis_Last_Current);
 
-    var tempV:f32 = lastPoint.overallLength;
+    var tempV:f32 = prevPoint.overallLength;
     if(halfDis_Last_Current > cornerLength){
-        p0 = lastCenterCoord - lastPoint.right * halfLineWidth;
-        p1 = lastCenterCoord + lastPoint.right * halfLineWidth;
+        p0 = lastCenterCoord - prevPoint.right * halfLineWidth;
+        p1 = lastCenterCoord + prevPoint.right * halfLineWidth;
     
-        p2 = currentPoint.pos - lastPoint.right * halfLineWidth;
-        p3 = currentPoint.pos + lastPoint.right * halfLineWidth;
+        p2 = currentPoint.pos - prevPoint.right * halfLineWidth;
+        p3 = currentPoint.pos + prevPoint.right * halfLineWidth;
 
         let deltaPos = normalize(lastCenterCoord - currentPoint.pos) * cornerLength;
         p2 = p2 + deltaPos;
@@ -233,9 +274,9 @@ fn drawLineCorner(shapeData:LineShape3D, currentPoint:Path3DKeyPoint){
         p2.y = lineOffsetY;
         p3.y = lineOffsetY;
 
-        u0 = vec2f(0.0, lastPoint.overallLength + halfDis_Last_Current);
-        u1 = vec2f(1.0, lastPoint.overallLength + halfDis_Last_Current);
-        tempV = lastPoint.overallLength + 2.0 * halfDis_Last_Current - (cornerLength + cornerUVLength) * lastLengthUVRatio;
+        u0 = vec2f(0.0, prevPoint.overallLength + halfDis_Last_Current);
+        u1 = vec2f(1.0, prevPoint.overallLength + halfDis_Last_Current);
+        tempV = prevPoint.overallLength + 2.0 * halfDis_Last_Current - (cornerLength + cornerUVLength) * lastLengthUVRatio;
         u2 = vec2f(0.0, tempV);
         u3 = vec2f(1.0, tempV);
         drawLine(shapeIndex,p1,p0,p2,u1,u0,u2);
@@ -283,7 +324,7 @@ fn drawLineCorner(shapeData:LineShape3D, currentPoint:Path3DKeyPoint){
     if(isPositive){
         //prev
         p1 = currentPoint.pos - cornerRight * edgeLength;
-        p2 = currentPoint.pos - lastPoint.right * halfLineWidth;
+        p2 = currentPoint.pos - prevPoint.right * halfLineWidth;
         p3 = currentPoint.pos - currentPoint.right * halfLineWidth;
         
         p0.y = lineOffsetY;
@@ -291,7 +332,7 @@ fn drawLineCorner(shapeData:LineShape3D, currentPoint:Path3DKeyPoint){
         p2.y = lineOffsetY;
         p3.y = lineOffsetY;
 
-        tempV = lastPoint.overallLength + 2.0 * halfDis_Last_Current - (cornerUVLength + lastTrapezoidHeight) * lastLengthUVRatio;
+        tempV = prevPoint.overallLength + 2.0 * halfDis_Last_Current - (cornerUVLength + lastTrapezoidHeight) * lastLengthUVRatio;
 
         u0 = vec2f(0.5, tempV + lastTrapezoidHeight * lastLengthUVRatio);
         u2 = vec2f(0.0, tempV + lastTrapezoidHeight * lastLengthUVRatio);
@@ -319,7 +360,7 @@ fn drawLineCorner(shapeData:LineShape3D, currentPoint:Path3DKeyPoint){
         //next
         p1 = currentPoint.pos + cornerRight * edgeLength;
         p2 = currentPoint.pos + currentPoint.right * halfLineWidth;
-        p3 = currentPoint.pos + lastPoint.right * halfLineWidth;
+        p3 = currentPoint.pos + prevPoint.right * halfLineWidth;
 
         p0.y = lineOffsetY;
         p1.y = lineOffsetY;
@@ -344,7 +385,7 @@ fn drawLineCorner(shapeData:LineShape3D, currentPoint:Path3DKeyPoint){
         p4 = mix(p1, p0, lastTrapezoidT);
         p6 = mix(p1, p3, lastTrapezoidT);
 
-        tempV = lastPoint.overallLength + 2.0 * halfDis_Last_Current - cornerUVLength * lastLengthUVRatio;
+        tempV = prevPoint.overallLength + 2.0 * halfDis_Last_Current - cornerUVLength * lastLengthUVRatio;
         u0 = vec2f(0.5, tempV);
         u3 = vec2f(1.0, tempV);
         tempV -= lastTrapezoidHeight * lastLengthUVRatio;
@@ -365,7 +406,7 @@ fn drawLineCorner(shapeData:LineShape3D, currentPoint:Path3DKeyPoint){
             p0 = currentPoint.pos;
             if(isPositive){
                 p1 = currentPoint.pos - cornerRight * edgeLength;
-                p2 = currentPoint.pos - lastPoint.right * halfLineWidth;
+                p2 = currentPoint.pos - prevPoint.right * halfLineWidth;
                 p3 = currentPoint.pos - currentPoint.right * halfLineWidth;
 
                 p0.y = lineOffsetY;
@@ -373,7 +414,7 @@ fn drawLineCorner(shapeData:LineShape3D, currentPoint:Path3DKeyPoint){
                 p2.y = lineOffsetY;
                 p3.y = lineOffsetY;
                 //prev
-                tempV = lastPoint.overallLength + 2.0 * halfDis_Last_Current - cornerUVLength * lastLengthUVRatio;
+                tempV = prevPoint.overallLength + 2.0 * halfDis_Last_Current - cornerUVLength * lastLengthUVRatio;
                 u0 = vec2f(0.5, tempV);
                 u1 = vec2f(0.0, tempV + cornerUVLength * lastLengthUVRatio);
                 u2 = vec2f(0.0, tempV);
@@ -388,14 +429,14 @@ fn drawLineCorner(shapeData:LineShape3D, currentPoint:Path3DKeyPoint){
             }else{
                 p1 = currentPoint.pos + cornerRight * edgeLength;
                 p2 = currentPoint.pos + currentPoint.right * halfLineWidth;
-                p3 = currentPoint.pos + lastPoint.right * halfLineWidth;
+                p3 = currentPoint.pos + prevPoint.right * halfLineWidth;
 
                 p0.y = lineOffsetY;
                 p1.y = lineOffsetY;
                 p2.y = lineOffsetY;
                 p3.y = lineOffsetY;
                 //prev
-                tempV = lastPoint.overallLength + 2.0 * halfDis_Last_Current - cornerUVLength * lastLengthUVRatio;
+                tempV = prevPoint.overallLength + 2.0 * halfDis_Last_Current - cornerUVLength * lastLengthUVRatio;
                 u0 = vec2f(0.5, tempV);
                 u1 = vec2f(1.0, tempV + cornerUVLength * lastLengthUVRatio);
                 u3 = vec2f(1.0, tempV);
@@ -415,14 +456,14 @@ fn drawLineCorner(shapeData:LineShape3D, currentPoint:Path3DKeyPoint){
             p0 = currentPoint.pos;
             tempV = currentPoint.overallLength;
             if(isPositive){
-                p2 = currentPoint.pos - lastPoint.right * halfLineWidth;
+                p2 = currentPoint.pos - prevPoint.right * halfLineWidth;
                 p3 = currentPoint.pos - currentPoint.right * halfLineWidth;
                 u0 = vec2f(0.5, tempV);
                 u2 = vec2f(0.0, tempV - cornerUVLength * lastLengthUVRatio);
                 u3 = vec2f(0.0, tempV + cornerUVLength * nextLengthUVRatio);
             }else{
                 p2 = currentPoint.pos + currentPoint.right * halfLineWidth;
-                p3 = currentPoint.pos + lastPoint.right * halfLineWidth;
+                p3 = currentPoint.pos + prevPoint.right * halfLineWidth;
                 u0 = vec2f(0.5, tempV);
                 u2 = vec2f(1.0, tempV + cornerUVLength * nextLengthUVRatio);
                 u3 = vec2f(1.0, tempV - cornerUVLength * lastLengthUVRatio);
@@ -439,10 +480,10 @@ fn drawLineCorner(shapeData:LineShape3D, currentPoint:Path3DKeyPoint){
             var rotateMat:mat3x3<f32>;
             var rotateFrom:vec3<f32>;
             if(isPositive){
-                rotateFrom = -lastPoint.right;
+                rotateFrom = -prevPoint.right;
                 rotateMat = buildRotateYMat3(-cornerAngle * 2.0 / f32(cornerPointExt));
             }else{
-                rotateFrom = lastPoint.right;
+                rotateFrom = prevPoint.right;
                 rotateMat = buildRotateYMat3(cornerAngle * 2.0 / f32(cornerPointExt));
             }
     
@@ -486,7 +527,7 @@ fn writeLinePath(nodeData:ShapeData){
 
     var currentPoint:vec3<f32>;
     var nextPoint:vec3<f32>;
-    var lastPoint:vec3<f32>;
+    var prevPoint:vec3<f32>;
 
     var lastRight:vec3<f32>;
 
@@ -497,23 +538,26 @@ fn writeLinePath(nodeData:ShapeData){
     var curSrcIndex:u32 = u32(round(srcPointStart));
     var curDestIndex:u32 = destPointStart;
 
-    currentPoint = srcPathBuffer[curSrcIndex].xyy;
+    currentPoint = srcPathBuffer[curSrcIndex].xzy;
+    var currentInvalid = currentPoint.y;
+    var nextInvalid:f32 = 0.0;
     currentPoint.y = 0.0;
     let firstPoint = currentPoint;
 
-    lastPoint = srcPathBuffer[srcPointCount - 1].xyy;
-    lastPoint.y = 0.0;
+    prevPoint = srcPathBuffer[srcPointCount - 1].xyy;
+    prevPoint.y = 0.0;
 
-    forward = normalize(currentPoint - lastPoint);
+    forward = normalize(currentPoint - prevPoint);
     lastRight = cross(up, forward);
     var overallLength:f32 = 0.0;
     
     for(var i = 0u; i < srcPointCount; i += 1u)
     {
-        nextPoint = srcPathBuffer[curSrcIndex + 1u].xyy;
+        nextPoint = srcPathBuffer[curSrcIndex + 1u].xzy;
+        nextInvalid = nextPoint.y;
         nextPoint.y = 0.0;
         if(i > 0u){
-            overallLength += length(currentPoint - lastPoint);
+            overallLength += length(currentPoint - prevPoint);
         }
 
         if(i == 0u){
@@ -530,21 +574,26 @@ fn writeLinePath(nodeData:ShapeData){
             }
         }else{
             //center
-            forward = normalize(nextPoint - currentPoint);
+            if(currentInvalid > 0.5){
+                forward = normalize(currentPoint - prevPoint);
+            }else{
+                forward = normalize(nextPoint - currentPoint);
+            }
             right = cross(up, forward);
         }
 
-        writeLinePoint(curDestIndex, shapeData, currentPoint, right, f32(i), overallLength);
+        writeLinePoint(curDestIndex, shapeData, currentPoint, right, f32(i), overallLength, currentInvalid);
         lastRight = right;
 
-        lastPoint = currentPoint;
+        prevPoint = currentPoint;
         currentPoint = nextPoint;
+        currentInvalid = nextInvalid;
         curSrcIndex += 1u;
         curDestIndex += 1u;
     }
 }
 
-fn writeLinePoint(pointIndex:u32, shapeData:LineShape3D, pos:vec3<f32>, right:vec3<f32>, localPointIndex:f32, overallLength:f32)
+fn writeLinePoint(pointIndex:u32, shapeData:LineShape3D, pos:vec3<f32>, right:vec3<f32>, localPointIndex:f32, overallLength:f32, invalidPoint:f32)
 {
     let pathIndex = pointIndex;
     destPathBuffer[pathIndex].pos = pos;
@@ -553,6 +602,7 @@ fn writeLinePoint(pointIndex:u32, shapeData:LineShape3D, pos:vec3<f32>, right:ve
     destPathBuffer[pathIndex].shapeIndex = f32(shapeIndex);
     destPathBuffer[pathIndex].pointIndex = localPointIndex;
     destPathBuffer[pathIndex].overallLength = overallLength;
+    destPathBuffer[pathIndex].invalidPoint = invalidPoint;
 }
 
 `

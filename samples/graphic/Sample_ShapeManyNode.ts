@@ -121,12 +121,14 @@ export class Sample_ShapeManyNode {
     }
 
     private createShapeAt(x: number, y: number, index: number): Shape3D {
-        let circle = this.maker.circle(10, 0, 0);
+        let circle = this.maker.arc(10, 0, 0);
         circle.lineWidth = 0.15;
         circle.segment = 30;
         circle.radius = 3;
         circle.fill = true;
         circle.line = true;
+        circle.fillColor = Color.randomRGB();
+        circle.fillUVRect.set(0, 0, 0.1, 0.1);
         circle.shapeOrder = index;
         let object3D = this.maker.renderer.getShapeObject3D(circle);
         object3D.x = x
@@ -142,6 +144,7 @@ export class Sample_ShapeManyNode {
 
     private createBigShape(x: number, y: number, index: number): Shape3D {
         let rect = this.maker.roundRect(10, 0, 0);
+        rect.fillUVRect.set(0, 0, 0.1, 0.1);
         rect.lineWidth = 0.15;
         rect.cornerSegment = 10;
         rect.radius = 1;

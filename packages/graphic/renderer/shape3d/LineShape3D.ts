@@ -1,10 +1,12 @@
-import { Vector2, LineJoin } from "@orillusion/core";
+import { Vector3, LineJoin, Vector2 } from "@orillusion/core";
 import { Shape3D, ShapeTypeEnum } from "./Shape3D";
 import earcut from 'earcut';
 
+type vec2 = { x: number, y: number };
+
 export class LineShape3D extends Shape3D {
     protected _corner: number = 8;
-    protected _lineJoin: LineJoin = LineJoin.miter;
+    protected _lineJoin: LineJoin = LineJoin.bevel;
     public readonly shapeType: number = Number(ShapeTypeEnum.Line);
 
     public get corner(): number {
@@ -43,11 +45,35 @@ export class LineShape3D extends Shape3D {
         }
     }
 
+    public sampleQuadraticCurve(start: vec2, cp: vec2, end: vec2, t: number, ret?: vec2) {
+        ret ||= new Vector2();
+        let p0 = this.mixVector2(start, cp, t, Vector2.HELP_0);
+        let p1 = this.mixVector2(cp, end, t, Vector2.HELP_1);
+
+        p0 = this.mixVector2(p0, p1, t, ret);
+
+        return ret;
+    }
+
+    public sampleCurve(start: vec2, cp1: vec2, cp2: vec2, end: vec2, t: number, ret?: vec2) {
+        ret ||= new Vector2();
+        let p0 = this.mixVector2(start, cp1, t, Vector2.HELP_0);
+        let p1 = this.mixVector2(cp1, cp2, t, Vector2.HELP_1);
+        let p2 = this.mixVector2(cp2, end, t, Vector2.HELP_2);
+
+        p0 = this.mixVector2(p0, p1, t, p0);
+        p1 = this.mixVector2(p1, p2, t, p1);
+
+        p0 = this.mixVector2(p0, p1, t, ret);
+
+        return ret;
+    }
+
     protected writeShapeData() {
         super.writeShapeData(this._lineJoin, this._corner);
     }
 
-    protected mixVector2(src: Vector2, dest: Vector2, t: number, ret?: Vector2) {
+    protected mixVector2(src: vec2, dest: vec2, t: number, ret?: vec2) {
         ret ||= new Vector2();
         ret.x = this.mixFloat(src.x, dest.x, t);
         ret.y = this.mixFloat(src.y, dest.y, t);

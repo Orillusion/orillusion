@@ -75,7 +75,7 @@ export class Shape3DRenderer extends DynamicFaceRenderer {
         this._srcPathFloat32Array = new Float32Array(srcPathCount * 4);
         this._srcPathBuffer = new StorageGPUBuffer(srcPathCount * 4);
 
-        this._destPathBuffer = new StorageGPUBuffer(this.maxFaceCount * 12);
+        this._destPathBuffer = new StorageGPUBuffer(this.maxFaceCount * 16);
 
         this._rendererData = new UniformGPUBuffer(4);
         this._rendererData.setFloat('maxNodeCount', this.maxNodeCount);

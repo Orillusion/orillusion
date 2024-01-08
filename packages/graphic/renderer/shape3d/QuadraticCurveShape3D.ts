@@ -1,4 +1,4 @@
-import { Vector2, } from "@orillusion/core";
+import { Vector2, Vector3, } from "@orillusion/core";
 import { ShapeTypeEnum } from "./Shape3D";
 import { LineShape3D } from "./LineShape3D";
 export class QuadraticCurveShape3D extends LineShape3D {
@@ -63,7 +63,7 @@ export class QuadraticCurveShape3D extends LineShape3D {
         super.calcRequireSource();
     }
 
-    private genCurvePoints(): Vector2[] {
+    private genCurvePoints(): Vector3[] {
         if (this._curveChange) {
             this._curveChange = false;
 
@@ -71,7 +71,8 @@ export class QuadraticCurveShape3D extends LineShape3D {
             let list = this._points;
             let max = this._segment;
             for (let i = 0; i <= max; i++) {
-                list[i] = this.sampleValue(i / max, list[i]);
+                let vec2 = this.sampleQuadraticCurve(this._start, this._cp, this._end, i / max, list[i]);
+                list[i] = new Vector3(vec2.x, vec2.y);
             }
             list.length = this._segment + 1;
             this._destPointCount = this._srcPointCount = list.length;
@@ -80,16 +81,6 @@ export class QuadraticCurveShape3D extends LineShape3D {
         return this._points;
     }
 
-
-    public sampleValue(t: number, ret?: Vector2) {
-        ret ||= new Vector2();
-        let p0 = this.mixVector2(this._start, this._cp, t, Vector2.HELP_0);
-        let p1 = this.mixVector2(this._cp, this._end, t, Vector2.HELP_1);
-
-        p0 = this.mixVector2(p0, p1, t, ret);
-
-        return ret;
-    }
 
 
 }

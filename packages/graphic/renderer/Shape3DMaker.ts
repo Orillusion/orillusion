@@ -7,6 +7,7 @@ import { CircleShape3D } from "./shape3d/CircleShape3D";
 import { LineShape3D } from "./shape3d/LineShape3D";
 import { QuadraticCurveShape3D } from "./shape3d/QuadraticCurveShape3D";
 import { CurveShape3D } from "./shape3d/CurveShape3D";
+import { PathShape3D } from "./shape3d/PathShape3D";
 
 export class Shape3DMaker {
 
@@ -50,7 +51,7 @@ export class Shape3DMaker {
         return ellipse;
     }
 
-    circle(radius: number, startAngle: number, endAngle: number, counterclockwise?: boolean): CircleShape3D {
+    arc(radius: number, startAngle: number, endAngle: number, counterclockwise?: boolean): CircleShape3D {
         let circle = this._renderer.createShape(CircleShape3D);
         circle.radius = radius;
         circle.startAngle = startAngle || 0;
@@ -81,6 +82,10 @@ export class Shape3DMaker {
         return curve;
     }
 
+    path(): PathShape3D {
+        let curve = this._renderer.createShape(PathShape3D);
+        return curve;
+    }
 
     rect(w: number, h: number): RoundRectShape3D {
         let rect = this._renderer.createShape(RoundRectShape3D);

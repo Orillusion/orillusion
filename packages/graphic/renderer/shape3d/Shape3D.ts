@@ -1,4 +1,4 @@
-import { DynamicDrawStruct, Matrix3, LineJoin, Vector2, Color, Vector4 } from "@orillusion/core";
+import { DynamicDrawStruct, Matrix3, LineJoin, Vector2, Color, Vector4, Vector3 } from "@orillusion/core";
 
 export class Shape3DStruct extends DynamicDrawStruct {
     public shapeType: number = 0;
@@ -51,7 +51,7 @@ export class Shape3D {
     protected _srcIndexStart: number = 0;
     protected _srcIndexCount: number = 0;
     private _shapeOrder: number = 0;
-    protected _points: Vector2[];
+    protected _points: Vector3[];
     protected _indecies: number[];
     public readonly shapeIndex: number = 0;
     protected _isClosed: boolean = true;
@@ -71,10 +71,10 @@ export class Shape3D {
 
     public readonly shapeType: number = ShapeTypeEnum.None;
 
-    constructor(structs: Shape3DStruct, srcPoints: Float32Array, srcIndecies: Uint32Array, matrixIndex: number) {
+    constructor(structs: Shape3DStruct, sharedPoints: Float32Array, sharedIndecies: Uint32Array, matrixIndex: number) {
         this._shapeStruct = structs;
-        this._sharedSrcPoints = srcPoints;
-        this._sharedSrcIndecies = srcIndecies;
+        this._sharedSrcPoints = sharedPoints;
+        this._sharedSrcIndecies = sharedIndecies;
         this.shapeIndex = matrixIndex;
     }
 
@@ -177,10 +177,10 @@ export class Shape3D {
         return this._destPointCount;
     }
 
-    public get points(): Vector2[] {
+    public get points(): Vector3[] {
         return this._points;
     }
-    public set points(value: Vector2[]) {
+    public set points(value: Vector3[]) {
         this._points = value;
         this._srcPointCount = value?.length || 0;
         this._isChange = true;
@@ -295,6 +295,8 @@ export class Shape3D {
             for (let point of this._points) {
                 array[index + 0] = point.x;
                 array[index + 1] = point.y;
+                array[index + 2] = point.z;
+                array[index + 3] = 0;
                 index += 4;
             }
         }
@@ -308,6 +310,7 @@ export class Shape3D {
                 array[index + 0] = this._indecies[i * 3 + 0];
                 array[index + 1] = this._indecies[i * 3 + 1];
                 array[index + 2] = this._indecies[i * 3 + 2];
+                array[index + 3] = 0;
                 index += 4;
             }
         }

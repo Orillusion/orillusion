@@ -46,6 +46,10 @@ struct Path3DKeyPoint{
    shapeIndex:f32,
    pointIndex:f32,//localIndex
    overallLength:f32,
+   invalidPoint:f32,
+   a:f32,
+   b:f32,
+   c:f32
 }
 
 struct RenderData{
@@ -77,8 +81,8 @@ struct RenderData{
    let nextKeyPoint:Path3DKeyPoint = destPathBuffer[nextPointIndex];
    if(shapeBase.fill > 0.5){
        p0 = cPoint;
-       p1 = keyPoint.pos;
-       p2 = nextKeyPoint.pos;
+       p1 = keyPoint.pos + keyPoint.right * lineWidth * 0.5;
+       p2 = nextKeyPoint.pos + nextKeyPoint.right * lineWidth * 0.5;
 
        u0 = vec2<f32>(p0.x, p0.z);
        u1 = vec2<f32>(p1.x, p1.z);
