@@ -58,7 +58,9 @@ fn drawLineFace(nodeData:ShapeData, currentPoint:Path3DKeyPoint){
                 }
             }else{
                 if(isLastPointOfShape){
-                    drawLineEnd(shapeData, currentPoint);
+                    if(prevPoint.invalidPoint < 0.5 && isCurrentValid){
+                        drawLineEnd(shapeData, currentPoint);
+                    }
                 }else{
                     let lineJoin = u32(round(shapeData.lineJoin));
                     var cornerPointExt = 0u;

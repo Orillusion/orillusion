@@ -113,6 +113,8 @@ export class PathShape3D extends LineShape3D implements CanvasPath {
     }
 
     ellipse(x: number, y: number, radiusX: number, radiusY: number, rotation: number, startAngle: number, endAngle: number, counterclockwise?: boolean, segment?: number): void {
+        this.changeLastPointValid(true);
+
         //fix angle
         startAngle ||= 0;
         endAngle ||= 0;
@@ -149,6 +151,7 @@ export class PathShape3D extends LineShape3D implements CanvasPath {
     moveTo(x: number, y: number): void {
         this.changeLastPointValid(false);
         this.appendPoint(x, y);
+        this.changeLastPointValid(false);
     }
 
     quadraticCurveTo(cpx: number, cpy: number, x: number, y: number, segment?: number): void {
@@ -175,6 +178,7 @@ export class PathShape3D extends LineShape3D implements CanvasPath {
 
     rect(x: number, y: number, w: number, h: number): void {
         this.moveTo(x - w * 0.5, y - h * 0.5);
+        this.changeLastPointValid(true);
         this.appendPoint(x + w * 0.5, y - h * 0.5);
         this.appendPoint(x + w * 0.5, y + h * 0.5);
         this.appendPoint(x - w * 0.5, y + h * 0.5);
@@ -219,6 +223,7 @@ export class PathShape3D extends LineShape3D implements CanvasPath {
         roundRectList.shift();
         roundRectList.push(firstPosition);
         this.moveTo(firstPosition.x, firstPosition.y);
+        this.changeLastPointValid(true);
         for (let item of roundRectList) {
             this.appendPoint(item.x, item.y);
         }
