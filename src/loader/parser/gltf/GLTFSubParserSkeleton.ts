@@ -1,3 +1,4 @@
+import { Vector3 } from "../../..";
 import { Joint } from "../../../components/anim/skeletonAnim/Joint";
 import { Skeleton } from "../../../components/anim/skeletonAnim/Skeleton";
 import { SkeletonAnimationClip } from "../../../components/anim/skeletonAnim/SkeletonAnimationClip";
@@ -21,7 +22,10 @@ export class GLTFSubParserSkeleton {
 
     public parseSkeletonAnimation(skeleton: Skeleton, animation) {
         let count = 0;
-        let numFrame: number = this.subParser.parseAccessor(animation.samplers[0].input).data.length;
+        let inputAccessor = this.subParser.parseAccessor(animation.samplers[0].input);
+        let numFrame: number = inputAccessor.data.length;
+        let frameRate: number = inputAccessor.data[1] - inputAccessor.data[0];
+        let totalTime: number = inputAccessor.data[inputAccessor.data.length - 1];
         let skeletonPoseLength: number = 12 * skeleton.numJoint;
         let bufferData = new Float32Array(skeletonPoseLength * numFrame);
         for (var index = 0; index < skeleton.numJoint; index++) {
@@ -58,34 +62,132 @@ export class GLTFSubParserSkeleton {
             } else {
                 switch (property) {
                     case 'scale':
-                        for (var nFrame: number = 0; nFrame < numFrame; nFrame++) {
-                            var srcOffset = nFrame * outputAccessor.numComponents;
-                            var dstOffset = skeletonPoseLength * nFrame + 12 * joint.index;
-                            bufferData[dstOffset + 0] = outputAccessor.data[srcOffset + 0]; // x
-                            bufferData[dstOffset + 1] = outputAccessor.data[srcOffset + 1]; // y
-                            bufferData[dstOffset + 2] = outputAccessor.data[srcOffset + 2]; // z
-                            bufferData[dstOffset + 3] = 1;
-                        }
+                        if (numFrame * outputAccessor.numComponents == outputAccessor.data.length) {
+                            for (var nFrame: number = 0; nFrame < numFrame; nFrame++) {
+                                var srcOffset = nFrame * outputAccessor.numComponents;
+                                var dstOffset = skeletonPoseLength * nFrame + 12 * joint.index;
+                                bufferData[dstOffset + 0] = outputAccessor.data[srcOffset + 0]; // x
+                                bufferData[dstOffset + 1] = outputAccessor.data[srcOffset + 1]; // y
+                                bufferData[dstOffset + 2] = outputAccessor.data[srcOffset + 2]; // z
+                                bufferData[dstOffset + 3] = 1;
+                            }
+                        } else if (inputAccessor.data.length == 2) {
+                            let time = 0;
+                            let t0 = inputAccessor.data[0];
+                            let t1 = inputAccessor.data[1];
+
+                            var srcOffsetA = 0 * outputAccessor.numComponents;
+                            Vector3.HELP_0.set(
+                                outputAccessor.data[srcOffsetA + 0],
+                                outputAccessor.data[srcOffsetA + 1],
+                                outputAccessor.data[srcOffsetA + 2]
+                            );
+
+                            var srcOffsetB = 1 * outputAccessor.numComponents;
+                            Vector3.HELP_1.set(
+                                outputAccessor.data[srcOffsetB + 0],
+                                outputAccessor.data[srcOffsetB + 1],
+                                outputAccessor.data[srcOffsetB + 2]
+                            );
+                            for (var nFrame: number = 0; nFrame < numFrame; nFrame++) {
+                                let t = time / t1;
+                                Vector3.HELP_2.lerp(Vector3.HELP_0, Vector3.HELP_1, t);
+                                
+                                var dstOffset = skeletonPoseLength * nFrame + 12 * joint.index;
+                                bufferData[dstOffset + 0] = Vector3.HELP_2.x;
+                                bufferData[dstOffset + 1] = Vector3.HELP_2.y;
+                                bufferData[dstOffset + 2] = Vector3.HELP_2.z;
+                                bufferData[dstOffset + 3] = 1;
+
+                                time += frameRate;
+                            }
+                        } else throw new Error("Unsupported animation sampler interpolation.");
                         break;
                     case 'rotation':
-                        for (var nFrame: number = 0; nFrame < numFrame; nFrame++) {
-                            var srcOffset = nFrame * outputAccessor.numComponents;
-                            var dstOffset = skeletonPoseLength * nFrame + 12 * joint.index + 4;
-                            bufferData[dstOffset + 0] = outputAccessor.data[srcOffset + 0]; // x
-                            bufferData[dstOffset + 1] = outputAccessor.data[srcOffset + 1]; // y
-                            bufferData[dstOffset + 2] = outputAccessor.data[srcOffset + 2]; // z
-                            bufferData[dstOffset + 3] = outputAccessor.data[srcOffset + 3]; // w
-                        }
+                        if (numFrame * outputAccessor.numComponents == outputAccessor.data.length) {
+                            for (var nFrame: number = 0; nFrame < numFrame; nFrame++) {
+                                var srcOffset = nFrame * outputAccessor.numComponents;
+                                var dstOffset = skeletonPoseLength * nFrame + 12 * joint.index + 4;
+                                bufferData[dstOffset + 0] = outputAccessor.data[srcOffset + 0]; // x
+                                bufferData[dstOffset + 1] = outputAccessor.data[srcOffset + 1]; // y
+                                bufferData[dstOffset + 2] = outputAccessor.data[srcOffset + 2]; // z
+                                bufferData[dstOffset + 3] = outputAccessor.data[srcOffset + 3]; // w
+                            }
+                        } else if (inputAccessor.data.length == 2) {
+                            let time = 0;
+                            let t0 = inputAccessor.data[0];
+                            let t1 = inputAccessor.data[1];
+
+                            var srcOffsetA = 0 * outputAccessor.numComponents;
+                            Vector3.HELP_0.set(
+                                outputAccessor.data[srcOffsetA + 0],
+                                outputAccessor.data[srcOffsetA + 1],
+                                outputAccessor.data[srcOffsetA + 2],
+                                outputAccessor.data[srcOffsetA + 3],
+                            );
+
+                            var srcOffsetB = 1 * outputAccessor.numComponents;
+                            Vector3.HELP_1.set(
+                                outputAccessor.data[srcOffsetB + 0],
+                                outputAccessor.data[srcOffsetB + 1],
+                                outputAccessor.data[srcOffsetB + 2],
+                                outputAccessor.data[srcOffsetB + 3],
+                            );
+                            for (var nFrame: number = 0; nFrame < numFrame; nFrame++) {
+                                let t = time / t1;
+                                Vector3.HELP_2.lerp(Vector3.HELP_0, Vector3.HELP_1, t);
+                                
+                                var dstOffset = skeletonPoseLength * nFrame + 12 * joint.index + 4;
+                                bufferData[dstOffset + 0] = Vector3.HELP_2.x;
+                                bufferData[dstOffset + 1] = Vector3.HELP_2.y;
+                                bufferData[dstOffset + 2] = Vector3.HELP_2.z;
+                                bufferData[dstOffset + 3] = Vector3.HELP_2.w;
+
+                                time += frameRate;
+                            }
+                        } else throw new Error("Unsupported animation sampler interpolation.");
                         break;
                     case 'translation':
-                        for (var nFrame: number = 0; nFrame < numFrame; nFrame++) {
-                            var srcOffset = nFrame * outputAccessor.numComponents;
-                            var dstOffset = skeletonPoseLength * nFrame + 12 * joint.index + 8;
-                            bufferData[dstOffset + 0] = outputAccessor.data[srcOffset + 0]; // x
-                            bufferData[dstOffset + 1] = outputAccessor.data[srcOffset + 1]; // y
-                            bufferData[dstOffset + 2] = outputAccessor.data[srcOffset + 2]; // z
-                            bufferData[dstOffset + 3] = inputAccessor.data[nFrame * inputAccessor.numComponents];
-                        }
+                        if (numFrame * outputAccessor.numComponents == outputAccessor.data.length) {
+                            for (var nFrame: number = 0; nFrame < numFrame; nFrame++) {
+                                var srcOffset = nFrame * outputAccessor.numComponents;
+                                var dstOffset = skeletonPoseLength * nFrame + 12 * joint.index + 8;
+                                bufferData[dstOffset + 0] = outputAccessor.data[srcOffset + 0]; // x
+                                bufferData[dstOffset + 1] = outputAccessor.data[srcOffset + 1]; // y
+                                bufferData[dstOffset + 2] = outputAccessor.data[srcOffset + 2]; // z
+                                bufferData[dstOffset + 3] = inputAccessor.data[nFrame * inputAccessor.numComponents];
+                            }
+                        } else if (inputAccessor.data.length == 2) {
+                            let time = 0;
+                            let t0 = inputAccessor.data[0];
+                            let t1 = inputAccessor.data[1];
+
+                            var srcOffsetA = 0 * outputAccessor.numComponents;
+                            Vector3.HELP_0.set(
+                                outputAccessor.data[srcOffsetA + 0],
+                                outputAccessor.data[srcOffsetA + 1],
+                                outputAccessor.data[srcOffsetA + 2]
+                            );
+
+                            var srcOffsetB = 1 * outputAccessor.numComponents;
+                            Vector3.HELP_1.set(
+                                outputAccessor.data[srcOffsetB + 0],
+                                outputAccessor.data[srcOffsetB + 1],
+                                outputAccessor.data[srcOffsetB + 2]
+                            );
+                            for (var nFrame: number = 0; nFrame < numFrame; nFrame++) {
+                                let t = time / t1;
+                                Vector3.HELP_2.lerp(Vector3.HELP_0, Vector3.HELP_1, t);
+                                
+                                var dstOffset = skeletonPoseLength * nFrame + 12 * joint.index + 8;
+                                bufferData[dstOffset + 0] = Vector3.HELP_2.x;
+                                bufferData[dstOffset + 1] = Vector3.HELP_2.y;
+                                bufferData[dstOffset + 2] = Vector3.HELP_2.z;
+                                bufferData[dstOffset + 3] = time;
+
+                                time += frameRate;
+                            }
+                        } else throw new Error("Unsupported animation sampler interpolation.");
                         break;
                 }
             }
