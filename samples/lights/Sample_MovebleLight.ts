@@ -1,5 +1,5 @@
-import { BoxGeometry, Camera3D, ComponentBase, Engine3D, LitMaterial, MeshRenderer, Object3D, Scene3D, View3D, Color, Object3DUtil, PointLight,  PointerEvent3D, Vector3,ColliderComponent, BlendMode, UnLitMaterial, KelvinUtil } from "@orillusion/core";
-import { Stats } from '@orillusion/stats';
+import { BoxGeometry, Camera3D, ComponentBase, Engine3D, LitMaterial, MeshRenderer, Object3D, Scene3D, View3D, Color, Object3DUtil, PointLight, PointerEvent3D, Vector3, ColliderComponent, BlendMode, UnLitMaterial, KelvinUtil } from "@orillusion/core";
+import { Stats } from "@orillusion/stats";
 import dat from "dat.gui";
 
 class Sample_MovebleLight {
@@ -21,7 +21,7 @@ class Sample_MovebleLight {
         let cameraObj = new Object3D();
         let camera = cameraObj.addComponent(Camera3D);
         camera.perspective(60, Engine3D.aspect, 1, 5000);
-        camera.lookAt(new Vector3(0, 0, 30), new Vector3(0,0,0));
+        camera.lookAt(new Vector3(0, 0, 30), new Vector3(0, 0, 0));
         scene.addChild(cameraObj);
 
         //create PointLight
@@ -36,17 +36,17 @@ class Sample_MovebleLight {
 
         //add debug GUI
         let lightColor = {
-            color:[255,255,255,255]
-        }
+            color: [255, 255, 255, 255],
+        };
         const gui = new dat.GUI();
         let light = gui.addFolder("light");
-        light.add(this.light,"intensity",5,30,1);
-        light.add(this.light,"range",10,30,1);
-        light.add(this.light,"radius",0.1,2,0.1);
-        light.addColor(lightColor,"color").onChange((v)=>{
-            this.light.lightColor = new Color(v[0]/255,v[1]/255,v[2]/255)
-        })
-        light.add({tips:"Move Your Mouse"},"tips");
+        light.add(this.light, "intensity", 5, 30, 1);
+        light.add(this.light, "range", 10, 30, 1);
+        light.add(this.light, "radius", 0.1, 2, 0.1);
+        light.addColor(lightColor, "color").onChange((v) => {
+            this.light.lightColor = new Color(v[0] / 255, v[1] / 255, v[2] / 255);
+        });
+        light.add({ tips: "Move Your Mouse" }, "tips");
         light.open();
 
         //add background
@@ -63,10 +63,10 @@ class Sample_MovebleLight {
         for (let i = 0; i < 10; i++) {
             for (let j = 0; j < 10; j++) {
                 let obj = boxObj.clone();
-                obj.addComponent(RotateScript)
+                obj.addComponent(RotateScript);
                 obj.x = i * 4 - 18;
                 obj.y = j * 4 - 18;
-                scene.addChild(obj)
+                scene.addChild(obj);
             }
         }
 
@@ -76,17 +76,17 @@ class Sample_MovebleLight {
         let mr = helper.addComponent(MeshRenderer);
         mr.geometry = new BoxGeometry(100, 100, 1);
         let mat = new UnLitMaterial();
-        mr.material = mat
+        mr.material = mat;
 
         //set helper invisible
         mat.baseColor = new Color(1, 1, 1, 0);
         mat.blendMode = BlendMode.ALPHA;
-        
-        helper.addComponent(ColliderComponent)
+
+        helper.addComponent(ColliderComponent);
 
         //add point-move event listener
-        helper.addEventListener(PointerEvent3D.PICK_MOVE, this.onMove, this)
-        scene.addChild(helper)
+        helper.addEventListener(PointerEvent3D.PICK_MOVE, this.onMove, this);
+        scene.addChild(helper);
 
         //start render
         let view = new View3D();
@@ -96,8 +96,8 @@ class Sample_MovebleLight {
     }
     private onMove(e: PointerEvent3D) {
         //set pick position as light position
-        this.light.transform.x = e.data.pickInfo.worldPos.x
-        this.light.transform.y = e.data.pickInfo.worldPos.y
+        this.light.transform.x = e.data.pickInfo.worldPos.x;
+        this.light.transform.y = e.data.pickInfo.worldPos.y;
     }
 }
 //rotate component
