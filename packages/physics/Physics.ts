@@ -43,7 +43,7 @@ class _Physics {
      * Init Physics Engine
      */
     public async init() {
-        await Ammo(Ammo);
+        await Ammo.bind(window)(Ammo);
         this.TEMP_TRANSFORM = new Ammo.btTransform();
         var collisionConfiguration = new Ammo.btDefaultCollisionConfiguration();
         var dispatcher = new Ammo.btCollisionDispatcher(collisionConfiguration);
