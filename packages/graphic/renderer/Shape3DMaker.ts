@@ -1,13 +1,14 @@
-import { BitmapTexture2DArray, Graphic3DMesh, Scene3D, Vector2 } from "@orillusion/core";
+import { BitmapTexture2DArray, Graphic3DMesh, Scene3D, Vector2, Vector3 } from "@orillusion/core";
 import { Shape3DRenderer } from "./Shape3DRenderer";
 import { RoundRectShape3D } from "./shape3d/RoundRectShape3D";
 import { EllipseShape3D } from "./shape3d/EllipseShape3D";
-import { Shape3DStruct } from "./shape3d/Shape3D";
+import { Point3D, Shape3DStruct } from "./shape3d/Shape3D";
 import { CircleShape3D } from "./shape3d/CircleShape3D";
 import { LineShape3D } from "./shape3d/LineShape3D";
 import { QuadraticCurveShape3D } from "./shape3d/QuadraticCurveShape3D";
 import { CurveShape3D } from "./shape3d/CurveShape3D";
-import { PathShape3D } from "./shape3d/PathShape3D";
+import { Path2DShape3D } from "./shape3d/Path2DShape3D";
+import { Path3DShape3D } from "./shape3d/Path3DShape3D";
 
 export class Shape3DMaker {
 
@@ -61,7 +62,12 @@ export class Shape3DMaker {
 
     line(points: Vector2[]) {
         let line = this._renderer.createShape(LineShape3D);
-        line.points = points;
+        let points3D = line.points3D || [];
+        points3D.length = 0;
+        for (let pt of points) {
+            points3D.push(new Point3D(pt.x, pt.y));
+        }
+        line.points3D = points3D;
         return line;
     }
 
@@ -82,9 +88,12 @@ export class Shape3DMaker {
         return curve;
     }
 
-    path(): PathShape3D {
-        let curve = this._renderer.createShape(PathShape3D);
-        return curve;
+    path2D(): Path2DShape3D {
+        return this._renderer.createShape(Path2DShape3D);
+    }
+
+    path3D(): Path3DShape3D {
+        return this._renderer.createShape(Path3DShape3D);
     }
 
     rect(w: number, h: number): RoundRectShape3D {

@@ -6,7 +6,7 @@ import { GUIShape3D } from "@samples/utils/GUIShape3D";
 import { Shape3D } from "@orillusion/graphic/renderer/shape3d/Shape3D";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
-export class Sample_Shape3DPath {
+export class Sample_Shape3DPath3D {
     lightObj3D: Object3D;
     scene: Scene3D;
     view: View3D;
@@ -29,7 +29,7 @@ export class Sample_Shape3DPath {
         let camera = CameraUtil.createCamera3DObject(this.scene);
         camera.perspective(60, Engine3D.aspect, 1, 5000.0);
 
-        camera.object3D.addComponent(HoverCameraController).setCamera(0, -80, 80);
+        camera.object3D.addComponent(HoverCameraController).setCamera(0, -60, 20);
 
         this.view = new View3D();
         this.view.scene = this.scene;
@@ -39,7 +39,7 @@ export class Sample_Shape3DPath {
 
         await this.initScene();
 
-        this.scene.addChild(new AxisObject(100, 0.05))
+        this.scene.addChild(new AxisObject(10, 0.1))
 
         sky.relativeTransform = this.lightObj3D.transform;
     }
@@ -91,7 +91,7 @@ export class Sample_Shape3DPath {
 
     private createPath(): Shape3D {
 
-        let path = this.maker.path();
+        let path = this.maker.path3D();
         path.lineWidth = 0.5;
         path.lineJoin = LineJoin.bevel;
         path.corner = 6;
@@ -106,12 +106,13 @@ export class Sample_Shape3DPath {
 
         path.moveTo(0, 0);
         path.moveTo(5, 2);
-        path.lineTo(8, 10);
+        path.lineTo(5, 10, 5);
+        path.lineTo(10, 15);
         path.moveTo(20, 0);
         path.lineTo(20, 20);
         path.closePath();
 
-        path.quadraticCurveTo(-10, 25, 15, 28, 11);
+        path.quadraticCurveTo(-10, 25, 20, 15, 28, 0, 18);
 
         path.ellipse(30, 16, 5, 10, 45, 0, 360);
 

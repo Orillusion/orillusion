@@ -1,6 +1,7 @@
 import { CircleShape3DCode_cs } from "./CircleShape3DCode_cs";
 import { EllipseShape3DCode_cs } from "./EllipseShape3DCode_cs";
-import { LineShape3DCode_cs } from "./LineShape3DCode_cs";
+import { Path2DShape3DCode_cs } from "./Path2DShape3DCode_cs";
+import { Path3DShape3DCode_cs } from "./Path3DShape3DCode_cs";
 import { RoundRectShape3DCode_cs } from "./RoundRectShape3DCode_cs";
 
 export let Shape3DCommonCode_cs = /*wgsl*/`
@@ -8,13 +9,15 @@ export let Shape3DCommonCode_cs = /*wgsl*/`
 ${CircleShape3DCode_cs}
 ${RoundRectShape3DCode_cs}
 ${EllipseShape3DCode_cs}
-${LineShape3DCode_cs}
+${Path2DShape3DCode_cs}
+${Path3DShape3DCode_cs}
 
 const NoneShape:u32 = 0u;
 const CircleShapeType : u32 = 1u;
 const RoundRectShapeType : u32 = 2u;
 const EllipseShapeType : u32 = 3u;
-const LineShapeType : u32 = 4u;
+const Path2DShapeType : u32 = 4u;
+const Path3DShapeType : u32 = 5u;
 
 struct ShapeDataBase{
    shapeType: f32,
@@ -53,6 +56,8 @@ struct Path3DKeyPoint{
 }
 
 struct RenderData{
+   mvMatrix:mat4x4<f32>,
+   invMvMatrix:mat4x4<f32>,
    maxNodeCount:f32,
    usedDestPointCount:f32,
    maxFaceCount:f32,
@@ -163,10 +168,12 @@ var<private> globalIndex : u32;
 var<private> zero_pos : vec3<f32> = vec3<f32>(0.0,0.0,0.0);
 var<private> zero_uv : vec2f = vec2f(0.0,0.0);
 var<private> pi_2 : f32 = 6.2831853071795864;
+var<private> pi: f32 = 3.14159265359;
 var<private> shapeIndex : u32 = 0;
 var<private> shapeType : u32 = 0;
 var<private> lineOffsetY : f32 = 0.0;
 var<private> fillOffsetY : f32 = 0.0;
-var<private> zFightingRangeEachShape : f32 = 0.0;
+var<private> matrix_vp : mat4x4<f32>;
+var<private> matrix_inv_vp : mat4x4<f32>;
 
 `

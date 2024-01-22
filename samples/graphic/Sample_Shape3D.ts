@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, Graphic3DMesh, Matrix4, Color, Time, sin, MeshRenderer, Vector2, LineJoin, Vector4, Object3DUtil } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, Graphic3DMesh, Matrix4, Color, Time, sin, MeshRenderer, Vector2, LineJoin, Vector4, Object3DUtil, AxisObject } from "@orillusion/core";
 import { Stats } from "@orillusion/stats";
 import { CircleShape3D, EllipseShape3D, Shape3DMaker } from "@orillusion/graphic";
 import { GUIShape3D } from "@samples/utils/GUIShape3D";
@@ -39,6 +39,7 @@ export class Sample_Shape3D {
 
         await this.initScene();
 
+        this.scene.addChild(new AxisObject(10))
 
         sky.relativeTransform = this.lightObj3D.transform;
     }
@@ -245,10 +246,10 @@ export class Sample_Shape3D {
 
     update() {
         if (this.transformObj) {
-            this.transformObj.rotationY += Time.delta * 0.05;
-            this.transformObj.rotationZ += Time.delta * 0.01;
-            this.transformObj.x = this.sphere.x = Math.sin(Time.time * 0.0001) * 20;
-            this.transformObj.z = this.sphere.z = Math.cos(Time.time * 0.0001) * 20;
+            // this.transformObj.rotationY += Time.delta * 0.05;
+            // this.transformObj.rotationZ += Time.delta * 0.01;
+            // this.transformObj.x = this.sphere.x = Math.sin(Time.time * 0.0001) * 20;
+            // this.transformObj.z = this.sphere.z = Math.cos(Time.time * 0.0001) * 20;
         }
     }
 

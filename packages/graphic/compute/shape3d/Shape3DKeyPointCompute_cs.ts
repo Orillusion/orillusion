@@ -6,7 +6,8 @@ export let Shape3DKeyPointCompute_cs = /*wgsl*/`
    fn compute(workgroup_id:vec3<u32>,local_invocation_id:vec3<u32>) {
       var time = globalUniform.time;
       globalIndex = workgroup_id.x * 256u + local_invocation_id.x ;
-      
+      matrix_vp = rendererData.mvMatrix;
+      matrix_inv_vp = rendererData.invMvMatrix;
       if(false){
          let vertexBuffer0 = vertexBuffer[0];
          let srcPathBuffer0 = srcPathBuffer[0];
@@ -34,9 +35,14 @@ export let Shape3DKeyPointCompute_cs = /*wgsl*/`
             writeEllipsePath(nodeData);
             break;
          }
-         case LineShapeType:
+         case Path2DShapeType:
          {
-            writeLinePath(nodeData);
+            writePath2DPath(nodeData);
+            break;
+         }
+         case Path3DShapeType:
+         {
+            writePath3DPath(nodeData);
             break;
          }
          default:

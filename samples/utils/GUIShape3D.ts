@@ -51,13 +51,13 @@ export class GUIShape3D {
         });
         this.renderCommonShape3D(shape, maxSize);
 
-        for (let i = 0; i < shape.points.length; i++) {
-            let point = shape.points[i];
+        for (let i = 0; i < shape.points3D.length; i++) {
+            let point = shape.points3D[i];
             GUIHelp.add(point, 'x', -10, 10, 0.01).onChange(
-                (v) => { shape.points = shape.points; }
+                (v) => { shape.points3D = shape.points3D; }
             );
             GUIHelp.add(point, 'y', -10, 10, 0.01).onChange(
-                (v) => { shape.points = shape.points; }
+                (v) => { shape.points3D = shape.points3D; }
             );
         }
         open && GUIHelp.open();

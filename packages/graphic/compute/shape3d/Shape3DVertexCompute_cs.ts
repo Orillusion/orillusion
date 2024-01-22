@@ -5,6 +5,9 @@ export let Shape3DVertexCompute_cs = /*wgsl*/`
 
    fn compute(workgroup_id:vec3<u32>,local_invocation_id:vec3<u32>) {
       var time = globalUniform.time;
+      matrix_vp = rendererData.mvMatrix;
+      matrix_inv_vp = rendererData.invMvMatrix;
+      
       globalIndex = workgroup_id.x * 256u + local_invocation_id.x;
       if(globalIndex < u32(rendererData.usedDestPointCount) )
       {
@@ -19,9 +22,9 @@ export let Shape3DVertexCompute_cs = /*wgsl*/`
          if(shapeType == 0u){
             return;
          }
-         zFightingRangeEachShape = rendererData.zFightingRange / (rendererData.maxNodeCount + 1.0);
-         lineOffsetY = (nodeData.base.shapeOrder + 0.5) * zFightingRangeEachShape;
-         fillOffsetY = nodeData.base.shapeOrder * zFightingRangeEachShape;
+         let depthRangeEachShape = rendererData.zFightingRange / (rendererData.maxNodeCount + 1.0);
+         lineOffsetY = (nodeData.base.shapeOrder + 0.5) * depthRangeEachShape;
+         fillOffsetY = nodeData.base.shapeOrder * depthRangeEachShape;
 
          switch(shapeType){
             case RoundRectShapeType:
@@ -39,9 +42,14 @@ export let Shape3DVertexCompute_cs = /*wgsl*/`
                drawEllipseFace(nodeData, keyPoint);
                break;
             }
-            case LineShapeType:
+            case Path2DShapeType:
             {
-               drawLineFace(nodeData, keyPoint);
+               drawPath2DFace(nodeData, keyPoint);
+               break;
+            }
+            case Path3DShapeType:
+            {
+               drawPath3DFace(nodeData, keyPoint);
                break;
             }
             default:

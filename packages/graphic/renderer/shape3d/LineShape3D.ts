@@ -1,13 +1,13 @@
-import { Vector3, LineJoin, Vector2 } from "@orillusion/core";
-import { Shape3D, ShapeTypeEnum } from "./Shape3D";
+import { Vector3, LineJoin } from "@orillusion/core";
+import { Point3D, Shape3D, ShapeTypeEnum } from "./Shape3D";
 import earcut from 'earcut';
 
-type vec2 = { x: number, y: number };
+type vec3 = { x: number, y: number, h?: number };
 
 export class LineShape3D extends Shape3D {
     protected _corner: number = 8;
     protected _lineJoin: LineJoin = LineJoin.bevel;
-    public readonly shapeType: number = Number(ShapeTypeEnum.Line);
+    public readonly shapeType: number = Number(ShapeTypeEnum.Path2D);
 
     public get corner(): number {
         return this._corner;
@@ -32,9 +32,9 @@ export class LineShape3D extends Shape3D {
     public calcRequireSource(): void {
         this._destPointCount = this._srcPointCount;
 
-        if (this._fill && this._points.length > 2) {
+        if (this._fill && this._points3D.length > 2) {
             let coords: number[] = [];
-            for (let point of this._points) {
+            for (let point of this._points3D) {
                 coords.push(point.x, point.y);
             }
             this._indecies = earcut(coords);
@@ -45,26 +45,26 @@ export class LineShape3D extends Shape3D {
         }
     }
 
-    public sampleQuadraticCurve(start: vec2, cp: vec2, end: vec2, t: number, ret?: vec2) {
-        ret ||= new Vector2();
-        let p0 = this.mixVector2(start, cp, t, Vector2.HELP_0);
-        let p1 = this.mixVector2(cp, end, t, Vector2.HELP_1);
+    public sampleQuadraticCurve(start: vec3, cp: vec3, end: vec3, t: number, ret?: vec3) {
+        ret ||= new Point3D();
+        let p0 = this.mixVector3(start, cp, t, Point3D.HELP_0);
+        let p1 = this.mixVector3(cp, end, t, Point3D.HELP_1);
 
-        p0 = this.mixVector2(p0, p1, t, ret);
+        p0 = this.mixVector3(p0, p1, t, ret);
 
         return ret;
     }
 
-    public sampleCurve(start: vec2, cp1: vec2, cp2: vec2, end: vec2, t: number, ret?: vec2) {
-        ret ||= new Vector2();
-        let p0 = this.mixVector2(start, cp1, t, Vector2.HELP_0);
-        let p1 = this.mixVector2(cp1, cp2, t, Vector2.HELP_1);
-        let p2 = this.mixVector2(cp2, end, t, Vector2.HELP_2);
+    public sampleCurve(start: vec3, cp1: vec3, cp2: vec3, end: vec3, t: number, ret?: vec3) {
+        ret ||= new Point3D();
+        let p0 = this.mixVector3(start, cp1, t, Point3D.HELP_0);
+        let p1 = this.mixVector3(cp1, cp2, t, Point3D.HELP_1);
+        let p2 = this.mixVector3(cp2, end, t, Point3D.HELP_2);
 
-        p0 = this.mixVector2(p0, p1, t, p0);
-        p1 = this.mixVector2(p1, p2, t, p1);
+        p0 = this.mixVector3(p0, p1, t, p0);
+        p1 = this.mixVector3(p1, p2, t, p1);
 
-        p0 = this.mixVector2(p0, p1, t, ret);
+        p0 = this.mixVector3(p0, p1, t, ret);
 
         return ret;
     }
@@ -73,10 +73,11 @@ export class LineShape3D extends Shape3D {
         super.writeShapeData(this._lineJoin, this._corner);
     }
 
-    protected mixVector2(src: vec2, dest: vec2, t: number, ret?: vec2) {
-        ret ||= new Vector2();
+    protected mixVector3(src: vec3, dest: vec3, t: number, ret?: vec3) {
+        ret ||= new Point3D(0, 0, 0);
         ret.x = this.mixFloat(src.x, dest.x, t);
         ret.y = this.mixFloat(src.y, dest.y, t);
+        ret.h = this.mixFloat(src.h, dest.h, t);
         return ret;
     }
 

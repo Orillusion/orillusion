@@ -32,12 +32,44 @@ export enum ShapeTypeEnum {
     Circle = 1,
     RoundRect = 2,
     Ellipse = 3,
-    Line = 4,
+    Path2D = 4,
+    Path3D = 5,
 }
 
 export enum CircleArcType {
     Sector = 0,
     Moon = 1
+}
+
+export class Point3D {
+
+    public static HELP_0: Point3D = new Point3D();
+    public static HELP_1: Point3D = new Point3D();
+    public static HELP_2: Point3D = new Point3D();
+
+    constructor(x: number = 0, y: number = 0, h: number = 0, invalid?: boolean) {
+        this.set(x, y, h, invalid);
+    }
+
+    public set(x: number, y: number, h: number = 0, invalid?: boolean) {
+        this.x = x;
+        this.y = y;
+        this.h = h;
+        this.invalid = invalid;
+    }
+
+    public copyFrom(src: Point3D): this {
+        this.x = src.x;
+        this.y = src.y;
+        this.h = src.h;
+        this.invalid = src.invalid;
+        return this;
+    }
+
+    public x: number;
+    public y: number;
+    public h: number;
+    public invalid: boolean;
 }
 
 export class Shape3D {
@@ -51,7 +83,7 @@ export class Shape3D {
     protected _srcIndexStart: number = 0;
     protected _srcIndexCount: number = 0;
     private _shapeOrder: number = 0;
-    protected _points: Vector3[];
+    protected _points3D: Point3D[];
     protected _indecies: number[];
     public readonly shapeIndex: number = 0;
     protected _isClosed: boolean = true;
@@ -70,6 +102,7 @@ export class Shape3D {
     private _uvSpeed: Vector4 = new Vector4();
 
     public readonly shapeType: number = ShapeTypeEnum.None;
+    public readonly computeEveryFrame?: boolean;
 
     constructor(structs: Shape3DStruct, sharedPoints: Float32Array, sharedIndecies: Uint32Array, matrixIndex: number) {
         this._shapeStruct = structs;
@@ -177,11 +210,11 @@ export class Shape3D {
         return this._destPointCount;
     }
 
-    public get points(): Vector3[] {
-        return this._points;
+    public get points3D(): Point3D[] {
+        return this._points3D;
     }
-    public set points(value: Vector3[]) {
-        this._points = value;
+    public set points3D(value: Point3D[]) {
+        this._points3D = value;
         this._srcPointCount = value?.length || 0;
         this._isChange = true;
     }
@@ -292,11 +325,11 @@ export class Shape3D {
         if (this._srcPointCount) {
             let index = this._srcPointStart * 4;
             let array = this._sharedSrcPoints;
-            for (let point of this._points) {
+            for (let point of this._points3D) {
                 array[index + 0] = point.x;
-                array[index + 1] = point.y;
-                array[index + 2] = point.z;
-                array[index + 3] = 0;
+                array[index + 1] = point.h;
+                array[index + 2] = point.y;
+                array[index + 3] = point.invalid ? 1 : 0;
                 index += 4;
             }
         }

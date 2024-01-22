@@ -1,5 +1,5 @@
 
-import { BitmapTexture2DArray, ComputeShader, Ctor, DynamicDrawStruct, DynamicFaceRenderer, Object3D, OrderMap, StorageGPUBuffer, UniformGPUBuffer, Vector2, Vector3, Vector4, View3D, graphicDynamicCompute } from "@orillusion/core";
+import { BitmapTexture2DArray, ComputeShader, Ctor, DynamicDrawStruct, DynamicFaceRenderer, Matrix4, Object3D, OrderMap, StorageGPUBuffer, UniformGPUBuffer, Vector2, Vector3, Vector4, View3D, graphicDynamicCompute } from "@orillusion/core";
 import { Shape3DVertexCompute_cs } from "../compute/shape3d/Shape3DVertexCompute_cs";
 import { Shape3DKeyPointCompute_cs } from "../compute/shape3d/Shape3DKeyPointCompute_cs";
 import { Shape3D } from "./shape3d/Shape3D";
@@ -18,9 +18,13 @@ export class Shape3DRenderer extends DynamicFaceRenderer {
     private _shapeMap: OrderMap<number, Shape3D>;
     private _freeShapes: number[] = [];
     private _zFightingScale: number = 1.0;
+    private _mvMatrix: Matrix4;
+    private _invMvMatrix: Matrix4;
     public init(param?: any): void {
-        super.init(param);
+        this._mvMatrix = new Matrix4();
+        this._invMvMatrix = new Matrix4();
         this._shapeMap = new OrderMap<number, Shape3D>(null, false, true);
+        super.init(param);
     }
 
     public set<T extends DynamicDrawStruct>(nodeStruct: Ctor<T>, tex: BitmapTexture2DArray, standAloneMatrix?: boolean): void {
@@ -77,11 +81,15 @@ export class Shape3DRenderer extends DynamicFaceRenderer {
 
         this._destPathBuffer = new StorageGPUBuffer(this.maxFaceCount * 16);
 
-        this._rendererData = new UniformGPUBuffer(4);
+        //config :4; mv matrix, inverted mv matrix: 16 * 2
+        this._rendererData = new UniformGPUBuffer(4 + 16 * 2);
+        this._rendererData.setMatrix('mvMatrix', this._mvMatrix);
+        this._rendererData.setMatrix('invMvMatrix', this._invMvMatrix);
         this._rendererData.setFloat('maxNodeCount', this.maxNodeCount);
         this._rendererData.setFloat('usedDestPointCount', 0);
         this._rendererData.setFloat('maxFaceCount', this.maxFaceCount);
         this._rendererData.setFloat('zFightingRange', this._zFightingScale);
+
 
         super.initBaseBuffer();
     }
@@ -114,9 +122,9 @@ export class Shape3DRenderer extends DynamicFaceRenderer {
         this._onChangeKernelGroup.push(this._vertexCompute);
     }
 
-    private updateShapeRenderer(): void {
+    private updateShapeRenderer(view?: View3D): void {
         let isRenderChange: boolean = this._shapeMap.isChange;
-
+        let computeByFrame = false;
         let usedDestPointCount = 0;
         let usedSrcPoints = 0;
         let usedSrcIndecies = 0;
@@ -129,6 +137,7 @@ export class Shape3DRenderer extends DynamicFaceRenderer {
             shapeData.isChange && shapeData.calcRequireSource();
 
             isRenderChange ||= shapeData.isChange;
+            computeByFrame ||= shapeData.computeEveryFrame;
 
             usedDestPointCount += shapeData.destPointCount;
             usedSrcIndecies += shapeData.srcIndexCount;
@@ -149,13 +158,25 @@ export class Shape3DRenderer extends DynamicFaceRenderer {
             }
         }
 
-        if (isRenderChange) {
+        //update viewMatrix
+        if (isRenderChange || computeByFrame) {
+            let worldMatrix = view.camera.transform.worldMatrix;
+            this._invMvMatrix.copyFrom(worldMatrix);
+            this._mvMatrix.copyFrom(worldMatrix).invert();
+
+            this._rendererData.setMatrix('mvMatrix', this._mvMatrix);
+            this._rendererData.setMatrix('invMvMatrix', this._invMvMatrix);
+
             this._rendererData.setFloat('maxNodeCount', this.maxNodeCount);
             this._rendererData.setFloat('usedDestPointCount', usedDestPointCount);
             this._rendererData.setFloat('maxFaceCount', this.maxFaceCount);
             this._rendererData.setFloat('zFightingRange', this._zFightingScale);
             this._rendererData.apply();
 
+            this._shapeMap.isChange = false;
+        }
+
+        if (isRenderChange) {
             this._srcPathBuffer.setFloat32Array('points', this._srcPathFloat32Array);
             this._srcPathBuffer.apply();
 
@@ -163,15 +184,15 @@ export class Shape3DRenderer extends DynamicFaceRenderer {
             this._srcIndexBuffer.apply();
 
             this._vertexCompute.workerSizeX = Math.floor(usedDestPointCount / 256) + 1;
-
             this.updateShape();
-
-            this._shapeMap.isChange = false;
+        } else if (computeByFrame) {
+            this._needCompute = true;
         }
+
     }
 
     public onUpdate(view?: View3D): void {
-        this.updateShapeRenderer();
+        this.updateShapeRenderer(view);
         super.onUpdate?.(view);
     }
 

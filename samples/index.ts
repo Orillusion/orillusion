@@ -6,11 +6,13 @@ import { Sample_GraphicMesh_Trailing } from "./graphic/Sample_GraphicTrailing";
 import { Sample_GraphicMesh_Trailing2 } from "./graphic/Sample_GraphicTrailing2";
 import { Sample_GraphicTrailing3 } from "./graphic/Sample_GraphicTrailing3";
 import { Sample_Shape3D } from "./graphic/Sample_Shape3D";
-import { Sample_Shape3DPath } from "./graphic/Sample_Shape3DPath";
+import { Sample_Shape3DPath3D } from "./graphic/Sample_Shape3DPath3D";
+import { Sample_Shape3DPath2D } from "./graphic/Sample_Shape3DPath2D";
 import { Sample_ShapeManyNode } from "./graphic/Sample_ShapeManyNode";
 import { Sample_GTAO } from "./post/Sample_GTAO";
 import { Sample_GodRay } from "./post/Sample_GodRay";
 
-new Sample_Shape3D().run();
-// new Sample_Shape3DPath().run();
+// new Sample_Shape3D().run();
+// new Sample_Shape3DPath2D().run();
+new Sample_Shape3DPath3D().run();
 // new Sample_ShapeManyNode().run();

@@ -1,8 +1,8 @@
 import { Vector2, Vector3, } from "@orillusion/core";
-import { ShapeTypeEnum } from "./Shape3D";
+import { Point3D, ShapeTypeEnum } from "./Shape3D";
 import { LineShape3D } from "./LineShape3D";
 export class QuadraticCurveShape3D extends LineShape3D {
-    public readonly shapeType: number = Number(ShapeTypeEnum.Line);
+    public readonly shapeType: number = Number(ShapeTypeEnum.Path2D);
     protected _curveChange: boolean = true;
     private _start: Vector2 = new Vector2(0, 0);
     private _cp: Vector2 = new Vector2(50, 0);
@@ -63,22 +63,22 @@ export class QuadraticCurveShape3D extends LineShape3D {
         super.calcRequireSource();
     }
 
-    private genCurvePoints(): Vector3[] {
+    private genCurvePoints(): Point3D[] {
         if (this._curveChange) {
             this._curveChange = false;
 
-            this._points ||= [];
-            let list = this._points;
+            this._points3D ||= [];
+            let list = this._points3D;
             let max = this._segment;
             for (let i = 0; i <= max; i++) {
                 let vec2 = this.sampleQuadraticCurve(this._start, this._cp, this._end, i / max, list[i]);
-                list[i] = new Vector3(vec2.x, vec2.y);
+                list[i] = new Point3D(vec2.x, vec2.y);
             }
             list.length = this._segment + 1;
             this._destPointCount = this._srcPointCount = list.length;
 
         }
-        return this._points;
+        return this._points3D;
     }
 
 
