@@ -569,7 +569,6 @@ fn writePath2DPoint(pointIndex:u32, shapeData:Path2DShape3D, pos:vec3<f32>, righ
 {
     let pathIndex = pointIndex;
     destPathBuffer[pathIndex].pos = pos;
-    destPathBuffer[pathIndex].up = vec3<f32>(0.0, 1.0, 0.0);
     destPathBuffer[pathIndex].right = right;
     destPathBuffer[pathIndex].shapeIndex = f32(shapeIndex);
     destPathBuffer[pathIndex].pointIndex = localPointIndex;

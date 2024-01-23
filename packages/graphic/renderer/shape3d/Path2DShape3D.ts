@@ -2,6 +2,15 @@ import { Vector2, deg2Rad, Vector3, Matrix4, rad2Deg } from "@orillusion/core";
 import { Point3D, Shape3DStruct } from "./Shape3D";
 import { LineShape3D } from "./LineShape3D";
 
+/**
+ * Define class for drawing path on the xz plane
+ * He implemented the interface CanvasPath
+ *
+ * @export
+ * @class Path2DShape3D
+ * @extends {LineShape3D}
+ * @implements {CanvasPath}
+ */
 export class Path2DShape3D extends LineShape3D implements CanvasPath {
 
     private _currentCoord: Point3D;

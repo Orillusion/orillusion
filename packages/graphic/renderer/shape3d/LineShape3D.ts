@@ -4,6 +4,14 @@ import earcut from 'earcut';
 
 type vec3 = { x: number, y: number, h?: number };
 
+/**
+ * Define class for drawing line path on the xz plane, by inputs xz coords.
+ * You can use the API implemented in CanvasPath in Path2DShape3D to draw the xz plane path
+ *
+ * @export
+ * @class LineShape3D
+ * @extends {Shape3D}
+ */
 export class LineShape3D extends Shape3D {
     protected _corner: number = 8;
     protected _lineJoin: LineJoin = LineJoin.bevel;

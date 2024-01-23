@@ -1,6 +1,14 @@
 import { Vector2, Vector3, } from "@orillusion/core";
 import { Point3D, ShapeTypeEnum } from "./Shape3D";
 import { LineShape3D } from "./LineShape3D";
+
+/**
+ * Define class for drawing quadratic curv on the xz plane
+ *
+ * @export
+ * @class QuadraticCurveShape3D
+ * @extends {Shape3D}
+ */
 export class QuadraticCurveShape3D extends LineShape3D {
     public readonly shapeType: number = Number(ShapeTypeEnum.Path2D);
     protected _curveChange: boolean = true;

@@ -41,6 +41,13 @@ export enum CircleArcType {
     Moon = 1
 }
 
+
+/**
+ * Used to describe the key points for drawing a path, where xy refers to the data in the xz direction. H is the data in the y direction
+ * If you want to give this Shape transform attribute, you can control the transformation of the binded Object3D to achieve the goal
+ * @export
+ * @class Point3D
+ */
 export class Point3D {
 
     public static HELP_0: Point3D = new Point3D();

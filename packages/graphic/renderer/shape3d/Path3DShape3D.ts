@@ -2,6 +2,13 @@ import { Vector2, deg2Rad, Vector3, Matrix4, rad2Deg, LineJoin } from "@orillusi
 import { Point3D, Shape3DStruct, ShapeTypeEnum } from "./Shape3D";
 import { LineShape3D } from "./LineShape3D";
 
+/**
+ * Define class for drawing path in 3D space.
+ * It implemented an API similar to CanvasPath.
+ * @export
+ * @class Path3DShape3D
+ * @extends {Shape3D}
+ */
 export class Path3DShape3D extends LineShape3D {
 
     private _currentCoord: Point3D;

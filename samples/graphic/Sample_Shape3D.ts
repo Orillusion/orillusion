@@ -6,6 +6,13 @@ import { GUIShape3D } from "@samples/utils/GUIShape3D";
 import { Shape3D } from "@orillusion/graphic/renderer/shape3d/Shape3D";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
+
+/**
+ * Sample of create various types of Shapes
+ *
+ * @export
+ * @class Sample_Shape3D
+ */
 export class Sample_Shape3D {
     lightObj3D: Object3D;
     scene: Scene3D;
@@ -246,10 +253,10 @@ export class Sample_Shape3D {
 
     update() {
         if (this.transformObj) {
-            // this.transformObj.rotationY += Time.delta * 0.05;
-            // this.transformObj.rotationZ += Time.delta * 0.01;
-            // this.transformObj.x = this.sphere.x = Math.sin(Time.time * 0.0001) * 20;
-            // this.transformObj.z = this.sphere.z = Math.cos(Time.time * 0.0001) * 20;
+            this.transformObj.rotationY += Time.delta * 0.05;
+            this.transformObj.rotationZ += Time.delta * 0.01;
+            this.transformObj.x = this.sphere.x = Math.sin(Time.time * 0.0001) * 20;
+            this.transformObj.z = this.sphere.z = Math.cos(Time.time * 0.0001) * 20;
         }
     }
 

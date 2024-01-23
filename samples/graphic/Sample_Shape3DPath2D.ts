@@ -1,11 +1,18 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, Graphic3DMesh, Matrix4, Color, Time, sin, MeshRenderer, Vector2, LineJoin, Vector4, Object3DUtil, AxisObject } from "@orillusion/core";
 import { Stats } from "@orillusion/stats";
-import { CircleShape3D, EllipseShape3D, Shape3DMaker } from "@orillusion/graphic";
+import { Shape3DMaker } from "@orillusion/graphic";
 import { GUIShape3D } from "@samples/utils/GUIShape3D";
 import { Shape3D } from "@orillusion/graphic/renderer/shape3d/Shape3D";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
+
+/**
+ * This example shows how to use Shape2D to draw various different paths on xz plane.
+ *
+ * @export
+ * @class Sample_Shape3DPath2D
+ */
 export class Sample_Shape3DPath2D {
     lightObj3D: Object3D;
     scene: Scene3D;
@@ -69,15 +76,6 @@ export class Sample_Shape3DPath2D {
     private async addNode() {
         let texts = [];
         texts.push(await Engine3D.res.loadTexture("textures/grid.jpg") as BitmapTexture2D);
-        texts.push(await Engine3D.res.loadTexture("textures/grid.jpg") as BitmapTexture2D);
-        texts.push(await Engine3D.res.loadTexture("textures/grid.jpg") as BitmapTexture2D);
-        texts.push(await Engine3D.res.loadTexture("textures/grid.jpg") as BitmapTexture2D);
-        texts.push(await Engine3D.res.loadTexture("textures/grid.jpg") as BitmapTexture2D);
-        texts.push(await Engine3D.res.loadTexture("textures/grid.jpg") as BitmapTexture2D);
-        texts.push(await Engine3D.res.loadTexture("textures/grid.jpg") as BitmapTexture2D);
-        texts.push(await Engine3D.res.loadTexture("textures/grid.jpg") as BitmapTexture2D);
-        texts.push(await Engine3D.res.loadTexture("textures/grid.jpg") as BitmapTexture2D);
-        texts.push(await Engine3D.res.loadTexture("textures/grid.jpg") as BitmapTexture2D);
 
         let bitmapTexture2DArray = new BitmapTexture2DArray(texts[0].width, texts[0].height, texts.length);
         bitmapTexture2DArray.setTextures(texts);
@@ -90,7 +88,6 @@ export class Sample_Shape3DPath2D {
 
 
     private createPath(): Shape3D {
-
         let path = this.maker.path2D();
         path.lineWidth = 0.5;
         path.lineJoin = LineJoin.bevel;
@@ -118,27 +115,24 @@ export class Sample_Shape3DPath2D {
 
         path.roundRect(30, 40, 20, 10, 6, 4);
 
-        let a = false;
-        if (a) {
-            let sphereF = Object3DUtil.GetSingleSphere(0.5, 1, 0, 0);
-            sphereF.x = 10;
-            sphereF.z = 4;
-            this.scene.addChild(sphereF);
 
-            let sphereCtrl = Object3DUtil.GetSingleSphere(0.5, 0, 1, 0);
-            sphereCtrl.x = 2;
-            sphereCtrl.z = 10;
-            this.scene.addChild(sphereCtrl);
+        let sphereF = Object3DUtil.GetSingleSphere(0.2, 1, 0, 0);
+        sphereF.x = 10;
+        sphereF.z = 4;
+        this.scene.addChild(sphereF);
 
-            let sphereT = Object3DUtil.GetSingleSphere(0.5, 0, 0, 1);
-            sphereT.x = 15;
-            sphereT.z = 10;
-            this.scene.addChild(sphereT);
+        let sphereCtrl = Object3DUtil.GetSingleSphere(0.2, 0, 1, 0);
+        sphereCtrl.x = 2;
+        sphereCtrl.z = 10;
+        this.scene.addChild(sphereCtrl);
 
-            path.moveTo(sphereF.x, sphereF.z);
-            path.arcTo(sphereCtrl.x, sphereCtrl.z, sphereT.x, sphereT.z, 4, 4);
+        let sphereT = Object3DUtil.GetSingleSphere(0.2, 0, 0, 1);
+        sphereT.x = 15;
+        sphereT.z = 10;
+        this.scene.addChild(sphereT);
 
-        }
+        path.moveTo(sphereF.x, sphereF.z);
+        path.arcTo(sphereCtrl.x, sphereCtrl.z, sphereT.x, sphereT.z, 4, 10);
 
 
         GUIShape3D.renderLine(path, 5, false);

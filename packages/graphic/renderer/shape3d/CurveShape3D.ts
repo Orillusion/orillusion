@@ -1,6 +1,15 @@
 import { Vector2 } from "@orillusion/core";
 import { Point3D, ShapeTypeEnum } from "./Shape3D";
 import { LineShape3D } from "./LineShape3D";
+
+/**
+ * Define class for drawing Curve on the xz plane
+ * You can use the API implemented in CanvasPath in Path2DShape3D to draw the xz plane path
+ *
+ * @export
+ * @class CurveShape3D
+ * @extends {Shape3D}
+ */
 export class CurveShape3D extends LineShape3D {
     public readonly shapeType: number = Number(ShapeTypeEnum.Path2D);
     protected _curveChange: boolean = true;

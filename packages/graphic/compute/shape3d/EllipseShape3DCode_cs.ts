@@ -80,7 +80,6 @@ fn writeEllipsePoint(pointIndex:f32, shapeData:EllipseShape3D, rx:f32, ry:f32, r
         newOverallLength += length(pos - lastPoint.xyz);
     }
     destPathBuffer[pathIndex].pos = pos;
-    destPathBuffer[pathIndex].up = up;
     destPathBuffer[pathIndex].right = normalize(cross(up, normalize(deltaPos - pos)));
     destPathBuffer[pathIndex].shapeIndex = f32(shapeIndex);
     destPathBuffer[pathIndex].pointIndex = localPointIndex;

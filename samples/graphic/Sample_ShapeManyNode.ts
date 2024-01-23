@@ -5,6 +5,12 @@ import { Shape3DMaker } from "@orillusion/graphic";
 import { Shape3D } from "@orillusion/graphic/renderer/shape3d/Shape3D";
 import { GUIShape3D } from "@samples/utils/GUIShape3D";
 
+/**
+ * Show adding and deleting individual Shapes, as well as changing render the order of individual Shapes
+ *
+ * @export
+ * @class Sample_ShapeManyNode
+ */
 export class Sample_ShapeManyNode {
     lightObj3D: Object3D;
     scene: Scene3D;

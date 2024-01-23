@@ -358,12 +358,6 @@ fn drawPath3DCorner(shapeData:Path3DShape3D, currentPoint:Path3DKeyPoint){
     }
 }
 
-// fn calcCornerAngle(prev:Path3DKeyPoint, cur:Path3DKeyPoint, next:Path3DKeyPoint) -> f32{
-//     let prevXY = dot(prev.right, cur.right);
-//     return prevXY
-// }
-
-
 fn writePath3DPath(nodeData:ShapeData){
     let shapeData:Path3DShape3D = getPath3DShape3D(nodeData);
     let shapeBase = shapeData.base;
@@ -435,9 +429,8 @@ fn writePath3DPath(nodeData:ShapeData){
             }
             right = normalize(cross(normalize(currentPoint), forward));
         }
-        let pointUp = normalize(cross(forward, right));
 
-        writePath3DPoint(curDestIndex, shapeData, currentPointView, right, pointUp, f32(i), overallLength, currentInvalid);
+        writePath3DPoint(curDestIndex, shapeData, currentPointView, right, f32(i), overallLength, currentInvalid);
         lastRight = right;
 
         prevPoint = currentPoint;
@@ -459,12 +452,11 @@ fn drawPath3DView(shapeIndex:u32,p0:vec3f,p1:vec3f,p2:vec3f,u0:vec2f,u1:vec2f,u2
 }
 
 
-fn writePath3DPoint(pointIndex:u32, shapeData:Path3DShape3D, pos:vec3<f32>, right:vec3<f32>, up:vec3<f32>,
+fn writePath3DPoint(pointIndex:u32, shapeData:Path3DShape3D, pos:vec3<f32>, right:vec3<f32>,
      localPointIndex:f32, overallLength:f32, invalidPoint:f32)
 {
     let pathIndex = pointIndex;
     destPathBuffer[pathIndex].pos = pos;
-    destPathBuffer[pathIndex].up = up;
     destPathBuffer[pathIndex].right = right;
     destPathBuffer[pathIndex].shapeIndex = f32(shapeIndex);
     destPathBuffer[pathIndex].pointIndex = localPointIndex;

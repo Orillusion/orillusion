@@ -10,6 +10,13 @@ import { CurveShape3D } from "./shape3d/CurveShape3D";
 import { Path2DShape3D } from "./shape3d/Path2DShape3D";
 import { Path3DShape3D } from "./shape3d/Path3DShape3D";
 
+
+/**
+ * A help class for quickly creating Shape3D related objects
+ *
+ * @export
+ * @class Shape3DMaker
+ */
 export class Shape3DMaker {
 
     private _renderer: Shape3DRenderer;
@@ -42,6 +49,19 @@ export class Shape3DMaker {
         return this._renderer;
     }
 
+
+    /**
+     * Create an ellipse in Shape3DRenderer
+     *
+     * @param {number} radiusX
+     * @param {number} radiusY
+     * @param {number} rotation
+     * @param {number} startAngle
+     * @param {number} endAngle
+     * @param {boolean} [counterclockwise]
+     * @return {*}  {EllipseShape3D}
+     * @memberof Shape3DMaker
+     */
     ellipse(radiusX: number, radiusY: number, rotation: number, startAngle: number, endAngle: number, counterclockwise?: boolean): EllipseShape3D {
         let ellipse = this._renderer.createShape(EllipseShape3D);
         ellipse.rx = radiusX;
@@ -52,6 +72,17 @@ export class Shape3DMaker {
         return ellipse;
     }
 
+
+    /**
+     * Create an arc in Shape3DRenderer
+     *
+     * @param {number} radius
+     * @param {number} startAngle
+     * @param {number} endAngle
+     * @param {boolean} [counterclockwise]
+     * @return {*}  {CircleShape3D}
+     * @memberof Shape3DMaker
+     */
     arc(radius: number, startAngle: number, endAngle: number, counterclockwise?: boolean): CircleShape3D {
         let circle = this._renderer.createShape(CircleShape3D);
         circle.radius = radius;
@@ -60,6 +91,14 @@ export class Shape3DMaker {
         return circle;
     }
 
+
+    /**
+     * Create line segments in Shape3DRenderer
+     *
+     * @param {Vector2[]} points
+     * @return {*} 
+     * @memberof Shape3DMaker
+     */
     line(points: Vector2[]) {
         let line = this._renderer.createShape(LineShape3D);
         let points3D = line.points3D || [];
@@ -71,6 +110,19 @@ export class Shape3DMaker {
         return line;
     }
 
+
+    /**
+     * Create a quadratic curve in Shape3DRenderer
+     *
+     * @param {number} fx
+     * @param {number} fy
+     * @param {number} cpx
+     * @param {number} cpy
+     * @param {number} tx
+     * @param {number} ty
+     * @return {*}  {QuadraticCurveShape3D}
+     * @memberof Shape3DMaker
+     */
     quadraticCurve(fx: number, fy: number, cpx: number, cpy: number, tx: number, ty: number): QuadraticCurveShape3D {
         let curve = this._renderer.createShape(QuadraticCurveShape3D);
         curve.start = new Vector2(fx, fy);
@@ -79,6 +131,20 @@ export class Shape3DMaker {
         return curve;
     }
 
+    /**
+     * Create a curve in Shape3DRenderer
+     *
+     * @param {number} fx
+     * @param {number} fy
+     * @param {number} cp1x
+     * @param {number} cp1y
+     * @param {number} cp2x
+     * @param {number} cp2y
+     * @param {number} tx
+     * @param {number} ty
+     * @return {*}  {CurveShape3D}
+     * @memberof Shape3DMaker
+     */
     curve(fx: number, fy: number, cp1x: number, cp1y: number, cp2x: number, cp2y: number, tx: number, ty: number): CurveShape3D {
         let curve = this._renderer.createShape(CurveShape3D);
         curve.start = new Vector2(fx, fy);
@@ -88,14 +154,35 @@ export class Shape3DMaker {
         return curve;
     }
 
+
+    /**
+     * Create a path2D in Shape3DRenderer. Through the Path2DShape3D, you can use the CanvasPath API for path drawing on xz plane.
+     *
+     * @return {*}  {Path2DShape3D}
+     * @memberof Shape3DMaker
+     */
     path2D(): Path2DShape3D {
         return this._renderer.createShape(Path2DShape3D);
     }
 
+    /**
+     * Create a path3D in Shape3DRenderer. Through the Path3DShape3D, you can use the similar CanvasPath API for path drawing in 3D space.
+     *
+     * @return {*}  {Path3DShape3D}
+     * @memberof Shape3DMaker
+     */
     path3D(): Path3DShape3D {
         return this._renderer.createShape(Path3DShape3D);
     }
 
+    /**
+     * Create a rect in Shape3DRenderer
+     *
+     * @param {number} w
+     * @param {number} h
+     * @return {*}  {RoundRectShape3D}
+     * @memberof Shape3DMaker
+     */
     rect(w: number, h: number): RoundRectShape3D {
         let rect = this._renderer.createShape(RoundRectShape3D);
         rect.width = w;
@@ -105,7 +192,17 @@ export class Shape3DMaker {
         return rect;
     }
 
-    roundRect(w: number, h: number, radii?: number) {
+
+    /**
+     * Create a RoundRect in Shape3DRenderer
+     *
+     * @param {number} w
+     * @param {number} h
+     * @param {number} [radii]
+     * @return {*} 
+     * @memberof Shape3DMaker
+     */
+    roundRect(w: number, h: number, radii?: number): RoundRectShape3D {
         let roundRect = this._renderer.createShape(RoundRectShape3D);
         roundRect.width = w;
         roundRect.height = h;

@@ -35,6 +35,15 @@ export class Shape3DRenderer extends DynamicFaceRenderer {
         }
     }
 
+
+    /**
+     * Create a shape3D by Shape3D constructor
+     *
+     * @template T
+     * @param {Ctor<T>} cls
+     * @return {*}  {T}
+     * @memberof Shape3DRenderer
+     */
     public createShape<T extends Shape3D>(cls: Ctor<T>): T {
         let destShapeID = this._freeShapes.shift();
         let struct = this.nodes[destShapeID];
@@ -53,11 +62,27 @@ export class Shape3DRenderer extends DynamicFaceRenderer {
         }
     }
 
+
+    /**
+     * Get binded Object3D objects based on Shape3D. And then you can control Shape3D through the Object 3D transform
+     * 
+     * @param {Shape3D} shape
+     * @return {*}  {Object3D}
+     * @memberof Shape3DRenderer
+     */
     public getShapeObject3D(shape: Shape3D): Object3D {
         let index = shape.shapeIndex;
         return this.object3Ds[index];
     }
 
+
+    /**
+     * Remove a Shape3D by index
+     *
+     * @param {number} shapeIndex
+     * @return {*}  {Shape3D}
+     * @memberof Shape3DRenderer
+     */
     public removeShape(shapeIndex: number): Shape3D {
         let shape = this._shapeMap.get(shapeIndex);
         if (shape) {
@@ -79,7 +104,7 @@ export class Shape3DRenderer extends DynamicFaceRenderer {
         this._srcPathFloat32Array = new Float32Array(srcPathCount * 4);
         this._srcPathBuffer = new StorageGPUBuffer(srcPathCount * 4);
 
-        this._destPathBuffer = new StorageGPUBuffer(this.maxFaceCount * 16);
+        this._destPathBuffer = new StorageGPUBuffer(this.maxFaceCount * 12);
 
         //config :4; mv matrix, inverted mv matrix: 16 * 2
         this._rendererData = new UniformGPUBuffer(4 + 16 * 2);

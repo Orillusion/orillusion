@@ -1,4 +1,13 @@
 import { CircleArcType, Shape3D, ShapeTypeEnum } from "./Shape3D";
+
+/**
+ * Define class for drawing Ellipse on the xz plane
+ * You can use the API implemented in CanvasPath in Path2DShape3D to draw the xz plane path
+ *
+ * @export
+ * @class EllipseShape3D
+ * @extends {Shape3D}
+ */
 export class EllipseShape3D extends Shape3D {
     private _rx: number = 20;
     private _ry: number = 10;

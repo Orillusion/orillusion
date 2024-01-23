@@ -1,10 +1,17 @@
 import { clamp } from "@orillusion/core";
-import { Shape3D, Shape3DStruct, ShapeTypeEnum } from "./Shape3D";
-export class RoundRectShape3D extends Shape3D {
+import { Shape3D, ShapeTypeEnum } from "./Shape3D";
 
+/**
+ * Define class for drawing rounded rectangles on the xz plane
+ *
+ * @export
+ * @class RoundRectShape3D
+ * @extends {Shape3D}
+ */
+export class RoundRectShape3D extends Shape3D {
     private _width: number = 100;
     private _height: number = 100;
-    private _cornerSegment: number = 4;//0~?
+    private _cornerSegment: number = 4;
     private _radius: number = 2;
 
     public readonly shapeType: number = Number(ShapeTypeEnum.RoundRect);

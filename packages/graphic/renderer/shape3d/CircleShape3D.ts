@@ -1,4 +1,12 @@
 import { CircleArcType, Shape3D, ShapeTypeEnum } from "./Shape3D";
+/**
+ * Define class for drawing Circle on the xz plane
+ * You can use the API implemented in CanvasPath in Path2DShape3D to draw the xz plane path
+ *
+ * @export
+ * @class CircleShape3D
+ * @extends {Shape3D}
+ */
 export class CircleShape3D extends Shape3D {
     private _radius: number = 10;
     private _segment: number = 10;

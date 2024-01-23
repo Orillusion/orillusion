@@ -45,14 +45,12 @@ struct ShapeData {
 struct Path3DKeyPoint{
    pos:vec3<f32>,
    right:vec3<f32>,
-   up:vec3<f32>,
    shapeIndex:f32,
    pointIndex:f32,//localIndex
    overallLength:f32,
    invalidPoint:f32,
    a:f32,
    b:f32,
-   c:f32
 }
 
 struct RenderData{
