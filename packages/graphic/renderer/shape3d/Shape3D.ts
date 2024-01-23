@@ -92,7 +92,6 @@ export class Shape3D {
     private _shapeOrder: number = 0;
     protected _points3D: Point3D[];
     protected _indecies: number[];
-    public readonly shapeIndex: number = 0;
     protected _isClosed: boolean = true;
     protected _fill: boolean = true;
     protected _line: boolean = true;
@@ -102,12 +101,10 @@ export class Shape3D {
     private _fillTextureID: number = 0;
     private _lineColor: Color = new Color(1, 0, 1, 1);
     private _fillColor: Color = new Color(0, 1, 0, 1);
-    private _lineUVSpeed: Vector2 = new Vector2();
-    private _fillUVSpeed: Vector2 = new Vector2();
     private _fillUVRect: Vector4 = new Vector4(0, 0, 1, 1);
     private _lineUVRect: Vector4 = new Vector4(0, 0, 1, 1);
     private _uvSpeed: Vector4 = new Vector4();
-
+    public readonly shapeIndex: number = 0;
     public readonly shapeType: number = ShapeTypeEnum.None;
     public readonly computeEveryFrame?: boolean;
 
@@ -266,13 +263,16 @@ export class Shape3D {
         }
     }
 
-    public get lineUVSpeed(): Vector2 {
-        return this._lineUVSpeed;
-    }
-    public set lineUVSpeed(value: Vector2) {
-        this._lineUVSpeed.copyFrom(value);
-        this._isChange = true;
-    }
+
+    /**
+    * x: u offset of line.
+    * y: v offset of line.
+    * z: u scale of line.
+    * w: v scale of line.
+    *
+    * @type {Vector4}
+    * @memberof Shape3D
+    */
     public get lineUVRect(): Vector4 {
         return this._lineUVRect;
     }
@@ -280,13 +280,16 @@ export class Shape3D {
         this._lineUVRect.copyFrom(value);
         this._isChange = true;
     }
-    public get fillUVSpeed(): Vector2 {
-        return this._fillUVSpeed;
-    }
-    public set fillUVSpeed(value: Vector2) {
-        this._fillUVSpeed.copyFrom(value);
-        this._isChange = true;
-    }
+
+    /**
+     * x: u offset of filled area.
+     * y: v offset of filled area.
+     * z: u scale of filled area.
+     * w: v scale of filled area.
+     *
+     * @type {Vector4}
+     * @memberof Shape3D
+     */
     public get fillUVRect(): Vector4 {
         return this._fillUVRect;
     }
@@ -295,6 +298,15 @@ export class Shape3D {
         this._isChange = true;
     }
 
+    /**
+     * x: u speed of filled area.
+     * y: v speed of filled area.
+     * z: u speed of line.
+     * w: v speed of line.
+     *
+     * @type {Vector4}
+     * @memberof Shape3D
+     */
     public get uvSpeed(): Vector4 {
         return this._uvSpeed;
     }

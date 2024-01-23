@@ -2,6 +2,8 @@ import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { CircleShape3D, CurveShape3D, EllipseShape3D, QuadraticCurveShape3D, RoundRectShape3D, LineShape3D, Shape3D, CircleArcType } from "@orillusion/graphic";
 import { LineJoin } from "@orillusion/core";
 import { GUIUtil } from "./GUIUtil";
+import { Path3DShape3D } from "@orillusion/graphic/renderer/shape3d/Path3DShape3D";
+import { Path2DShape3D } from "@orillusion/graphic/renderer/shape3d/Path2DShape3D";
 
 export class GUIShape3D {
 
@@ -51,15 +53,18 @@ export class GUIShape3D {
         });
         this.renderCommonShape3D(shape, maxSize);
 
-        for (let i = 0; i < shape.points3D.length; i++) {
-            let point = shape.points3D[i];
-            GUIHelp.add(point, 'x', -10, 10, 0.01).onChange(
-                (v) => { shape.points3D = shape.points3D; }
-            );
-            GUIHelp.add(point, 'y', -10, 10, 0.01).onChange(
-                (v) => { shape.points3D = shape.points3D; }
-            );
+        if (!(shape instanceof Path3DShape3D) && !(shape instanceof Path2DShape3D)) {
+            for (let i = 0; i < shape.points3D.length; i++) {
+                let point = shape.points3D[i];
+                GUIHelp.add(point, 'x', -10, 10, 0.01).onChange(
+                    (v) => { shape.points3D = shape.points3D; }
+                );
+                GUIHelp.add(point, 'y', -10, 10, 0.01).onChange(
+                    (v) => { shape.points3D = shape.points3D; }
+                );
+            }
         }
+
         open && GUIHelp.open();
         GUIHelp.endFolder();
     }
@@ -137,8 +142,8 @@ export class GUIShape3D {
         GUIHelp.add(shape, 'isClosed');
         GUIHelp.add(shape, 'lineWidth', 0, maxSize, 0.01);
 
-        GUIUtil.RenderVector4('UVRect.', shape, 'fillUVRect', 0, 10, 0.01);
-        GUIUtil.RenderVector4('UVRect2.', shape, 'lineUVRect', 0, 10, 0.01);
+        GUIUtil.RenderVector4('FillUVRect.', shape, 'fillUVRect', 0, 10, 0.01);
+        GUIUtil.RenderVector4('LineUVRect.', shape, 'lineUVRect', 0, 10, 0.01);
         GUIUtil.RenderVector4('UVSpeed.', shape, 'uvSpeed', -0.01, 0.01, 0.0001);
 
         GUIUtil.RenderColor(shape, 'lineColor');
