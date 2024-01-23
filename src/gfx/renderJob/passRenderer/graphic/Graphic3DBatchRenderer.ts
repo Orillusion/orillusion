@@ -1,16 +1,12 @@
 import { RenderNode } from "../../../../components/renderer/RenderNode";
-import { BoundingBox } from "../../../../core/bound/BoundingBox";
 import { View3D } from "../../../../core/View3D";
 import { Color } from "../../../../math/Color";
 import { Vector3 } from "../../../../math/Vector3";
-import { RendererMask } from "../state/RendererMask";
 import { RendererPassState } from "../state/RendererPassState";
 import { PassType } from "../state/RendererType";
-import { ClusterLightingRender } from "../cluster/ClusterLightingRender";
-import { Graphic3DFixedRenderPipeline } from "./Graphic3DFixedRenderPipeline";
-import { GraphicConfig } from "./GraphicConfig";
 import { Graphics3DShape } from "./Graphics3DShape";
 import { ClusterLightingBuffer } from "../cluster/ClusterLightingBuffer";
+import { GeometryBase, Graphic3DFixedRenderMaterial, VertexAttributeName } from "../../../..";
 
 /**
 * @internal
@@ -18,17 +14,45 @@ import { ClusterLightingBuffer } from "../cluster/ClusterLightingBuffer";
 export class Graphic3DBatchRenderer extends RenderNode {
     public shapes: Map<string, Graphics3DShape>;
     protected mDirtyData: boolean = false;
+    protected mBatchSize: number;
     protected mMinIndexCount: number;
     protected mGPUPrimitiveTopology: GPUPrimitiveTopology;
-    protected mRenderPipeline: Graphic3DFixedRenderPipeline;
 
     constructor(minIndexCount: number, topology: GPUPrimitiveTopology) {
         super();
         this.alwaysRender = true;
         this.mMinIndexCount = minIndexCount;
+        this.mBatchSize = Math.trunc(65536 / this.mMinIndexCount);
         this.mGPUPrimitiveTopology = topology;
         this.shapes = new Map<string, Graphics3DShape>();
-        this.addRendererMask(RendererMask.Particle);
+    }
+
+    public init() {
+        super.init();
+        this.castGI = false;
+        this.castShadow = false;
+        this.geometry = new GeometryBase();
+
+        let indexData = new Uint16Array((Math.trunc(this.mMinIndexCount * this.mBatchSize / 4) + 1) * 4);
+        for (let i = 0; i < indexData.length; i++) {
+            indexData[i] = i;
+        }
+        this.geometry.setIndices(indexData);
+
+        this.geometry.setAttribute(VertexAttributeName.position, new Float32Array(4 * indexData.length));
+        this.geometry.setAttribute(VertexAttributeName.color, new Float32Array(4 * indexData.length));
+
+        this.geometry.addSubGeometry({
+            indexStart: 0,
+            indexCount: 0,
+            vertexStart: 0,
+            vertexCount: 0,
+            firstStart: 0,
+            index: 0,
+            topology: 0,
+        });
+
+        this.materials = [new Graphic3DFixedRenderMaterial(this.mGPUPrimitiveTopology)];
     }
 
     public fillShapeData(uuid: string, type: string, color: Color, points: Vector3[]) {
@@ -37,37 +61,37 @@ export class Graphic3DBatchRenderer extends RenderNode {
 
         if (this.shapes.has(uuid)) {
             data = this.shapes.get(uuid);
-            if (data.shapeData.length < GraphicConfig.ShapeVertexSize * points.length) {
-                data.shapeData = new Float32Array(GraphicConfig.ShapeVertexSize * points.length);
+            if (data.pointData.length < 4 * points.length) {
+                data.pointData = new Float32Array(4 * points.length);
+                data.colorData = new Float32Array(4 * points.length);
             }
         } else {
             data = new Graphics3DShape(this.transform._worldMatrix.index);
             data.type = type;
             data.color = color;
-            data.shapeData = new Float32Array(GraphicConfig.ShapeVertexSize * points.length);
+            data.pointData = new Float32Array(4 * points.length);
+            data.colorData = new Float32Array(4 * points.length);
         }
 
-        const shapeData = data.shapeData;
+        const pointData = data.pointData;
+        const colorData = data.colorData;
         const transformIndex = this.transform._worldMatrix.index;
         for (let i = 0, index = 0; i < points.length; ++i) {
             const point = points[i];
-            shapeData[index++] = point.x;
-            shapeData[index++] = point.y;
-            shapeData[index++] = point.z;
-            shapeData[index++] = transformIndex;
-            shapeData[index++] = color.r;
-            shapeData[index++] = color.g;
-            shapeData[index++] = color.b;
-            shapeData[index++] = color.a;
-        }
-        this.shapes.set(uuid, data);
-    }
+            pointData[index] = point.x;
+            colorData[index++] = color.r;
 
-    public init() {
-        super.init();
-        this.castGI = false;
-        this.castShadow = false;
-        this.mRenderPipeline = new Graphic3DFixedRenderPipeline(this.mMinIndexCount, this.mGPUPrimitiveTopology);
+            pointData[index] = point.y;
+            colorData[index++] = color.g;
+
+            pointData[index] = point.z;
+            colorData[index++] = color.b;
+
+            pointData[index] = transformIndex;
+            colorData[index++] = color.a;
+        }
+
+        this.shapes.set(uuid, data);
     }
 
     public removeShape(uuid: string) {
@@ -77,26 +101,29 @@ export class Graphic3DBatchRenderer extends RenderNode {
         }
     }
 
-    protected initPipeline() {
-        this.object3D.bound = new BoundingBox(Vector3.ZERO, Vector3.MAX);
-        this._readyPipeline = true;
-    }
-
     public nodeUpdate(view: View3D, passType: PassType, renderPassState: RendererPassState, clusterLightingBuffer?: ClusterLightingBuffer) {
-        // if(!this.enable || passType != RendererType.COLOR ) return ;
         if (this.mDirtyData) {
-            this.mRenderPipeline.reset();
+            let offset = 0;
+            let posAttrData = this.geometry.getAttribute(VertexAttributeName.position);
+            let colAttrData = this.geometry.getAttribute(VertexAttributeName.color);
+
             this.shapes.forEach((shape, uuid) => {
-                this.mRenderPipeline.addShapeData(shape);
+                posAttrData.data.set(shape.pointData, offset);
+                colAttrData.data.set(shape.colorData, offset);
+                offset += shape.pointData.length;
             });
+
+            this.geometry.vertexBuffer.upload(VertexAttributeName.position, posAttrData);
+            this.geometry.vertexBuffer.upload(VertexAttributeName.color, colAttrData);
+
+            let count = offset / 4;
+            let indexCount = count;
+            this.geometry.subGeometries[0].lodLevels[0].indexCount = indexCount;
+            
+
             this.mDirtyData = false;
         }
-        return;
-    }
-
-    public renderPass2(view: View3D, passType: PassType, rendererPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer, encoder: GPURenderPassEncoder, useBundle: boolean = false) {
-        // if(!this.enable || passType != RendererType.COLOR ) return ;
-        this.mRenderPipeline.render(rendererPassState, encoder);
+        super.nodeUpdate(view, passType, renderPassState, clusterLightingBuffer);
     }
 
     public allocGraphics3DShape(uuid: string, transformIndex: number) {

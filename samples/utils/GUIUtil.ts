@@ -428,7 +428,7 @@ export class GUIUtil {
         GUIHelp.endFolder();
     }
 
-    static renderLitMaterial(mat: LitMaterial) {
+    static renderLitMaterial(mat: LitMaterial, open?: boolean) {
         GUIHelp.addFolder(mat.name);
         GUIHelp.addColor(mat, 'baseColor').onChange((v) => {
             let color = mat.baseColor;
@@ -462,6 +462,11 @@ export class GUIUtil {
         GUIHelp.add(mat, 'metallic', 0.0, 1.0, 0.0001).onChange((v) => {
             mat.metallic = v;
         });
+
+        GUIHelp.add(mat, 'castShadow');
+        GUIHelp.add(mat, 'acceptShadow');
+
+        open && GUIHelp.open();
 
         GUIHelp.endFolder();
     }

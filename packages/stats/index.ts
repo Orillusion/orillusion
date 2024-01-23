@@ -26,7 +26,8 @@ export class Stats extends ComponentBase {
         container.className = 'stats'
         container.setAttribute('style', 'display:flex;flex-direction:column;gap:1px;position:fixed;top:0;left:0;cursor:pointer;opacity:0.9;z-index:10000')
         this.fpsPanel = new Panel(container, 'FPS', '#0ff', '#002')
-        this.memPanel = new Panel(container, 'MB', '#f08', '#201')
+        if('memory' in performance)
+            this.memPanel = new Panel(container, 'MB', '#f08', '#201')
         // this.drawcallPanel = new Panel( container, 'DC', '#0f0', '#020' )
 
 
@@ -50,7 +51,7 @@ export class Stats extends ComponentBase {
      */
     stop() {
         this.fpsPanel.destroy()
-        this.memPanel.destroy()
+        this.memPanel?.destroy()
         document.body.removeChild(this.container)
     }
     /**
@@ -61,7 +62,7 @@ export class Stats extends ComponentBase {
         const time = this.beginTime = performance.now()
         if (time >= this.prevTime + 1000) {
             this.fpsPanel.update((this.frames * 1000) / (time - this.prevTime), 100)
-            this.memPanel.update((performance as any).memory.totalJSHeapSize / 1048576, 256)
+            this.memPanel?.update((performance as any).memory.totalJSHeapSize / 1048576, 256)
             // this.drawcallPanel.update( Engine3D.engineSetting.performance.drawCall, 512)
             this.prevTime = time
             this.frames = 0

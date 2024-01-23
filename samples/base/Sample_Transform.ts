@@ -1,64 +1,77 @@
-import { GUIHelp } from '@orillusion/debug/GUIHelp';
-import { Stats } from '@orillusion/stats'
-import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D } from '@orillusion/core';
-import { GUIUtil } from '@samples/utils/GUIUtil';
+import { Engine3D, Scene3D, AtmosphericComponent, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, View3D, Camera3D } from "@orillusion/core";
+import { Stats } from "@orillusion/stats";
+import * as dat from "dat.gui"
 
-// simple base demo
-class Sample_Transform {
-    async run() {
-        // init engine
-        await Engine3D.init();
-        // create new Scene
-        let scene = new Scene3D();
+// initializa engine
+await Engine3D.init();
 
-        // add performance stats
-        scene.addComponent(Stats);
+// create new scene as root node
+let scene3D: Scene3D = new Scene3D();
 
-        // add an Atmospheric sky enviroment
-        let sky = scene.addComponent(AtmosphericComponent);
-        sky.sunY = 0.6
+// add performance stats
+scene3D.addComponent(Stats)
 
-        // init camera3D
-        let mainCamera = CameraUtil.createCamera3D(null, scene);
-        mainCamera.perspective(60, Engine3D.aspect, 1, 2000.0);
+// add an Atmospheric sky enviroment
+let sky = scene3D.addComponent(AtmosphericComponent);
+sky.sunY = 0.6;
 
-        // add a basic camera controller
-        let hoverCameraController = mainCamera.object3D.addComponent(HoverCameraController);
-        hoverCameraController.setCamera(15, -15, 10);
+// create camera
+let cameraObj: Object3D = new Object3D();
+let camera = cameraObj.addComponent(Camera3D);
+// adjust camera view
+camera.perspective(45, Engine3D.aspect, 1, 5000.0);
 
-        // create a basic cube
-        let cubeObj = new Object3D();
-        let mr = cubeObj.addComponent(MeshRenderer);
-        mr.geometry = new BoxGeometry();
-        let mat = new LitMaterial();
-        mr.material = mat;
-        scene.addChild(cubeObj);
+// set camera controller
+let controller = cameraObj.addComponent(HoverCameraController);
+controller.setCamera(0, 0, 30);
+// add camera node
+scene3D.addChild(cameraObj);
 
-        // add a basic direct light
-        let lightObj = new Object3D();
-        lightObj.rotationX = 45;
-        lightObj.rotationY = 60;
-        lightObj.rotationZ = 150;
-        let dirLight = lightObj.addComponent(DirectLight);
-        dirLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
-        dirLight.intensity = 10;
-        scene.addChild(lightObj);
+// create light obj
+let light: Object3D = new Object3D();
+// adjust light rotation
+light.rotationX = 45;
+light.rotationY = 30;
+// add direct light component
+let dirLight: DirectLight = light.addComponent(DirectLight);
+dirLight.intensity = 1;
+// add light object to scene
+scene3D.addChild(light);
 
-        sky.relativeTransform = dirLight.transform;
+// create a box
+const box: Object3D = new Object3D();
+// add MeshRenderer
+let mr: MeshRenderer = box.addComponent(MeshRenderer);
+// set geometry
+mr.geometry = new BoxGeometry(5, 5, 5);
+// set material
+mr.material = new LitMaterial();
+// set rotation
+box.rotationY = 45;
+// add object
+scene3D.addChild(box);
 
-        // create a view with target scene and camera
-        let view = new View3D();
-        view.scene = scene;
-        view.camera = mainCamera;
+// create a view with target scene and camera
+let view = new View3D();
+view.scene = scene3D;
+view.camera = camera;
+// start render
+Engine3D.startRenderView(view);
 
-        // start render
-        Engine3D.startRenderView(view);
-
-        let transform = cubeObj.transform;
-        // debug GUI
-        GUIHelp.init();
-        GUIUtil.renderTransform(transform);
-    }
-}
-
-new Sample_Transform().run()
+// add debug GUI
+let gui = new dat.GUI();
+let f = gui.addFolder('Sun')
+f.add(sky, "sunX", 0, 1);
+f.add(sky, "sunY", 0, 1);
+f.open()
+let f2 = gui.addFolder('Transform')
+f2.add(box.transform, 'x', -20.0, 20.0, 0.01);
+f2.add(box.transform, 'y', -20.0, 20.0, 0.01);
+f2.add(box.transform, 'z', -20.0, 20.0, 0.01);
+f2.add(box.transform, 'rotationX', -180, 180, 0.01);
+f2.add(box.transform, 'rotationY', -180, 180, 0.01);
+f2.add(box.transform, 'rotationZ', -180, 180.0, 0.01);
+f2.add(box.transform, 'scaleX', -2.0, 2.0, 0.01);
+f2.add(box.transform, 'scaleY', -2.0, 2.0, 0.01);
+f2.add(box.transform, 'scaleZ', -2.0, 2.0, 0.01);
+f2.open()

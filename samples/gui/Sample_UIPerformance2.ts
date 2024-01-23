@@ -1,4 +1,4 @@
-﻿import { BoundingBox, Color, Engine3D, GUIConfig, GUIQuad, Object3D, Scene3D, TextAnchor, UIImageGroup, UITextField, Vector2, Vector3, ViewPanel, clamp } from "@orillusion/core";
+﻿import { BoundingBox, Color, Engine3D, GUIConfig, GUIQuad, Object3D, Scene3D, TextAnchor, UIImageGroup, UITextField, Vector2, Vector3, ViewPanel, clamp, webGPUContext } from "@orillusion/core";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { createExampleScene } from "@samples/utils/ExampleScene";
 import { Stats } from "@orillusion/stats";
@@ -105,7 +105,7 @@ export class Sample_UIPerformance2 {
         //create UI root
         let panelRoot: Object3D = new Object3D();
         //create panel
-        let panel = panelRoot.addComponent(ViewPanel, { billboard: true });
+        let panel = panelRoot.addComponent(ViewPanel);
         canvas.addChild(panel.object3D);
         //create sprite sheet list
         this.createSpriteSheets(panelRoot);
@@ -116,7 +116,7 @@ export class Sample_UIPerformance2 {
         //create UI root
         let panelRoot: Object3D = new Object3D();
         //create panel
-        let panel = panelRoot.addComponent(ViewPanel, { billboard: true });
+        let panel = panelRoot.addComponent(ViewPanel);
         panel.panelOrder = 10000;
         canvas.addChild(panel.object3D);
         let textQuad = new Object3D();
@@ -128,7 +128,6 @@ export class Sample_UIPerformance2 {
         text.alignment = TextAnchor.MiddleCenter;
 
         return text;
-
     }
 
     spriteSheets: SpriteSheet[];
@@ -149,14 +148,16 @@ export class Sample_UIPerformance2 {
 
         let size = 64;
         let halfSize = size * 0.5;
-        let imgGroup = root.addComponent(UIImageGroup, { count: 5000 });
+        let groupNode = new Object3D();
+        root.addChild(groupNode);
+        let imgGroup = groupNode.addComponent(UIImageGroup, { count: 5000 });
         for (let i = 0; i < 5000; i++) {
             imgGroup.setColor(i, color);
             imgGroup.setSprite(i, sprite);
             imgGroup.setSize(i, size, size);
             imgGroup.setXY(i,
-                (Math.random() - 0.5) * width * 0.7 - halfSize,
-                (Math.random() - 0.5) * height * 0.7 - halfSize);
+                (Math.random() - 0.5) * (width - size * 0.5) - halfSize,
+                (Math.random() - 0.5) * (height - size * 0.5) - halfSize);
             let sheet: SpriteSheet = new SpriteSheet(imgGroup, i, this.keyFrames, bound);
             this.spriteSheets.push(sheet);
         }

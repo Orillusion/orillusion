@@ -55,6 +55,7 @@ export class SkyRenderer extends MeshRenderer {
             this._inRenderer = false;
             EntityCollect.instance.sky = null;
         }
+        super.onDisable();
     }
 
     public renderPass2(view: View3D, passType: PassType, rendererPassState: RendererPassState, clusterLightingBuffer: ClusterLightingBuffer, encoder: GPURenderPassEncoder, useBundle: boolean = false) {
