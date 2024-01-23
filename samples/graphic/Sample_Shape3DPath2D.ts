@@ -1,10 +1,8 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, Graphic3DMesh, Matrix4, Color, Time, sin, MeshRenderer, Vector2, LineJoin, Vector4, Object3DUtil, AxisObject } from "@orillusion/core";
 import { Stats } from "@orillusion/stats";
-import { Shape3DMaker } from "@orillusion/graphic";
+import { Shape3DMaker, Shape3D } from "@orillusion/graphic";
 import { GUIShape3D } from "@samples/utils/GUIShape3D";
-import { Shape3D } from "@orillusion/graphic/renderer/shape3d/Shape3D";
-import { GUIUtil } from "@samples/utils/GUIUtil";
 
 
 /**

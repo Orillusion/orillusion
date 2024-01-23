@@ -1,77 +1,26 @@
-// vite.config.js
 import { defineConfig } from 'vite'
-import { readFile, writeFile, readdir, lstat } from 'fs/promises'
-import { resolve, parse } from 'path'
-export default defineConfig(option => ({
-    server: {
-        host: '0.0.0.0',
-        port: 8001,
-        hmr: false // open this line if no auto hot-reload required
-    },
-    publicDir: option.command === 'build' ? false : 'public',
+const path = require('path')
+export default defineConfig({
     resolve: {
         alias: {
-            '@orillusion/core': resolve(__dirname, './src/index.ts'),
-            '@orillusion': resolve(__dirname, './packages'),
-            '@samples': resolve(__dirname, './samples')
-        },
-        mainFields: ['module:dev', 'module']
+            '@orillusion/core': path.resolve(__dirname, '../../src'),
+            '@orillusion': path.resolve(__dirname, '../')
+        }
     },
-    plugins: option.command === 'build' ? undefined : [{
-        name: 'autoIndex',
-        configureServer(server) {
-            const tsFile = /.*.ts$/
-            async function dir(folder, ts = []) {
-                let files = await readdir(folder)
-                for (let f of files) {
-                    let path = resolve(folder, f).replace(/\\/g, '/') // fix windows path
-                    let ls = await lstat(path)
-                    if (ls.isDirectory()) {
-                        await dir(path, ts)
-                    } else if (tsFile.test(path)) {
-                        let name = parse(path).name
-                        if (name !== 'index' && !name.startsWith('_') && !name.endsWith('-back'))
-                            ts.push(path)
-                    }
-                }
-                return ts
-            }
-            async function autoIndex(file) {
-                if (file && !tsFile.test(file.replace(/\\/g, '/'))) // fix windows path
-                    return
-                let ts = await dir('.')
-                ts.sort() // make sure same sort on windows and unix
-                let improts = ''
-                _dir = __dirname.replace(/\\/g, '/')  // fix windows path
-                for (let path of ts) {
-                    improts += `export * from "${path.replace(_dir, '.').slice(0, -3)}"\r\n`
-                }
-                let content = await readFile(resolve(__dirname, './index.ts'), 'utf-8')
-                if (improts !== content) {
-                    console.log('[autoIndex] index.ts')
-                    writeFile(resolve(__dirname, './index.ts'), improts)
-                }
-            }
-            server.httpServer.on('listening', autoIndex)
-            server.watcher.on('change', autoIndex)
-            server.watcher.on('unlink', autoIndex)
-        }
-    }, {
-        name: 'cors',
-        configureServer: server => {
-            // server.middlewares.use((_req, res, next) => {
-            //     res.setHeader("Cross-Origin-Resource-Policy", "cross-origin")
-            //     res.setHeader("Cross-Origin-Opener-Policy", "same-origin")
-            //     res.setHeader("Cross-Origin-Embedder-Policy", "require-corp")
-            // })
-        }
-    }],
     build: {
+        target: 'esnext',
         lib: {
-            entry: resolve(__dirname, './src/index.ts'),
-            name: 'Orillusion',
-            fileName: (format) => `orillusion.${format}.max.js`,
+            entry: path.resolve('index.ts'),
+            name: 'Graphic',
+            fileName: (format) => `graphic.${format}.js`
         },
-        minify: false
+        rollupOptions: {
+            external: ['@orillusion/core'],
+            output: {
+                globals: {
+                    '@orillusion/core': 'Orillusion'
+                }
+            }
+        }
     }
-}))
+})
