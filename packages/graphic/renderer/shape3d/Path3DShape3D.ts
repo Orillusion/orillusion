@@ -29,6 +29,14 @@ export class Path3DShape3D extends LineShape3D {
         console.warn('not support');
     }
 
+    public get isClosed(): boolean {
+        return this._isClosed;
+    }
+    public set isClosed(value: boolean) {
+        this._isClosed = false;
+        console.warn('not support!');
+    }
+
     public reset() {
         this._points3D.length = 0;
         this._currentCoord.set(0, 0, 0, true);
