@@ -116,6 +116,24 @@ export class Sample_Shape3DPath3D {
 
         path.roundRect(30, 40, 20, 10, 6, 4);
 
+        let sphereF = Object3DUtil.GetSingleSphere(0.2, 1, 0, 0);
+        sphereF.x = 10;
+        sphereF.z = 4;
+        this.scene.addChild(sphereF);
+
+        let sphereCtrl = Object3DUtil.GetSingleSphere(0.2, 0, 1, 0);
+        sphereCtrl.x = 2;
+        sphereCtrl.z = 10;
+        this.scene.addChild(sphereCtrl);
+
+        let sphereT = Object3DUtil.GetSingleSphere(0.2, 0, 0, 1);
+        sphereT.x = 15;
+        sphereT.z = 10;
+        this.scene.addChild(sphereT);
+
+        path.moveTo(sphereF.x, sphereF.z);
+        path.arcTo(sphereCtrl.x, sphereCtrl.z, sphereT.x, sphereT.z, 4, 12);
+
         GUIShape3D.renderLine(path, 5, false);
         return path;
     }

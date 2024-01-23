@@ -97,6 +97,7 @@ export let VertexAttributes: string = /*wgsl*/ `
     #if USE_TANGENT
         @location(auto) varying_Tangent: vec4<f32>,
     #endif
+   
 
     @builtin(position) member: vec4<f32>
     };

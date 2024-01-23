@@ -10,6 +10,7 @@ export let VertexAttributeIndexShader: string = /*wgsl*/ `
         @location(auto) TEXCOORD_1: vec2<f32>,
         @location(auto) vIndex: f32,
         @location(auto) index2: f32,
+        
     }
 
     struct VertexOutput {

@@ -212,15 +212,6 @@ fn drawPath3DCorner(shapeData:Path3DShape3D, currentPoint:Path3DKeyPoint){
         lastPointIndex = pointIndex - 1u;
     }
 
-    let lineJoin = u32(round(shapeData.lineJoin));
-    var cornerPointExt = 0u;
-    if(lineJoin == 0){ cornerPointExt = 1u;}
-    else if(lineJoin == 1){ cornerPointExt = 0u;}
-    else {
-        cornerPointExt = u32(round(shapeData.corner));
-        cornerPointExt = clamp(cornerPointExt, 2u, 8u);
-    }
-
     nextPointIndex += destStart;
     lastPointIndex += destStart;
 
@@ -229,9 +220,9 @@ fn drawPath3DCorner(shapeData:Path3DShape3D, currentPoint:Path3DKeyPoint){
     let halfLineWidth = shapeData.base.lineWidth * 0.5;
     let cornerLength = shapeData.base.lineWidth;
     
-    var curveFrom = prevPoint.pos;
+    var curveFrom = (currentPoint.pos + prevPoint.pos) * 0.5;
     var curveCenter = currentPoint.pos;
-    var curveTo = nextPoint.pos;
+    var curveTo = (currentPoint.pos + nextPoint.pos) * 0.5;
     var curveTotalLength = 0f;
     
     //prev half segment

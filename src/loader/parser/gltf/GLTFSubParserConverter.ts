@@ -362,6 +362,16 @@ export class GLTFSubParserConverter {
         let geometry = new GeometryBase();
         geometry.name = name;
 
+        // Only Uint16Array and Uint32Array are supported
+        if ('indices' in attribArrays) {
+            let bigIndices = attribArrays[`indices`].data.length > 65535;
+            if (bigIndices) {
+                attribArrays[`indices`].data = new Uint32Array(attribArrays[`indices`].data);
+            } else {
+                attribArrays[`indices`].data = new Uint16Array(attribArrays[`indices`].data);
+            }
+        }
+
         // geometry.geometrySource = new SerializeGeometrySource().setGLTFGeometry(this.initUrl, name);
         //morphTarget
         geometry.morphTargetsRelative = primitive.morphTargetsRelative;

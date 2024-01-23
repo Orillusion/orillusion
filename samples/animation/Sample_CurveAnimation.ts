@@ -2,7 +2,7 @@ import { Object3D, Scene3D, AnimationCurve, Engine3D, AtmosphericComponent, Came
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
-export class Sample_AnimCurve {
+class Sample_AnimCurve {
     lightObj3D: Object3D;
     scene: Scene3D;
     Duck: Object3D;
