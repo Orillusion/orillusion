@@ -148,10 +148,11 @@ export class ShaderReflection {
     }
 
     public static getShaderReflection2(code: string, shaderBase: ShaderPassBase) {
-        if (shaderBase.shaderVariant != undefined) {
+        // Remove this if because need to parse auto
+        // if (shaderBase.shaderVariant != undefined) {
             let preShader = Preprocessor.parse(code, shaderBase.defineValue);
             ShaderReflection.parser2(preShader, shaderBase);
-        }
+        // }
     }
 
     /**
