@@ -1,9 +1,7 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { CircleShape3D, CurveShape3D, EllipseShape3D, QuadraticCurveShape3D, RoundRectShape3D, LineShape3D, Shape3D, CircleArcType } from "@orillusion/graphic";
+import { CircleShape3D, CurveShape3D, EllipseShape3D, QuadraticCurveShape3D, RoundRectShape3D, LineShape3D, Shape3D, CircleArcType, Path2DShape3D, Path3DShape3D } from "@orillusion/graphic";
 import { LineJoin } from "@orillusion/core";
 import { GUIUtil } from "./GUIUtil";
-import { Path3DShape3D } from "@orillusion/graphic/renderer/shape3d/Path3DShape3D";
-import { Path2DShape3D } from "@orillusion/graphic/renderer/shape3d/Path2DShape3D";
 
 export class GUIShape3D {
 
