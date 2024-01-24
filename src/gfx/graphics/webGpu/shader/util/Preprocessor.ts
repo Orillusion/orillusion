@@ -10,6 +10,7 @@ export class Preprocessor {
         code = this.filterComment(code);
         code = this.parsePreprocess(new PreprocessorContext(), code, defineValue);
         code = this.parseAutoBindingForAllGroup(code);
+        code = this.parseAutoLocationBlock(code);
         return code;
     }
 
@@ -119,7 +120,7 @@ export class Preprocessor {
                 break;
             }
             let nRightIndex = code.indexOf(')', nLeftIndex);
-            let id = code.substring(nLeftIndex+10, nRightIndex);
+            let id = code.substring(nLeftIndex + 10, nRightIndex);
             result += code.substring(offset, nLeftIndex);
             if (id === 'auto') {
                 result += `@location(${lastBindingId})`;
@@ -143,11 +144,11 @@ export class Preprocessor {
                 break;
             }
             let nRightIndex = code.indexOf('}', nLeftIndex);
-            let nRightIndex2= code.indexOf('->', nLeftIndex);
+            let nRightIndex2 = code.indexOf('->', nLeftIndex);
             if (nRightIndex2 != -1 && nRightIndex2 < nRightIndex) {
                 nRightIndex = nRightIndex2;
             }
-            let block = code.substring(nLeftIndex, nRightIndex+1);
+            let block = code.substring(nLeftIndex, nRightIndex + 1);
             block = this.parseAutoLocation(block);
             result += code.substring(offset, nLeftIndex);
             result += block;
