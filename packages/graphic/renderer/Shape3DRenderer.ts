@@ -176,6 +176,7 @@ export class Shape3DRenderer extends DynamicFaceRenderer {
                 this.setUVRect(shapeIndex, shapeData.fillUVRect);
                 this.setUVRect2(shapeIndex, shapeData.lineUVRect);
                 this.setUVSpeed(shapeIndex, shapeData.uvSpeed);
+                this.setFillRotation(shapeIndex, shapeData.fillRotation);
                 this.setBaseColor(shapeIndex, shapeData.fillColor);
                 this.setLineColor(shapeIndex, shapeData.lineColor);
                 this.setTextureID(shapeIndex, shapeData.fillTextureID);

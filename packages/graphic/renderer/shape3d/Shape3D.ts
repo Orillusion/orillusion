@@ -101,6 +101,7 @@ export class Shape3D {
     private _fillTextureID: number = 0;
     private _lineColor: Color = new Color(1, 0, 1, 1);
     private _fillColor: Color = new Color(0, 1, 0, 1);
+    private _fillRotation: number = 0;
     private _fillUVRect: Vector4 = new Vector4(0, 0, 1, 1);
     private _lineUVRect: Vector4 = new Vector4(0, 0, 1, 1);
     private _uvSpeed: Vector4 = new Vector4();
@@ -158,6 +159,16 @@ export class Shape3D {
     public set fillTextureID(value: number) {
         if (this._fillTextureID != value) {
             this._fillTextureID = value;
+            this._isChange = true;
+        }
+    }
+
+    public get fillRotation(): number {
+        return this._fillRotation;
+    }
+    public set fillRotation(value: number) {
+        if (this._fillRotation != value) {
+            this._fillRotation = value;
             this._isChange = true;
         }
     }

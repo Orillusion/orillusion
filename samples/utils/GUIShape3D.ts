@@ -139,6 +139,7 @@ export class GUIShape3D {
         GUIHelp.add(shape, 'fill');
         GUIHelp.add(shape, 'isClosed');
         GUIHelp.add(shape, 'lineWidth', 0, maxSize, 0.01);
+        GUIHelp.add(shape, 'fillRotation', -Math.PI, Math.PI, 0.01);
 
         GUIUtil.RenderVector4('FillUVRect.', shape, 'fillUVRect', 0, 10, 0.01);
         GUIUtil.RenderVector4('LineUVRect.', shape, 'lineUVRect', 0, 10, 0.01);

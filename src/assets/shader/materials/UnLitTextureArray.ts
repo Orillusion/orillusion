@@ -54,12 +54,22 @@ export let UnLitTextureArray: string = /*wgsl*/ `
         graphicNode = graphicBuffer[u32(round(ORI_VertexVarying.index))];
         
         var uv = transformUV1.zw * ORI_VertexVarying.fragUV0 + transformUV1.xy;
+        //The fragUV1.x is 1.0 when the vertex belongs to line.
         if(ORI_VertexVarying.fragUV1.x > 0.5){
             uv = graphicNode.uvRect2.zw * uv.xy + graphicNode.uvRect2.xy;
             uv += graphicNode.uvSpeed.zw * globalUniform.time;
         }else{
             uv = graphicNode.uvRect.zw * uv.xy + graphicNode.uvRect.xy;
             uv += graphicNode.uvSpeed.xy * globalUniform.time;
+            let rad = graphicNode.fillRotation;
+            if(rad != 0.0){
+                let zrot = mat3x3<f32>(
+                    cos(rad),-sin(rad),0.0,
+                    sin(rad), cos(rad),0.0,
+                    0.0,0.0,1.0
+                );
+                uv = (zrot * vec3f(uv, 0.0)).xy;
+            }
         }
         var graphicTextureID = graphicNode.texIndex;
         var graphicNodeColor = graphicNode.baseColor;

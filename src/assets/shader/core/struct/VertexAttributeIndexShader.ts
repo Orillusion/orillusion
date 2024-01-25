@@ -38,6 +38,12 @@ export let VertexAttributeIndexShader: string = /*wgsl*/ `
         texIndex:f32,
         tex2Index:f32,
         tex3Index:f32,
+
+        fillRotation:f32,
+        empty0:f32,
+        empty1:f32,
+        empty2:f32,
+
         baseColor:vec4f,
         lineColor:vec4f,
         emissiveColor:vec4f,

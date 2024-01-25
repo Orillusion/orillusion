@@ -1,5 +1,5 @@
 
-import { BitmapTexture2DArray, Color, ComputeShader, Ctor, GPUContext, GlobalBindGroup, MeshRenderer, Object3D, StorageGPUBuffer, Struct, StructStorageGPUBuffer, TriGeometry, UnLitTexArrayMaterial, Vector4, View3D } from "@orillusion/core";
+import { BitmapTexture2DArray, Color, ComputeShader, Ctor, GPUContext, GlobalBindGroup, MeshRenderer, Object3D, StorageGPUBuffer, Struct, StructStorageGPUBuffer, TriGeometry, UnLitTexArrayMaterial, Vector3, Vector4, View3D } from "@orillusion/core";
 import { DynamicDrawStruct } from "./DynamicDrawStruct";
 
 export class DynamicFaceRenderer extends MeshRenderer {
@@ -48,7 +48,7 @@ export class DynamicFaceRenderer extends MeshRenderer {
         this.material = this.nodeMat = new UnLitTexArrayMaterial();
         // this.material.doubleSide = true;
 
-        this.transformBuffer = new StorageGPUBuffer(this.maxNodeCount * (7 * 4), 0);
+        this.transformBuffer = new StorageGPUBuffer(this.maxNodeCount * (8 * 4), 0);
         this.material.setStorageBuffer("graphicBuffer", this.transformBuffer);
     }
 
@@ -81,7 +81,7 @@ export class DynamicFaceRenderer extends MeshRenderer {
         let black: Color = new Color(0, 0, 0, 0);
         let uvRect: Vector4 = new Vector4(0, 0, 0.1, 0.1);
         let uvSpeed: Vector4 = new Vector4(0, 0, 0, 0);
-
+        let vec3Zero: Vector3 = new Vector3(0, 0, 0);
         for (let i = 0; i < this.maxNodeCount; i++) {
             if (standAloneMatrix) {
                 const element = new Object3D();
@@ -96,6 +96,10 @@ export class DynamicFaceRenderer extends MeshRenderer {
             this.transformBuffer.setFloat("texId_" + i, 0);
             this.transformBuffer.setFloat("texId2_" + i, 0);
             this.transformBuffer.setFloat("texId3_" + i, 0);
+
+            this.transformBuffer.setFloat("fillRotation_" + i, 0);
+            this.transformBuffer.setVector3("empty_" + i, vec3Zero);
+
             this.transformBuffer.setColor("baseColor_" + i, white);
             this.transformBuffer.setColor("lineColor_" + i, white);
             this.transformBuffer.setColor("emissiveColor_" + i, black);
@@ -165,6 +169,11 @@ export class DynamicFaceRenderer extends MeshRenderer {
 
     public setEmissiveColor(i: number, color: Color) {
         this.transformBuffer.setColor("emissiveColor_" + i, color);
+        this._onBufferChange = true;
+    }
+
+    public setFillRotation(i: number, radians: number) {
+        this.transformBuffer.setFloat("fillRotation_" + i, radians);
         this._onBufferChange = true;
     }
 

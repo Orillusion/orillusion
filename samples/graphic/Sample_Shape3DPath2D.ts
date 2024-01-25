@@ -34,7 +34,7 @@ export class Sample_Shape3DPath2D {
         let camera = CameraUtil.createCamera3DObject(this.scene);
         camera.perspective(60, Engine3D.aspect, 1, 5000.0);
 
-        camera.object3D.addComponent(HoverCameraController).setCamera(0, -60, 20);
+        camera.object3D.addComponent(HoverCameraController).setCamera(0, -60, 60);
 
         this.view = new View3D();
         this.view.scene = this.scene;
