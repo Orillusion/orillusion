@@ -1,4 +1,4 @@
-import { Vector2, mergeFunctions } from "../../../../..";
+import { Vector2, Vector3, mergeFunctions } from "../../../../..";
 import { graphicTrailCompute } from "../../../../../assets/shader/graphic/GraphicTrailCompute";
 import { MeshRenderer } from "../../../../../components/renderer/MeshRenderer";
 import { View3D } from "../../../../../core/View3D";
@@ -35,9 +35,10 @@ export class Graphic3DMeshRenderer extends MeshRenderer {
         mat.baseMap = tex;
         this.material = mat;
 
-        this.transformBuffer = new StorageGPUBuffer(num * (7 * 4), 0);
+        this.transformBuffer = new StorageGPUBuffer(num * (8 * 4), 0);
         this.material.setStorageBuffer("graphicBuffer", this.transformBuffer);
 
+        let vec3Zero: Vector3 = new Vector3(0, 0, 0);
         this.object3Ds = [];
         for (let i = 0; i < num; i++) {
             const element = new Object3D();
@@ -48,6 +49,10 @@ export class Graphic3DMeshRenderer extends MeshRenderer {
             this.transformBuffer.setFloat("texId_" + i, 1);
             this.transformBuffer.setFloat("texId2_" + i, 1);
             this.transformBuffer.setFloat("texId3_" + i, 1);
+            this.transformBuffer.setFloat("texId3_" + i, 1);
+            this.transformBuffer.setFloat("fillRotation_" + i, 0);
+            this.transformBuffer.setVector3("empty_" + i, vec3Zero);
+
             this.transformBuffer.setColor("baseColor_" + i, new Color());
             this.transformBuffer.setColor("lineColor_" + i, new Color());
             this.transformBuffer.setColor("emissiveColor_" + i, new Color(0, 0, 0, 0));
@@ -60,24 +65,10 @@ export class Graphic3DMeshRenderer extends MeshRenderer {
         this.geometry = GeometryUtil.mergeNumber(source, num);
     }
 
-    public startSpark() {
-
-    }
-
     public setTextureID(i: number, id: number) {
         this.transformBuffer.setFloat("texId_" + i, id);
         this._onChange = true;
     }
-
-    // public setTexture2ID(i: number, id: number) {
-    //     this.transformBuffer.setFloat("texId_" + i, id);
-    //     this._onChange = true;
-    // }
-
-    // public setTexture3ID(i: number, id: number) {
-    //     this.transformBuffer.setFloat("texId_" + i, id);
-    //     this._onChange = true;
-    // }
 
     public setBaseColor(i: number, color: Color) {
         this.transformBuffer.setColor("baseColor_" + i, color);
