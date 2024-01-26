@@ -104,8 +104,7 @@ export class Sample_CandleFlame {
             mat.baseMap = Engine3D.res.whiteTexture;
             mat.normalMap = Engine3D.res.normalTexture;
             mat.aoMap = Engine3D.res.whiteTexture;
-            mat.maskMap = Engine3D.res.createTexture(32, 32, 255.0, 255.0, 0.0, 1);
-            mat.emissiveMap = Engine3D.res.blackTexture;
+            mat.emissiveMap = Engine3D.res.whiteTexture;
             mat.roughness = 0.5;
             mat.metallic = 0.2;
 
