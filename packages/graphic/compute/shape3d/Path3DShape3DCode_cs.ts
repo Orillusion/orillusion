@@ -174,10 +174,6 @@ fn drawPath3DFilled(shapeData:Path3DShape3D){
         p1.z += fillOffsetY;
         p2.z += fillOffsetY;
 
-        p0 = (rendererData.invMvMatrix * vec4<f32>(p0, 1.0)).xyz;
-        p1 = (rendererData.invMvMatrix * vec4<f32>(p1, 1.0)).xyz;
-        p2 = (rendererData.invMvMatrix * vec4<f32>(p2, 1.0)).xyz;
-
         u0 = vec2f(p0.x, p0.z);
         u1 = vec2f(p1.x, p1.z);
         u2 = vec2f(p2.x, p2.z);
@@ -294,11 +290,11 @@ fn drawPath3DCorner(shapeData:Path3DShape3D, currentPoint:Path3DKeyPoint){
 
     var preForward = normalize(currentPoint.pos - prevPoint.pos);
     var curForward = normalize(nextPoint.pos - currentPoint.pos);
-    preForward = normalize(cross(normalize(currentPoint.pos), preForward));
-    curForward = normalize(cross(normalize(currentPoint.pos), curForward));
+    preForward = normalize(cross(normalize(currentPoint.pos - cameraPos.xyz), preForward));
+    curForward = normalize(cross(normalize(currentPoint.pos - cameraPos.xyz), curForward));
 
-    preForward = normalize(cross(preForward, vec3<f32>(0.0, 0.0, 1.0)));
-    curForward = normalize(cross(curForward, vec3<f32>(0.0, 0.0, 1.0)));
+    preForward = normalize(cross(preForward, cameraUp.xyz));
+    curForward = normalize(cross(curForward, cameraUp.xyz));
 
     var xyAngle = acos(dot(preForward, curForward));
     let maxSegment = clamp(shapeData.corner, 0.0, 10.0);
@@ -329,7 +325,7 @@ fn drawPath3DCorner(shapeData:Path3DShape3D, currentPoint:Path3DKeyPoint){
             mixPoint = mix(mix0, mix1, t);
             
             var forward = normalize(mixPoint - (p0 + p1) * 0.5);
-            var right = normalize(cross(normalize(mixPoint), forward));
+            var right = normalize(cross(normalize(mixPoint - cameraPos.xyz), forward));
 
             p2 = mixPoint - right * halfLineWidth;
             p3 = mixPoint + right * halfLineWidth;
@@ -361,10 +357,6 @@ fn writePath3DPath(nodeData:ShapeData){
     var nextPoint:vec3<f32>;
     var prevPoint:vec3<f32>;
 
-    var currentPointView:vec3<f32>;
-    var nextPointView:vec3<f32>;
-    var prevPointView:vec3<f32>;
-
     var prevPoint3D:vec4<f32>;
     var nextPoint3D:vec4<f32>;
     var curPoint3D:vec4<f32>;
@@ -372,15 +364,12 @@ fn writePath3DPath(nodeData:ShapeData){
     var lastRight:vec3<f32>;
 
     var right:vec3<f32>;
-    var up = vec3<f32>(0.0, 0.0, 1.0);
     var forward:vec3<f32>;
 
     var curSrcIndex:u32 = u32(round(srcPointStart));
     var curDestIndex:u32 = destPointStart;
 
     curPoint3D = srcPathBuffer[curSrcIndex];
-    currentPointView = (rendererData.mvMatrix * vec4<f32>(curPoint3D.xyz, 1.0)).xyz;
-    currentPoint = currentPointView.xyz;
 
     var currentInvalid:f32;
     let firstPoint = currentPoint;
@@ -390,8 +379,7 @@ fn writePath3DPath(nodeData:ShapeData){
     for(var i = 0u; i < srcPointCount; i += 1u)
     {
         nextPoint3D = srcPathBuffer[curSrcIndex + 1u];
-        nextPointView = (rendererData.mvMatrix * vec4<f32>(nextPoint3D.xyz, 1.0)).xyz;
-        nextPoint = nextPointView;
+        nextPoint = nextPoint3D.xyz;
 
         currentInvalid = curPoint3D.w;
 
@@ -402,12 +390,12 @@ fn writePath3DPath(nodeData:ShapeData){
         if(i == 0u){
             //start
             forward = normalize(nextPoint - currentPoint);
-            right = normalize(cross(normalize(currentPoint), forward));
+            right = normalize(cross(normalize(currentPoint - cameraPos.xyz), forward));
         }else if(i + 1u == srcPointCount){
             //end
             if(shapeBase.isClosed > 0.0){
                 forward = normalize(firstPoint - currentPoint);
-                right = normalize(cross(normalize(currentPoint), forward));
+                right = normalize(cross(normalize(currentPoint - cameraPos.xyz), forward));
             }else{
                 right = lastRight;
             }
@@ -418,27 +406,25 @@ fn writePath3DPath(nodeData:ShapeData){
             }else{
                 forward = normalize(nextPoint - currentPoint);
             }
-            right = normalize(cross(normalize(currentPoint), forward));
+            right = normalize(cross(normalize(currentPoint - cameraPos.xyz), forward));
         }
 
-        writePath3DPoint(curDestIndex, shapeData, currentPointView, right, f32(i), overallLength, currentInvalid);
+        writePath3DPoint(curDestIndex, shapeData, currentPoint, right, f32(i), overallLength, currentInvalid);
         lastRight = right;
 
         prevPoint = currentPoint;
         prevPoint3D = curPoint3D;
-        prevPointView = currentPointView;
         currentPoint = nextPoint;
         curPoint3D = nextPoint3D;
-        currentPointView = nextPointView;
         curSrcIndex += 1u;
         curDestIndex += 1u;
     }
 }
 
 fn drawPath3DView(shapeIndex:u32,p0:vec3f,p1:vec3f,p2:vec3f,u0:vec2f,u1:vec2f,u2:vec2f){
-    let wP0 = (matrix_inv_vp * vec4<f32>(p0.x, p0.y, p0.z + lineOffsetY, 1.0)).xyz;
-    let wP1 = (matrix_inv_vp * vec4<f32>(p1.x, p1.y, p1.z + lineOffsetY, 1.0)).xyz;
-    let wP2 = (matrix_inv_vp * vec4<f32>(p2.x, p2.y, p2.z + lineOffsetY, 1.0)).xyz;
+    let wP0 = vec3<f32>(p0.x, p0.y, p0.z + lineOffsetY);
+    let wP1 = vec3<f32>(p1.x, p1.y, p1.z + lineOffsetY);
+    let wP2 = vec3<f32>(p2.x, p2.y, p2.z + lineOffsetY);
     drawLine(shapeIndex,wP0,wP1,wP2,u0,u1,u2);
 }
 

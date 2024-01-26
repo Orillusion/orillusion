@@ -54,8 +54,8 @@ struct Path3DKeyPoint{
 }
 
 struct RenderData{
-   mvMatrix:mat4x4<f32>,
-   invMvMatrix:mat4x4<f32>,
+   cameraUp:vec4<f32>,
+   cameraPos:vec4<f32>,
    maxNodeCount:f32,
    usedDestPointCount:f32,
    maxFaceCount:f32,
@@ -171,7 +171,7 @@ var<private> shapeIndex : u32 = 0;
 var<private> shapeType : u32 = 0;
 var<private> lineOffsetY : f32 = 0.0;
 var<private> fillOffsetY : f32 = 0.0;
-var<private> matrix_vp : mat4x4<f32>;
-var<private> matrix_inv_vp : mat4x4<f32>;
+var<private> cameraUp : vec4f;
+var<private> cameraPos : vec4f;
 
 `

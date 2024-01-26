@@ -26,7 +26,7 @@ export class Path2DShape3D extends LineShape3D implements CanvasPath {
     }
     public set isClosed(value: boolean) {
         this._isClosed = false;
-        console.warn('not support!');
+        console.warn('Not Supported');
     }
 
     public reset() {

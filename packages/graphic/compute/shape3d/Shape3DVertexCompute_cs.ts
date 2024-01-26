@@ -5,8 +5,8 @@ export let Shape3DVertexCompute_cs = /*wgsl*/`
 
    fn compute(workgroup_id:vec3<u32>,local_invocation_id:vec3<u32>) {
       var time = globalUniform.time;
-      matrix_vp = rendererData.mvMatrix;
-      matrix_inv_vp = rendererData.invMvMatrix;
+      cameraUp = rendererData.cameraUp;
+      cameraPos = rendererData.cameraPos;
       
       globalIndex = workgroup_id.x * 256u + local_invocation_id.x;
       if(globalIndex < u32(rendererData.usedDestPointCount) )

@@ -18,11 +18,12 @@ export class Shape3DRenderer extends DynamicFaceRenderer {
     private _shapeMap: OrderMap<number, Shape3D>;
     private _freeShapes: number[] = [];
     private _zFightingScale: number = 1.0;
-    private _mvMatrix: Matrix4;
-    private _invMvMatrix: Matrix4;
+    private _cameraUp: Vector4;
+    private _cameraPos: Vector4;
+
     public init(param?: any): void {
-        this._mvMatrix = new Matrix4();
-        this._invMvMatrix = new Matrix4();
+        this._cameraUp = new Vector4();
+        this._cameraPos = new Vector4();
         this._shapeMap = new OrderMap<number, Shape3D>(null, false, true);
         super.init(param);
     }
@@ -108,8 +109,8 @@ export class Shape3DRenderer extends DynamicFaceRenderer {
 
         //config :4; mv matrix, inverted mv matrix: 16 * 2
         this._rendererData = new UniformGPUBuffer(4 + 16 * 2);
-        this._rendererData.setMatrix('mvMatrix', this._mvMatrix);
-        this._rendererData.setMatrix('invMvMatrix', this._invMvMatrix);
+        this._rendererData.setVector4('cameraUp', this._cameraUp);
+        this._rendererData.setVector4('cameraPos', this._cameraPos);
         this._rendererData.setFloat('maxNodeCount', this.maxNodeCount);
         this._rendererData.setFloat('usedDestPointCount', 0);
         this._rendererData.setFloat('maxFaceCount', this.maxFaceCount);
@@ -186,12 +187,14 @@ export class Shape3DRenderer extends DynamicFaceRenderer {
 
         //update viewMatrix
         if (isRenderChange || computeByFrame) {
-            let worldMatrix = view.camera.transform.worldMatrix;
-            this._invMvMatrix.copyFrom(worldMatrix);
-            this._mvMatrix.copyFrom(worldMatrix).invert();
+            let transform = view.camera.transform;
 
-            this._rendererData.setMatrix('mvMatrix', this._mvMatrix);
-            this._rendererData.setMatrix('invMvMatrix', this._invMvMatrix);
+            let up = this._cameraUp.set(0, 0, 1, 0) as any as Vector3;
+            transform.worldMatrix.transformVector(up, up);
+            this._rendererData.setVector4('cameraUp', this._cameraUp);
+
+            this._cameraPos.copyFrom(transform.worldPosition as any);
+            this._rendererData.setVector4('cameraPos', this._cameraPos);
 
             this._rendererData.setFloat('maxNodeCount', this.maxNodeCount);
             this._rendererData.setFloat('usedDestPointCount', usedDestPointCount);

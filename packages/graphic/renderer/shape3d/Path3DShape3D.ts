@@ -5,6 +5,8 @@ import { LineShape3D } from "./LineShape3D";
 /**
  * Define class for drawing path in 3D space.
  * It implemented an API similar to CanvasPath.
+ * Please ensure that the current Shape3D model matrix is identitied.
+ * 
  * @export
  * @class Path3DShape3D
  * @extends {Shape3D}
@@ -26,7 +28,7 @@ export class Path3DShape3D extends LineShape3D {
         return this._lineJoin;
     }
     public set lineJoin(value: LineJoin) {
-        console.warn('not support');
+        console.warn('Not Supported');
     }
 
     public get isClosed(): boolean {
@@ -34,7 +36,7 @@ export class Path3DShape3D extends LineShape3D {
     }
     public set isClosed(value: boolean) {
         this._isClosed = false;
-        console.warn('not support!');
+        console.warn('Not Supported');
     }
 
     public reset() {
