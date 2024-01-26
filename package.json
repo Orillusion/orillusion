@@ -1,8 +1,9 @@
 {
     "name": "@orillusion/core",
-    "version": "0.7.1",
+    "version": "0.7.2",
     "author": "Orillusion",
     "description": "Orillusion WebGPU Engine",
+    "type": "module",
     "main": "./dist/orillusion.umd.js",
     "module": "./dist/orillusion.es.js",
     "exports": {
@@ -35,24 +36,25 @@
         "minify": "./node_modules/vite/node_modules/.bin/esbuild dist/orillusion.es.max.js --minify --outfile=dist/orillusion.es.js && ./node_modules/vite/node_modules/.bin/esbuild dist/orillusion.umd.max.js --minify --outfile=dist/orillusion.umd.js",
         "test": "electron test/ci/main.js",
         "test:ci": "xvfb-maybe -- electron --enable-unsafe-webgpu --enable-features=Vulkan --use-vulkan=swiftshader --use-webgpu-adapter=swiftshader --no-sandbox test/ci/main.js",
-        "docs": "npm run docs:core && npm run docs:physics && npm run docs:media && npm run docs:stats && npm run docs:particle",
+        "docs": "npm run docs:core && npm run docs:physics && npm run docs:media && npm run docs:stats && npm run docs:particle && npm run docs:graphic",
         "docs:typedoc": "npx typedoc --plugin typedoc-plugin-markdown --plugin ./script/typedoc-plugin-not-exported.js --tsconfig tsconfig.build.json --gitRevision main --hideBreadcrumbs true --allReflectionsHaveOwnDocument true --readme none --excludeInternal --excludePrivate --excludeProtected --sort source-order --out",
         "docs:core": "npm run docs:typedoc docs/api src/index.ts",
         "docs:physics": "cd packages/physics && npm run docs",
         "docs:media": "cd packages/media-extention && npm run docs",
         "docs:stats": "cd packages/stats && npm run docs",
         "docs:particle": "cd packages/particle && npm run docs",
+        "docs:graphic": "cd packages/graphic && npm run docs",
         "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s"
     },
     "devDependencies": {
-        "@webgpu/types": "^0.1.32",
+        "@webgpu/types": "^0.1.40",
         "conventional-changelog-cli": "^2.2.2",
-        "electron": "^26.0.0",
-        "typedoc": "^0.24.7",
-        "typedoc-plugin-markdown": "^3.15.3",
-        "typescript": "^5.0.4",
-        "vite": "^4.3.9",
-        "xvfb-maybe": "^0.2.1",
-        "earcut": "^2.2.4"
+        "earcut": "^2.2.4",
+        "electron": "^28.2.0",
+        "typedoc": "^0.25.7",
+        "typedoc-plugin-markdown": "^3.17.1",
+        "typescript": "^5.3.3",
+        "vite": "^5.0.12",
+        "xvfb-maybe": "^0.2.1"
     }
 }
