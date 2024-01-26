@@ -18,62 +18,62 @@ export let VertexAttributes: string = /*wgsl*/ `
 
     struct VertexAttributes{
         @builtin(instance_index) index : u32,
-        @location(0) position: vec3<f32>,
-        @location(1) normal: vec3<f32>,
-        @location(2) uv: vec2<f32>,
-        @location(3) TEXCOORD_1: vec2<f32>,
+        @location(auto) position: vec3<f32>,
+        @location(auto) normal: vec3<f32>,
+        @location(auto) uv: vec2<f32>,
+        @location(auto) TEXCOORD_1: vec2<f32>,
 
         #if USE_METAHUMAN
             #if USE_TANGENT
-                @location(4) TANGENT: vec4<f32>,
-                @location(5) joints0: vec4<f32>,
-                @location(6) weights0: vec4<f32>,
+                @location(auto) TANGENT: vec4<f32>,
+                @location(auto) joints0: vec4<f32>,
+                @location(auto) weights0: vec4<f32>,
                 #if USE_JOINT_VEC8
-                    @location(7) joints1: vec4<f32>,
-                    @location(8) weights1: vec4<f32>,
-                    ${MorphTarget_shader.getMorphTargetAttr(9)}
+                    @location(auto) joints1: vec4<f32>,
+                    @location(auto) weights1: vec4<f32>,
+                    @location(auto) vIndex: f32,
                 #else
-                    ${MorphTarget_shader.getMorphTargetAttr(7)}
+                    @location(auto) vIndex: f32,
                 #endif
             #else
-                @location(4) joints0: vec4<f32>,
-                @location(5) weights0: vec4<f32>,
+                @location(auto) joints0: vec4<f32>,
+                @location(auto) weights0: vec4<f32>,
                 #if USE_JOINT_VEC8
-                    @location(6) joints1: vec4<f32>,
-                    @location(7) weights1: vec4<f32>,
-                    ${MorphTarget_shader.getMorphTargetAttr(8)}
+                    @location(auto) joints1: vec4<f32>,
+                    @location(auto) weights1: vec4<f32>,
+                    @location(auto) vIndex: f32,
                 #else
-                    ${MorphTarget_shader.getMorphTargetAttr(6)}
+                    @location(auto) vIndex: f32,
                 #endif
             #endif
         #else
             #if USE_TANGENT
-                @location(4) TANGENT: vec4<f32>,
+                @location(auto) TANGENT: vec4<f32>,
             #endif
 
             #if USE_SKELETON
                 #if USE_TANGENT
-                    @location(5) joints0: vec4<f32>,
-                    @location(6) weights0: vec4<f32>,
+                    @location(auto) joints0: vec4<f32>,
+                    @location(auto) weights0: vec4<f32>,
                     #if USE_JOINT_VEC8
-                        @location(7) joints1: vec4<f32>,
-                        @location(8) weights1: vec4<f32>,
+                        @location(auto) joints1: vec4<f32>,
+                        @location(auto) weights1: vec4<f32>,
                     #endif
                 #else
-                    @location(4) joints0: vec4<f32>,
-                    @location(5) weights0: vec4<f32>,
+                    @location(auto) joints0: vec4<f32>,
+                    @location(auto) weights0: vec4<f32>,
                     #if USE_JOINT_VEC8
-                        @location(6) joints1: vec4<f32>,
-                        @location(7) weights1: vec4<f32>,
+                        @location(auto) joints1: vec4<f32>,
+                        @location(auto) weights1: vec4<f32>,
                     #endif
                 #endif
             #endif
 
             #if USE_MORPHTARGETS
                 #if USE_TANGENT
-                    ${MorphTarget_shader.getMorphTargetAttr(5)}
+                    @location(auto) vIndex: f32,
                 #else
-                    ${MorphTarget_shader.getMorphTargetAttr(4)}
+                    @location(auto) vIndex: f32,
                 #endif
             #endif
 
@@ -81,17 +81,21 @@ export let VertexAttributes: string = /*wgsl*/ `
     }
 
     struct VertexOutput {
-    @location(0) index: f32,
-    @location(1) varying_UV0: vec2<f32>,
-    @location(2) varying_UV1: vec2<f32>,
-    @location(3) varying_ViewPos: vec4<f32>,
-    @location(4) varying_Clip: vec4<f32>,
-    @location(5) varying_WPos: vec4<f32>,
-    @location(6) varying_WNormal: vec3<f32>,
-    @location(7) varying_Color: vec4<f32>,
-    @location(8) varying_ShadowPos: vec4<f32>,
+    @location(auto) index: f32,
+    @location(auto) varying_UV0: vec2<f32>,
+    @location(auto) varying_UV1: vec2<f32>,
+    @location(auto) varying_ViewPos: vec4<f32>,
+    @location(auto) varying_Clip: vec4<f32>,
+    @location(auto) varying_WPos: vec4<f32>,
+    @location(auto) varying_WNormal: vec3<f32>,
+    @location(auto) varying_Color: vec4<f32>,
+
+    #if USE_SHADOWMAPING
+        @location(auto) varying_ShadowPos: vec4<f32>,
+    #endif
+
     #if USE_TANGENT
-        @location(9) varying_Tangent: vec4<f32>,
+        @location(auto) varying_Tangent: vec4<f32>,
     #endif
    
 

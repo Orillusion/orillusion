@@ -148,7 +148,7 @@ export class GPUBufferBase {
         node.setXYZW(v4.x, v4.y, v4.z, v4.w);
     }
 
-    public setVector4Array(name: string, v4Array: Vector4[] | Quaternion[]) {
+    public setVector4Array(name: string, v4Array: Vector3[] | Vector4[] | Quaternion[]) {
         let node = this.memoryNodes.get(name);
         if (!node) {
             node = this.memory.allocation_node(4 * 4 * v4Array.length);

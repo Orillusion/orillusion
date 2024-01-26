@@ -7,7 +7,7 @@ import {
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { GUIUtil } from '@samples/utils/GUIUtil';
 
-class Sample_GodRay {
+export class Sample_GodRay {
 	lightObj: Object3D;
 	scene: Scene3D;
 
@@ -118,4 +118,4 @@ class Sample_GodRay {
 
 }
 
-new Sample_GodRay().run();
+// new Sample_GodRay().run();

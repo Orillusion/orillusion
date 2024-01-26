@@ -1,3 +1,4 @@
+import { Vector3 } from "../../../../..";
 import { Engine3D } from "../../../../../Engine3D";
 import { Camera3D } from "../../../../../core/Camera3D";
 import { CSM } from "../../../../../core/csm/CSM";
@@ -42,7 +43,8 @@ export class GlobalUniformGroup {
         this.uuid = UUID();
         this.usage = GPUBufferUsage.UNIFORM | GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST;
         // ... + 8(shadow matrix) + 8(csm matrix) + 4(csm bias) + 4(csm scattering exp...)
-        this.uniformGPUBuffer = new UniformGPUBuffer(32 * 4 * 4 + (3 * 4 * 4) + 8 * 16 + CSM.Cascades * 16 + 4 + 4);
+        // this.uniformGPUBuffer = new UniformGPUBuffer(32 * 4 * 4 + (3 * 4 * 4) + 8 * 16 + CSM.Cascades * 16 + 4 + 4);
+        this.uniformGPUBuffer = new UniformGPUBuffer(8192);
         this.uniformGPUBuffer.visibility = GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT | GPUShaderStage.COMPUTE;
 
         this.matrixBindGroup = matrixBindGroup;
@@ -143,6 +145,20 @@ export class GlobalUniformGroup {
         this.uniformGPUBuffer.setInt32(`nDirShadowEnd`, this.dirShadowEnd);
         this.uniformGPUBuffer.setInt32(`nPointShadowStart`, this.pointShadowStart);
         this.uniformGPUBuffer.setInt32(`nPointShadowEnd`, this.pointShadowEnd);
+
+        this.uniformGPUBuffer.setInt32(`empty1`, 0);
+        this.uniformGPUBuffer.setInt32(`empty2`, 0);
+        this.uniformGPUBuffer.setInt32(`empty3`, 0);
+
+        this.uniformGPUBuffer.setVector4Array(`frustumPlanes`, camera.frustum.planes);
+        // this.uniformGPUBuffer.setVector4Array(`frustumPlanes`, [
+        //     new Vector3(0.0, 0.0, 0.0, 0.0),
+        //     new Vector3(1.0, 0.0, 0.0, 0.0),
+        //     new Vector3(1.0, 1.0, 0.0, 0.0),
+        //     new Vector3(0.0, 1.0, 0.0, 0.0),
+        //     new Vector3(2.0, 0.0, 0.0, 0.0),
+        //     new Vector3(2.0, 1.0, 0.0, 0.0),
+        // ]);
         this.uniformGPUBuffer.apply();
     }
 

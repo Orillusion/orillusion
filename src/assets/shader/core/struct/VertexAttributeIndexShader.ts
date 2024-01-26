@@ -4,25 +4,27 @@ export let VertexAttributeIndexShader: string = /*wgsl*/ `
     struct VertexAttributes{
         @builtin(instance_index) index : u32,
 
-        @location(0) position: vec3<f32>,
-        @location(1) normal: vec3<f32>,
-        @location(2) uv: vec2<f32>,
-        @location(3) TEXCOORD_1: vec2<f32>,
-        @location(4) vIndex: f32,
-        @location(5) index2: f32,
+        @location(auto) position: vec3<f32>,
+        @location(auto) normal: vec3<f32>,
+        @location(auto) uv: vec2<f32>,
+        @location(auto) TEXCOORD_1: vec2<f32>,
+        @location(auto) vIndex: f32,
+        @location(auto) index2: f32,
         
     }
 
     struct VertexOutput {
-        @location(0) index: f32,
-        @location(1) varying_UV0: vec2<f32>,
-        @location(2) varying_UV1: vec2<f32>,
-        @location(3) varying_ViewPos: vec4<f32>,
-        @location(4) varying_Clip: vec4<f32>,
-        @location(5) varying_WPos: vec4<f32>,
-        @location(6) varying_WNormal: vec3<f32>,
-        @location(7) varying_Color: vec4<f32>,
-        @location(8) varying_ShadowPos: vec4<f32>,
+        @location(auto) index: f32,
+        @location(auto) varying_UV0: vec2<f32>,
+        @location(auto) varying_UV1: vec2<f32>,
+        @location(auto) varying_ViewPos: vec4<f32>,
+        @location(auto) varying_Clip: vec4<f32>,
+        @location(auto) varying_WPos: vec4<f32>,
+        @location(auto) varying_WNormal: vec3<f32>,
+        @location(auto) varying_Color: vec4<f32>,
+        #if USE_SHADOWMAPING
+            @location(auto) varying_ShadowPos: vec4<f32>,
+        #endif
         @builtin(position) member: vec4<f32>
     };
 
@@ -36,9 +38,18 @@ export let VertexAttributeIndexShader: string = /*wgsl*/ `
         texIndex:f32,
         tex2Index:f32,
         tex3Index:f32,
+
+        fillRotation:f32,
+        empty0:f32,
+        empty1:f32,
+        empty2:f32,
+
         baseColor:vec4f,
+        lineColor:vec4f,
         emissiveColor:vec4f,
         uvRect:vec4f,
+        uvRect2:vec4f,
+        uvSpeed:vec4f,
     }
 
     var<private> ORI_VertexOut: VertexOutput ;

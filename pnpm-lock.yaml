@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@webgpu/types': ^0.1.32
   conventional-changelog-cli: ^2.2.2
+  earcut: ^2.2.4
   electron: ^26.0.0
   typedoc: ^0.24.7
   typedoc-plugin-markdown: ^3.15.3
@@ -13,6 +14,7 @@ specifiers:
 devDependencies:
   '@webgpu/types': 0.1.32
   conventional-changelog-cli: 2.2.2
+  earcut: 2.2.4
   electron: 26.0.0
   typedoc: 0.24.7_typescript@5.0.4
   typedoc-plugin-markdown: 3.15.3_typedoc@0.24.7
@@ -709,6 +711,10 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       is-obj: 2.0.0
+    dev: true
+
+  /earcut/2.2.4:
+    resolution: {integrity: sha512-/pjZsA1b4RPHbeWZQn66SWS8nZZWLQQ23oE3Eam7aroEFGEvwKAsJfZ9ytiEMycfzXWpca4FA9QIOehf7PocBQ==}
     dev: true
 
   /electron/26.0.0:

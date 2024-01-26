@@ -10,6 +10,7 @@ export class Preprocessor {
         code = this.filterComment(code);
         code = this.parsePreprocess(new PreprocessorContext(), code, defineValue);
         code = this.parseAutoBindingForAllGroup(code);
+        code = this.parseAutoLocationBlock(code);
         return code;
     }
 
@@ -107,6 +108,56 @@ export class Preprocessor {
 
         return result;
     }
+
+    protected static parseAutoLocation(code: string): string {
+        let offset = 0;
+        let result = '';
+        let lastBindingId = 0;
+        while (offset < code.length) {
+            let nLeftIndex = code.indexOf('@location(', offset);
+            if (nLeftIndex == -1) {
+                result += code.substring(offset);
+                break;
+            }
+            let nRightIndex = code.indexOf(')', nLeftIndex);
+            let id = code.substring(nLeftIndex + 10, nRightIndex);
+            result += code.substring(offset, nLeftIndex);
+            if (id === 'auto') {
+                result += `@location(${lastBindingId})`;
+                lastBindingId++;
+            } else {
+                result += code.substring(nLeftIndex, nRightIndex + 1);
+            }
+            offset = nRightIndex + 1;
+        }
+        return result;
+    }
+
+    protected static parseAutoLocationBlock(code: string): string {
+        let offset = 0;
+        let result = '';
+        let lastBindingId = 0;
+        while (offset < code.length) {
+            let nLeftIndex = code.indexOf('@location(', offset);
+            if (nLeftIndex == -1) {
+                result += code.substring(offset);
+                break;
+            }
+            let nRightIndex = code.indexOf('}', nLeftIndex);
+            let nRightIndex2 = code.indexOf('->', nLeftIndex);
+            if (nRightIndex2 != -1 && nRightIndex2 < nRightIndex) {
+                nRightIndex = nRightIndex2;
+            }
+            let block = code.substring(nLeftIndex, nRightIndex + 1);
+            block = this.parseAutoLocation(block);
+            result += code.substring(offset, nLeftIndex);
+            result += block;
+            offset = nRightIndex + 1;
+        }
+
+        return result;
+    }
+
 
     protected static parsePreprocessCommand(context: PreprocessorContext, code: string, defineValue: { [name: string]: any }): string {
         let result: string = '';
