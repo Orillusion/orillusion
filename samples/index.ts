@@ -58,7 +58,7 @@
         <script>
             let target = sessionStorage.target
             if(target)
-            import('./samples/'+target).then(m=>{
+            import('${location.origin}/samples/'+target).then(m=>{
                 for(let i in m){
                     new m[i]().run()
                     break

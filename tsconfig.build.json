@@ -8,6 +8,8 @@
         "sourceMap": false,
         "resolveJsonModule": true,
         "esModuleInterop": true,
+        "declaration": true,
+        "noEmit": false,
         "rootDir": "./",
         "baseUrl": "./",
         "paths": {
@@ -17,8 +19,6 @@
         },
         "types": ["vite/client", "@webgpu/types"],
         // for build
-        // "noEmit": true,
-        "declaration": true,
         "declarationDir": "dist",
         "outDir": "dist",
         "skipLibCheck": true,

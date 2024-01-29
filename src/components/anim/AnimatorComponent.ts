@@ -1,5 +1,4 @@
-import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { BoxGeometry, DEGREES_TO_RADIANS, Engine3D, LitMaterial, Matrix4, MeshFilter, MeshRenderer, Object3D, PrefabAvatarData, Quaternion, RenderNode, RendererBase, Skeleton, SkeletonPose, SkinnedMeshRenderer2, StorageGPUBuffer, Time, Vector2, Vector3, Vector4, View3D, makeMatrix44 } from "../..";
+import { Engine3D, Matrix4, Object3D, PrefabAvatarData, Quaternion, RenderNode, SkinnedMeshRenderer2, StorageGPUBuffer, Time, Vector3, Vector4, View3D } from "../..";
 import { PropertyAnimationClip } from "../../math/AnimationCurveClip";
 import { RegisterComponent } from "../../util/SerializeDecoration";
 import { ComponentBase } from "../ComponentBase";

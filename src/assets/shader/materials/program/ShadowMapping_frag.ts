@@ -1,11 +1,8 @@
 import { CSM } from "../../../../core/csm/CSM";
 
 export let ShadowMapping_frag: string = /*wgsl*/ `
-    #if USE_SHADOWMAPING
     @group(1) @binding(auto) var shadowMapSampler: sampler;
     @group(1) @binding(auto) var shadowMap: texture_depth_2d_array;
-    #endif
-
     @group(1) @binding(auto) var pointShadowMapSampler: sampler;
     @group(1) @binding(auto) var pointShadowMap: texture_depth_cube_array;
 
@@ -18,8 +15,10 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
     fn useShadow(){
         shadowStrut.directShadowVisibility = array<f32, 8>( 1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0) ;
         shadowStrut.pointShadows = array<f32, 8>( 1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0) ;
-        directShadowMaping(globalUniform.shadowBias);
-        pointShadowMapCompare(globalUniform.pointShadowBias);
+        #if USE_SHADOWMAPING
+          directShadowMaping(globalUniform.shadowBias);
+          pointShadowMapCompare(globalUniform.pointShadowBias);
+        #endif
     }
 
     fn calcBasicBias(shadowWorldSize:f32, shadowDepthTexSize:f32, near:f32, far:f32) -> f32{
@@ -33,7 +32,7 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
     const csmCount:i32 = ${CSM.Cascades} ;
     var<private> csmLevel:i32 = -1;
     fn directShadowMaping(shadowBias: f32)  {
-      #if USE_SHADOWMAPING
+
         let enableCSM:bool = globalUniform.enableCSM > 0.5;
         for (var i: i32 = 0; i < dirCount ; i = i + 1) {
           if( i >= globalUniform.nDirShadowStart && i < globalUniform.nDirShadowEnd ){
@@ -97,7 +96,7 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
             shadowStrut.directShadowVisibility[i] = visibility;
           }
         }
-      #endif
+
     }
 
     fn directShadowMapingIndex(light:LightData, matrix:mat4x4<f32>, depthTexIndex:i32, shadowBias:f32) -> vec4<f32>
@@ -105,40 +104,38 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
       var visibility = 1.0;
       var isOutSideArea:f32 = 1.0;
       var varying_shadowUV:vec2<f32> = vec2<f32>(0.0);
-      #if USE_SHADOWMAPING
-        var shadowPosTmp = matrix * vec4<f32>(ORI_VertexVarying.vWorldPos.xyz, 1.0);
-        var shadowPos = shadowPosTmp.xyz / shadowPosTmp.w;
-        varying_shadowUV = shadowPos.xy * vec2<f32>(0.5, -0.5) + vec2<f32>(0.5, 0.5);
-        if (varying_shadowUV.x <= 1.0
-          && varying_shadowUV.x >= 0.0
-          && varying_shadowUV.y <= 1.0
-          && varying_shadowUV.y >= 0.0
-          && shadowPosTmp.z <= 1.0
-          && shadowPosTmp.z >= 0.0)
-        {
-          visibility = 0.0;
-          isOutSideArea = 0.0;
-          var uvOnePixel = 1.0 / vec2<f32>(globalUniform.shadowMapSize);
-          var totalWeight = 0.0;
-          var NoL = (dot(normalize(ORI_VertexVarying.vWorldNormal), normalize(-light.direction)));
-          let v = max(NoL, 0.0) ;
-          var bias = shadowBias / v;
-          for (var y = -1; y <= 1; y++) {
-            for (var x = -1; x <= 1; x++) {
-              var offset = vec2<f32>(f32(x), f32(y)) * uvOnePixel;
-              
-              // visibility += textureSampleCompare(shadowMap, shadowMapSampler, varying_shadowUV + offset, depthTexIndex, shadowPos.z - bias);
-              var depth = textureSampleLevel(shadowMap, shadowMapSampler, varying_shadowUV + offset, depthTexIndex, 0);
-              if ((shadowPos.z - bias ) < depth) {
-                visibility += 1.0 ;
-              }
-              totalWeight += 1.0;
+      var shadowPosTmp = matrix * vec4<f32>(ORI_VertexVarying.vWorldPos.xyz, 1.0);
+      var shadowPos = shadowPosTmp.xyz / shadowPosTmp.w;
+      varying_shadowUV = shadowPos.xy * vec2<f32>(0.5, -0.5) + vec2<f32>(0.5, 0.5);
+      if (varying_shadowUV.x <= 1.0
+        && varying_shadowUV.x >= 0.0
+        && varying_shadowUV.y <= 1.0
+        && varying_shadowUV.y >= 0.0
+        && shadowPosTmp.z <= 1.0
+        && shadowPosTmp.z >= 0.0)
+      {
+        visibility = 0.0;
+        isOutSideArea = 0.0;
+        var uvOnePixel = 1.0 / vec2<f32>(globalUniform.shadowMapSize);
+        var totalWeight = 0.0;
+        var NoL = (dot(normalize(ORI_VertexVarying.vWorldNormal), normalize(-light.direction)));
+        let v = max(NoL, 0.0) ;
+        var bias = shadowBias / v;
+        for (var y = -1; y <= 1; y++) {
+          for (var x = -1; x <= 1; x++) {
+            var offset = vec2<f32>(f32(x), f32(y)) * uvOnePixel;
+            
+            // visibility += textureSampleCompare(shadowMap, shadowMapSampler, varying_shadowUV + offset, depthTexIndex, shadowPos.z - bias);
+            var depth = textureSampleLevel(shadowMap, shadowMapSampler, varying_shadowUV + offset, depthTexIndex, 0);
+            if ((shadowPos.z - bias ) < depth) {
+              visibility += 1.0 ;
             }
+            totalWeight += 1.0;
           }
-          visibility /= totalWeight;
-          visibility += 0.001;
         }
-      #endif
+        visibility /= totalWeight;
+        visibility += 0.001;
+      }
       return vec4<f32>(visibility, isOutSideArea, varying_shadowUV);
     }
 
@@ -161,9 +158,10 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
   
           #if USE_PCF_SHADOW
               let samples = 4.0;
-              for (var x: f32 = -offset; x < offset; x += offset / (samples * 0.5)) {
-                for (var y: f32 = -offset; y < offset; y += offset / (samples * 0.5)) {
-                  for (var z: f32 = -offset; z < offset; z += offset / (samples * 0.5)) {
+              let sampleOffset = offset / (samples * 0.5);
+              for (var x: f32 = -offset; x < offset; x += sampleOffset) {
+                for (var y: f32 = -offset; y < offset; y += sampleOffset) {
+                  for (var z: f32 = -offset; z < offset; z += sampleOffset) {
                     let offsetDir = normalize(dir.xyz + vec3<f32>(x, y, z));
                     var depth = textureSampleLevel(pointShadowMap, pointShadowMapSampler, offsetDir, light.castShadow, 0);
                     depth *= globalUniform.far;
@@ -172,9 +170,8 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
                     }
                   }
                 }
-              }
-              shadow = min(max(shadow / (samples * samples * samples), 0.0), 1.0);
-          #endif
+                shadow = min(max(shadow / (samples * samples * samples), 0.0), 1.0);
+            #endif
   
           #if USE_SOFT_SHADOW
               let vDis = length(globalUniform.CameraPos.xyz - worldPos.xyz);

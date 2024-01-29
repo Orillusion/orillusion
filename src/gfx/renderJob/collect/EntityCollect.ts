@@ -1,5 +1,4 @@
 
-import { Graphic3DMeshRenderer } from '../../..';
 import { Engine3D } from '../../../Engine3D';
 import { ILight } from '../../../components/lights/ILight';
 import { RenderNode } from '../../../components/renderer/RenderNode';

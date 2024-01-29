@@ -12,7 +12,7 @@ import { ClusterLightingBuffer } from './ClusterLightingBuffer';
 import { ClusterBoundsSource_cs } from '../../../../assets/shader/cluster/ClusterBoundsSource_cs';
 import { ClusterLighting_cs } from '../../../../assets/shader/cluster/ClusterLighting_cs';
 import { Camera3D, ClusterConfig, Color, Vector3, Vector4 } from '../../../..';
-import { GUIHelp } from '@orillusion/debug/GUIHelp';
+// import { GUIHelp } from '@orillusion/debug/GUIHelp';
 /**
  * @internal
  * @group Post

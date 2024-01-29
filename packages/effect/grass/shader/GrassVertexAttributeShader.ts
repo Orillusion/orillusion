@@ -4,25 +4,25 @@ export let GrassVertexAttributeShader: string = /*wgsl*/ `
     struct VertexAttributes{
         @builtin(instance_index) index : u32,
 
-        @location(0) position: vec3<f32>,
-        @location(1) normal: vec3<f32>,
-        @location(2) uv: vec2<f32>,
-        @location(3) TEXCOORD_1: vec2<f32>,
-        @location(4) vIndex: f32,
-        @location(5) weights0: vec4<f32>, 
+        @location(auto) position: vec3<f32>,
+        @location(auto) normal: vec3<f32>,
+        @location(auto) uv: vec2<f32>,
+        @location(auto) TEXCOORD_1: vec2<f32>,
+        @location(auto) vIndex: f32,
+        @location(auto) weights0: vec4<f32>, 
     }
 
     struct VertexOutput {
-        @location(0) index: f32,
-        @location(1) varying_UV0: vec2<f32>,
-        @location(2) varying_UV1: vec2<f32>,
-        @location(3) varying_ViewPos: vec4<f32>,
-        @location(4) varying_Clip: vec4<f32>,
-        @location(5) varying_WPos: vec4<f32>,
-        @location(6) varying_WNormal: vec3<f32>,
-        @location(7) varying_Color: vec4<f32>,
+        @location(auto) index: f32,
+        @location(auto) varying_UV0: vec2<f32>,
+        @location(auto) varying_UV1: vec2<f32>,
+        @location(auto) varying_ViewPos: vec4<f32>,
+        @location(auto) varying_Clip: vec4<f32>,
+        @location(auto) varying_WPos: vec4<f32>,
+        @location(auto) varying_WNormal: vec3<f32>,
+        @location(auto) varying_Color: vec4<f32>,
         #if USE_SHADOWMAPING
-            @location(8) varying_ShadowPos: vec4<f32>,
+            @location(auto) varying_ShadowPos: vec4<f32>,
         #endif
         @builtin(position) member: vec4<f32>
     };

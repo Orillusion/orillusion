@@ -16,21 +16,12 @@ export class ChromaKeyMaterial extends Material {
         ShaderLib.register("ChromaKeyShader", ChromaKeyShader);
         let newShader = new Shader();
 
-        let colorPass = new RenderShaderPass(
-            `ChromaKeyShader`,
-            `ChromaKeyShader`
-        );
+        let colorPass = new RenderShaderPass(`ChromaKeyShader`, `ChromaKeyShader`);
         colorPass.setShaderEntry(`VertMain`, `FragMain`);
         colorPass.passType = PassType.COLOR;
 
-        colorPass.setUniformVector4(
-            `transformUV1`,
-            new Vector4(0, 0, 1, 1)
-        );
-        colorPass.setUniformVector4(
-            `transformUV2`,
-            new Vector4(0, 0, 1, 1)
-        );
+        colorPass.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));
+        colorPass.setUniformVector4(`transformUV2`, new Vector4(0, 0, 1, 1));
         colorPass.setUniformColor(`baseColor`, new Color());
         colorPass.setUniformVector4(`rectClip`, new Vector4(0, 0, 0, 0));
         colorPass.setUniformFloat(`alphaCutoff`, 0.5);
@@ -54,7 +45,7 @@ export class ChromaKeyMaterial extends Material {
         shaderState.useZ = false;
         shaderState.blendMode = BlendMode.ALPHA;
         this.shader = newShader;
-        
+
         // default value
         this.shader.setTexture(`baseMap`, Engine3D.res.whiteTexture);
     }
@@ -65,6 +56,20 @@ export class ChromaKeyMaterial extends Material {
 
     public get baseMap() {
         return this.shader.getTexture(`baseMap`);
+    }
+
+    /**
+     * set base color (tint color)
+     */
+    public set baseColor(color: Color) {
+        this.shader.setUniformColor(`baseColor`, color);
+    }
+
+    /**
+     * get base color (tint color)
+     */
+    public get baseColor() {
+        return this.shader.getUniformColor(`baseColor`);
     }
 
     /**
@@ -182,5 +187,5 @@ export class ChromaKeyMaterial extends Material {
     /**
      * Show a debug GUI
      */
-    debug() { }
+    debug() {}
 }

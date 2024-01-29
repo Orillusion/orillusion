@@ -86,7 +86,7 @@ export class MemoryInfo {
         }
     }
 
-    public setVector4Array(vs: Vector4[] | Quaternion[]) {
+    public setVector4Array(vs: Vector3[] | Vector4[] | Quaternion[]) {
         for (let i = 0; i < vs.length; i++) {
             const element = vs[i];
             this.dataBytes.setFloat32((i * 4 + 0) * Float32Array.BYTES_PER_ELEMENT, element.x, true);

@@ -1,6 +1,8 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
-const path = require('path')
-const {spawn, execSync} = require('child_process')
+import { app, BrowserWindow, ipcMain } from 'electron/main'
+import { join } from 'path'
+import { spawn } from 'child_process'
+import { fileURLToPath } from 'url';
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
 app.commandLine.appendSwitch('log-level', 'silent')
 const HOST = 'http://localhost:4000'
@@ -12,7 +14,7 @@ const createWindow = async ()=>{
         // show: false,
         // frame: false,
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
+            preload: join(__dirname, 'preload.js'),
             nodeintegrationinsubframes: true,
             webviewTag: true
         }

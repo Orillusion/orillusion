@@ -13,7 +13,8 @@ export default defineConfig(option => ({
         alias: {
             '@orillusion/core': resolve(__dirname, './src/index.ts'),
             '@orillusion': resolve(__dirname, './packages'),
-            '@samples': resolve(__dirname, './samples')
+            '@samples': resolve(__dirname, './samples'),
+            'dat.gui': resolve(__dirname, './packages/debug/dat.gui.module')
         },
         mainFields: ['module:dev', 'module']
     },
@@ -55,15 +56,6 @@ export default defineConfig(option => ({
             server.watcher.on('change', autoIndex)
             server.watcher.on('unlink', autoIndex)
         }
-    }, {
-        // name: 'cors',
-        // configureServer: server => {
-        //     server.middlewares.use((_req, res, next) => {
-        //         res.setHeader("Cross-Origin-Resource-Policy", "cross-origin")
-        //         res.setHeader("Cross-Origin-Opener-Policy", "same-origin")
-        //         res.setHeader("Cross-Origin-Embedder-Policy", "require-corp")
-        //     })
-        // }
     }],
     build: {
         target: 'esnext',

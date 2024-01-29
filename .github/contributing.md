@@ -6,6 +6,7 @@ Hi! I'm really excited that you are interested in contributing to Orillusion. Be
 - [Issue Reporting Guidelines](#issue-reporting-guidelines)
 - [Pull Request Guidelines](#pull-request-guidelines)
 - [Development Setup](#development-setup)
+- [Write New Samples](#write-new-samples)
 - [NPM Scripts](#scripts)
 - [Project Structure](#project-structure)
 
@@ -41,10 +42,11 @@ Hi! I'm really excited that you are interested in contributing to Orillusion. Be
 
 [Node.js](https://nodejs.org) **version 16+**, and [PNPM](https://pnpm.io) **version 7+** is perferred.
 
-First, you need to clone/flok repo:
+First, you need to fork repo
+Then, clone your forked repo
 
 ```bash
-$ git clone git@github.com:Orillusion/orillusion.git
+$ git clone git@github.com:XXX/orillusion.git
 $ cd orillusion
 $ git checkout dev # `dev` branch is perfered to start your development
 ```
@@ -74,6 +76,22 @@ A high level overview of main tools used:
 - [Rollup](https://rollupjs.org) for production bundling
 - [Electron](https://www.electronjs.org/) for CI unit testing
 - [TypeDoc](https://typedoc.org/) for API docs generating
+
+## Write New Samples
+
+1. create new entry `ts` in `/samples/xxx/Sample_xxx.ts`, the file name should be self-explanatory and start with `Sample_`. If there is no folder/category for your sample, create new one.
+
+2. write your scene code, take [/samples/base/Sample_Transform.ts](../samples/base/Sample_Transform.ts) as a starter template/example. 
+
+3. Coding rules:
+    1. import core modules from `@orillusion/core`, e.g. `Engine3D, Scene3D, Object3D, ...`.
+    2. import plugins/extentions from `@orillusion/xxx`, e.g. `@orillusion/stats, @orillusion/particle, @orillusion/physics...`.
+    3. perfer using [Top-level await](https://v8.dev/features/top-level-await) to initialize the `Engine3D` and other async APIs.
+    4. perfer embedding all `functions/classes/modules` into one single `ts` file.
+    5. perfer using [dat.gui](https://github.com/dataarts/dat.gui) to control your scene parameters.
+    6. write comments as much as possible to make your code more readable and self-documented.
+
+4. If your sample requires local files, e.g. gltf models, images, we perfer you upload them to a public filehosting service, e.g. github pages, cloudflare CDNs, npmjs, AWS S3, Aliyun OSS, etc. Then use the public URLs to import them in your samples. Otherwise, you can add files to the `/public` folder and make PRs to our [assets](https://github.com/Orillusion/assets) repo so that you can import files directly from the `/` path.
 
 ## Scripts
 

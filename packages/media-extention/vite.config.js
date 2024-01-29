@@ -8,6 +8,7 @@ export default defineConfig({
         }
     },
     build: {
+        target: 'esnext',
         lib: {
             entry: path.resolve('index.ts'),
             name: 'Media',

@@ -1,6 +1,5 @@
-
-import { Color, Engine3D, Material, PassType, RenderShaderPass, Shader, ShaderLib, Texture, Vector4 } from '@orillusion/core';
-import { VideoShader } from './VideoShader';
+import { Color, Engine3D, Material, PassType, RenderShaderPass, Shader, ShaderLib, Texture, Vector4 } from "@orillusion/core";
+import { VideoShader } from "./VideoShader";
 
 /**
  * Video Material
@@ -8,19 +7,18 @@ import { VideoShader } from './VideoShader';
  * @group Material
  */
 export class VideoMaterial extends Material {
-
     /**
      * Create new VideoMaterial
      */
     constructor() {
         super();
-        ShaderLib.register('VideoShader', VideoShader);
+        ShaderLib.register("VideoShader", VideoShader);
 
         let newShader = new Shader();
 
         let colorPass = new RenderShaderPass(`VideoShader`, `VideoShader`);
         colorPass.passType = PassType.COLOR;
-        colorPass.setShaderEntry(`VertMain`, `FragMain`)
+        colorPass.setShaderEntry(`VertMain`, `FragMain`);
 
         colorPass.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));
         colorPass.setUniformVector4(`transformUV2`, new Vector4(0, 0, 1, 1));
@@ -53,6 +51,20 @@ export class VideoMaterial extends Material {
      */
     public get rectClip(): Vector4 {
         return this.shader.getUniform("rectClip").data;
+    }
+
+    /**
+     * set base color (tint color)
+     */
+    public set baseColor(color: Color) {
+        this.shader.setUniformColor(`baseColor`, color);
+    }
+
+    /**
+     * get base color (tint color)
+     */
+    public get baseColor() {
+        return this.shader.getUniformColor(`baseColor`);
     }
 
     public get baseMap(): Texture {

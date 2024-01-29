@@ -1,8 +1,5 @@
-import { Vector2 } from "@orillusion/core";
-
 export class GUIConfig {
-  public static pixelRatio: number = 1.0;
-  public static readonly solution: Vector2 = new Vector2(1600, 1280);
+  public static panelRatio: number = 1.0;
   public static quadMaxCountForWorld: number = 256;
   public static quadMaxCountForView: number = 2048;
   public static readonly SortOrderStartWorld: number = 7000;

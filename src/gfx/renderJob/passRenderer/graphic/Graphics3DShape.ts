@@ -1,7 +1,6 @@
 import { Color } from "../../../../math/Color";
 import { DEGREES_TO_RADIANS } from "../../../../math/MathUtil";
 import { Vector3 } from "../../../../math/Vector3";
-import { GraphicConfig } from "./GraphicConfig";
 
 /**
  * @internal
@@ -11,7 +10,8 @@ export class Graphics3DShape {
     public type: string;
     public color: Color;
     public count: number = 0;
-    public shapeData: Float32Array;
+    public pointData: Float32Array;
+    public colorData: Float32Array;
     public dirtyData: boolean = false;
     public memoryDataIndex: number = -1;
     protected transformIndex: number;
@@ -100,34 +100,43 @@ export class Graphics3DShape {
     }
 
     public fillShapeData(points: Vector3[], colors: Color | Color[], forceUpdate: boolean = false) {
-        if (!this.shapeData) {
-            this.shapeData = new Float32Array(GraphicConfig.ShapeVertexSize * points.length);
-        } else if (this.count + GraphicConfig.ShapeVertexSize * points.length >= this.shapeData.length) {
-            let tmp = new Float32Array(this.shapeData.length + GraphicConfig.ShapeVertexSize * points.length);
-            tmp.set(this.shapeData);
-            this.shapeData = tmp;
+        if (!this.pointData) {
+            this.pointData = new Float32Array(4 * points.length);
+            this.colorData = new Float32Array(4 * points.length);
+        } else if (this.count + 4 * points.length >= this.pointData.length) {
+            let tmp = new Float32Array(this.pointData.length + 4 * points.length);
+            tmp.set(this.pointData);
+            this.pointData = tmp;
+
+            tmp = new Float32Array(this.colorData.length + 4 * points.length);
+            tmp.set(this.colorData);
+            this.colorData = tmp;
         }
 
         if (forceUpdate || this.dirtyData == false) {
-            const shapeData = this.shapeData;
+            const pointData = this.pointData;
+            let index = this.count;
             for (let i = 0; i < points.length; ++i) {
                 const point = points[i];
-                shapeData[this.count++] = point.x;
-                shapeData[this.count++] = point.y;
-                shapeData[this.count++] = point.z;
-                shapeData[this.count++] = this.transformIndex;
+                pointData[this.count++] = point.x;
+                pointData[this.count++] = point.y;
+                pointData[this.count++] = point.z;
+                pointData[this.count++] = this.transformIndex;
+            }
 
+            const colorData = this.colorData;
+            for (let i = 0; i < points.length; ++i) {
                 if (colors instanceof Color) {
-                    shapeData[this.count++] = colors.r;
-                    shapeData[this.count++] = colors.g;
-                    shapeData[this.count++] = colors.b;
-                    shapeData[this.count++] = colors.a;
+                    colorData[index++] = colors.r;
+                    colorData[index++] = colors.g;
+                    colorData[index++] = colors.b;
+                    colorData[index++] = colors.a;
                 } else {
                     const color = colors[i];
-                    shapeData[this.count++] = color.r;
-                    shapeData[this.count++] = color.g;
-                    shapeData[this.count++] = color.b;
-                    shapeData[this.count++] = color.a;
+                    colorData[index++] = color.r;
+                    colorData[index++] = color.g;
+                    colorData[index++] = color.b;
+                    colorData[index++] = color.a;
                 }
             }
         }

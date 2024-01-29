@@ -78,5 +78,5 @@ export let mergeFunctions = (...funcs) => {
 /**
  * Constructor
  */
-export type Ctor<T> = { new(any?): T, prototype: any };
+export type Ctor<T> = { new(any?, any2?, any3?, any4?): T, prototype: any };
 export type Parser<T> = { new(any?): T, prototype: any, format: ParserFormat };

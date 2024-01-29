@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, BloomPost, Color, DepthOfFieldPost, DirectLight, Engine3D, GPUCullMode, GTAOPost, GlobalFog, GlobalIlluminationComponent, GodRayPost, LitMaterial, Material, MorphTargetBlender, Object3D, PointLight, SkinnedMeshRenderer2, SpotLight, Transform, UIImage, UIPanel, UIShadow, View3D } from "@orillusion/core";
+import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, BloomPost, Color, DepthOfFieldPost, DirectLight, Engine3D, GPUCullMode, GTAOPost, GlobalFog, GlobalIlluminationComponent, GodRayPost, LitMaterial, Material, MorphTargetBlender, Object3D, PointLight, SkinnedMeshRenderer2, SpotLight, Transform, UIImage, UIPanel, UIShadow, Vector2, Vector4, View3D } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
@@ -428,7 +428,7 @@ export class GUIUtil {
         GUIHelp.endFolder();
     }
 
-    static renderLitMaterial(mat: LitMaterial) {
+    static renderLitMaterial(mat: LitMaterial, open?: boolean) {
         GUIHelp.addFolder(mat.name);
         GUIHelp.addColor(mat, 'baseColor').onChange((v) => {
             let color = mat.baseColor;
@@ -462,6 +462,11 @@ export class GUIUtil {
         GUIHelp.add(mat, 'metallic', 0.0, 1.0, 0.0001).onChange((v) => {
             mat.metallic = v;
         });
+
+        GUIHelp.add(mat, 'castShadow');
+        GUIHelp.add(mat, 'acceptShadow');
+
+        open && GUIHelp.open();
 
         GUIHelp.endFolder();
     }
@@ -556,5 +561,40 @@ export class GUIUtil {
         GUIHelp.add(post, 'far', 150, 300, 1)
         GUIHelp.add(post, 'pixelOffset', 0.0, 15, 1)
         GUIHelp.endFolder();
+    }
+
+    static RenderColor(target: Object, name: string) {
+        GUIHelp.addColor(target, name).onChange(v => {
+            let [r, g, b, a] = v;
+            target[name] = new Color(r / 255, g / 255, b / 255, a / 255)
+        })
+    }
+
+    static RenderVector4(label: string, target: Object, key: string, min: number, max: number, step: number = 0.01) {
+        let components = ['x', 'y', 'z', 'w'];
+        let data = {};
+        let vec4: Vector4 = target[key];
+        for (let component of components) {
+            data[label + component] = vec4[component];
+            GUIHelp.add(data, label + component, min, max, step).onChange(v => {
+                vec4[component] = v;
+                target[key] = vec4;
+            });
+
+        }
+    }
+
+    static RenderVector2(label: string, target: Object, key: string, min: number, max: number, step: number = 0.01) {
+        let keys = ['x', 'y'];
+        let data = {};
+        let vec2: Vector2 = target[key];
+        for (let component of keys) {
+            data[label + component] = vec2[component];
+            GUIHelp.add(data, label + component, min, max, step).onChange(v => {
+                vec2[component] = v;
+                target[key] = vec2;
+            });
+
+        }
     }
 }

@@ -1,6 +1,6 @@
 export let FXAAShader: string = /*wgsl*/ `
     struct FragmentOutput {
-        @location(0) o_Target: vec4<f32>
+        @location(auto) o_Target: vec4<f32>
     };
 
     var<private> varying_uv: vec2<f32>;
@@ -31,7 +31,7 @@ export let FXAAShader: string = /*wgsl*/ `
     }
 
     @fragment
-    fn main(@location(0) fragUV: vec2<f32>) -> FragmentOutput {
+    fn main(@location(auto) fragUV: vec2<f32>) -> FragmentOutput {
         var v_vTexcoord = fragUV ;
         // v_vTexcoord.x = 1.0 - v_vTexcoord.x ;
         v_vTexcoord.y = 1.0 - v_vTexcoord.y ;
