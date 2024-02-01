@@ -9,13 +9,15 @@ export class Preprocessor {
     public static parse(code: string, defineValue: { [name: string]: any }): string {
         code = this.filterComment(code);
         code = this.parsePreprocess(new PreprocessorContext(), code, defineValue);
-        code = this.parseAutoBindingForGroupX(code, 1);
+        code = this.parseAutoBindingForAllGroup(code);
+        code = this.parseAutoLocationBlock(code);
         return code;
     }
 
     public static parseComputeShader(code: string, defineValue: { [name: string]: any }): string {
         code = this.filterComment(code);
         code = this.parsePreprocess(new PreprocessorContext(), code, defineValue);
+        code = this.parseAutoBindingForAllGroup(code);
         return code;
     }
 
@@ -29,6 +31,46 @@ export class Preprocessor {
         let codeBlock = code.substring(begIndex, endIndex);
         let tail = code.substring(endIndex);
         return header + this.parsePreprocessCommand(context, codeBlock, defineValue) + tail;
+    }
+
+    protected static parseAutoBindingForAllGroup(code: string): string {
+        let offset = 0;
+        let result = '';
+        let group = new Map<number, number>();
+        while (offset < code.length) {
+            let nLeftIndex = code.indexOf('@group(', offset);
+            if (nLeftIndex == -1) {
+                result += code.substring(offset);
+                break;
+            }
+            let nRightIndex = code.indexOf(')', nLeftIndex);
+            let groupID = Number.parseInt(code.substring(nLeftIndex + 7, nRightIndex));
+            nLeftIndex = code.indexOf('@binding(', nRightIndex);
+            nRightIndex = code.indexOf(')', nLeftIndex);
+
+            let bindingID = code.substring(nLeftIndex + 9, nRightIndex);
+
+            result += code.substring(offset, nLeftIndex);
+            if (bindingID.includes(`auto`)) {
+                if (group.has(groupID)) {
+                    let lastBindingId = group.get(groupID) + 1;
+                    result += `@binding(${lastBindingId})`;
+                    group.set(groupID, lastBindingId);
+                } else {
+                    result += '@binding(0)';
+                    group.set(groupID, 0);
+                }
+            } else {
+                let nBindingID = Number.parseInt(bindingID);
+                if (!group.has(groupID) || group.get(groupID) < nBindingID) {
+                    group.set(groupID, nBindingID);
+                }
+                result += `@binding(${bindingID})`;
+            }
+            offset = nRightIndex + 1;
+        }
+
+        return result;
     }
 
     protected static parseAutoBindingForGroupX(code: string, nGroup: number): string {
@@ -66,6 +108,56 @@ export class Preprocessor {
 
         return result;
     }
+
+    protected static parseAutoLocation(code: string): string {
+        let offset = 0;
+        let result = '';
+        let lastBindingId = 0;
+        while (offset < code.length) {
+            let nLeftIndex = code.indexOf('@location(', offset);
+            if (nLeftIndex == -1) {
+                result += code.substring(offset);
+                break;
+            }
+            let nRightIndex = code.indexOf(')', nLeftIndex);
+            let id = code.substring(nLeftIndex + 10, nRightIndex);
+            result += code.substring(offset, nLeftIndex);
+            if (id === 'auto') {
+                result += `@location(${lastBindingId})`;
+                lastBindingId++;
+            } else {
+                result += code.substring(nLeftIndex, nRightIndex + 1);
+            }
+            offset = nRightIndex + 1;
+        }
+        return result;
+    }
+
+    protected static parseAutoLocationBlock(code: string): string {
+        let offset = 0;
+        let result = '';
+        let lastBindingId = 0;
+        while (offset < code.length) {
+            let nLeftIndex = code.indexOf('@location(', offset);
+            if (nLeftIndex == -1) {
+                result += code.substring(offset);
+                break;
+            }
+            let nRightIndex = code.indexOf('}', nLeftIndex);
+            let nRightIndex2 = code.indexOf('->', nLeftIndex);
+            if (nRightIndex2 != -1 && nRightIndex2 < nRightIndex) {
+                nRightIndex = nRightIndex2;
+            }
+            let block = code.substring(nLeftIndex, nRightIndex + 1);
+            block = this.parseAutoLocation(block);
+            result += code.substring(offset, nLeftIndex);
+            result += block;
+            offset = nRightIndex + 1;
+        }
+
+        return result;
+    }
+
 
     protected static parsePreprocessCommand(context: PreprocessorContext, code: string, defineValue: { [name: string]: any }): string {
         let result: string = '';

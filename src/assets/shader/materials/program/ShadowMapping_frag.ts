@@ -156,17 +156,17 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
               var len = length(frgToLight);
               var bias = max(shadowBias * globalUniform.far * (1.0 - dot(ORI_ShadingInput.Normal, dir)), 0.005);
   
-            #if USE_PCF_SHADOW
-                let samples = 4.0;
-                for (var x: f32 = -offset; x < offset; x += offset / (samples * 0.5)) {
-                  for (var y: f32 = -offset; y < offset; y += offset / (samples * 0.5)) {
-                    for (var z: f32 = -offset; z < offset; z += offset / (samples * 0.5)) {
-                      let offsetDir = normalize(dir.xyz + vec3<f32>(x, y, z));
-                      var depth = textureSampleLevel(pointShadowMap, pointShadowMapSampler, offsetDir, light.castShadow, 0);
-                      depth *= globalUniform.far;
-                      if ((len - bias) > depth) {
-                        shadow += 1.0 * dot(offsetDir, dir.xyz);
-                      }
+          #if USE_PCF_SHADOW
+              let samples = 4.0;
+              let sampleOffset = offset / (samples * 0.5);
+              for (var x: f32 = -offset; x < offset; x += sampleOffset) {
+                for (var y: f32 = -offset; y < offset; y += sampleOffset) {
+                  for (var z: f32 = -offset; z < offset; z += sampleOffset) {
+                    let offsetDir = normalize(dir.xyz + vec3<f32>(x, y, z));
+                    var depth = textureSampleLevel(pointShadowMap, pointShadowMapSampler, offsetDir, light.castShadow, 0);
+                    depth *= globalUniform.far;
+                    if ((len - bias) > depth) {
+                      shadow += 1.0 * dot(offsetDir, dir.xyz);
                     }
                   }
                 }

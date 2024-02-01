@@ -58,7 +58,7 @@ class Sample_BlendMode2 {
             material.baseMap = await Engine3D.res.loadTexture("particle/T_Fx_Object_229.png");;
             renderer.material = material;
             renderer.geometry = new PlaneGeometry(100, 100, 1, 1);
-            material.blendMode = BlendMode.ALPHA;
+            material.blendMode = BlendMode.NORMAL;
             this.scene.addChild(plane);
 
             GUIHelp.init();

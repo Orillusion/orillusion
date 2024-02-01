@@ -49,7 +49,7 @@ class Sample_GICornellBox {
         param.camera.distance = 100;
 
         let exampleScene = createExampleScene(param);
-        exampleScene.hoverCtrl.setCamera(0, 0, 20);
+        exampleScene.hoverCtrl.setCamera(0, 0, 50, new Vector3(0, 10, 0));
         exampleScene.camera.enableCSM = true;
         this.scene = exampleScene.scene;
         this.addGIProbes();

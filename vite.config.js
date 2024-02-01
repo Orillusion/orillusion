@@ -56,15 +56,6 @@ export default defineConfig(option => ({
             server.watcher.on('change', autoIndex)
             server.watcher.on('unlink', autoIndex)
         }
-    }, {
-        // name: 'cors',
-        // configureServer: server => {
-        //     server.middlewares.use((_req, res, next) => {
-        //         res.setHeader("Cross-Origin-Resource-Policy", "cross-origin")
-        //         res.setHeader("Cross-Origin-Opener-Policy", "same-origin")
-        //         res.setHeader("Cross-Origin-Embedder-Policy", "require-corp")
-        //     })
-        // }
     }],
     build: {
         target: 'esnext',

@@ -7,7 +7,7 @@ export let GlobalFog_shader = /* wgsl */ `
 var<private> PI: f32 = 3.14159265359;
 
 struct FragmentOutput {
-    @location(0) o_Target: vec4<f32>
+    @location(auto) o_Target: vec4<f32>
 };
 
 ${GlobalUniform}
@@ -109,7 +109,7 @@ fn getSkyColor(worldPosition:vec3<f32>, skyRoughness:f32, isHDRTexture:bool) -> 
 }
 
 @fragment
-fn main(@location(0) fragUV: vec2<f32>, @builtin(position) coord: vec4<f32>) -> FragmentOutput {
+fn main(@location(auto) fragUV: vec2<f32>, @builtin(position) coord: vec4<f32>) -> FragmentOutput {
     var texCoord = vec2<f32>(fragUV.x, 1.0 - fragUV.y);
     texPosition = textureSample(positionMap, positionMapSampler, texCoord) ;
     texNormal = textureSample(normalMap, normalMapSampler, texCoord) ;

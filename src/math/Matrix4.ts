@@ -1093,7 +1093,7 @@ export class Matrix4 {
      * @param axis Rotation Angle around axis axis. Axis needs to be specified as the orientation of an axis between x/y/z
      * @version Orillusion3D  0.5.1
      */
-    public createByRotation(degrees: number, axis: Vector3): void {
+    public createByRotation(degrees: number, axis: Vector3): this {
         let tmp: Matrix4 = Matrix4.helpMatrix;
         let s: number;
         let c: number;
@@ -1160,6 +1160,7 @@ export class Matrix4 {
         }
 
         this.append(tmp);
+        return this;
     }
 
     /**

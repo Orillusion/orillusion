@@ -8,9 +8,9 @@ struct uniformData {
 };
 
 struct FragmentOutput {
-    @location(0) o_Position: vec4<f32>,
-    @location(1) o_Normal: vec4<f32>,
-    @location(2) o_Color: vec4<f32>
+    @location(auto) o_Position: vec4<f32>,
+    @location(auto) o_Normal: vec4<f32>,
+    @location(auto) o_Color: vec4<f32>
 };
 
 @group(1) @binding(4)
@@ -28,7 +28,7 @@ fn LinearToGammaSpace(linRGB: vec3<f32>) -> vec3<f32> {
   }
 
 @fragment
-fn main(@location(0) fragUV: vec2<f32>, @location(1) vWorldPos: vec4<f32>, @location(2) vWorldNormal: vec3<f32>) -> FragmentOutput {
+fn main(@location(auto) fragUV: vec2<f32>, @location(auto) vWorldPos: vec4<f32>, @location(auto) vWorldNormal: vec3<f32>) -> FragmentOutput {
     let maxLevel: u32 = textureNumLevels(baseMap);
     let textureColor:vec3<f32> = textureSampleLevel(baseMap, baseMapSampler, normalize(vWorldPos.xyz), global.roughness * f32(maxLevel) ).xyz;
     let o_Color = 0.618 * vec4<f32>(LinearToGammaSpace(textureColor) * globalUniform.skyExposure , 1.0);

@@ -153,6 +153,30 @@ export class Color {
         return color;
     }
 
+    public static randomRGB(seedR: number = 0.5, seedG: number = 0.5, seedB: number = 0.5, baseR: number = 0.5, baseG: number = 0.5, baseB: number = 0.5): Color {
+        let color = new Color();
+        color.a = 1.0;
+        color.r = baseR + seedR * Math.random();
+        color.g = baseG + seedG * Math.random();
+        color.b = baseB + seedB * Math.random();
+        return color;
+    }
+
+
+    /**
+     * random on color 
+     * @returns 
+     */
+    public static randomGray(base: number = 0.5, random: number = 0.5): Color {
+        let seed = Math.random() * random + base;
+        let color = new Color();
+        color.a = 1.0;
+        color.r = seed;
+        color.g = seed;
+        color.b = seed;
+        return color;
+    }
+
     /**
      * set rgba to this color
      * @param r red channel
@@ -315,13 +339,13 @@ export class Color {
      * @param target 
      * @returns 
      */
-    public static lerp(v:number, c1:Color,c2:Color,target?:Color){
+    public static lerp(v: number, c1: Color, c2: Color, target?: Color) {
         let ret = target ? target : new Color();
-        ret.r = (c2.r - c1.r) * v + c1.r ;  
-        ret.g = (c2.g - c1.g) * v + c1.g ;  
-        ret.b = (c2.b - c1.b) * v + c1.b ;  
-        ret.a = (c2.a - c1.a) * v + c1.a ;  
-        return target ;
+        ret.r = (c2.r - c1.r) * v + c1.r;
+        ret.g = (c2.g - c1.g) * v + c1.g;
+        ret.b = (c2.b - c1.b) * v + c1.b;
+        ret.a = (c2.a - c1.a) * v + c1.a;
+        return target;
     }
 
 

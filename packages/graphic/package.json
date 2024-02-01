@@ -1,0 +1,28 @@
+{
+    "name": "@orillusion/graphic",
+    "version": "0.1.1",
+    "author": "Orillusion",
+    "description": "Orillusion graphic Plugin",
+    "main": "./dist/graphic.umd.js",
+    "module": "./dist/graphic.es.js",
+    "module:dev": "./index.ts",
+    "types": "./dist/index.d.ts",
+    "files": ["dist"],
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build && npm run build:types && npm run build:clean",
+        "build:types": "tsc --emitDeclarationOnly -p tsconfig.json",
+        "build:clean": "mv dist/packages/graphic/* dist && rm -rf dist/src && rm -rf dist/packages",
+        "docs": "npm run docs:typedoc ../../docs/graphic index.ts",
+        "docs:typedoc": "npx typedoc --plugin typedoc-plugin-markdown --plugin ../../script/typedoc-plugin-not-exported.js --tsconfig tsconfig.json --gitRevision main --hideBreadcrumbs true --allReflectionsHaveOwnDocument true --readme none --excludeInternal --excludePrivate --excludeProtected --sort source-order --out"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Orillusion/orillusion.git"
+    },
+    "dependencies": {
+        "@orillusion/core": "^0.7.0",
+        "earcut": "^2.2.4"
+    }
+}

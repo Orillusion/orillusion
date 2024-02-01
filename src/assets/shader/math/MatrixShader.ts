@@ -42,6 +42,16 @@ export let MatrixShader = /* wgsl */ `
         return xrot;
     }
 
+    fn buildYRotateXMat4(radY:f32,x:f32,y:f32,z:f32) -> mat4x4<f32>{
+        var yRot = mat4x4<f32>(
+            cos(radY),0.0,sin(radY),0.0,
+            0.0,1.0,0.0,0.0,
+            -sin(radY),0.0,cos(radY),0.0,
+            x,y,z,1.0,
+        );
+        return yRot;
+    }
+
     fn buildRotateXYZMat4(radX:f32,radY:f32,radZ:f32,x:f32,y:f32,z:f32) -> mat4x4<f32>{
         var xRot = mat4x4<f32>(
             1.0,0.0,0.0,0.0,

@@ -7,7 +7,7 @@ import {
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { GUIUtil } from '@samples/utils/GUIUtil';
 
-class Sample_GTAO {
+export class Sample_GTAO {
 	lightObj: Object3D;
 	scene: Scene3D;
 
@@ -132,4 +132,4 @@ class Sample_GTAO {
 
 }
 
-new Sample_GTAO().run();
+// new Sample_GTAO().run();
