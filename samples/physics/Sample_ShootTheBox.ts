@@ -1,15 +1,13 @@
-import dat from "dat.gui";
-import { BoxGeometry, Camera3D, Engine3D, LitMaterial, MeshRenderer, Object3D, Scene3D, View3D, Color, Object3DUtil, Vector3, AtmosphericComponent, HoverCameraController, ColliderComponent, BoxColliderShape, KeyEvent, SphereColliderShape, DirectLight, SphereGeometry, ComponentBase, KeyCode, KelvinUtil, Time } from "@orillusion/core";
+import { BoxGeometry, Engine3D, LitMaterial, MeshRenderer, Object3D, Scene3D, View3D, Color, Object3DUtil, Vector3, AtmosphericComponent, HoverCameraController, ColliderComponent, BoxColliderShape, SphereColliderShape, DirectLight, SphereGeometry, KelvinUtil, PointerEvent3D, CameraUtil } from "@orillusion/core";
 import { Stats } from "@orillusion/stats";
 import { Physics, Rigidbody } from "@orillusion/physics";
+import dat from "dat.gui";
 
 class Sample_ShootTheBox {
-    aim: Object3D;
-    moveScript: MoveScript;
     view: View3D;
-    ballSpeed: Vector3 = new Vector3(0, 0, -30000);
+    ballSpeed: number = 5;
     async run() {
-        //init Physics System 
+        //init Physics System
         await Physics.init();
         await Engine3D.init({
             //make Physics System continuously effective
@@ -22,8 +20,8 @@ class Sample_ShootTheBox {
         //update shadow every frame
         Engine3D.setting.shadow.updateFrameRate = 1;
 
-        //add keydown event listener
-        Engine3D.inputSystem.addEventListener(KeyEvent.KEY_DOWN, this.keyDown, this);
+        //add mouse event listener
+        Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_DOWN, this.MouseDown, this);
 
         //create scene,add sky and FPS
         let scene = new Scene3D();
@@ -31,13 +29,13 @@ class Sample_ShootTheBox {
         scene.addComponent(Stats);
 
         //create camera
-        let cameraObj = new Object3D();
-        let camera = cameraObj.addComponent(Camera3D);
+        let camera = CameraUtil.createCamera3DObject(scene);
         camera.enableCSM = true;
-        camera.perspective(60, Engine3D.aspect, 1, 5000);
-        let con = cameraObj.addComponent(HoverCameraController);
-        con.setCamera(0, -30, 50);
-        scene.addChild(cameraObj);
+        camera.perspective(60, Engine3D.aspect, 10, 5000);
+        let controller = camera.object3D.addComponent(HoverCameraController);
+        //disable controller move
+        controller.mouseRightFactor = 0;
+        controller.setCamera(0, -30, 50);
 
         //add DirectLight
         let lightObj = new Object3D();
@@ -66,7 +64,7 @@ class Sample_ShootTheBox {
             let box = new Object3D();
             let mr = box.addComponent(MeshRenderer);
             mr.geometry = new BoxGeometry(2, 2, 2);
-            mats.forEach(element => {
+            mats.forEach((element) => {
                 element.baseColor = Color.random();
             });
             //add 100 box with different color
@@ -87,20 +85,6 @@ class Sample_ShootTheBox {
             }
         }
 
-        //add the aiming point
-        {
-            this.aim = new Object3D();
-            let aim1 = Object3DUtil.GetSingleCube(0.5, 2, 0.5, 0.8, 0.2, 0.1);
-            this.aim.addChild(aim1);
-            let aim2 = Object3DUtil.GetSingleCube(0.5, 2, 0.5, 0.8, 0.2, 0.1);
-            aim2.rotationZ = 90;
-            this.aim.addChild(aim2);
-            this.aim.z = 10;
-            this.aim.y = 10;
-            this.moveScript = this.aim.addComponent(MoveScript);
-            scene.addChild(this.aim);
-        }
-
         //add a ball as prefeb
         let sphereObj = new Object3D();
         let mr = sphereObj.addComponent(MeshRenderer);
@@ -112,19 +96,17 @@ class Sample_ShootTheBox {
 
         //add some tips
         const gui = new dat.GUI();
+        gui.width = 280;
         let tip = gui.addFolder("Tips");
         let tips = {
-            tip1: "press WASD to move",
-            tip2: "press space to fire"
+            tip1: "left mouse:rotate camera",
+            tip2: "right mouse:shoot ball"
         };
         tip.add(tips, "tip1");
         tip.add(tips, "tip2");
         tip.open();
         let speed = gui.addFolder("Speed");
-        speed.add({ ballSpeed: 30 }, "ballSpeed", 10, 60, 1).onChange((v) => {
-            this.ballSpeed.z = -1 * v * 1000;
-        });
-        speed.add(this.moveScript, "moveSpeed", 1, 50, 1);
+        speed.add(this, "ballSpeed", 1, 10, 0.1);
         speed.open();
 
         //start render
@@ -133,74 +115,22 @@ class Sample_ShootTheBox {
         this.view.camera = camera;
         Engine3D.startRenderView(this.view);
     }
-    private keyDown(e: KeyEvent) {
-        //fire only when pressed the space key
-        if (e.keyCode == KeyCode.Key_Space) {
-            let sphereObj = Engine3D.res.getPrefab("ball");
-            let collider = sphereObj.addComponent(ColliderComponent);
+
+    private MouseDown(e: PointerEvent3D) {
+        //right mouse down
+        if (e.mouseCode == 2) {
+            let ray = this.view.camera.screenPointToRay(e.mouseX, e.mouseY);
+            let ball = Engine3D.res.getPrefab("ball");
+            let collider = ball.addComponent(ColliderComponent);
             collider.shape = new SphereColliderShape(1);
-            let rigidBody = sphereObj.addComponent(Rigidbody);
+            let rigidBody = ball.addComponent(Rigidbody);
             rigidBody.mass = 10;
             //set velocity after rigidbody inited
             rigidBody.addInitedFunction(() => {
-                rigidBody.velocity = this.ballSpeed;
+                rigidBody.velocity = ray.direction.multiplyScalar(10000 * this.ballSpeed);
             }, this);
-            sphereObj.transform.localPosition = this.aim.localPosition;
-            this.view.scene.addChild(sphereObj);
-        }
-    }
-}
-//move script
-class MoveScript extends ComponentBase {
-    up: boolean;
-    down: boolean;
-    left: boolean;
-    right: boolean;
-    moveSpeed: number = 10;
-    init(): void {
-        Engine3D.inputSystem.addEventListener(KeyEvent.KEY_DOWN, this.keyDown, this);
-        Engine3D.inputSystem.addEventListener(KeyEvent.KEY_UP, this.keyUp, this);
-    }
-    private keyDown(e: KeyEvent) {
-        if (e.keyCode == KeyCode.Key_A) {
-            this.left = true;
-        }
-        else if (e.keyCode == KeyCode.Key_D) {
-            this.right = true;
-        }
-        else if (e.keyCode == KeyCode.Key_W) {
-            this.up = true;
-        }
-        else if (e.keyCode == KeyCode.Key_S) {
-            this.down = true;
-        }
-    }
-    private keyUp(e: KeyEvent) {
-        if (e.keyCode == KeyCode.Key_A) {
-            this.left = false;
-        }
-        else if (e.keyCode == KeyCode.Key_D) {
-            this.right = false;
-        }
-        else if (e.keyCode == KeyCode.Key_W) {
-            this.up = false;
-        }
-        else if (e.keyCode == KeyCode.Key_S) {
-            this.down = false;
-        }
-    }
-    onUpdate() {
-        if (this.up) {
-            this.transform.y += this.moveSpeed * Time.delta / 1000;
-        }
-        else if (this.down) {
-            this.transform.y -= this.moveSpeed * Time.delta / 1000;
-        }
-        else if (this.left) {
-            this.transform.x -= this.moveSpeed * Time.delta / 1000;
-        }
-        else if (this.right) {
-            this.transform.x += this.moveSpeed * Time.delta / 1000;
+            ball.transform.localPosition = ray.origin;
+            this.view.scene.addChild(ball);
         }
     }
 }
