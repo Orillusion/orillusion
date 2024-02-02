@@ -17,8 +17,10 @@ class Sample_ShootTheBox {
                 }
             }
         });
-        //update shadow every frame
+        //set shadow
         Engine3D.setting.shadow.updateFrameRate = 1;
+        Engine3D.setting.shadow.shadowSize = 2048;
+        Engine3D.setting.shadow.shadowBound = 64;
 
         //add mouse event listener
         Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_DOWN, this.MouseDown, this);
@@ -30,8 +32,8 @@ class Sample_ShootTheBox {
 
         //create camera
         let camera = CameraUtil.createCamera3DObject(scene);
-        camera.enableCSM = true;
-        camera.perspective(60, Engine3D.aspect, 10, 5000);
+        // camera.enableCSM = true;
+        camera.perspective(60, Engine3D.aspect, 1, 5000);
         let controller = camera.object3D.addComponent(HoverCameraController);
         //disable controller move
         controller.mouseRightFactor = 0;

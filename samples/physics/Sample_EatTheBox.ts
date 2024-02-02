@@ -24,7 +24,7 @@ class Sample_EatTheBox {
         //set shadow
         Engine3D.setting.shadow.updateFrameRate = 1;
         Engine3D.setting.shadow.shadowSize = 2048;
-
+        Engine3D.setting.shadow.shadowBound = 64;
         //get original ammo world for processing more custom function
         this.ammoWorld = Physics.world;
 
@@ -36,7 +36,7 @@ class Sample_EatTheBox {
         //create camera
         let cameraObj = new Object3D();
         let camera = cameraObj.addComponent(Camera3D);
-        camera.enableCSM = true;
+        // camera.enableCSM = true;
         camera.perspective(60, Engine3D.aspect, 1, 5000);
         camera.lookAt(new Vector3(0, 40, 35), new Vector3());
         scene.addChild(cameraObj);
