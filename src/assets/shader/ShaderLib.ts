@@ -45,6 +45,7 @@ import { GBuffer_pass } from './core/pass/GBuffer_pass';
 import { castPointShadowMap_vert, directionShadowCastMap_frag, shadowCastMap_frag, shadowCastMap_vert } from './core/pass/CastShadow_pass';
 import { ZPassShader_vs } from './core/pass/ZPassShader_vs';
 import { ZPassShader_fs } from './core/pass/ZPassShader_fs';
+import { AtmosphericScatteringSky_shader } from '../..';
 
 /**
  * @internal
@@ -107,6 +108,8 @@ export class ShaderLib {
         ShaderLib.register('Quad_depthCube_frag_wgsl', Quad_depthCube_frag_wgsl);
         ShaderLib.register('sky_vs_frag_wgsl', CubeSky_Shader.sky_vs_frag_wgsl);
         ShaderLib.register('sky_fs_frag_wgsl', CubeSky_Shader.sky_fs_frag_wgsl);
+        ShaderLib.register('AtmosphericScatteringIntegration', AtmosphericScatteringSky_shader.integration);
+        ShaderLib.register('AtmosphereEarth', AtmosphericScatteringSky_shader.earth);
 
         ShaderLib.register("LambertShader", Lambert_shader);
 

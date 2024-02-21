@@ -34,15 +34,19 @@ class Sample_ClearCoat {
     }
 
     async initScene() {
+        {
+            let atmosphericSky = this.scene.addComponent(AtmosphericComponent);
+            GUIUtil.renderAtmosphericSky(atmosphericSky);
+        }
         /******** sky *******/
         {
             // let tex = await Engine3D.res.loadHDRTextureCube("hdri/T_Panorama05_HDRI.HDR");
             // let sky = this.scene.addComponent(SkyRenderer);
             // sky.map = tex;
             // sky.enable = true;
-            let sky = this.scene.getOrAddComponent(SkyRenderer);
-            sky.map = await Engine3D.res.loadHDRTextureCube('/hdri/sunset.hdr');
-            this.scene.envMap = sky.map;
+            // let sky = this.scene.getOrAddComponent(SkyRenderer);
+            // sky.map = await Engine3D.res.loadHDRTextureCube('/hdri/sunset.hdr');
+            // this.scene.envMap = sky.map;
         }
         /******** light *******/
         {

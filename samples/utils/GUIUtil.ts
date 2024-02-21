@@ -1,10 +1,28 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, BloomPost, Color, DepthOfFieldPost, DirectLight, Engine3D, GPUCullMode, GTAOPost, GlobalFog, GlobalIlluminationComponent, GodRayPost, LitMaterial, Material, MorphTargetBlender, Object3D, PointLight, SkinnedMeshRenderer2, SpotLight, Transform, UIImage, UIPanel, UIShadow, Vector2, Vector4, View3D } from "@orillusion/core";
+import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, BloomPost, Camera3D, Color, DepthOfFieldPost, DirectLight, Engine3D, GPUCullMode, GTAOPost, GlobalFog, GlobalIlluminationComponent, GodRayPost, LitMaterial, Material, MorphTargetBlender, Object3D, PointLight, Scene3D, SkinnedMeshRenderer2, SpotLight, Transform, UIImage, UIPanel, UIShadow, Vector2, Vector4, View3D } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
 
 export class GUIUtil {
 
+    public static renderSceneSetting(scene: Scene3D, open: boolean = true, name?: string) {
+        name ||= 'SceneSetting';
+        GUIHelp.addFolder(name);
+        GUIHelp.add(scene, 'exposure', 0.1, 10, 0.01);
+        GUIHelp.add(Engine3D.setting.render, 'hdrExposure', 0.1, 10, 0.01);
 
+        open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
+
+    public static renderCameraSetting(camera: Camera3D, open: boolean = true, name?: string) {
+        name ||= 'CameraSetting';
+        GUIHelp.addFolder(name);
+        GUIHelp.add(camera, 'fov', 0.1, 180, 0.01);
+        GUIHelp.add(camera, 'near', 0.1, 1000, 0.01);
+        GUIHelp.add(camera, 'far', 0.1, 1000, 0.01);
+        open && GUIHelp.open();
+        GUIHelp.endFolder();
+    }
 
 
     public static renderShadowSetting(open: boolean = true) {
@@ -22,7 +40,7 @@ export class GUIUtil {
         name ||= 'AtmosphericSky';
         GUIHelp.addFolder(name);
         GUIHelp.add(component, 'sunX', 0, 1, 0.01);
-        GUIHelp.add(component, 'sunY', 0.4, 1.6, 0.01);
+        GUIHelp.add(component, 'sunY', 0.45, 0.55, 0.001);
         GUIHelp.add(component, 'eyePos', 0, 5000, 1);
         GUIHelp.add(component, 'sunRadius', 0, 1000, 0.01);
         GUIHelp.add(component, 'sunRadiance', 0, 100, 0.01);
@@ -30,6 +48,7 @@ export class GUIUtil {
         GUIHelp.add(component, 'exposure', 0, 2, 0.01);
         GUIHelp.add(component, 'displaySun', 0, 1, 0.01);
         GUIHelp.add(component, 'enable');
+        GUIHelp.add(component, 'hdrExposure', 0, 20, 0.001);
 
         open && GUIHelp.open();
         GUIHelp.endFolder();

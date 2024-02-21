@@ -124,6 +124,17 @@ export class AtmosphericComponent extends SkyRenderer {
         }
     }
 
+    public get hdrExposure() {
+        return this._atmosphericScatteringSky.setting.hdrExposure;
+    }
+
+    public set hdrExposure(value) {
+        if (this._atmosphericScatteringSky.setting.hdrExposure != value) {
+            this._atmosphericScatteringSky.setting.hdrExposure = value;
+            this._onChange = true;
+        }
+    }
+
 
     public init(): void {
         super.init();
@@ -134,6 +145,7 @@ export class AtmosphericComponent extends SkyRenderer {
         let scene = this.transform.scene3D;
         this.map = this._atmosphericScatteringSky;
         scene.envMap = this._atmosphericScatteringSky;
+        scene.envMap.isHDRTexture = true;
         this.onUpdate(view3D);
     }
 
@@ -141,6 +153,7 @@ export class AtmosphericComponent extends SkyRenderer {
         let scene = this.transform.scene3D;
         this.map = this._atmosphericScatteringSky;
         scene.envMap = this._atmosphericScatteringSky;
+        scene.envMap.isHDRTexture = true;
         super.start();
     }
 
@@ -168,7 +181,7 @@ export class AtmosphericComponent extends SkyRenderer {
 
         if (this._onChange) {
             this._onChange = false;
-            this._atmosphericScatteringSky.apply();
+            this._atmosphericScatteringSky.apply(view);
         }
 
     }
