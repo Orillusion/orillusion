@@ -38,7 +38,7 @@ export class GUICanvas extends ComponentBase {
     }
 
     public copyComponent(from: this): this {
-        from.index = from.index;
+        this.index = from.index;
         return this;
     }
 }
