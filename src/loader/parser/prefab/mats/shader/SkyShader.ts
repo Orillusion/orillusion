@@ -19,6 +19,7 @@ export class SkyShader extends Shader {
 
         colorShader.setUniformVector3(`eyesPos`, new Vector3());
         colorShader.setUniformFloat(`exposure`, 1.0);
+        colorShader.setUniformFloat(`hdrExposure`, 1.0);
         colorShader.setUniformFloat(`roughness`, 0.0);
 
         let shaderState = colorShader.shaderState;

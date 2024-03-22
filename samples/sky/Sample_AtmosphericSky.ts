@@ -9,26 +9,68 @@ class Sample_AtmosphericSky {
         // init engine
         await Engine3D.init({});
         // init scene
-        let scene: Scene3D = createExampleScene().scene;
+        let example = createExampleScene();
+        let scene: Scene3D = example.scene;
         // start renderer
         Engine3D.startRenderView(scene.view);
         // add atmospheric sky
         let sky = scene.getComponent(AtmosphericComponent);
 
-        let texture = sky['_atmosphericScatteringSky'];
-        let ulitMaterial = new UnLitMaterial();
-        ulitMaterial.baseMap = texture.texture2D;
-        ulitMaterial.cullMode = GPUCullMode.none;
-        let obj = new Object3D();
-        scene.addChild(obj);
-        let r = obj.addComponent(MeshRenderer);
-        r.material = ulitMaterial;
-        r.geometry = new PlaneGeometry(100, 50, 1, 1, Vector3.Z_AXIS);
-        scene.addChild(obj);
+        {
+            let texture = sky['_atmosphericScatteringSky']['_transmittanceLut'];
+            let ulitMaterial = new UnLitMaterial();
+            ulitMaterial.baseMap = texture;
+            ulitMaterial.cullMode = GPUCullMode.none;
+            let obj = new Object3D();
+            let r = obj.addComponent(MeshRenderer);
+            r.material = ulitMaterial;
+            r.geometry = new PlaneGeometry(50, 25, 1, 1, Vector3.Z_AXIS);
+            obj.y = 50;
+            scene.addChild(obj);
+        }
+        {
+            let texture = sky['_atmosphericScatteringSky']['_multipleScatteringLut'];
+            let ulitMaterial = new UnLitMaterial();
+            ulitMaterial.baseMap = texture;
+            ulitMaterial.cullMode = GPUCullMode.none;
+            let obj = new Object3D();
+            let r = obj.addComponent(MeshRenderer);
+            r.material = ulitMaterial;
+            r.geometry = new PlaneGeometry(25, 25, 1, 1, Vector3.Z_AXIS);
+            obj.y = 25;
+            scene.addChild(obj);
+        }
+        {
+            let texture = sky['_atmosphericScatteringSky']['_skyViewLut'];
+            let ulitMaterial = new UnLitMaterial();
+            ulitMaterial.baseMap = texture;
+            ulitMaterial.cullMode = GPUCullMode.none;
+            let obj = new Object3D();
+            let r = obj.addComponent(MeshRenderer);
+            r.material = ulitMaterial;
+            r.geometry = new PlaneGeometry(50, 25, 1, 1, Vector3.Z_AXIS);
+            scene.addChild(obj);
+        }
+
+        // {
+        //     let texture = sky['_atmosphericScatteringSky']['_skyTexture'];
+        //     let ulitMaterial = new UnLitMaterial();
+        //     ulitMaterial.baseMap = texture;
+        //     ulitMaterial.cullMode = GPUCullMode.none;
+        //     let obj = new Object3D();
+        //     let r = obj.addComponent(MeshRenderer);
+        //     r.material = ulitMaterial;
+        //     r.geometry = new PlaneGeometry(50, 25, 1, 1, Vector3.Z_AXIS);
+        //     scene.addChild(obj);
+        // }
+
+        
 
         // gui
         GUIHelp.init();
         GUIUtil.renderAtmosphericSky(sky);
+        GUIUtil.renderSceneSetting(scene);
+        GUIUtil.renderCameraSetting(example.camera);
     }
 }
 
