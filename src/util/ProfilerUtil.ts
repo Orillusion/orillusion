@@ -1,4 +1,5 @@
-import { PassType, Vector4, View3D } from "..";
+import { View3D } from "../core/View3D"
+import { PassType } from "../gfx/renderJob/passRenderer/state/PassType"
 
 export type ProfilerLabel2 = {
     lable: string,

@@ -173,9 +173,9 @@ export class GBufferPost extends PostBase {
     }
 
     public onResize() {
-        let presentationSize = webGPUContext.presentationSize;
-        let w = presentationSize[0];
-        let h = presentationSize[1];
-        this.outTexture.resize(w, h);
+        // let presentationSize = webGPUContext.presentationSize;
+        // let w = presentationSize[0];
+        // let h = presentationSize[1];
+        // this.outTexture.resize(w, h);
     }
 }

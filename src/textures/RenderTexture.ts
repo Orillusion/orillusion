@@ -33,7 +33,7 @@ export class RenderTexture extends Texture {
         super(width, height, numberLayer);
         this.name = UUID();
 
-        this.autoResize = autoResize;
+        this.autoResize = false;
         this.useMipmap = useMipMap;
         this.sampleCount = sampleCount;
         this.format = format;
@@ -48,7 +48,7 @@ export class RenderTexture extends Texture {
 
         this.resize(width, height);
 
-        if (autoResize) {
+        if (this.autoResize) {
             webGPUContext.addEventListener(CResizeEvent.RESIZE, (e) => {
                 let { width, height } = e.data;
                 this.resize(width, height);

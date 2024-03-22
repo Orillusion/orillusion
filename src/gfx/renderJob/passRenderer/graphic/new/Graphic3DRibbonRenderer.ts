@@ -1,4 +1,4 @@
-import { graphicTrailCompute } from "../../../../..";
+import { graphicTrailCompute } from "../../../../../assets/shader/graphic/GraphicTrailCompute";
 import { MeshRenderer } from "../../../../../components/renderer/MeshRenderer";
 import { View3D } from "../../../../../core/View3D";
 import { Object3D } from "../../../../../core/entities/Object3D";

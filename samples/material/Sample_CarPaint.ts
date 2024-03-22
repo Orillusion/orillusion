@@ -59,8 +59,8 @@ export class Sample_CarPaint {
 		// let TAA = postProcessing.addPost(TAAPost);
 		// let gtao = postProcessing.addPost(GTAOPost);
 		// GUIUtil.renderGTAO(gtao);
-		let gBufferPost = postProcessing.addPost(GBufferPost);
-		GUIUtil.renderGBufferPost(gBufferPost);
+		// let gBufferPost = postProcessing.addPost(GBufferPost);
+		// GUIUtil.renderGBufferPost(gBufferPost);
 		// let bloom = postProcessing.addPost(BloomPost);
 		// GUIUtil.renderBloom(bloom);
 

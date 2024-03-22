@@ -23,7 +23,6 @@ export class GBufferFrame extends RTFrame {
     createGBuffer(key: string, rtWidth: number, rtHeight: number, autoResize: boolean = true, outColor: boolean = true) {
         let attachments = this.renderTargets;
         let reDescriptors = this.rtDescriptors;
-
         if (outColor) {
             let colorDec = new RTDescriptor();
             colorDec.loadOp = 'clear';
