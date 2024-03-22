@@ -199,7 +199,7 @@ export let PBRLitSSSShader: string = /*wgsl*/ `
 
         var sssColor = vec3f(pow(textureSample(sssMap, sssMapSampler, uv ).r,materialUniform.skinPower)) * materialUniform.skinColor.rgb ;
         let sunLight = lightBuffer[0] ;
-        let sunLightIntensity = (sunLight.intensity / LUMEN)  ;
+        let sunLightIntensity = (sunLight.intensity )  ;
         let ndl = 1.0 - clamp(dot(normalize(normal),-normalize(sunLight.direction)),0.0,1.0) * 0.5 + 0.5 ;//1.0 - saturate( dot(normalize(normal),normalize(sunLight.direction)) ) * 0.5 + 0.5 ;
         ORI_ShadingInput.SSS += 0.5 * vec3f(sssColor * sunLightIntensity * materialUniform.skinColorIns * ndl * sunLight.lightColor.rgb ) ;
      

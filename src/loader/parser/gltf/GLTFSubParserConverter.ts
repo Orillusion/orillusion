@@ -1,4 +1,4 @@
-import { LitMaterial, Material } from "../../..";
+import { GLTFMaterial, LitMaterial, Material } from "../../..";
 import { Engine3D } from "../../../Engine3D";
 import { SkeletonAnimationComponent } from "../../../components/SkeletonAnimationComponent";
 import { DirectLight } from "../../../components/lights/DirectLight";
@@ -174,31 +174,49 @@ export class GLTFSubParserConverter {
                 this.gltf.resources[materialKey] = newMat;
                 // newMat.doubleSided
                 newMat.name = md.name;
-                if (primitive.material) {
-                    const { baseColorTexture, baseColorFactor, metallicFactor, roughnessFactor, doubleSided, metallicRoughnessTexture, normalTexture, occlusionTexture, emissiveTexture, emissiveFactor, enableBlend, alphaCutoff } = primitive.material;
 
-                    let physicMaterial = (newMat = this.applyMaterialExtensions(primitive.material, newMat));
-                    if (`enableBlend` in primitive.material) {
-                        if (primitive.material[`enableBlend`]) {
-                            physicMaterial.blendMode = BlendMode.SOFT_ADD;
+                let gltfMat = md as GLTFMaterial;
+                if (gltfMat) {
+                    const { baseColorTexture, baseColorFactor, metallicFactor, roughnessFactor, doubleSided, metallicRoughnessTexture, normalTexture, occlusionTexture, emissiveTexture, emissiveFactor, enableBlend, alphaCutoff } = gltfMat;
+
+                    let physicMaterial = (newMat = this.applyMaterialExtensions(gltfMat, newMat));
+                    if (`enableBlend` in gltfMat) {
+                        if (gltfMat[`enableBlend`]) {
+                            physicMaterial.blendMode = BlendMode.ALPHA;
+                            physicMaterial.castShadow = false;
                         } else {
                             physicMaterial.blendMode = BlendMode.NONE;
                         }
                     }
 
-                    if (`alphaCutoff` in primitive.material && alphaCutoff > 0 && alphaCutoff < 1) {
+                    if (`alphaCutoff` in gltfMat && alphaCutoff > 0 && alphaCutoff < 1) {
                         physicMaterial.setUniformFloat("alphaCutoff", alphaCutoff);
                         physicMaterial.blendMode = BlendMode.NORMAL;
                         physicMaterial.transparent = true;
+                        // physicMaterial.castShadow = false;
                         // physicMaterial.depthWriteEnabled = false;
                     }
 
-                    if (primitive.material.transformUV1) {
-                        physicMaterial.setUniformVector4("uvTransform_1", primitive.material.transformUV1);
+                    if (gltfMat.baseMapOffsetSize) {
+                        physicMaterial.setUniformVector4("baseMapOffsetSize", gltfMat.baseMapOffsetSize);
                     }
-                    if (primitive.material.transformUV2) {
-                        physicMaterial.setUniformVector4("uvTransform_2", primitive.material.transformUV2);
+                    if (gltfMat.normalMapOffsetSize) {
+                        physicMaterial.setUniformVector4("normalMapOffsetSize", gltfMat.normalMapOffsetSize);
                     }
+                    if (gltfMat.emissiveMapOffsetSize) {
+                        physicMaterial.setUniformVector4("emissiveMapOffsetSize", gltfMat.emissiveMapOffsetSize);
+                    }
+                    if (gltfMat.roughnessMapOffsetSize) {
+                        physicMaterial.setUniformVector4("roughnessMapOffsetSize", gltfMat.roughnessMapOffsetSize);
+                    }
+                    if (gltfMat.metallicMapOffsetSize) {
+                        physicMaterial.setUniformVector4("metallicMapOffsetSize", gltfMat.metallicMapOffsetSize);
+                    }
+                    if (gltfMat.aoMapOffsetSize) {
+                        physicMaterial.setUniformVector4("aoMapOffsetSize", gltfMat.aoMapOffsetSize);
+                    }
+
+
                     physicMaterial.setUniformColor("baseColor", new Color(baseColorFactor[0], baseColorFactor[1], baseColorFactor[2], baseColorFactor[3]));
                     physicMaterial.setUniformFloat("roughness", roughnessFactor);
                     physicMaterial.setUniformFloat("metallic", metallicFactor);
@@ -218,7 +236,8 @@ export class GLTFSubParserConverter {
                     }
 
                     if (occlusionTexture && (metallicRoughnessTexture != occlusionTexture)) {
-                        physicMaterial.setTexture("aoMap", occlusionTexture);
+                        // physicMaterial.setTexture("aoMap", occlusionTexture);
+                        // physicMaterial.shader.getDefaultColorShader().setDefine(`USE_AOTEX`, true);
                     }
 
                     if (emissiveTexture) {
@@ -359,6 +378,14 @@ export class GLTFSubParserConverter {
     }
 
     private createGeometryBase(name: string, attribArrays: any, primitive: any): GeometryBase {
+        if ('indices' in attribArrays) {
+            let bigIndices = attribArrays[`indices`].data.length > 65534;
+            if (bigIndices) {
+                attribArrays[`indices`].data = new Uint32Array(attribArrays[`indices`].data);
+            } else {
+                attribArrays[`indices`].data = new Uint16Array(attribArrays[`indices`].data);
+            }
+        }
         let geometry = new GeometryBase();
         geometry.name = name;
 
@@ -417,9 +444,11 @@ export class GLTFSubParserConverter {
     }
 
     private applyMaterialExtensions(dmaterial: any, mat: Material): Material {
-        KHR_materials_clearcoat.apply(this.gltf, dmaterial, mat);
-        KHR_materials_unlit.apply(this.gltf, dmaterial, mat);
-        KHR_materials_emissive_strength.apply(this.gltf, dmaterial, mat);
+        if (dmaterial.extensions) {
+            KHR_materials_clearcoat.apply(this.gltf, dmaterial, mat);
+            KHR_materials_unlit.apply(this.gltf, dmaterial, mat);
+            KHR_materials_emissive_strength.apply(this.gltf, dmaterial, mat);
+        }
         return mat;
     }
 

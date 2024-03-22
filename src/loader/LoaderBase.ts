@@ -155,7 +155,7 @@ export class LoaderBase {
         }
         if (receivedArr.length > 0) {
             for (let i = 0; i < chunks.length; i++) {
-                // console.log(receivedArr[i]);
+                console.log(receivedArr[i]);
                 if (loaderFunctions && loaderFunctions.onProgress) {
                     loaderFunctions.onProgress.call(this, receivedArr[i], receivedLength, url);
                 }

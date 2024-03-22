@@ -1,6 +1,7 @@
 ﻿import { GlobalUniform } from "../../../assets/shader/core/common/GlobalUniform";
 import { WorldMatrixUniform } from "../../../assets/shader/core/common/WorldMatrixUniform";
-import { ColorPassFragmentOutput } from "../../../assets/shader/core/struct/ColorPassFragmentOutput";
+import { FragmentOutput } from "../../../assets/shader/core/struct/FragmentOutput";
+
 
 /**
  * shader code
@@ -37,7 +38,7 @@ export class GUIShader {
     }
 
     private static readonly fs: string = /* wgsl */ `
-        ${ColorPassFragmentOutput}
+        ${FragmentOutput}
         ${this.bindTextureArray()}
 
         var<private> fragmentOutput: FragmentOutput;
@@ -180,6 +181,7 @@ export class GUIShader {
             scissorFadeOutSize:f32,
 
             pixelRatio:f32,
+
             v3:vec3<f32>
         }
         

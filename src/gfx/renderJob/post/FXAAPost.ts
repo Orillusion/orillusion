@@ -6,7 +6,9 @@ import { GPUTextureFormat } from '../../graphics/webGpu/WebGPUConst';
 import { webGPUContext } from '../../graphics/webGpu/Context3D';
 import { PostBase } from './PostBase';
 import { View3D } from '../../../core/View3D';
-import { FXAAShader } from '../../..';
+import { FXAAShader } from '../../../assets/shader/post/FXAAShader';
+import { GBufferFrame } from '../frame/GBufferFrame';
+import { ViewQuad } from '../../../core/ViewQuad';
 /**
  * FXAA(fast approximate antialiasing)
  * A deformation anti-aliasing method that pays more attention to performance. 
@@ -15,6 +17,7 @@ import { FXAAShader } from '../../..';
  * @group Post Effects
  */
 export class FXAAPost extends PostBase {
+    postQuad: ViewQuad;
 
     constructor() {
         super();
@@ -23,16 +26,22 @@ export class FXAAPost extends PostBase {
         ShaderLib.register("FXAA_Shader", FXAAShader);
 
         let rt = this.createRTTexture(`FXAAPost`, presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float);
-        let quad = this.createViewQuad(`fxaa`, 'FXAA_Shader', rt);
-        quad.quadShader.setUniform("u_texel", new Vector2(1.0 / presentationSize[0], 1.0 / presentationSize[1]));
-        quad.quadShader.setUniform("u_strength", 4);
+        this.postQuad = this.createViewQuad(`fxaa`, 'FXAA_Shader', rt);
+        this.postQuad.quadShader.setUniform("u_texel", new Vector2(1.0 / presentationSize[0], 1.0 / presentationSize[1]));
+        this.postQuad.quadShader.setUniform("u_strength", 4);
     }
+
     /**
      * @internal
      */
     onAttach(view: View3D,) {
         Engine3D.setting.render.postProcessing.fxaa.enable = true;
+
+        // let rtFrame = GBufferFrame.getGBufferFrame("ColorPassGBuffer");
+        // let gBufferTexture = rtFrame.getCompressGBufferTexture();
+        // this.postQuad.quadShader.setTexture('gBufferTexture', gBufferTexture);
     }
+
     /**
      * @internal
      */

@@ -1,9 +1,12 @@
 export let SSR_BlendColor_cs: string = /*wgsl*/ `
-@group(0) @binding(0) var<storage, read_write> rayTraceBuffer : array<RayTraceRetData>;
-  @group(0) @binding(1) var colorMap : texture_2d<f32>;
-  @group(0) @binding(2) var ssrMapSampler : sampler;
-  @group(0) @binding(3) var ssrMap : texture_2d<f32>;
-  @group(0) @binding(4) var outTex : texture_storage_2d<rgba16float, write>;
+  #include 'GlobalUniform'
+  #include 'GBufferStand'
+
+  @group(0) @binding(2) var<storage, read_write> rayTraceBuffer : array<RayTraceRetData>;
+  @group(0) @binding(3) var colorMap : texture_2d<f32>;
+  @group(0) @binding(4) var ssrMapSampler : sampler;
+  @group(0) @binding(5) var ssrMap : texture_2d<f32>;
+  @group(0) @binding(6) var outTex : texture_storage_2d<rgba16float, write>;
 
   var<private> colorTexSize: vec2<u32>;
   var<private> ssrTexSize: vec2<u32>;
@@ -26,12 +29,12 @@ export let SSR_BlendColor_cs: string = /*wgsl*/ `
     return vec2<f32>(u, v);
   }
 
-  
+  const PI = 3.1415926;
   @compute @workgroup_size( 8 , 8 , 1 )
   fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_invocation_id) globalInvocation_id : vec3<u32>)
   {
     fragCoord = vec2<i32>( globalInvocation_id.xy );
-    colorTexSize = textureDimensions(colorMap).xy;
+    colorTexSize = textureDimensions(gBufferTexture).xy;
     ssrTexSize = textureDimensions(ssrMap).xy;
     if(fragCoord.x >= i32(colorTexSize.x) || fragCoord.y >= i32(colorTexSize.y)){
         return;
@@ -40,13 +43,19 @@ export let SSR_BlendColor_cs: string = /*wgsl*/ `
     ssrCoord = vec2<i32>(vec2<f32>(fragCoord.xy) * scale);
     let index = ssrCoord.x + ssrCoord.y * i32(ssrTexSize.x);
     let hitData = rayTraceBuffer[index];
-    var color = textureLoad(colorMap, fragCoord , 0);
+    var lastColor = textureLoad(colorMap, fragCoord , 0);
+    let time = globalUniform.time;
+
+    let gbuffer = getGBuffer(fragCoord);
+    let color = getColorFromGBuffer(gbuffer);
+    let rm = getRMFromGBuffer(gbuffer);
+
     var uv01 = CalcUV_01(fragCoord, colorTexSize);
     
     var ssrColor = textureSampleLevel(ssrMap, ssrMapSampler, uv01, 0.0);
-    var tc = mix(color, ssrColor, hitData.fresnel) ;
+    ssrColor = mix(vec4f(lastColor.rgb,1.0) , ssrColor, (1.0 - rm.r) ) ;
+    var tc = mix(vec4f(lastColor.rgb,1.0) , ssrColor, rm.g ) ;
     var outColor = tc ;
-    outColor.a = color.a ; 
     textureStore(outTex, fragCoord , outColor );
   }
 

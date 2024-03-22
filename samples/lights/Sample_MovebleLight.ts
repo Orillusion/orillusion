@@ -27,7 +27,7 @@ class Sample_MovebleLight {
         //create PointLight
         let lightObj = new Object3D();
         this.light = lightObj.addComponent(PointLight);
-        this.light.intensity = 10;
+        this.light.intensity = 4;
         this.light.range = 20;
         lightObj.z = 5;
         this.light.lightColor = KelvinUtil.color_temperature_to_rgb(2345);

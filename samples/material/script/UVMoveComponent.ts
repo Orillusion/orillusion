@@ -22,12 +22,12 @@ export class UVMoveComponent extends ComponentBase {
 
     onUpdate(): void {
         if (this._material) {
-            let value = this._material.getUniformV4(`transformUV1`);
+            let value = this._material.getUniformV4(`baseMapOffsetSize`);
             value.x += Time.delta * this._speed.x * 0.001;
             value.y += Time.delta * this._speed.y * 0.001;
             value.z = this._speed.z;
             value.w = this._speed.w;
-            this._material.setUniformVector4(`transformUV1`, value);
+            this._material.setUniformVector4(`baseMapOffsetSize`, value);
         }
     }
 }

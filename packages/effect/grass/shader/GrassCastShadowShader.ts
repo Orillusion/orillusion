@@ -54,7 +54,7 @@ export let GrassCastShadowShader = /* wgsl */`
         let grassPivot = localMatrix[3].xyz ;
         let bound = materialUniform.windBound ;
 
-        let time = TIME.y * 0.001 ;
+        let time = TIME_time() * 0.001 ;
         let cycleTime = sin(time) ;
 
         //sampler wind noise texture by vertex shader 

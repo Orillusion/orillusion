@@ -47,7 +47,7 @@ class Sample_TAA {
 			let lc = this.lightObj.addComponent(DirectLight);
 			lc.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
 			lc.castShadow = true;
-			lc.intensity = 10;
+			lc.intensity = 4;
 			this.scene.addChild(this.lightObj);
 		}
 

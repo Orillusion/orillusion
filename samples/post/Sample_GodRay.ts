@@ -51,7 +51,7 @@ export class Sample_GodRay {
 			let lc = this.lightObj.addComponent(DirectLight);
 			lc.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
 			lc.castShadow = true;
-			lc.intensity = 20;
+			lc.intensity = 5;
 			this.scene.addChild(this.lightObj);
 			GUIUtil.renderDirLight(lc, false);
 		}

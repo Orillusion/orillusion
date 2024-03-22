@@ -25,6 +25,7 @@ import { WasmMatrix } from '@orillusion/wasm-matrix/WasmMatrix';
 import { Matrix4 } from './math/Matrix4';
 import { FXAAPost } from './gfx/renderJob/post/FXAAPost';
 import { PostProcessingComponent } from './components/post/PostProcessingComponent';
+import { GBufferFrame } from './gfx/renderJob/frame/GBufferFrame';
 
 /** 
  * Orillusion 3D Engine
@@ -47,6 +48,11 @@ export class Engine3D {
     public static inputSystem: InputSystem;
 
     /**
+    * input system in engine3d
+    */
+    public static divB: HTMLDivElement;
+
+    /**
      * more view in engine3d
      */
     public static views: View3D[];
@@ -59,8 +65,6 @@ export class Engine3D {
     private static _renderLoop: Function;
     private static _lateRender: Function;
     private static _requestAnimationFrameID: number = 0;
-    static Engine3D: any;
-    static divB: HTMLDivElement;
 
     /**
      * set engine render frameRate 24/30/60/114/120/144/240/360 fps or other
@@ -139,16 +143,18 @@ export class Engine3D {
             drawTrMax: Number.MAX_SAFE_INTEGER,
             zPrePass: false,
             useLogDepth: false,
+            useCompressGBuffer: false,
             gi: false,
             postProcessing: {
                 bloom: {
-                    downSampleStep: 5,
-                    downSampleBlurSize: 5,
+                    downSampleStep: 3,
+                    downSampleBlurSize: 9,
                     downSampleBlurSigma: 1.0,
-                    upSampleBlurSize: 5,
+                    upSampleBlurSize: 9,
                     upSampleBlurSigma: 1.0,
                     luminanceThreshole: 1.0,
                     bloomIntensity: 1.0,
+                    hdr: 1.0
                 },
                 globalFog: {
                     debug: false,
@@ -242,7 +248,8 @@ export class Engine3D {
             shadowSize: 1024,
             pointShadowSize: 1024,
             shadowSoft: 0.005,
-            shadowBias: 0.0001,
+            shadowBound: 100,
+            shadowBias: 0.05,
             needUpdate: true,
             autoUpdate: true,
             updateFrameRate: 2,
@@ -296,6 +303,13 @@ export class Engine3D {
         },
         loader: {
             numConcurrent: 20,
+        },
+        reflectionSetting: {
+            reflectionProbeMaxCount: 8,
+            reflectionProbeSize: 256,
+            width: 256 * 6,
+            height: 8 * 256,
+            enable: true
         }
     };
 
@@ -328,6 +342,17 @@ export class Engine3D {
         await WasmMatrix.init(Matrix4.allocCount);
 
         await webGPUContext.init(descriptor.canvasConfig);
+
+        //****pre compute setting****/
+        this.setting.reflectionSetting.width = this.setting.reflectionSetting.reflectionProbeSize * 6;
+        this.setting.reflectionSetting.height = this.setting.reflectionSetting.reflectionProbeSize * this.setting.reflectionSetting.reflectionProbeMaxCount;
+        GBufferFrame.getGBufferFrame(
+            GBufferFrame.reflections_GBuffer,
+            this.setting.reflectionSetting.width,
+            this.setting.reflectionSetting.height,
+            false
+        );
+        //****pre compute setting****/
 
         ShaderLib.init();
 

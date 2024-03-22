@@ -51,7 +51,7 @@ class Sample_LoadGLTF {
             let directLight = this.lightObj3D.addComponent(DirectLight);
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             directLight.castShadow = true;
-            directLight.intensity = 18;
+            directLight.intensity = 5;
             GUIHelp.init();
             GUIUtil.renderDirLight(directLight);
             this.scene.addChild(this.lightObj3D);

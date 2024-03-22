@@ -12,6 +12,7 @@ export class Sample_LoadGLB {
         GUIHelp.init();
         await Engine3D.init();
         Engine3D.setting.shadow.autoUpdate = true;
+        Engine3D.setting.shadow.shadowBias = 0.05;
 
         let ex = createExampleScene();
         this.scene = ex.scene;
@@ -90,7 +91,7 @@ export class Sample_LoadGLB {
             }
         };
 
-        
+
         GUIHelp.add({ Model: `HIE-Hand-Armor` }, 'Model', Object.keys(list)).onChange(async (v) => {
             let { url, scale, offset, rotation } = list[v];
             this.loadGLB(url, offset, scale, rotation);

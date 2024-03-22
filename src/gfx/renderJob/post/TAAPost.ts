@@ -95,7 +95,7 @@ export class TAAPost extends PostBase {
     }
 
     public set jitterSeedCount(value: number) {
-        value = clamp(value, 2, 8);
+        value = clamp(value, 2, 32);
         value = Math.round(value);
         let setting = Engine3D.setting.render.postProcessing.taa;
         setting.jitterSeedCount = value;
@@ -118,7 +118,7 @@ export class TAAPost extends PostBase {
     }
 
     public set sharpFactor(value: number) {
-        value = clamp(value, 0.1, 0.9);
+        value = clamp(value, 0.1, 0.99);
         let setting = Engine3D.setting.render.postProcessing.taa;
         setting.sharpFactor = value;
     }
@@ -129,7 +129,7 @@ export class TAAPost extends PostBase {
     }
 
     public set sharpPreBlurFactor(value: number) {
-        value = clamp(value, 0.1, 0.9);
+        value = clamp(value, 0.1, 0.99);
         let setting = Engine3D.setting.render.postProcessing.taa;
         setting.sharpPreBlurFactor = value;
     }
@@ -155,13 +155,13 @@ export class TAAPost extends PostBase {
         let taaSetting: UniformGPUBuffer = new UniformGPUBuffer(16 * 2 + 4 * 3); //matrix + 3 * vector4
 
         let standUniform = GlobalBindGroup.getCameraGroup(view.camera);
-        computeShader.setUniformBuffer('standUniform', standUniform.uniformGPUBuffer);
+        computeShader.setUniformBuffer('globalUniform', standUniform.uniformGPUBuffer);
         computeShader.setUniformBuffer('taaData', taaSetting);
         computeShader.setStorageBuffer(`preColorBuffer`, this.preColorBuffer);
 
-        let rtFrame = GBufferFrame.getGBufferFrame("ColorPassGBuffer");
+        let rtFrame = GBufferFrame.getGBufferFrame(GBufferFrame.colorPass_GBuffer);
         computeShader.setSamplerTexture(`preColorTex`, this.preColorTex);
-        computeShader.setSamplerTexture(`posTex`, rtFrame.getPositionMap());
+        computeShader.setSamplerTexture(`gBufferTexture`, rtFrame.getCompressGBufferTexture());
         this.autoSetColorTexture('inTex', computeShader);
         computeShader.setStorageTexture(`outTex`, this.taaTexture);
 

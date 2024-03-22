@@ -1,6 +1,6 @@
 {
     "name": "@orillusion/ammo",
-    "version": "0.2.0",
+    "version": "0.1.3",
     "author": "Orillusion",
     "description": "Orillusion WebGPU Engine",
     "main": "ammo.js",

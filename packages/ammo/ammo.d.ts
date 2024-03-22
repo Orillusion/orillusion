@@ -7,7 +7,12 @@ declare function Ammo<T>(target?: T): Promise<T & typeof Ammo>;
  * Ammo.js by Bullet2
  */
 declare module Ammo {
-    function destroy(obj: any): void;
+
+    type Constructor<T = {}> = new (...args: any[]) => T;
+    type VoidPtr = number;
+    const NULL: {};
+    const PHY_FLOAT: number;
+
     function _malloc(size: number): number;
     function _free(ptr: number): void;
     const HEAP8: Int8Array;
@@ -16,8 +21,20 @@ declare module Ammo {
     const HEAPU8: Uint8Array;
     const HEAPU16: Uint16Array;
     const HEAPU32: Uint32Array;
-    const HEAPF32: Float32Array;
     const HEAPF64: Float64Array;
+    const HEAPF32: Float32Array;
+
+    function destroy(obj: Ammo.Type): void;
+    function castObject<T1, T2 extends Ammo.Type>(obj: T1, fun: Constructor<T2>): T2;
+    function wrapPointer<T extends Ammo.Type>(params: number, obj: Constructor<T>): T;
+    function addFunction(params: Function): number;
+    function getClass(obj: Ammo.Type): void;
+    function getPointer(obj: Ammo.Type): void;
+    function getCache(fun: Constructor<Ammo.Type>): void;
+    function _malloc(byte: number): number;
+    function _free(...args: any): any;
+    function compare(obj1: Ammo.Type, obj2: Ammo.Type): boolean;
+
     class btIDebugDraw {
         drawLine(from: btVector3, to: btVector3, color: btVector3): void;
         drawContactPoint(pointOnB: btVector3, normalOnB: btVector3, distance: number, lifeTime: number, color: btVector3): void;
@@ -267,10 +284,19 @@ declare module Ammo {
         setLocalScaling(scaling: btVector3): void;
         getLocalScaling(): btVector3;
         calculateLocalInertia(mass: number, inertia: btVector3): void;
+
+        /**
+         * Set collision shape edge count
+         * @param margin 
+         */
         setMargin(margin: number): void;
+
+        /**
+         * Get collision shape edge count
+         */
         getMargin(): number;
     }
-    class btConvexShape extends btCollisionShape {}
+    class btConvexShape extends btCollisionShape { }
     class btConvexTriangleMeshShape extends btConvexShape {
         constructor(meshInterface: btStridingMeshInterface, calcAabb?: boolean);
     }
@@ -399,14 +425,14 @@ declare module Ammo {
         getIndexedMeshArray(): btIndexedMeshArray;
     }
     type PHY_ScalarType = 'PHY_FLOAT' | 'PHY_DOUBLE' | 'PHY_INTEGER' | 'PHY_SHORT' | 'PHY_FIXEDPOINT88' | 'PHY_UCHAR';
-    class btConcaveShape extends btCollisionShape {}
+    class btConcaveShape extends btCollisionShape { }
     class btEmptyShape extends btConcaveShape {
         constructor();
     }
     class btStaticPlaneShape extends btConcaveShape {
         constructor(planeNormal: btVector3, planeConstant: number);
     }
-    class btTriangleMeshShape extends btConcaveShape {}
+    class btTriangleMeshShape extends btConcaveShape { }
     class btBvhTriangleMeshShape extends btTriangleMeshShape {
         constructor(meshInterface: btStridingMeshInterface, useQuantizedAabbCompression: boolean, buildBvh?: boolean);
     }
@@ -435,7 +461,7 @@ declare module Ammo {
     class btCollisionDispatcher extends btDispatcher {
         constructor(conf: btDefaultCollisionConfiguration);
     }
-    class btOverlappingPairCallback {}
+    class btOverlappingPairCallback { }
     class btOverlappingPairCache {
         setInternalGhostPairCallback(ghostPairCallback: btOverlappingPairCallback): void;
         getNumOverlappingPairs(): number;
@@ -446,7 +472,7 @@ declare module Ammo {
     class btBroadphaseInterface {
         getOverlappingPairCache(): btOverlappingPairCache;
     }
-    class btCollisionConfiguration {}
+    class btCollisionConfiguration { }
     class btDbvtBroadphase extends btBroadphaseInterface {
         constructor();
     }
@@ -602,7 +628,7 @@ declare module Ammo {
     class btFixedConstraint extends btTypedConstraint {
         constructor(rbA: btRigidBody, rbB: btRigidBody, frameInA: btTransform, frameInB: btTransform);
     }
-    class btConstraintSolver {}
+    class btConstraintSolver { }
     class btDispatcherInfo {
         get_m_timeStep(): number;
         set_m_timeStep(m_timeStep: number): void;
@@ -1043,7 +1069,7 @@ declare module Ammo {
     class btSoftBodyRigidBodyCollisionConfiguration extends btDefaultCollisionConfiguration {
         constructor(info?: btDefaultCollisionConstructionInfo);
     }
-    class btSoftBodySolver {}
+    class btSoftBodySolver { }
     class btDefaultSoftBodySolver extends btSoftBodySolver {
         constructor();
     }
@@ -1068,4 +1094,109 @@ declare module Ammo {
         CreateFromTriMesh(worldInfo: btSoftBodyWorldInfo, vertices: ReadonlyArray<number>, triangles: ReadonlyArray<number>, ntriangles: number, randomizeConstraints: boolean): btSoftBody;
         CreateFromConvexHull(worldInfo: btSoftBodyWorldInfo, vertices: btVector3, nvertices: number, randomizeConstraints: boolean): btSoftBody;
     }
+
+    type Type =
+        | btIDebugDraw
+        | DebugDrawer
+        | btVector3
+        | btVector4
+        | btQuadWord
+        | btQuaternion
+        | btMatrix3x3
+        | btTransform
+        | btMotionState
+        | btDefaultMotionState
+        | btCollisionObject
+        | btCollisionObjectWrapper
+        | RayResultCallback
+        | ClosestRayResultCallback
+        | btManifoldPoint
+        | ContactResultCallback
+        | ConcreteContactResultCallback
+        | LocalShapeInfo
+        | LocalConvexResult
+        | ConvexResultCallback
+        | ClosestConvexResultCallback
+        | btCollisionShape
+        | btConvexShape
+        | btConvexTriangleMeshShape
+        | btBoxShape
+        | btCapsuleShape
+        | btCapsuleShapeX
+        | btCapsuleShapeZ
+        | btCylinderShape
+        | btCylinderShapeX
+        | btCylinderShapeZ
+        | btSphereShape
+        | btConeShape
+        | btConvexHullShape
+        | btShapeHull
+        | btConeShapeX
+        | btConeShapeZ
+        | btCompoundShape
+        | btStridingMeshInterface
+        | btTriangleMesh
+        | btConcaveShape
+        | btStaticPlaneShape
+        | btTriangleMeshShape
+        | btBvhTriangleMeshShape
+        | btHeightfieldTerrainShape
+        | btDefaultCollisionConstructionInfo
+        | btDefaultCollisionConfiguration
+        | btPersistentManifold
+        | btDispatcher
+        | btCollisionDispatcher
+        | btOverlappingPairCallback
+        | btOverlappingPairCache
+        | btAxisSweep3
+        | btBroadphaseInterface
+        | btCollisionConfiguration
+        | btDbvtBroadphase
+        | btRigidBodyConstructionInfo
+        | btRigidBody
+        | btConstraintSetting
+        | btTypedConstraint
+        | btPoint2PointConstraint
+        | btGeneric6DofConstraint
+        | btGeneric6DofSpringConstraint
+        | btSequentialImpulseConstraintSolver
+        | btConeTwistConstraint
+        | btHingeConstraint
+        | btSliderConstraint
+        | btFixedConstraint
+        | btConstraintSolver
+        | btDispatcherInfo
+        | btCollisionWorld
+        | btContactSolverInfo
+        | btDynamicsWorld
+        | btDiscreteDynamicsWorld
+        | btVehicleTuning
+        | btVehicleRaycasterResult
+        | btVehicleRaycaster
+        | btDefaultVehicleRaycaster
+        | RaycastInfo
+        | btWheelInfoConstructionInfo
+        | btWheelInfo
+        | btActionInterface
+        | btKinematicCharacterController
+        | btRaycastVehicle
+        | btGhostObject
+        | btPairCachingGhostObject
+        | btGhostPairCallback
+        | btSoftBodyWorldInfo
+        | Node
+        | tNodeArray
+        | Material
+        | tMaterialArray
+        | Anchor
+        | tAnchorArray
+        | Config
+        | btSoftBody
+        | btSoftBodyRigidBodyCollisionConfiguration
+        | btSoftBodySolver
+        | btDefaultSoftBodySolver
+        | btSoftBodyArray
+        | btSoftRigidDynamicsWorld
+        | btSoftBodyHelpers;
+
 }

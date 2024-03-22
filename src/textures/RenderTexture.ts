@@ -112,7 +112,7 @@ export class RenderTexture extends Texture {
             this.minFilter = 'linear';
             this.magFilter = 'linear';
             this.mipmapFilter = `linear`;
-            this.maxAnisotropy = 16;
+            // this.maxAnisotropy = 16;
 
             this.addressModeU = GPUAddressMode.clamp_to_edge;
             this.addressModeV = GPUAddressMode.clamp_to_edge;

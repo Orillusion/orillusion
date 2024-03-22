@@ -298,7 +298,7 @@ export class UITransform extends ComponentBase {
     }
 
     public beforeDestroy(force?: boolean): void {
-        this.transform.eventDispatcher.removeEventListener(this.transform.eventLocalChange.type, this.onTransformChange, this);
+        this.transform.eventDispatcher.addEventListener(this.transform.eventLocalChange.type, this.onTransformChange, this);
         super.beforeDestroy?.(force);
     }
 }

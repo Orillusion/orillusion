@@ -26,7 +26,7 @@ class Sample_ConduitGeometry2 {
         exampleScene.camera.enableCSM = true;
         this.scene = exampleScene.scene;
         let job = Engine3D.startRenderView(exampleScene.view);
-        job.addPost(new BloomPost());
+        // job.addPost(new BloomPost());
         await this.createMaterial();
         await this.loadCurveData();
 
@@ -78,8 +78,8 @@ class Sample_ConduitGeometry2 {
         let texture = new BitmapTexture2D();
         texture.addressModeU = "repeat";
         texture.addressModeV = "repeat";
-        // await texture.load('textures/grid.jpg');
-        await texture.load('textures/cell.png');
+        await texture.load('textures/grid.jpg');
+        // await texture.load('textures/cell.png');
         this.material.baseMap = texture;
     }
 

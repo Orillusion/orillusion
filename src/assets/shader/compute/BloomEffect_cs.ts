@@ -1,3 +1,4 @@
+import { ColorUtil } from "../utils/ColorUtil";
 
 let BloomCfg =  /*wgsl*/ `
 struct BloomCfg{
@@ -52,8 +53,7 @@ let GaussBlur = function (GaussNxN: string, inTex: string, inTexSampler: string)
           for(var j=-r; j<=r; j+=1)
           {
               let w = GaussWeight2D(f32(i), f32(j), sigma);
-              var coord:vec2<f32> = uv + vec2<f32>(f32(i), f32(j)) * stride;
-              // color += tex2D(tex, coord).rgb * w;
+              var coord:vec2<f32> = uv + vec2<f32>(f32(i), f32(j)) * stride ;
               color += textureSampleLevel(${inTex}, ${inTexSampler}, coord, 0.0).xyz * w;
               weight += w;
           }
@@ -71,6 +71,7 @@ let GaussBlur = function (GaussNxN: string, inTex: string, inTexSampler: string)
 //________________________pixel filter
 
 export let threshold: string = /*wgsl*/ `
+${ColorUtil}
 ${BloomCfg}
 
 @group(0) @binding(1) var inTex : texture_2d<f32>;
@@ -88,18 +89,18 @@ fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_inv
       return;
   }
   var color = textureLoad(inTex, fragCoord, 0);
-  let lum = dot(vec3<f32>(0.2126, 0.7152, 0.0722), color.rgb);
-  
-  // if(lum<=bloomCfg.luminanceThreshole) {
-  //   color = vec4<f32>(0,0,0,color.w);
-  // }
-  var ret = color.xyz;
-  var brightness = lum;
-  var contribution = max(0, brightness - bloomCfg.luminanceThreshole);
-  contribution /=max(brightness, 0.00001);
-  ret = ret * contribution;
+  var linerColor = gammaToLiner(color.rgb);
+  var lum = dot(vec3<f32>(0.2126, 0.7152, 0.0722), linerColor.rgb) ;
 
-  textureStore(outTex, fragCoord, vec4<f32>(ret, color.w));
+  var ret = linerColor.xyz;
+  var contribution = max(0, lum - bloomCfg.luminanceThreshole) ;
+  // if(contribution > 0.0){
+    // ret = linerColor * contribution;
+  ret = ACESToneMapping(linerColor,contribution);
+  // }else{
+  //   ret = vec3f(0.0,0.0,0.0);
+  // }
+  textureStore(outTex, fragCoord, vec4<f32>(vec3f(ret), color.w));
 }
 `
 
@@ -170,9 +171,9 @@ fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_inv
   let prev_stride = vec2<f32>(0.5) / vec2<f32>(f32(texSize.x), f32(texSize.y));
   let curr_stride = vec2<f32>(1.0) / vec2<f32>(f32(texSize.x), f32(texSize.y));
 
-  let rgb1 = GaussNxN_1(uv, i32(bloomCfg.upSampleBlurSize), prev_stride, bloomCfg.upSampleBlurSigma);
-  let rgb2 = GaussNxN_0(uv, i32(bloomCfg.upSampleBlurSize), curr_stride, bloomCfg.upSampleBlurSigma);
-  color = vec4<f32>(rgb1 + rgb2, color.w);
+  let rgb1 = GaussNxN_0(uv, i32(bloomCfg.upSampleBlurSize), prev_stride, bloomCfg.upSampleBlurSigma);
+  let rgb2 = GaussNxN_1(uv, i32(bloomCfg.upSampleBlurSize), curr_stride, bloomCfg.upSampleBlurSigma);
+  color = vec4<f32>(rgb1+rgb2, color.w);
   textureStore(outTex, fragCoord, color);
 }
 `
@@ -180,6 +181,7 @@ fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_inv
 
 //__________________________blend
 export let post = /*wgsl*/ `
+${ColorUtil}
 ${BloomCfg}
 ${CalcUV_01}
 
@@ -191,19 +193,6 @@ ${CalcUV_01}
 var<private> texSize: vec2<u32>;
 var<private> fragCoord: vec2<i32>;
 
-fn ACESToneMapping(color: vec3<f32>, adapted_lum: f32) -> vec3<f32>
-{
-    let A = 2.51;
-    let B = 0.03;
-    let C = 2.43;
-    let D = 0.59;
-    let E = 0.14;
-
-    var color2 = color * adapted_lum;
-    color2 = (color2 * (A * color2 + B)) / (color2 * (C * color2 + D) + E);
-    return color2;
-}
-
 @compute @workgroup_size( 8 , 8 , 1 )
 fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_invocation_id) globalInvocation_id : vec3<u32>)
 {
@@ -213,7 +202,9 @@ fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_inv
       return;
   }
   var color = textureLoad(_MainTex, fragCoord, 0);
-  var uv = CalcUV_01(fragCoord, texSize);
+  let uv = vec2<f32>(f32(fragCoord.x), f32(fragCoord.y)) / vec2<f32>(f32(texSize.x - 1), f32(texSize.y - 1));
+
+  // var bloom = textureLoad(_BloomTex, fragCoord, 0).xyz;
   var bloom = textureSampleLevel(_BloomTex, _BloomTexSampler, uv, 0.0).xyz * bloomCfg.bloomIntensity;
   
   // tone map

@@ -81,7 +81,8 @@ export class PointLightsScript extends ComponentBase {
         poi.b = Math.random() + 0.1;
         poi.intensity = Math.random() * 1.5 + 10;
         poi.range *= Math.random() * 0.5 + 0.5;
-
+        poi.radius = 0;
+        poi.at = 8;
 
         this.object3D.addChild(obj);
         this._points.push(poi);

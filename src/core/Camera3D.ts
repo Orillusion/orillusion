@@ -66,6 +66,7 @@ export class Camera3D extends ComponentBase {
     private _projectionMatrixInv: Matrix4 = new Matrix4();
     private _projectionMatrix: Matrix4 = new Matrix4();
     private _viewMatrix: Matrix4 = new Matrix4();
+    private _viewMatrixInv: Matrix4 = new Matrix4();
     private _unprojection: Matrix4 = new Matrix4();
     private _pvMatrixInv: Matrix4 = new Matrix4();
     private _pvMatrix: Matrix4 = new Matrix4();
@@ -73,6 +74,7 @@ export class Camera3D extends ComponentBase {
     private _halfh: number;
     private _ray: Ray;
     private _enableCSM: boolean = false;
+    public mainCamera: Camera3D;
 
     /**
      * @internal
@@ -122,6 +124,8 @@ export class Camera3D extends ComponentBase {
         this.viewPort.w = webGPUContext.presentationSize[0];
         this.viewPort.h = webGPUContext.presentationSize[1];
         this.lookTarget = new Vector3(0, 0, 0);
+
+        this.perspective(60, webGPUContext.aspect, 1, 1000.0);
     }
 
     public getShadowBias(depthTexSize: number): number {
@@ -296,6 +300,27 @@ export class Camera3D extends ComponentBase {
         return matrix;
     }
 
+    public get vMatrixInv(): Matrix4 {
+        let matrix = this._viewMatrixInv.copyFrom(this.viewMatrix);
+        matrix.invert();
+        return matrix;
+    }
+
+    public get cameraToWorld(): Matrix4 {
+        let cameraToWorld = Matrix4.helpMatrix;
+        cameraToWorld.identity();
+        cameraToWorld.copyFrom(this.projectionMatrixInv);
+        cameraToWorld.multiply(this.vMatrixInv);
+        return cameraToWorld;
+    }
+
+    public get ndcToView(): Matrix4 {
+        let cameraToWorld = Matrix4.helpMatrix;
+        cameraToWorld.identity();
+        cameraToWorld.copyFrom(this.projectionMatrixInv);
+        return cameraToWorld;
+    }
+
     /**
      * get project invert matrix
      */
@@ -450,7 +475,7 @@ export class Camera3D extends ComponentBase {
         this._useJitterProjection = value;
         this._haltonSeq ||= new HaltonSeq();
         this._jitterOffsetList = [];
-        for (let i = 0; i < 8; i++) {
+        for (let i = 0; i < 32; i++) {
             let offset = this.generateRandomOffset();
             this._jitterOffsetList.push(offset);
         }
@@ -459,7 +484,7 @@ export class Camera3D extends ComponentBase {
 
     private generateRandomOffset(): Vector2 {
         let offset = new Vector2(HaltonSeq.get((this._sampleIndex & 1023) + 1, 2) - 0.5, HaltonSeq.get((this._sampleIndex & 1023) + 1, 3) - 0.5);
-        const k_SampleCount = 8;
+        const k_SampleCount = 32;
         if (++this._sampleIndex >= k_SampleCount) this._sampleIndex = 0;
 
         return offset;

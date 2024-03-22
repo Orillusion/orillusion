@@ -23,7 +23,7 @@ export class Demo_Cloth {
         await this.initScene(scene);
 
         let camera = CameraUtil.createCamera3DObject(scene);
-        
+
         camera.perspective(60, webGPUContext.aspect, 0.01, 10000.0);
         let ctl = camera.object3D.addComponent(HoverCameraController);
         ctl.setCamera(30, -28, 2);
@@ -77,7 +77,7 @@ export class Demo_Cloth {
             lightObj.rotationY = 0;
             lightObj.rotationZ = 0;
             let lc = lightObj.addComponent(DirectLight);
-            lc.intensity = 20;
+            lc.intensity = 3;
             lc.castShadow = true;
             scene.addChild(lightObj);
         }

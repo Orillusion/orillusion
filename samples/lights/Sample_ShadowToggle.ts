@@ -41,7 +41,7 @@ class Sample_ShadowToggle {
         lightObj3D.rotationY = 62;
         lightObj3D.rotationZ = 0;
         let sunLight = lightObj3D.addComponent(DirectLight);
-        sunLight.intensity = 15;
+        sunLight.intensity = 4;
         sunLight.lightColor = KelvinUtil.color_temperature_to_rgb(6553);
         sunLight.castShadow = true;
 

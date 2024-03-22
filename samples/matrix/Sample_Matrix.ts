@@ -34,7 +34,7 @@ class Sample_Matrix {
         lightObj.rotationZ = 150;
         let dirLight = lightObj.addComponent(DirectLight);
         dirLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
-        dirLight.intensity = 10;
+        dirLight.intensity = 5;
         scene.addChild(lightObj);
 
         sky.relativeTransform = dirLight.transform;

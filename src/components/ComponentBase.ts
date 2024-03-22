@@ -120,6 +120,8 @@ export class ComponentBase implements IComponent {
     public onCompute?(view?: View3D, command?: GPUCommandEncoder);
     public onGraphic?(view?: View3D);
     public onParentChange?(lastParent?: Object3D, currentParent?: Object3D);
+    public onAddChild?(child: Object3D);
+    public onRemoveChild?(child: Object3D);
 
     /**
      *

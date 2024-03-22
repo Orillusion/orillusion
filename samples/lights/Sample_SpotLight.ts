@@ -55,7 +55,7 @@ class Sample_SpotLight {
         spotLight.lightColor.r = 255 / 255;
         spotLight.lightColor.g = 157 / 255;
         spotLight.lightColor.b = 5 / 255;
-        spotLight.intensity = 80;
+        spotLight.intensity = 4;
         spotLight.radius = 1;
         spotLight.range = 787;
         spotLight.outerAngle = 96;

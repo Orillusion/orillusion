@@ -345,7 +345,7 @@ export class Color {
         ret.g = (c2.g - c1.g) * v + c1.g;
         ret.b = (c2.b - c1.b) * v + c1.b;
         ret.a = (c2.a - c1.a) * v + c1.a;
-        return target;
+        return ret;
     }
 
 

@@ -1,5 +1,6 @@
 export let TAA_cs: string = /*wgsl*/ `
 #include "GlobalUniform"
+#include "GBufferStand"
 
 struct TAAData{
   preProjMatrix: mat4x4<f32>,
@@ -14,35 +15,38 @@ struct TAAData{
   slot1: f32,
 }
 
-@group(0) @binding(0) var<uniform> standUniform: GlobalUniform;
-@group(0) @binding(1) var<uniform> taaData: TAAData;
-@group(0) @binding(2) var<storage, read_write> preColorBuffer : array<vec4<f32>>;
-
-@group(0) @binding(3) var preColorTexSampler : sampler;
-@group(0) @binding(4) var preColorTex : texture_2d<f32>;
-@group(0) @binding(5) var posTex : texture_2d<f32>;
+@group(0) @binding(2) var<uniform> taaData: TAAData;
+@group(0) @binding(3) var<storage, read_write> preColorBuffer : array<vec4<f32>>;
+@group(0) @binding(4) var preColorTexSampler : sampler;
+@group(0) @binding(5) var preColorTex : texture_2d<f32>;
 @group(0) @binding(6) var inTexSampler : sampler;
 @group(0) @binding(7) var inTex : texture_2d<f32>;
 @group(0) @binding(8) var outTex : texture_storage_2d<rgba16float, write>;
 
+const PI = 3.1415926 ;
+const FLT_EPS = 5.960464478e-8;  // 2^-24, machine epsilon: 1 + EPS = 1 (half of the ULP for 1.0f)
+
 var<private> texSize: vec2<u32>;
 var<private> fragCoord: vec2<i32>;
+var<private> fragUV: vec2<f32>;
 var<private> coordIndex: i32;
 var<private> color_min: vec4<f32>;
 var<private> color_max: vec4<f32>;
 var<private> color_avg: vec4<f32>;
 var<private> re_proj_uv01: vec2<f32>;
-var<private> FLT_EPS:f32 = 5.960464478e-8;  // 2^-24, machine epsilon: 1 + EPS = 1 (half of the ULP for 1.0f)
 
 @compute @workgroup_size( 8 , 8 , 1 )
 fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_invocation_id) globalInvocation_id : vec3<u32>)
 {
+  useNormalMatrixInv();
+
   fragCoord = vec2<i32>( globalInvocation_id.xy );
   texSize = textureDimensions(inTex).xy;
+  fragUV = vec2<f32>(fragCoord) / vec2<f32>(texSize);
   if(fragCoord.x >= i32(texSize.x) || fragCoord.y >= i32(texSize.y)){
       return;
   }
-  let frame = standUniform.frame;
+  let frame = globalUniform.frame;
   coordIndex = fragCoord.x + fragCoord.y * i32(texSize.x);
   
   let oc = blendColor();
@@ -58,7 +62,10 @@ fn blendColor() -> vec4<f32>
   var reProjectionCoord:vec2<f32> = vec2<f32>(fragCoord);
   //var jitterUVOffset = 0.5 * vec2<f32>(taaData.jitterX, -taaData.jitterY);
   if(taaData.jitterFrameIndex > 0.5){
-      var wPos = textureLoad(posTex, fragCoord, 0);
+      
+      let gBuffer : GBuffer = getGBuffer(fragCoord);
+      var wPos = getWorldPositionFromGBuffer(gBuffer,fragUV) ;
+
       let ndc = taaData.preProjMatrix * (taaData.preViewMatrix * vec4<f32>(wPos.xyz, 1.0));
       re_proj_uv01 = vec2<f32>(ndc.x, -ndc.y) / ndc.w;
       re_proj_uv01 = (re_proj_uv01 + 1.0) * 0.5;

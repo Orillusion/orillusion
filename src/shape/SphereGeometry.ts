@@ -85,13 +85,13 @@ export class SphereGeometry extends GeometryBase {
         let ui = 0;
         for (j = 0; j <= _segmentsH; ++j) {
             var horAngle: number = (Math.PI * j) / _segmentsH;
-            var z: number = -_radius * Math.cos(horAngle);
+            var y: number = _radius * Math.cos(horAngle);
             var ringRadius: number = _radius * Math.sin(horAngle);
 
             for (i = 0; i <= _segmentsW; ++i) {
                 var verAngle: number = (2 * Math.PI * i) / _segmentsW;
                 var x: number = ringRadius * Math.cos(verAngle);
-                var y: number = ringRadius * Math.sin(verAngle);
+                var z: number = ringRadius * Math.sin(verAngle);
                 var normLen: number = 1 / Math.sqrt(x * x + y * y + z * z);
                 let index = i * _segmentsW + j;
                 position_arr[pi++] = x;
@@ -103,7 +103,7 @@ export class SphereGeometry extends GeometryBase {
                 normal_arr[ni++] = z * normLen;
 
                 uv_arr[ui++] = i / _segmentsW;
-                uv_arr[ui++] = 1.0 - j / _segmentsH;
+                uv_arr[ui++] = j / _segmentsH;
 
                 if (i > 0 && j > 0) {
                     var a: number = (_segmentsW + 1) * j + i;

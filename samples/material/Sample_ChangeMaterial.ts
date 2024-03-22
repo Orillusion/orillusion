@@ -46,7 +46,7 @@ class Sample_ChangeMaterial {
             let directLight = lightObj.addComponent(DirectLight);
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             directLight.castShadow = true;
-            directLight.intensity = 6;
+            directLight.intensity = 5;
             this.scene.addChild(lightObj);
         }
 

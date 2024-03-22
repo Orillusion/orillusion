@@ -1,6 +1,7 @@
 
 import { Engine3D } from '../../../Engine3D';
 import { ILight } from '../../../components/lights/ILight';
+import { Reflection } from '../../../components/renderer/Reflection';
 import { RenderNode } from '../../../components/renderer/RenderNode';
 import { Camera3D } from '../../../core/Camera3D';
 import { Scene3D } from '../../../core/Scene3D';
@@ -32,6 +33,7 @@ export class EntityCollect {
     private _op_RenderNodes: Map<Scene3D, RenderNode[]>;
     private _tr_RenderNodes: Map<Scene3D, RenderNode[]>;
     private _octreeRenderNodes: Map<Scene3D, Octree>;
+    private _reflections: Map<Scene3D, Reflection[]>;
 
     private _graphics: Graphic3DBatchRenderer[];
 
@@ -68,6 +70,7 @@ export class EntityCollect {
 
         this._op_RenderNodes = new Map<Scene3D, RenderNode[]>();
         this._tr_RenderNodes = new Map<Scene3D, RenderNode[]>();
+        this._reflections = new Map<Scene3D, Reflection[]>();
 
         this._graphics = [];
 
@@ -103,6 +106,17 @@ export class EntityCollect {
         let isTransparent: boolean = renderNode.renderOrder >= 3000;
         if (renderNode.hasMask(RendererMask.Sky)) {
             this.sky = renderNode;
+        } else if (renderNode.hasMask(RendererMask.Reflection)) {
+            this.removeRenderNode(root, renderNode);
+            let maps = this._reflections.get(root);
+            if (!maps) {
+                maps = [];
+                this._reflections.set(root, maps);
+                maps.push(renderNode as Reflection);
+            }
+            if (!maps.includes(renderNode as Reflection)) {
+                maps.push(renderNode as Reflection);
+            }
         } else if (renderNode instanceof Graphic3DBatchRenderer) {
             if (this._graphics.indexOf(renderNode) == -1) {
                 this._graphics.push(renderNode);
@@ -157,6 +171,14 @@ export class EntityCollect {
         renderNode.detachSceneOctree();
         if (renderNode.hasMask(RendererMask.Sky)) {
             this.sky = null;
+        } else if (renderNode.hasMask(RendererMask.Reflection)) {
+            let maps = this._reflections.get(root);
+            if (maps) {
+                let index = maps.indexOf(renderNode as Reflection);
+                if (index != -1) {
+                    maps.splice(index, 1);
+                }
+            }
         } else if (!RenderLayerUtil.hasMask(renderNode.renderLayer, RenderLayer.None)) {
 
         } else {
@@ -222,6 +244,11 @@ export class EntityCollect {
 
     public getProbes(root: Scene3D) {
         let list = this._sceneGIProbes.get(root);
+        return list ? list : [];
+    }
+
+    public getReflections(root: Scene3D) {
+        let list = this._reflections.get(root);
         return list ? list : [];
     }
 

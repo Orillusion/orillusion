@@ -6,7 +6,7 @@ var<private> PI: f32 = 3.14159265359;
 #include "GlobalUniform"
 #include "MathShader"
 #include "FastMathShader"
-#include "ColorUtil"
+#include "ColorUtil_frag"
 
 struct ConstUniform{
    screenWidth:f32,

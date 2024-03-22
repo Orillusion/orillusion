@@ -1,3 +1,4 @@
+import { ProfilerUtil } from "../../..";
 import { WebGPUDescriptorCreator } from "../../graphics/webGpu/descriptor/WebGPUDescriptorCreator";
 import { GPUContext } from "../GPUContext";
 import { RTFrame } from "../frame/RTFrame";
@@ -11,7 +12,6 @@ export class RenderContext {
 
     constructor(rtFrame: RTFrame) {
         this.rtFrame = rtFrame;
-
         this.rendererPassStates = [];
     }
 
@@ -29,16 +29,12 @@ export class RenderContext {
             let splitRtFrame = this.rtFrame.clone();
             for (const iterator of splitRtFrame.rtDescriptors) {
                 iterator.loadOp = `load`;
-                // iterator.storeOp = `discard`;
             }
             splitRtFrame.depthLoadOp = depth_loadOp;
             let splitRendererPassState = WebGPUDescriptorCreator.createRendererPassState(splitRtFrame, color_loadOp);
             this.rendererPassStates.push(splitRendererPassState);
             return splitRendererPassState;
         } else {
-            // for (const iterator of this.rtFrame.rtDescriptors) {
-            //     iterator.loadOp = color_loadOp;
-            // }
             this.rtFrame.depthLoadOp = depth_loadOp;
             let splitRendererPassState = WebGPUDescriptorCreator.createRendererPassState(this.rtFrame, color_loadOp);
             this.rendererPassStates.push(splitRendererPassState);

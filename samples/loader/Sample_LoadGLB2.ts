@@ -19,7 +19,7 @@ export class Sample_LoadGLB2 {
         this.scene = exampleScene.scene;
 
         exampleScene.hoverCtrl.setCamera(-45, -45, 10);
-        exampleScene.light.intensity = 10;
+        exampleScene.light.intensity = 5;
         Engine3D.startRenderView(exampleScene.view);
         await this.initScene();
 
