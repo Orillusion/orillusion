@@ -33,7 +33,7 @@ export class RenderTexture extends Texture {
         super(width, height, numberLayer);
         this.name = UUID();
 
-        this.autoResize = false;
+        this.autoResize = autoResize;
         this.useMipmap = useMipMap;
         this.sampleCount = sampleCount;
         this.format = format;
@@ -55,7 +55,6 @@ export class RenderTexture extends Texture {
                 this._textureChange = true;
             }, this);
         }
-
     }
 
     public resize(width, height) {

@@ -26,15 +26,15 @@ export class GBufferFrame extends RTFrame {
         if (outColor) {
             let colorDec = new RTDescriptor();
             colorDec.loadOp = 'clear';
-            this._colorBufferTex = RTResourceMap.createRTTexture(key + RTResourceConfig.colorBufferTex_NAME, rtWidth, rtHeight, GPUTextureFormat.rgba16float, false);
+            this._colorBufferTex = RTResourceMap.createRTTexture(key + RTResourceConfig.colorBufferTex_NAME, rtWidth, rtHeight, GPUTextureFormat.rgba16float, true);
             attachments.push(this._colorBufferTex);
             reDescriptors.push(colorDec);
         }
 
-        this._compressGBufferTex = new RenderTexture(rtWidth, rtHeight, GPUTextureFormat.rgba32float, false, undefined, 1, 0, true, autoResize);
+        this._compressGBufferTex = new RenderTexture(rtWidth, rtHeight, GPUTextureFormat.rgba32float, false, undefined, 1, 0, true, true);
         attachments.push(this._compressGBufferTex);
 
-        this.depthTexture = new RenderTexture(rtWidth, rtHeight, GPUTextureFormat.depth24plus, false, undefined, 1, 0, true, autoResize);
+        this.depthTexture = new RenderTexture(rtWidth, rtHeight, GPUTextureFormat.depth24plus, false, undefined, 1, 0, true, true);
         this.depthTexture.name = key + `_depthTexture`;
 
         let depthDec = new RTDescriptor();

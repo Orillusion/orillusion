@@ -491,6 +491,8 @@ export class Engine3D {
         for (i = 0; i < views.length; i++) {
             const view = views[i];
             view.scene.waitUpdate();
+            let [w, h] = webGPUContext.presentationSize;
+            view.camera.viewPort.setTo(0, 0, w, h);
             view.camera.resetPerspective(webGPUContext.aspect);
         }
 

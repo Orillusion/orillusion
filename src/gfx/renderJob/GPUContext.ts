@@ -148,11 +148,14 @@ export class GPUContext {
         this.cleanCache();
         this.renderPassCount++;
         this.lastRenderPassState = renderPassState;
+        if (renderPassState.depthTexture) {
+            let depth = renderPassState.renderPassDescriptor.depthStencilAttachment;
+            depth.view = renderPassState.depthTexture.getGPUView() as any;
+        }
         if (renderPassState.renderTargets && renderPassState.renderTargets.length > 0) {
             for (let i = 0; i < renderPassState.renderTargets.length; ++i) {
                 const renderTarget = renderPassState.renderTargets[i];
                 let att = renderPassState.renderPassDescriptor.colorAttachments[i];
-
                 if (renderPassState.multisample > 0 && renderPassState.renderTargets.length == 1) {
                     att.view = renderPassState.multiTexture.createView();
                     att.resolveTarget = renderTarget.getGPUView();

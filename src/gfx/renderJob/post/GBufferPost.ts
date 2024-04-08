@@ -43,7 +43,6 @@ export class GBufferPost extends PostBase {
      * @internal
      */
     rendererPassState: RendererPassState;
-    combineCompute: ComputeShader;
     rtFrame: RTFrame;
     view: View3D;
     gBufferTexture: RenderTexture;
@@ -109,9 +108,7 @@ export class GBufferPost extends PostBase {
         this.currentRenderTexture = rtFrame.getColorTexture();
         this.gBufferTexture = rtFrame.getCompressGBufferTexture();
 
-        let presentationSize = webGPUContext.presentationSize;
-        let w = presentationSize[0];
-        let h = presentationSize[1];
+        let [w, h] = webGPUContext.presentationSize;
 
         this.outTexture = new VirtualTexture(w, h, GPUTextureFormat.rgba16float, false, GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC | GPUTextureUsage.TEXTURE_BINDING);
         this.outTexture.name = 'outTexture';
@@ -173,9 +170,10 @@ export class GBufferPost extends PostBase {
     }
 
     public onResize() {
-        // let presentationSize = webGPUContext.presentationSize;
-        // let w = presentationSize[0];
-        // let h = presentationSize[1];
-        // this.outTexture.resize(w, h);
+        let [w, h] = webGPUContext.presentationSize;
+        this.outTexture.resize(w, h);
+
+        this.testCompute.workerSizeX = Math.ceil(this.outTexture.width / 16);
+        this.testCompute.workerSizeY = Math.ceil(this.outTexture.height / 16);
     }
 }
