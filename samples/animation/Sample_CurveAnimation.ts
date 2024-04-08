@@ -19,7 +19,7 @@ export class Sample_AnimCurve {
         Engine3D.setting.shadow.shadowBias = 0.05;
 
         GUIHelp.init();
-        await Engine3D.init();
+        await Engine3D.init({ renderLoop: () => { this.renderUpdate() } });
 
         this.scene = new Scene3D();
         let sky = this.scene.addComponent(AtmosphericComponent);
@@ -28,7 +28,7 @@ export class Sample_AnimCurve {
         camera.perspective(60, Engine3D.aspect, 0.01, 5000.0);
 
         let ctrl = camera.object3D.addComponent(HoverCameraController);
-        ctrl.setCamera(0, -45, 100);
+        ctrl.setCamera(0, -45, 200);
         ctrl.maxDistance = 1000;
 
         let view = new View3D();

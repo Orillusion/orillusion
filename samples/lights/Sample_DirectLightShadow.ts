@@ -12,6 +12,12 @@ class Sample_DirectLightShadow {
         Engine3D.setting.shadow.shadowSize = 1024;
         Engine3D.setting.render.debug = true;
         Engine3D.setting.render.useLogDepth = false;
+        Engine3D.setting.shadow.autoUpdate = true;
+        Engine3D.setting.shadow.updateFrameRate = 1;
+        Engine3D.setting.shadow.shadowBound = 400;
+        Engine3D.setting.shadow.shadowSize = 2048;
+        Engine3D.setting.shadow.shadowBias = 0.05;
+
         Engine3D.setting.occlusionQuery.octree = { width: 1000, height: 1000, depth: 1000, x: 0, y: 0, z: 0 }
         await Engine3D.init({});
 

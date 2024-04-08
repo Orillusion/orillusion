@@ -49,9 +49,8 @@ export let OutlineCalcOutline_cs: string = /*wgsl*/ `
   fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_invocation_id) globalInvocation_id : vec3<u32>)
   {
     useNormalMatrixInv();
-
     fragCoordLow = vec2<i32>( globalInvocation_id.xy );
-    texSize = textureDimensions(indexTexture).xy;
+    texSize = textureDimensions(gBufferTexture).xy;
     fragUV = vec2<f32>(fragCoordLow) / vec2<f32>(texSize);
 
     lowSize = vec2<i32>(i32(outlineSetting.lowTexWidth), i32(outlineSetting.lowTexHeight));
@@ -70,9 +69,7 @@ export let OutlineCalcOutline_cs: string = /*wgsl*/ `
     fragOutline = weightBuffer[coordIndex];
 
     var gBuffer = getGBuffer( fragCoord ) ;
-    var wPos = getWorldPositionFromGBuffer(gBuffer,fragUV); 
-    
-    fragOutline.entityIndex = round(wPos.w);
+    fragOutline.entityIndex = f32(getIDFromGBuffer_i32(gBuffer));
     fragOutline.slotIndex = -1.0;
     fragOutline.outerSlotIndex = -1.0;
     fragOutline.weight = 0.0;

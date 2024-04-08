@@ -1,6 +1,5 @@
 export let SSR_BlendColor_cs: string = /*wgsl*/ `
   #include 'GlobalUniform'
-  #include 'GBufferStand'
 
   @group(0) @binding(2) var<storage, read_write> rayTraceBuffer : array<RayTraceRetData>;
   @group(0) @binding(3) var colorMap : texture_2d<f32>;
@@ -34,7 +33,7 @@ export let SSR_BlendColor_cs: string = /*wgsl*/ `
   fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_invocation_id) globalInvocation_id : vec3<u32>)
   {
     fragCoord = vec2<i32>( globalInvocation_id.xy );
-    colorTexSize = textureDimensions(gBufferTexture).xy;
+    colorTexSize = textureDimensions(colorMap).xy;
     ssrTexSize = textureDimensions(ssrMap).xy;
     if(fragCoord.x >= i32(colorTexSize.x) || fragCoord.y >= i32(colorTexSize.y)){
         return;
@@ -46,16 +45,10 @@ export let SSR_BlendColor_cs: string = /*wgsl*/ `
     var lastColor = textureLoad(colorMap, fragCoord , 0);
     let time = globalUniform.time;
 
-    let gbuffer = getGBuffer(fragCoord);
-    let color = getColorFromGBuffer(gbuffer);
-    let rm = getRMFromGBuffer(gbuffer);
-
     var uv01 = CalcUV_01(fragCoord, colorTexSize);
     
     var ssrColor = textureSampleLevel(ssrMap, ssrMapSampler, uv01, 0.0);
-    ssrColor = mix(vec4f(lastColor.rgb,1.0) , ssrColor, (1.0 - rm.r) ) ;
-    var tc = mix(vec4f(lastColor.rgb,1.0) , ssrColor, rm.g ) ;
-    var outColor = tc ;
+    var outColor = mix(lastColor, ssrColor, hitData.fresnel) ;
     textureStore(outTex, fragCoord , outColor );
   }
 

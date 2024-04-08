@@ -1,26 +1,8 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AnimatorComponent, AtmosphericComponent, BillboardType, BlendMode, BloomPost, Color, DepthOfFieldPost, DirectLight, Engine3D, GBufferPost, GPUCullMode, GTAOPost, GlobalFog, GlobalIlluminationComponent, GodRayPost, LitMaterial, Material, MorphTargetBlender, Object3D, OutlinePost, PassType, PointLight, ProfilerDraw, SkinnedMeshRenderer2, SpotLight, TAAPost, Transform, UIImage, UIPanel, UIShadow, Vector2, Vector4, View3D } from "@orillusion/core";
 import { UVMoveComponent } from "@samples/material/script/UVMoveComponent";
+import { ProfilerDraw, PassType, OutlinePost, GBufferPost, Engine3D, AtmosphericComponent, GlobalFog, Transform, BloomPost, GodRayPost, Object3D, DirectLight, PointLight, SpotLight, GlobalIlluminationComponent, View3D, UIShadow, Color, UIPanel, GPUCullMode, BillboardType, LitMaterial, BlendMode, MorphTargetBlender, SkinnedMeshRenderer2, AnimatorComponent, GTAOPost, TAAPost, DepthOfFieldPost, Vector4, Vector2 } from "@orillusion/core";
 
 export class GUIUtil {
-
-    static renderTAA(taa: TAAPost) {
-        GUIHelp.addFolder('TAAPost');
-
-        // jitterSeedCount: 8,
-        // blendFactor: 0.1,
-        // sharpFactor: 0.6,
-        // sharpPreBlurFactor: 0.5,
-        // temporalJitterScale: 0.13,
-
-        GUIHelp.add(taa, 'jitterSeedCount', 0, 32, 1);
-        GUIHelp.add(taa, 'blendFactor', 0, 1, 0.0001);
-        GUIHelp.add(taa, 'sharpFactor', 0, 1, 0.0001);
-        GUIHelp.add(taa, 'sharpPreBlurFactor', 0, 10, 0.0001);
-        GUIHelp.add(taa, 'temporalJitterScale', 0, 10, 0.0001);
-        open && GUIHelp.open();
-        GUIHelp.endFolder();
-    }
 
     static renderProfiler(arg0: ProfilerDraw) {
         let gui = GUIHelp._creatPanel();
@@ -210,7 +192,7 @@ export class GUIUtil {
         GUIHelp.add(light.transform, 'rotationY', 0.0, 360.0, 0.01);
         GUIHelp.add(light.transform, 'rotationZ', 0.0, 360.0, 0.01);
         GUIHelp.addColor(light, 'lightColor');
-        GUIHelp.add(light, 'intensity', 0.0, 1500.0, 0.01);
+        GUIHelp.add(light, 'intensity', 0.0, 100.0, 0.01);
         GUIHelp.add(light, 'indirect', 0.0, 1.0, 0.01);
         GUIHelp.add(light, 'castShadow');
 
@@ -660,6 +642,17 @@ export class GUIUtil {
         GUIHelp.add(post, "darkFactor", 0.0, 5, 0.001);
         GUIHelp.add(post, "blendColor");
         GUIHelp.add(post, "multiBounce");
+        GUIHelp.endFolder();
+    }
+
+    public static renderTAA(post: TAAPost, open: boolean = true) {
+        GUIHelp.addFolder("TAA");
+        GUIHelp.add(post, "jitterSeedCount", 2, 8, 1);
+        GUIHelp.add(post, "blendFactor", 0.0, 1.0, 0.01);
+        GUIHelp.add(post, "sharpFactor", 0.1, 0.9, 0.01);
+        GUIHelp.add(post, "sharpPreBlurFactor", 0.1, 0.9, 0.01);
+        GUIHelp.add(post, "temporalJitterScale", 0.0, 1.0, 0.01);
+        open && GUIHelp.open();
         GUIHelp.endFolder();
     }
 

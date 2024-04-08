@@ -64,10 +64,8 @@ export let SSR_IS_cs: string = /*wgsl*/ `
     var mixFactor = historyPosition[coordIndex].w;
     
     if(bufferData.alpha >= 0.0 && bufferData.roughness < ssrUniform.roughnessThreshold){
-      let roughness = clamp(bufferData.roughness, 0.0, 1.0);
       let prefilterColor = bufferData.skyColor;
-      var gBuffer = textureLoad(colorMap, vec2<i32>(bufferData.hitCoord), 0);
-      var ssrColor = vec4f(floatToVec3f(gBuffer.y),1.0) ;
+      var ssrColor = textureLoad(colorMap, vec2<i32>(bufferData.hitCoord), 0);
       ssrColor.w = bufferData.alpha;
       oc = ssrColor;
     }

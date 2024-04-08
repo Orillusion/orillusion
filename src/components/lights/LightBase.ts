@@ -9,7 +9,7 @@ import { LightData } from './LightData';
 import { ShadowLightsCollect } from '../../gfx/renderJob/collect/ShadowLightsCollect';
 import { IESProfiles } from './IESProfiles';
 import { ILight } from './ILight';
-import { Engine3D } from '../..';
+import { Engine3D } from '../../Engine3D';
 
 /**
  * @internal

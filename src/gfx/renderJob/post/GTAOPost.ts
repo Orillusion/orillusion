@@ -17,7 +17,6 @@ import { RTDescriptor } from '../../graphics/webGpu/descriptor/RTDescriptor';
 import { GBufferFrame } from '../frame/GBufferFrame';
 import { RTFrame } from '../frame/RTFrame';
 import { GTAO_cs } from '../../../assets/shader/compute/GTAO_cs';
-import { CResizeEvent } from '../../../event/CResizeEvent';
 
 /**
  * Ground base Ambient Occlusion
@@ -153,8 +152,6 @@ export class GTAOPost extends PostBase {
     }
 
     private createCompute() {
-        let setting = Engine3D.setting.render.postProcessing.gtao;
-
         this.gtaoCompute = new ComputeShader(GTAO_cs);
 
         let gtaoSetting: UniformGPUBuffer = new UniformGPUBuffer(4 * 2); //vector4 * 2
@@ -178,25 +175,12 @@ export class GTAOPost extends PostBase {
     }
 
     private createResource() {
-        let presentationSize = webGPUContext.presentationSize;
-        let w = presentationSize[0];
-        let h = presentationSize[1];
-
-        // RTResourceMap.createRTTextures(
-        //     [RTResourceConfig.colorBufferTex_NAME, RTResourceConfig.positionBufferTex_NAME, RTResourceConfig.normalBufferTex_NAME, RTResourceConfig.materialBufferTex_NAME],
-        //     [GPUTextureFormat.rgba16float, GPUTextureFormat.rgba16float, GPUTextureFormat.rgba8unorm, GPUTextureFormat.rgba8unorm],
-        // );
-
+        let [w, h] = webGPUContext.presentationSize;
         this.gtaoTexture = new VirtualTexture(w, h, GPUTextureFormat.rgba16float, false, GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC | GPUTextureUsage.TEXTURE_BINDING);
         this.gtaoTexture.name = 'gtaoTex';
         let gtaoDec = new RTDescriptor();
-        // gtaoDec.clearValue = [1, 1, 1, 1];
         gtaoDec.loadOp = `load`;
-        this.rtFrame = new RTFrame([
-            this.gtaoTexture
-        ], [
-            gtaoDec
-        ]);
+        this.rtFrame = new RTFrame([this.gtaoTexture], [gtaoDec]);
     }
 
     private randomCount: number = 0;
@@ -252,11 +236,8 @@ export class GTAOPost extends PostBase {
     }
 
     public onResize() {
-        let presentationSize = webGPUContext.presentationSize;
-        let w = presentationSize[0];
-        let h = presentationSize[1];
+        let [w, h] = webGPUContext.presentationSize;
         this.gtaoTexture.resize(w, h);
-
         this.gtaoCompute.workerSizeX = Math.ceil(this.gtaoTexture.width / 8);
         this.gtaoCompute.workerSizeY = Math.ceil(this.gtaoTexture.height / 8);
         this.gtaoCompute.workerSizeZ = 1;

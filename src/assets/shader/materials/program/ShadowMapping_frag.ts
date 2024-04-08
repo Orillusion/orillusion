@@ -11,7 +11,7 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
     var<private> shadowWeight: f32 = 1.0 ;
 
     fn useShadow(){
-        directShadowVisibility = array<f32, 8>( 0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0) ;
+        directShadowVisibility = array<f32, 8>( 1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0) ;
         pointShadows = array<f32, 8>(1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0) ;
         directShadowMaping(globalUniform.shadowBias);
         pointShadowMapCompare(globalUniform.pointShadowBias);

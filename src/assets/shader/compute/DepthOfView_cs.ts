@@ -24,18 +24,18 @@ export let DepthOfView_cs: string = /*wgsl*/ `
   @compute @workgroup_size( 8 , 8 , 1 )
   fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_invocation_id) globalInvocation_id : vec3<u32>)
   {
-    useNormalMatrixInv();
-
+    
     fragCoord = vec2<i32>( globalInvocation_id.xy );
     texSize = textureDimensions(inTex).xy;
-    fragUV = vec2<f32>(fragCoord) / vec2<f32>(texSize);
-
-    var gBuffer = getGBuffer( fragCoord ) ;
-
-    texelSize = 1.0 / vec2<f32>(texSize - 1);
+    
     if(fragCoord.x >= i32(texSize.x) || fragCoord.y >= i32(texSize.y)){
-        return;
+      return;
     }
+    fragUV = vec2<f32>(fragCoord) / vec2<f32>(texSize);
+    texelSize = 1.0 / vec2<f32>(texSize - 1);
+    var gBuffer = getGBuffer( fragCoord ) ;
+    useNormalMatrixInv();
+
     cameraPosition = globalUniform.CameraPos.xyz ;
     var wPosition = getWorldPositionFromGBuffer(gBuffer,fragUV); 
     var distance = length(wPosition - cameraPosition);

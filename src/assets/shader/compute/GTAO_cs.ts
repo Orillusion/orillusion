@@ -34,18 +34,19 @@ export let GTAO_cs: string = /*wgsl*/ `
     @compute @workgroup_size( 8 , 8 , 1 )
     fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_invocation_id) globalInvocation_id : vec3<u32>)
     {
-      useNormalMatrixInv();
-
+      
       fragCoord = vec2<i32>( globalInvocation_id.xy );
       texSize = textureDimensions(inTex).xy;
-      fragUV = vec2<f32>(fragCoord) / vec2<f32>(texSize);
       if(fragCoord.x >= i32(texSize.x) || fragCoord.y >= i32(texSize.y)){
-          return;
+        return;
       }
+      
+      fragUV = vec2<f32>(fragCoord) / vec2<f32>(texSize - 1);
+      useNormalMatrixInv();
 
       gBuffer = getGBuffer( fragCoord ) ;
       wNormal = vec4f(getWorldNormalFromGBuffer(gBuffer),1.0); 
-      var visible = getroughnessFromGBuffer(gBuffer);
+      var visible = getRoughnessFromGBuffer(gBuffer);
 
       var oc = textureLoad(inTex, fragCoord, 0);
       let index = fragCoord.x + fragCoord.y * i32(texSize.x);
@@ -62,7 +63,7 @@ export let GTAO_cs: string = /*wgsl*/ `
       var factor:f32 = mix(lastFactor, newFactor, 0.6);
       aoBuffer[index] = factor;
       factor = blurFactor(factor);
-      factor = saturate(1.0 - factor * gtaoData.darkFactor)* gtaoData.darkFactor;
+      factor = saturate(1.0 - factor * gtaoData.darkFactor);
       var gtao = vec3<f32>(factor);
       if(gtaoData.multiBounce > 0.5){
           gtao = MultiBounce(factor, oc.xyz);
@@ -115,7 +116,7 @@ export let GTAO_cs: string = /*wgsl*/ `
       let originNormal = normalize(vec3<f32>(wNormal.xyz));
       let stepPixel = maxPixelScaled / gtaoData.rayMarchSegment;
       var weight:f32 = 0.0;
-      var totalWeight:f32 = 0.0;
+      var totalWeight:f32 = 0.00001;
       for(var i:i32 = 0; i < 8; i += 1){
           let dirVec2 = directions[i];
           for(var j:f32 = 1.1; j < maxPixelScaled; j += stepPixel){
@@ -128,7 +129,7 @@ export let GTAO_cs: string = /*wgsl*/ `
 
                 let subGBuffer = getGBuffer( sampleCoord ) ;
                 let samplePosition = getWorldPositionFromGBuffer(subGBuffer,vec2f(sampleCoord)/vec2f(texSize));
-                var visible = getroughnessFromGBuffer(subGBuffer);
+                var visible = getRoughnessFromGBuffer(subGBuffer);
                 if(visible>0.0){
                   let distanceVec2 = samplePosition.xyz - wPosition;
                   let distance = length(distanceVec2);

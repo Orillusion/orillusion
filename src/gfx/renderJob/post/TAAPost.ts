@@ -150,7 +150,6 @@ export class TAAPost extends PostBase {
 
     private createCompute(view: View3D) {
         let computeShader = new ComputeShader(TAA_cs);
-        let cfg = Engine3D.setting.render.postProcessing.taa;
 
         let taaSetting: UniformGPUBuffer = new UniformGPUBuffer(16 * 2 + 4 * 3); //matrix + 3 * vector4
 
@@ -194,9 +193,7 @@ export class TAAPost extends PostBase {
         this.preProjMatrix = new Matrix4().identity();
         this.preViewMatrix = new Matrix4().identity();
 
-        let presentationSize = webGPUContext.presentationSize;
-        let w = presentationSize[0];
-        let h = presentationSize[1];
+        let [w, h] = webGPUContext.presentationSize;
 
         this.preColorBuffer = new StorageGPUBuffer(w * h * 4, GPUBufferUsage.COPY_SRC);
 
@@ -256,9 +253,7 @@ export class TAAPost extends PostBase {
     }
 
     public onResize(): void {
-        let presentationSize = webGPUContext.presentationSize;
-        let w = presentationSize[0];
-        let h = presentationSize[1];
+        let [w, h] = webGPUContext.presentationSize;
 
         this.preColorBuffer.resizeBuffer(w * h * 4);
 

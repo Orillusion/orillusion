@@ -9,12 +9,10 @@ import { ComputeShader } from '../../graphics/webGpu/shader/ComputeShader';
 import { GPUTextureFormat } from '../../graphics/webGpu/WebGPUConst';
 import { webGPUContext } from '../../graphics/webGpu/Context3D';
 import { GPUContext } from '../GPUContext';
-import { RTResourceMap } from '../frame/RTResourceMap';
 import { RendererPassState } from '../passRenderer/state/RendererPassState';
 import { PostBase } from './PostBase';
 import { clamp } from '../../../math/MathUtil';
 import { EntityCollect } from '../collect/EntityCollect';
-import { RTResourceConfig } from '../config/RTResourceConfig';
 import { RTDescriptor } from '../../graphics/webGpu/descriptor/RTDescriptor';
 import { RTFrame } from '../frame/RTFrame';
 import { GBufferFrame } from '../frame/GBufferFrame';
@@ -24,7 +22,6 @@ import { SkyRenderer } from '../../../components/renderer/SkyRenderer';
 import { SSR_RayTrace_cs } from '../../../assets/shader/compute/SSR_RayTrace_cs';
 import { SSR_IS_cs } from '../../../assets/shader/compute/SSR_IS_cs';
 import { SSR_BlendColor_cs } from '../../../assets/shader/compute/SSR_BlendColor_cs';
-import { TestComputeLoadBuffer } from '../../../assets/shader/compute/utils/TestComputeLoadBuffer';
 /**
  * Screen space reflection
  * ```
@@ -70,23 +67,16 @@ export class SSRPost extends PostBase {
     /**
      * @internal
      */
-    isKernelFloat32Array: Float32Array;
     rtFrame: RTFrame;
     historyPosition: StorageGPUBuffer;
     view: View3D;
-    scale: number = 0.5;
-    // textCompute: ComputeShader;
 
-    constructor() {
-        super();
-    }
     /**
      * @internal
      */
     public onAttach(view: View3D,) {
         this.view = view;
         Engine3D.setting.render.postProcessing.ssr.enable = true;
-        this.debug();
     }
     /**
      * @internal
@@ -163,9 +153,6 @@ export class SSRPost extends PostBase {
         setting.powDotRN = value;
     }
 
-    private debug() {
-    }
-
     private createRayTraceShader() {
         let globalUniform = GlobalBindGroup.getCameraGroup(this.view.camera);
 
@@ -186,16 +173,6 @@ export class SSRPost extends PostBase {
         this.SSR_RayTraceCompute.workerSizeX = Math.ceil(this.isRetTexture.width / 8);
         this.SSR_RayTraceCompute.workerSizeY = Math.ceil(this.isRetTexture.height / 8);
         this.SSR_RayTraceCompute.workerSizeZ = 1;
-
-        //test
-        // this.textCompute = new ComputeShader(TestComputeLoadBuffer);
-        // this.textCompute.setUniformBuffer('globalUniform', globalUniform.uniformGPUBuffer);
-        // this.textCompute.setSamplerTexture("gBufferTexture", gBufferTexture);
-        // this.textCompute.setStorageTexture("outputTexture", this.finalTexture);
-
-        // this.textCompute.workerSizeX = Math.ceil(this.finalTexture.width / 16);
-        // this.textCompute.workerSizeY = Math.ceil(this.finalTexture.height / 16);
-        // this.textCompute.workerSizeZ = 1;
     }
 
     private createISShader() {
@@ -205,10 +182,7 @@ export class SSRPost extends PostBase {
         this.SSR_IS_Compute.setStorageBuffer(`rayTraceBuffer`, this.rayTraceData);
         this.SSR_IS_Compute.setStorageBuffer(`ssrColorData`, this.ssrColorData);
         this.SSR_IS_Compute.setStorageBuffer(`historyPosition`, this.historyPosition);
-
-        let rtFrame = GBufferFrame.getGBufferFrame("ColorPassGBuffer");
-        let gBufferTexture = rtFrame.getCompressGBufferTexture();
-        this.SSR_IS_Compute.setSamplerTexture(`colorMap`, gBufferTexture);
+        this.SSR_IS_Compute.setSamplerTexture(`colorMap`, this.getOutTexture());
 
         this.SSR_IS_Compute.setStorageTexture(`outTex`, this.isRetTexture);
 
@@ -227,10 +201,8 @@ export class SSRPost extends PostBase {
         let rtFrame = GBufferFrame.getGBufferFrame("ColorPassGBuffer");
         let gBufferTexture = rtFrame.getCompressGBufferTexture();
 
-        let colorMap = this.getOutTexture();
-
         this.SSR_Blend_Compute.setSamplerTexture("gBufferTexture", gBufferTexture);
-        this.SSR_Blend_Compute.setSamplerTexture("colorMap", colorMap);
+        this.SSR_Blend_Compute.setSamplerTexture("colorMap", this.getOutTexture());
         this.SSR_Blend_Compute.setSamplerTexture(`ssrMap`, input);
         this.SSR_Blend_Compute.setStorageTexture(`outTex`, this.finalTexture);
 
@@ -240,21 +212,16 @@ export class SSRPost extends PostBase {
     }
 
     private createResource() {
-        let presentationSize = webGPUContext.presentationSize;
-        let w = presentationSize[0];
-        let h = presentationSize[1];
-        // RTResourceMap.createRTTextures(
-        //     [RTResourceConfig.colorBufferTex_NAME, RTResourceConfig.positionBufferTex_NAME, RTResourceConfig.normalBufferTex_NAME, RTResourceConfig.materialBufferTex_NAME],
-        //     [GPUTextureFormat.rgba16float, GPUTextureFormat.rgba16float, GPUTextureFormat.rgba8unorm, GPUTextureFormat.rgba8unorm],
-        // );
+        let [w, h] = webGPUContext.presentationSize;
+
         this.finalTexture = new VirtualTexture(w, h, GPUTextureFormat.rgba16float, false, GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.TEXTURE_BINDING);
         this.finalTexture.name = 'ssrOutTex';
         let rtDec = new RTDescriptor();
         rtDec.clearValue = [0, 0, 0, 0];
         rtDec.loadOp = `clear`;
 
-        let ssrWidth = Math.ceil(this.scale * w * Engine3D.setting.render.postProcessing.ssr.pixelRatio);
-        let ssrHeight = Math.ceil(this.scale * h * Engine3D.setting.render.postProcessing.ssr.pixelRatio);
+        let ssrWidth = Math.ceil(w * Engine3D.setting.render.postProcessing.ssr.pixelRatio);
+        let ssrHeight = Math.ceil(h * Engine3D.setting.render.postProcessing.ssr.pixelRatio);
 
         this.isRetTexture = new VirtualTexture(ssrWidth, ssrHeight, GPUTextureFormat.rgba16float, false, GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.TEXTURE_BINDING);
         this.isRetTexture.name = 'ssrTextureIn';
@@ -292,7 +259,6 @@ export class SSRPost extends PostBase {
             this.createISShader();
             this.createRayTraceShader();
             this.createBlendShader(this.isRetTexture);
-            let presentTexture = this.finalTexture;
             this.rendererPassState = WebGPUDescriptorCreator.createRendererPassState(this.rtFrame, null);
 
             let standUniform = GlobalBindGroup.getCameraGroup(view.camera);
@@ -315,24 +281,16 @@ export class SSRPost extends PostBase {
 
         this.ssrUniformBuffer.apply();
 
-        // let computes = [this.SSR_RayTraceCompute, this.SSR_IS_Compute, this.SSR_Blend_Compute];
-        let computes = [
-            // this.textCompute,
-            this.SSR_RayTraceCompute,
-            this.SSR_IS_Compute,
-            this.SSR_Blend_Compute
-        ];
+        let computes = [this.SSR_RayTraceCompute, this.SSR_IS_Compute, this.SSR_Blend_Compute];
         GPUContext.computeCommand(command, computes);
         GPUContext.lastRenderPassState = this.rendererPassState;
     }
 
     public onResize(): void {
-        let presentationSize = webGPUContext.presentationSize;
-        let w = presentationSize[0];
-        let h = presentationSize[1];
+        let [w, h] = webGPUContext.presentationSize;
 
-        let ssrWidth = Math.ceil(this.scale * w * Engine3D.setting.render.postProcessing.ssr.pixelRatio);
-        let ssrHeight = Math.ceil(this.scale * h * Engine3D.setting.render.postProcessing.ssr.pixelRatio);
+        let ssrWidth = Math.ceil(w * Engine3D.setting.render.postProcessing.ssr.pixelRatio);
+        let ssrHeight = Math.ceil(h * Engine3D.setting.render.postProcessing.ssr.pixelRatio);
 
         this.finalTexture.resize(w, h);
         this.isRetTexture.resize(ssrWidth, ssrHeight);

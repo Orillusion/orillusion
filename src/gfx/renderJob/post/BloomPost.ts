@@ -213,11 +213,10 @@ export class BloomPost extends PostBase {
         let setting = Engine3D.setting.render.postProcessing.bloom;
         this.bloomSetting = new UniformGPUBuffer(4 * 2); //vector4 * 2
 
-        let presentationSize = webGPUContext.presentationSize;
-        let screenWidth = presentationSize[0];
-        let screenHeight = presentationSize[1];
+        let [screenWidth, screenHeight] = webGPUContext.presentationSize;
+        let usage = GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC | GPUTextureUsage.TEXTURE_BINDING;
 
-        this.RT_threshold = new VirtualTexture(screenWidth, screenHeight, GPUTextureFormat.rgba16float, false, GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC | GPUTextureUsage.TEXTURE_BINDING);
+        this.RT_threshold = new VirtualTexture(screenWidth, screenHeight, GPUTextureFormat.rgba16float, false, usage);
 
         const N = setting.downSampleStep;
         {
@@ -225,7 +224,7 @@ export class BloomPost extends PostBase {
             let w = Math.ceil(screenWidth / 4);
             let h = Math.ceil(screenHeight / 4);
             for (let i = 0; i < N; i++) {
-                this.RT_BloomDown[i] = new VirtualTexture(w, h, GPUTextureFormat.rgba16float, false, GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC | GPUTextureUsage.TEXTURE_BINDING);
+                this.RT_BloomDown[i] = new VirtualTexture(w, h, GPUTextureFormat.rgba16float, false, usage);
                 w = Math.ceil(w / 2);
                 h = Math.ceil(h / 2);
             }
@@ -236,7 +235,7 @@ export class BloomPost extends PostBase {
             for (let i = 0; i < N - 1; i++) {
                 let w = this.RT_BloomDown[N - 2 - i].width;
                 let h = this.RT_BloomDown[N - 2 - i].height;
-                this.RT_BloomUp[i] = new VirtualTexture(w, h, GPUTextureFormat.rgba16float, false, GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC | GPUTextureUsage.TEXTURE_BINDING);
+                this.RT_BloomUp[i] = new VirtualTexture(w, h, GPUTextureFormat.rgba16float, false, usage);
             }
         }
 
@@ -281,9 +280,7 @@ export class BloomPost extends PostBase {
     public onResize() {
         let cfg = Engine3D.setting.render.postProcessing.bloom;
 
-        let presentationSize = webGPUContext.presentationSize;
-        let screenWidth = presentationSize[0];
-        let screenHeight = presentationSize[1];
+        let [screenWidth, screenHeight] = webGPUContext.presentationSize;
         this.RT_threshold.resize(screenWidth, screenHeight);
 
         const N = cfg.downSampleStep;

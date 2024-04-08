@@ -38,14 +38,13 @@ var<private> re_proj_uv01: vec2<f32>;
 @compute @workgroup_size( 8 , 8 , 1 )
 fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_invocation_id) globalInvocation_id : vec3<u32>)
 {
-  useNormalMatrixInv();
-
   fragCoord = vec2<i32>( globalInvocation_id.xy );
   texSize = textureDimensions(inTex).xy;
-  fragUV = vec2<f32>(fragCoord) / vec2<f32>(texSize);
   if(fragCoord.x >= i32(texSize.x) || fragCoord.y >= i32(texSize.y)){
       return;
   }
+  useNormalMatrixInv();
+  fragUV = vec2<f32>(fragCoord) / vec2<f32>(texSize - 1);
   let frame = globalUniform.frame;
   coordIndex = fragCoord.x + fragCoord.y * i32(texSize.x);
   
@@ -62,15 +61,14 @@ fn blendColor() -> vec4<f32>
   var reProjectionCoord:vec2<f32> = vec2<f32>(fragCoord);
   //var jitterUVOffset = 0.5 * vec2<f32>(taaData.jitterX, -taaData.jitterY);
   if(taaData.jitterFrameIndex > 0.5){
-      
       let gBuffer : GBuffer = getGBuffer(fragCoord);
       var wPos = getWorldPositionFromGBuffer(gBuffer,fragUV) ;
-
+      let roughness = getRoughnessFromGBuffer(gBuffer);
       let ndc = taaData.preProjMatrix * (taaData.preViewMatrix * vec4<f32>(wPos.xyz, 1.0));
       re_proj_uv01 = vec2<f32>(ndc.x, -ndc.y) / ndc.w;
       re_proj_uv01 = (re_proj_uv01 + 1.0) * 0.5;
       
-      if(re_proj_uv01.x >= 0.0 && re_proj_uv01.x <= 1.0 && re_proj_uv01.y >= 0.0 && re_proj_uv01.y <= 1.0){
+      if(roughness > 0.0 && re_proj_uv01.x >= 0.0 && re_proj_uv01.x <= 1.0 && re_proj_uv01.y >= 0.0 && re_proj_uv01.y <= 1.0){
           mixWeight = taaData.blendFactor;
           //reProjectionCoord = re_proj_uv01 + jitterUVOffset;
           reProjectionCoord.x = re_proj_uv01.x * f32(texSize.x - 1);
@@ -82,7 +80,7 @@ fn blendColor() -> vec4<f32>
       }
   }
   
-  var curUV01 = vec2<f32>(fragCoord) / vec2<f32>(texSize - 1);
+  var curUV01 = fragUV;
   //curUV01 += jitterUVOffset;
   
   let curColor = textureSampleLevel(inTex, inTexSampler, curUV01, 0.0);
@@ -95,7 +93,6 @@ fn blendColor() -> vec4<f32>
   
   preColor = clip_aabb(color_min.xyz, color_max.xyz, color_avg, preColor);
   var outColor = mix(preColor, curColor, mixWeight);
-
   return outColor;
 }
 

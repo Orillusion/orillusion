@@ -71,7 +71,7 @@ export let TestComputeLoadBuffer = /* wgsl */`
                 break;
             }
             case 4:{
-                fragColor = vec4f(vec3f(getroughnessFromGBuffer(gBuffer)),1.0) ;
+                fragColor = vec4f(vec3f(getRoughnessFromGBuffer(gBuffer)),1.0) ;
                 break;
             }
             case 5:{
@@ -83,7 +83,7 @@ export let TestComputeLoadBuffer = /* wgsl */`
                 break;
             }
             case 7:{
-                let id = (f32(getIDFromGBuffer(gBuffer)) * f_r22g8.r) % 9.0;
+                let id = (f32(getIDFromGBuffer_i32(gBuffer)) * f_r22g8.r) % 9.0;
                 fragColor = vec4f(colorSet[u32(id)],1.0) ;
                 break;
             }
