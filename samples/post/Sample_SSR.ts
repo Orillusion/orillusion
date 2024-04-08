@@ -49,7 +49,7 @@ export class Sample_SSR {
             let lc = this.lightObj.addComponent(DirectLight)
             lc.lightColor = KelvinUtil.color_temperature_to_rgb(5355)
             lc.castShadow = true
-            lc.intensity = 50
+            lc.intensity = 10
             scene.addChild(this.lightObj)
             GUIUtil.renderDirLight(lc);
         }

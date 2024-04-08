@@ -26,8 +26,8 @@ class Sample_CSM {
         mainCamera.object3D.z = -15;
         mainCamera.object3D.addComponent(HoverCameraController).setCamera(-15, -35, 200);
 
-        sky.relativeTransform = this.initLight('mainLight', 10, 45);
-        this.initLight('subLight', 6, 10);
+        sky.relativeTransform = this.initLight('mainLight', 3, 45);
+        this.initLight('subLight', 2, 10);
         this.initScene();
 
         let view = new View3D();

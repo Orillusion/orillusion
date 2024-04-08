@@ -144,10 +144,20 @@ export class Camera3D extends ComponentBase {
         return shadowBound;
     }
 
-    public getCSMShadowBias(index: number, depthTexSize: number): number {
-        let sizeOnePixel = 2.0 * this.getCSMShadowWorldExtents(index) / depthTexSize;
-        let depth = this.far - this.near;
-        return sizeOnePixel / depth;
+    // public getCSMShadowBias(index: number, depthTexSize: number): number {
+    //     let sizeOnePixel = 2.0 * this.getCSMShadowWorldExtents(index) / depthTexSize;
+    //     let depth = this.far - this.near;
+    //     return sizeOnePixel / depth;
+    // }
+
+    public getCSMShadowBiasScale(shadowCamera: Camera3D): number {
+        if (shadowCamera == this)
+            return 1.0;
+
+        let currentSize = this.far - this.near;
+        let baseCamera = this.csm.children[0].shadowCamera;
+        let baseSize = baseCamera.far - baseCamera.near;
+        return baseSize / currentSize;
     }
 
     public getCSMShadowWorldExtents(index: number): number {

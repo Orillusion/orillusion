@@ -1,9 +1,9 @@
-import { createExampleScene, createSceneParam } from "@samples/utils/ExampleScene";
-import { Object3D, Scene3D, Engine3D, GlobalIlluminationComponent, Object3DUtil, GTAOPost, PostProcessingComponent, TAAPost, BloomPost, FXAAPost } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, GlobalIlluminationComponent, Object3DUtil, PostProcessingComponent, TAAPost, BloomPost, FXAAPost, CameraUtil, HoverCameraController, AtmosphericComponent, DirectLight, KelvinUtil, View3D } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 
 class Sample_GI {
+    lightObj3D: Object3D;
     scene: Scene3D;
     async run() {
 
@@ -28,7 +28,9 @@ class Sample_GI {
         Engine3D.setting.gi.ddgiGamma = 1;
         Engine3D.setting.gi.autoRenderProbe = true;
 
-        Engine3D.setting.shadow.shadowBound = 200;
+        Engine3D.setting.shadow.shadowBound = 400;
+        Engine3D.setting.shadow.shadowSize = 2048;
+        Engine3D.setting.shadow.shadowBias = 0.05;
         Engine3D.setting.shadow.debug = true;
 
         Engine3D.setting.shadow.autoUpdate = true;
@@ -43,28 +45,31 @@ class Sample_GI {
             }
         });
         GUIHelp.init();
-        let param = createSceneParam();
-        param.camera.distance = 200;
-        let exampleScene = createExampleScene(param);
-        exampleScene.atmosphericSky.exposure = 0.5;
-        this.scene = exampleScene.scene;
-        exampleScene.camera.enableCSM = true;
-        Engine3D.startRenderViews([exampleScene.view]);
-        let job = Engine3D.getRenderJob(exampleScene.view);
+        this.scene = new Scene3D();
+        let sky = this.scene.addComponent(AtmosphericComponent);
 
-        let postProcessing = this.scene.addComponent(PostProcessingComponent);
-        // postProcessing.addPost(FXAAPost);
-        // postProcessing.addPost(TAAPost);
-        // postProcessing.addPost(GTAOPost);
-        postProcessing.addPost(BloomPost);
-        await this.initScene();
+        let camera = CameraUtil.createCamera3DObject(this.scene);
+        camera.perspective(60, Engine3D.aspect, 0.01, 5000.0);
+
+        let ctrl = camera.object3D.addComponent(HoverCameraController);
+        ctrl.setCamera(0, -45, 200);
+        ctrl.maxDistance = 1000;
+
+        let view = new View3D();
+        view.scene = this.scene;
+        view.camera = camera;
+
+        Engine3D.startRenderView(view);
+
+        let postCom = this.scene.addComponent(PostProcessingComponent);
+        postCom.addPost(FXAAPost);
+
         this.addGIProbes();
-        // GUIUtil.renderAtomosphericSky(exampleScene.atmosphericSky);
-        GUIUtil.renderDirLight(exampleScene.light, false);
+        await this.initScene();
+        sky.relativeTransform = this.lightObj3D.transform;
 
         GUIUtil.renderDebug();
-
-        GUIUtil.renderAtmosphericSky(exampleScene.atmosphericSky);
+        GUIUtil.renderAtmosphericSky(sky);
     }
 
     private giComponent: GlobalIlluminationComponent;
@@ -76,6 +81,20 @@ class Sample_GI {
     }
 
     async initScene() {
+        /******** light *******/
+        {
+            this.lightObj3D = new Object3D();
+            this.lightObj3D.rotationX = 35;
+            this.lightObj3D.rotationY = 110;
+            this.lightObj3D.rotationZ = 0;
+            let directLight = this.lightObj3D.addComponent(DirectLight);
+            directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
+            directLight.castShadow = true;
+            directLight.intensity = 3;
+            this.scene.addChild(this.lightObj3D);
+
+            GUIUtil.renderDirLight(directLight);
+        }
         {
             let floorHeight = 20;
             let floor = Object3DUtil.GetSingleCube(1000, floorHeight, 1000, 0.5, 0.5, 0.5);

@@ -109,7 +109,8 @@ export class GlobalUniformGroup {
             for (let i = 0; i < CSM.Cascades; i++) {
                 let shadowCamera: Camera3D = camera.csm.children[i].shadowCamera;
                 this.csmMatrixRaw.set(shadowCamera.pvMatrix.rawData, i * 16);
-                this.csmShadowBias[i] = camera.getCSMShadowBias(i, shadowMapSize);
+                this.csmShadowBias[i] = camera.getCSMShadowBiasScale(shadowCamera);
+                // this.csmShadowBias[i] = camera.getCSMShadowBias(i, shadowMapSize);
             }
         }
         this.uniformGPUBuffer.setFloat32Array(`csmShadowBias`, this.csmShadowBias);

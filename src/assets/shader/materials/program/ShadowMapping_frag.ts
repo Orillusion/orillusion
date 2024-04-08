@@ -113,13 +113,13 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
         {
           visibility = 0.0;
           isOutSideArea = 0.0;
-          var uvOnePixel = 1.0 / vec2<f32>(globalUniform.shadowMapSize) *2.0;
+          var uvOnePixel = 1.0 / vec2<f32>(globalUniform.shadowMapSize) ;
           var totalWeight = 0.0;
           // var NoL = (dot(normalize(ORI_VertexVarying.vWorldNormal), normalize(-light.direction)));
           // let v = max(NoL, 0.0) ;
           // var bias = max(0.05 * (dot(normalize(fragData.N), normalize(-light.direction)) ), -shadowBias); 
           var bias = -0.005 * max(dot(fragData.N, -light.direction) , 0.0 ); 
-          bias = clamp(bias, 0,0.01) + -shadowBias;
+          bias = clamp(bias, 0, 0.01) + -shadowBias;
 
           // var bias = shadowBias / v;
           let bound = 1 ;
