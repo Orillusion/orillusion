@@ -178,7 +178,7 @@ export let BxDF_frag: string = /*wgsl*/ `
         var retColor = (LinearToGammaSpace(color.rgb));
         retColor += fragData.Emissive.xyz ;
 
-        var viewColor = vec4<f32>( retColor.rgb ,fragData.Albedo.a) ;
+        var viewColor = vec4<f32>( retColor.rgb * fragData.Albedo.w, fragData.Albedo.a) ;
 
         let finalMatrix = globalUniform.projMat * globalUniform.viewMat ;
         let nMat = mat3x3<f32>(finalMatrix[0].xyz,finalMatrix[1].xyz,finalMatrix[2].xyz) ;

@@ -45,7 +45,7 @@ class Sample_BlendMode2 {
             let directLight = lightObj.addComponent(DirectLight);
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             directLight.castShadow = true;
-            directLight.intensity = 6;
+            directLight.intensity = 2;
             directLight.debug();
             this.scene.addChild(lightObj);
         }
