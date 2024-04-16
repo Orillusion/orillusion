@@ -10,6 +10,7 @@ export let GrassShader = /* wgsl */`
     #include "MatrixShader"
     #include "BrdfLut_frag"
     #include "LightingFunction_frag"
+    #include "ReflectionCG"
     
     struct MaterialUniform {
         baseColor: vec4<f32>,
@@ -43,6 +44,7 @@ export let GrassShader = /* wgsl */`
 
     const DEGREES_TO_RADIANS : f32 = 3.1415926 / 180.0 ;
     const PI : f32 = 3.1415926 ;
+    const LUMEN = 10.764;
 
     @vertex
     fn VertMain( vertex:VertexAttributes ) -> VertexOutput {

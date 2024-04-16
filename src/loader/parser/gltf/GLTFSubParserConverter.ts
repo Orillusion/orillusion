@@ -182,7 +182,7 @@ export class GLTFSubParserConverter {
                     let physicMaterial = (newMat = this.applyMaterialExtensions(gltfMat, newMat));
                     if (`enableBlend` in gltfMat) {
                         if (gltfMat[`enableBlend`]) {
-                            physicMaterial.blendMode = BlendMode.ALPHA;
+                            physicMaterial.blendMode = BlendMode.ABOVE;
                             physicMaterial.castShadow = false;
                         } else {
                             physicMaterial.blendMode = BlendMode.NONE;

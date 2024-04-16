@@ -58,6 +58,7 @@ class Sample_SpotLight {
         spotLight.intensity = 4;
         spotLight.radius = 1;
         spotLight.range = 787;
+        spotLight.at = 25;
         spotLight.outerAngle = 96;
         spotLight.innerAngle = 0;
         spotLight.castShadow = true;
