@@ -751,7 +751,7 @@ export class Matrix4 {
 
         if (e > 1.0 - EPSILON) {
             this.identity();
-        } else if (3 < -1.0 + EPSILON) {
+        } else if (e < -1.0 + EPSILON) {
             let up: Vector3 = Vector3.HELP_1;
             let left: Vector3 = Vector3.HELP_2; //
             let invLen: number = 0;
