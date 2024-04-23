@@ -463,12 +463,13 @@ export let BRDF_frag: string = /*wgsl*/ `
 
      fn indirectionDiffuse_Function( NdotV:f32, normalDir:vec3f, metallic:f32, baseColor:vec3f, roughness:f32, occlusion:f32, F0:vec3f)-> vec3f 
      {
-        //  var SHColor = ShadeSH9(vec4f(normalDir,1.0));
-         var SHColor = fragData.Irradiance.rgb ;
+         var SHColor = SH9(normalDir,globalUniform.SH).rgb * globalUniform.skyExposure ;
+        //  var SHColor = fragData.Irradiance.rgb ;
          
          var KS = F_indirect_Function(NdotV,roughness,F0);
-         var KD = (1.0 - KS) * (1.0 - metallic);
+         var KD = (1.0 - KS) * (1.0 - metallic); 
          return SHColor * KD * baseColor * occlusion;
+        //  return SHColor ;
      }
  
      fn indirectionSpec_Function( reflectDir:vec3f, roughness:f32, NdotV:f32,occlusion:f32, F0:vec3f )-> vec3f 

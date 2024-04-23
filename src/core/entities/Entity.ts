@@ -316,9 +316,6 @@ export class Entity extends CEventDispatcher {
             this.components.clear();
         } else {
             ComponentCollect.waitStartComponent.forEach((v, k) => {
-                // v.forEach((v) => {
-                //     v[`__start`]();
-                // })
                 while (v.length > 0) {
                     const element = v.shift();
                     element[`__start`]();

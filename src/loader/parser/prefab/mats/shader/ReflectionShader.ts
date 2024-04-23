@@ -8,7 +8,6 @@ import { RegisterShader } from "../../../../../util/SerializeDecoration";
 import { Shader } from "../../../../../gfx/graphics/webGpu/shader/Shader";
 
 
-@RegisterShader
 export class ReflectionShader extends Shader {
 
     constructor() {
