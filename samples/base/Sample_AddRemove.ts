@@ -41,13 +41,20 @@ class Sample_AddRemove {
     }
 
     private async test() {
-        let list: Object3D[] = [];
+        let visibleList: Object3D[] = [];
+        let invisibleList: Object3D[] = [];
         let player = await Engine3D.res.loadGltf('gltfs/anim/Minion_Lane_Super_Dawn/Minion_Lane_Super_Dawn.glb');
         // gui
         GUIHelp.init();
         GUIHelp.addButton("add", async () => {
             /******** player1 *******/
-            let clone = player.clone()
+            let clone: Object3D
+            if (invisibleList.length > 0) {
+                clone = invisibleList[invisibleList.length-1];
+                invisibleList.splice(invisibleList.length-1, 1);
+            } else {
+                clone = player.clone();
+            }
             clone.transform.x = Math.random() * 100 - 50;
             clone.transform.y = Math.random() * 100 - 50;
             clone.transform.z = Math.random() * 100 - 50;
@@ -56,16 +63,17 @@ class Sample_AddRemove {
             clone.transform.scaleZ = 20;
 
             this.view.scene.addChild(clone);
-            list.push(clone);
+            visibleList.push(clone);
         });
 
         GUIHelp.addButton("remove", () => {
-            let index = Math.floor(list.length * Math.random());
-            let obj = list[index];
+            let index = Math.floor(visibleList.length * Math.random());
+            let obj = visibleList[index];
             if (obj) {
-                list.splice(index, 1)
+                visibleList.splice(index, 1)
                 this.view.scene.removeChild(obj)
-                obj.destroy(true);
+                // obj.destroy(true);
+                invisibleList.push(obj)
             }
         });
 
