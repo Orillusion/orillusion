@@ -405,7 +405,7 @@ fn dir_to_faceId(pt:vec3<f32>) -> i32 {
       return mat3x3<f32>(xAxis, yAxis, zAxis);
     }
 
-    struct SH9{
+    struct SH9Struct{
       SHAr:vec4f,
       SHAg:vec4f,
       SHAb:vec4f,
@@ -415,7 +415,7 @@ fn dir_to_faceId(pt:vec3<f32>) -> i32 {
       SHC:vec4f,
     }
 
-    fn ShadeSH9 ( normal:vec4f , sh9:SH9) -> vec3f
+    fn ShadeSH9 ( normal:vec4f , sh9:SH9Struct) -> vec3f
     {
       var x1:vec3f = vec3f(0.0);
       var x2:vec3f = vec3f(0.0);

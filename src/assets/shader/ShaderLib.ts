@@ -49,6 +49,7 @@ import { BitUtil } from './utils/BitUtil';
 import { GBufferStand } from './core/common/GBufferStand';
 import { ReflectionShader_shader } from './materials/ReflectionShader_shader';
 import { ReflectionCG } from './env/ReflectionCG';
+import { SHCommon_frag } from './core/common/SHCommon_frag';
 
 /**
  * @internal
@@ -60,6 +61,7 @@ export class ShaderLib {
         ShaderLib.register('FastMathShader', FastMathShader);
         ShaderLib.register("BitUtil", BitUtil);
         ShaderLib.register("GBufferStand", GBufferStand);
+        ShaderLib.register("SHCommon_frag", SHCommon_frag);
 
         ShaderLib.register('MatrixShader', MatrixShader);
 

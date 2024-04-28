@@ -1,4 +1,4 @@
-import { EntityCollect } from "../../../../..";
+import { EntityCollect, Vector3, Vector4 } from "../../../../..";
 import { Engine3D } from "../../../../../Engine3D";
 import { Camera3D } from "../../../../../core/Camera3D";
 import { CSM } from "../../../../../core/csm/CSM";
@@ -46,7 +46,7 @@ export class GlobalUniformGroup {
         this.usage = GPUBufferUsage.UNIFORM | GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST;
         // ... + 8(shadow matrix) + 8(csm matrix) + 4(csm bias) + 4(csm scattering exp...)
         // this.uniformGPUBuffer = new UniformGPUBuffer(32 * 4 * 4 + (3 * 4 * 4) + 8 * 16 + CSM.Cascades * 16 + 4 + 4);
-        this.uniformGPUBuffer = new UniformGPUBuffer(8192);
+        this.uniformGPUBuffer = new UniformGPUBuffer(8192 + 9 * 4 * 4);
         this.uniformGPUBuffer.visibility = GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT | GPUShaderStage.COMPUTE;
 
         this.matrixBindGroup = matrixBindGroup;
@@ -130,9 +130,10 @@ export class GlobalUniformGroup {
 
         this.uniformGPUBuffer.setVector3(`CameraPos`, camera.transform.worldPosition);
         this.uniformGPUBuffer.setFloat(`frame`, Time.frame);
+        this.uniformGPUBuffer.setFloat32Array(`SH`, camera.sh);
+
         this.uniformGPUBuffer.setFloat(`time`, Time.frame);
         this.uniformGPUBuffer.setFloat(`delta`, Time.delta);
-        // this.uniformGPUBuffer.setFloat(`shadowBias`, Engine3D.setting.shadow.shadowBias);
         this.uniformGPUBuffer.setFloat(`shadowBias`, camera.getShadowBias(shadowMapSize));
         this.uniformGPUBuffer.setFloat(`skyExposure`, Engine3D.setting.sky.skyExposure);
         this.uniformGPUBuffer.setFloat(`renderPassState`, Engine3D.setting.render.renderPassState);
@@ -158,11 +159,22 @@ export class GlobalUniformGroup {
         this.uniformGPUBuffer.setInt32(`nDirShadowEnd`, this.dirShadowEnd);
         this.uniformGPUBuffer.setInt32(`nPointShadowStart`, this.pointShadowStart);
         this.uniformGPUBuffer.setInt32(`nPointShadowEnd`, this.pointShadowEnd);
-
         this.uniformGPUBuffer.setVector3(`cameraForward`, camera.transform.forward);
-
-
         this.uniformGPUBuffer.setVector4Array(`frustumPlanes`, camera.frustum.planes);
+
+        // new Float32Array([
+        //     1.0, 1.0, 1.0, 1.0,
+        //     0.0, 1.0, 0.0, 1.0,
+        //     0.0, 0.0, 1.0, 1.0,
+
+        //     1.0, 0.0, 0.0, 1.0,
+        //     0.0, 1.0, 0.0, 1.0,
+        //     0.0, 0.0, 1.0, 1.0,
+
+        //     1.0, 0.0, 0.0, 1.0,
+        //     0.0, 1.0, 0.0, 1.0,
+        //     0.0, 0.0, 1.0, 1.0,
+        // ]));
         this.uniformGPUBuffer.apply();
     }
 

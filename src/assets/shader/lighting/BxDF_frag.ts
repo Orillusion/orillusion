@@ -1,3 +1,4 @@
+import { SHCommon_frag } from './../core/common/SHCommon_frag';
 export let BxDF_frag: string = /*wgsl*/ `
   #include "Clearcoat_frag"
   #include "BRDF_frag"
@@ -6,6 +7,7 @@ export let BxDF_frag: string = /*wgsl*/ `
   #include "BitUtil"
   #include "Common_frag"
   #include "GlobalUniform"
+  #include "SHCommon_frag"
 
   #include "PhysicMaterialUniform_frag"
   #include "NormalMap_frag"
@@ -136,7 +138,7 @@ export let BxDF_frag: string = /*wgsl*/ `
       #endif
 
       var color = vec3f(iblDiffuseResult + indirectionSpec + specColor)  ;
-      // var color = vec3f(iblDiffuseResult )  ;
+      // var color = vec3f(indirectionDiffuse )  ;
 
       var clearCoatColor = vec3<f32>(0.0);
       #if USE_CLEARCOAT
