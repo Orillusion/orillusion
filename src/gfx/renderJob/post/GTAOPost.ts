@@ -185,8 +185,9 @@ export class GTAOPost extends PostBase {
 
     private randomCount: number = 0;
     private randomDirection(): Float32Array {
-        this.randomCount++;
-        if (this.randomCount > 1) this.randomCount = 0;
+        // this.randomCount++;
+        // if (this.randomCount > 1) this.randomCount = 0;
+        this.randomCount = 0;
         let offsetAngle = (Math.PI * 2 * this.randomCount) / 16;
         let angleSegment = (Math.PI * 2) / 8;
         for (let i = 0; i < 8; i++) {
