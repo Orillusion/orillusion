@@ -5,6 +5,8 @@ import multiscatter from "./NewMultiScattCS.wgsl?raw";
 import earth from "./AtmosphereEarth.wgsl?raw";
 import raymarch from "./RenderSkyRayMarching.wgsl?raw";
 import skyview from "./SkyViewLutPS.wgsl?raw";
+import cloud from "./CloudNoise.wgsl?raw";
+
 /**
  * @internal
  */
@@ -16,4 +18,5 @@ export class AtmosphericScatteringSky_shader {
   public static raymarch_cs: string = raymarch;
   public static skyview_cs: string = skyview;
   public static earth: string = earth;
+  public static cloud_cs: string = cloud;
 }

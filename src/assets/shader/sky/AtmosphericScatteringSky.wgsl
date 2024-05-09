@@ -12,6 +12,7 @@ struct UniformData {
   mieHeight: f32,         // = 1200;
   sunBrightness: f32,     // = 1.0;
   displaySun: f32,        // > 0.5: true
+  clouds: f32,            // > 0.5: true
   hdrExposure: f32,       // = 1.0;
   skyColor: vec4<f32>,        // sky color
 };

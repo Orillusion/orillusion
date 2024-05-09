@@ -13,6 +13,7 @@ struct UniformData {
   mieHeight: f32,         // = 1200;
   sunBrightness: f32,     // = 1.0;
   displaySun: f32,        // > 0.5: true
+  clouds: f32,            // > 0.5: true
   hdrExposure: f32,       // = 1.0;
   skyColor: vec4<f32>,        // sky color
 };
@@ -21,6 +22,8 @@ struct UniformData {
 @group(0) @binding(1) var outTexture: texture_storage_2d<rgba16float, write>;
 @group(0) @binding(auto) var transmittanceTexture: texture_2d<f32>;
 @group(0) @binding(auto) var multipleScatteringTexture: texture_2d<f32>;
+@group(0) @binding(auto) var cloudTextureSampler: sampler;
+@group(0) @binding(auto) var cloudTexture: texture_2d<f32>;
 
 var<workgroup> MultiScatAs1SharedMem: array<vec3<f32>, 64>;
 var<workgroup> LSharedMem: array<vec3<f32>, 64>;

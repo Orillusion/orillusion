@@ -124,6 +124,28 @@ export class AtmosphericComponent extends SkyRenderer {
         }
     }
 
+    public get clouds() {
+        return this._atmosphericScatteringSky.setting.clouds;
+    }
+
+    public set clouds(value) {
+        if (this._atmosphericScatteringSky.setting.clouds != value) {
+            this._atmosphericScatteringSky.setting.clouds = value;
+            this._onChange = true;
+        }
+    }
+
+    public get showV1() {
+        return this._atmosphericScatteringSky.setting.showV1;
+    }
+
+    public set showV1(value) {
+        if (this._atmosphericScatteringSky.setting.showV1 != value) {
+            this._atmosphericScatteringSky.setting.showV1 = value;
+            this._onChange = true;
+        }
+    }
+
     public get hdrExposure() {
         return this._atmosphericScatteringSky.setting.hdrExposure;
     }

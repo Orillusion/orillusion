@@ -3,13 +3,16 @@ var<private> defaultTMaxMax: f32 = 9000000.0;
 var<private> PLANET_RADIUS_OFFSET: f32 = 0.01;
 
 // Sample per pixel for ray marching
+// 16.0 without clouds
+// 128.0 for thicker atmosphere
+// 256.0 for clouds
 var<private> RayMarchMinMaxSPP: vec2<f32> = vec2<f32>(1.0, 16.0);
+var<private> RayMarchMinMaxSPPCloud: vec2<f32> = vec2<f32>(1.0, 256.0);
 var<private> MULTI_SCATTERING_POWER_SERIE: u32 = 1;
-var<private> MULTISCATAPPROX_ENABLED: u32 = 0;
+var<private> MULTISCATAPPROX_ENABLED: u32 = 1;
 var<private> SHADOWMAP_ENABLED: u32 = 0;
+var<private> VOLUMETRIC_SHADOW_ENABLED: u32 = 1;
 var<private> MultiScatteringLUTRes: f32 = 32.0;
-// for thicker atmosphere
-// var RayMarchMinMaxSPP: vec2<f32> = vec2<f32>(64.0, 128.0);
 
 struct SingleScatteringResult {
     L: vec3<f32>,                        // Scattered light (luminance)
@@ -43,6 +46,13 @@ struct AtmosphereParameters {
     AbsorptionExtinction: vec3<f32>,
 
     GroundAlbedo: vec3<f32>,
+
+    CloudBaseHeight: f32,
+    CloudTopHeight: f32,
+    CloudScattering: vec3<f32>,
+    CloudAbsorption: vec3<f32>,
+    CloudPhaseG: f32,
+    CloudK: f32,
 };
 
 struct MediumSampleRGB {
@@ -61,6 +71,10 @@ struct MediumSampleRGB {
     scatteringOzo: vec3<f32>,
     absorptionOzo: vec3<f32>,
     extinctionOzo: vec3<f32>,
+
+    scatteringCloud: vec3<f32>,
+    absorptionCloud: vec3<f32>,
+    extinctionCloud: vec3<f32>,
 
     albedo: vec3<f32>,
 };
@@ -107,6 +121,13 @@ fn RayleighPhase(cosTheta: f32) -> f32 {
 
 fn hgPhase(g: f32, cosTheta: f32) -> f32 {
     return CornetteShanksMiePhaseFunction(g, cosTheta);
+}
+
+// dual-lobe hg phase 
+fn dualLobeHgPhase(g: f32, cosTheta: f32, k: f32) -> f32 {
+    var phase1: f32 = hgPhase(g, cosTheta);
+    var phase2: f32 = hgPhase(-g, cosTheta);
+    return mix(phase1, phase2, k);
 }
 
 fn LutTransmittanceParamsToUv(Atmosphere: AtmosphereParameters, viewHeight: f32, viewZenithCosAngle: f32) -> vec2<f32> {
@@ -188,6 +209,20 @@ fn getShadow(Atmosphere: AtmosphereParameters, P: vec3<f32>) -> f32 {
     return 1.0;
 }
 
+fn computeVolumetricShadow(WorldPos: vec3<f32>, LightDir: vec3<f32>, Atmosphere: AtmosphereParameters) -> f32 {
+    var shadow: f32 = 1.0;
+    var stepSize: f32 = 0.3; // Adjust based on scene scale
+    var pos: vec3<f32> = WorldPos;
+    for (var i: f32 = 0.0; i < 10.0; i += 1.0) { // Number of steps can be adjusted
+        pos += stepSize * LightDir;
+        shadow *= 1.0 - sampleCloudDensity(pos, Atmosphere);
+        if (shadow < 0.05) {
+            break; // Early exit for low shadow values
+        }
+    }
+    return shadow;
+}
+
 // near: 0.01, far: 10000
 fn linearizeDepth(depth: f32, near: f32, far: f32) -> f32 {
     var z: f32 = depth * 2.0 - 1.0; // Back to NDC
@@ -249,7 +284,11 @@ fn IntegrateScatteredLuminance(
     var SampleCountFloor: f32 = SampleCountIni;
     var tMaxFloor: f32 = tMax;
     if VariableSampleCount {
-        SampleCount = mix(RayMarchMinMaxSPP.x, RayMarchMinMaxSPP.y, clamp(tMax * 0.01, 0.0, 1.0));
+        var spp: vec2<f32> = RayMarchMinMaxSPP;
+        if uniformBuffer.clouds > 0.5 {
+            spp = RayMarchMinMaxSPPCloud;
+        }
+        SampleCount = mix(spp.x, spp.y, clamp(tMax * 0.01, 0.0, 1.0));
         SampleCountFloor = floor(SampleCount);
         tMaxFloor = tMax * SampleCountFloor / SampleCount; // rescale tMax to map to the last entire step segment.
     }
@@ -262,6 +301,7 @@ fn IntegrateScatteredLuminance(
     var cosTheta: f32 = dot(wi, wo);
     var MiePhaseValue: f32 = hgPhase(Atmosphere.MiePhaseG, -cosTheta); // negate cosTheta because WorldDir is an "in" direction.
     var RayleighPhaseValue: f32 = RayleighPhase(cosTheta);
+    var CloudPhaseValue: f32 = dualLobeHgPhase(Atmosphere.CloudPhaseG, cosTheta, Atmosphere.CloudK);
 
     // #ifdef ILLUMINANCE_IS_ONE
     var globalL: vec3<f32> = vec3<f32>(1.0);
@@ -277,6 +317,12 @@ fn IntegrateScatteredLuminance(
     var tPrev: f32 = 0.0;
     var SampleSegmentT: f32 = 0.3;
 
+    // TODO: improve sampling and performance inside of the cloud layer
+    // compute the intersection points pointing in WorldDir direction
+    var tCloudBottom: f32 = raySphereIntersectNearest(WorldPos, WorldDir, earthO, Atmosphere.BottomRadius + Atmosphere.CloudBaseHeight);
+    var tCloudTop: f32 = raySphereIntersectNearest(WorldPos, WorldDir, earthO, Atmosphere.BottomRadius + Atmosphere.CloudTopHeight);
+
+    // Ray marching loop
     for (var s: f32 = 0.0; s < SampleCount; s += 1.0) {
         if VariableSampleCount {
             var t0: f32 = s / SampleCountFloor;
@@ -313,7 +359,7 @@ fn IntegrateScatteredLuminance(
 
         var PhaseTimesScattering: vec3<f32>;
         if MieRayPhase {
-            PhaseTimesScattering = medium.scatteringMie * MiePhaseValue + medium.scatteringRay * RayleighPhaseValue;
+            PhaseTimesScattering = medium.scatteringMie * MiePhaseValue + medium.scatteringRay * RayleighPhaseValue + medium.scatteringCloud * MiePhaseValue;
         } else {
             PhaseTimesScattering = medium.scattering * uniformPhase;
         }
@@ -335,8 +381,11 @@ fn IntegrateScatteredLuminance(
         if SHADOWMAP_ENABLED == 1 {
             shadow = getShadow(Atmosphere, P);
         }
+        if VOLUMETRIC_SHADOW_ENABLED == 1 && uniformBuffer.clouds > 0.5 {
+            shadow = computeVolumetricShadow(P, SunDir, Atmosphere);
+        }
 
-        var S: vec3<f32> = globalL * (earthShadow * shadow * TransmittanceToSun * PhaseTimesScattering);
+        var S: vec3<f32> = globalL * (earthShadow * shadow * TransmittanceToSun * PhaseTimesScattering + multiScatteredLuminance * medium.scattering);
 
         if MULTI_SCATTERING_POWER_SERIE == 0 {
             result.MultiScatAs1 += throughput * medium.scattering * 1.0 * dt;

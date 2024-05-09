@@ -14,6 +14,7 @@ struct UniformData {
   mieHeight: f32,         // = 1200;
   sunBrightness: f32,     // = 1.0;
   displaySun: f32,        // > 0.5: true
+  clouds: f32,            // > 0.5: true
   hdrExposure: f32,       // = 1.0;
   skyColor: vec4<f32>,        // sky color
 };
@@ -21,16 +22,15 @@ struct UniformData {
 @group(0) @binding(0) var<uniform> uniformBuffer: UniformData;
 @group(0) @binding(1) var outTexture: texture_storage_2d<rgba16float, write>;
 
-@group(0) @binding(auto)
-var multipleScatteringTexture: texture_2d<f32>;
+@group(0) @binding(auto) var multipleScatteringTexture: texture_2d<f32>;
 // TODO: linear sampler
-// @group(0) @binding(auto)
-// var multipleScatteringTextureSampler: sampler;
+// @group(0) @binding(auto) var multipleScatteringTextureSampler: sampler;
 
-@group(0) @binding(auto)
-var transmittanceTexture: texture_2d<f32>;
-// @group(0) @binding(auto)
-// var transmittanceTextureSampler: sampler;
+@group(0) @binding(auto) var transmittanceTexture: texture_2d<f32>;
+// @group(0) @binding(auto) var transmittanceTextureSampler: sampler;
+
+@group(0) @binding(auto) var cloudTextureSampler: sampler;
+@group(0) @binding(auto) var cloudTexture: texture_2d<f32>;
 
 var<private> uv01: vec2<f32>;
 var<private> fragCoord: vec2<i32>;
@@ -57,6 +57,10 @@ fn mainImage(uv: vec2<f32>, pixPos: vec2<f32>) -> vec4<f32> {
 
     coords = vec2<i32>(uv * vec2<f32>(textureDimensions(transmittanceTexture, 0)));
     var sampleB = textureLoad(transmittanceTexture, coords, 0).rgb;
+
+    // sample the cloud texture
+    coords = vec2<i32>(uv * vec2<f32>(textureDimensions(cloudTexture, 0)));
+    var sampleC = textureLoad(cloudTexture, coords, 0).rgb;
 
     var Atmosphere: AtmosphereParameters = GetAtmosphereParameters();
 

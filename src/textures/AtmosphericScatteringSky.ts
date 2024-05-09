@@ -3,7 +3,7 @@ import { AtmosphericScatteringSky_shader } from '../assets/shader/sky/Atmospheri
 import { UniformGPUBuffer } from '../gfx/graphics/webGpu/core/buffer/UniformGPUBuffer';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
 import { ComputeShader } from '../gfx/graphics/webGpu/shader/ComputeShader';
-import { GPUTextureFormat } from '../gfx/graphics/webGpu/WebGPUConst';
+import { GPUAddressMode, GPUTextureFormat } from '../gfx/graphics/webGpu/WebGPUConst';
 import { GPUContext } from '../gfx/renderJob/GPUContext';
 import { Color } from '../math/Color';
 import { HDRTextureCube } from './HDRTextureCube';
@@ -22,6 +22,8 @@ export class AtmosphericScatteringSkySetting {
     public sunY: number = 0.56;
     public sunBrightness: number = 1.0;
     public displaySun: boolean = true;
+    public clouds: boolean = true;
+    public showV1: boolean = false;
     public defaultTextureCubeSize: number = 512;
     public defaultTexture2DSize: number = 1024;
     public skyColor: Color = new Color(1, 1, 1, 1);
@@ -33,13 +35,14 @@ export class AtmosphericScatteringSkySetting {
  * @group Texture
  */
 export class AtmosphericScatteringSky extends HDRTextureCube {
-    private _internalTexture: AtmosphericTexture2D;
     private _transmittanceLut: TransmittanceTexture2D;
     private _multipleScatteringLut: MultipleScatteringTexture2D;
     private _skyTexture: SkyTexture2D;
     private _skyViewLut: SkyViewTexture2D;
+    private _cloudNoiseTexture: CloudNoiseTexture2D;
     private _cubeSize: number;
     public readonly setting: AtmosphericScatteringSkySetting;
+    private _internalTexture: AtmosphericTexture;
 
     /**
      * @constructor
@@ -50,29 +53,31 @@ export class AtmosphericScatteringSky extends HDRTextureCube {
         super();
         this.setting = setting;
         this.isHDRTexture = true;
+        this._internalTexture = new AtmosphericTexture(setting.defaultTexture2DSize, setting.defaultTexture2DSize * 0.5);
+        this._internalTexture.updateUniforms(this.setting);
+        this._internalTexture.update();
+        this._internalTexture.isHDRTexture = true;
         this._cubeSize = setting.defaultTextureCubeSize;
-        // this._internalTexture = new AtmosphericTexture2D(setting.defaultTexture2DSize, setting.defaultTexture2DSize * 0.5);
-        // this._internalTexture.updateUniforms(this.setting);
-        // this._internalTexture.update();
-        // this._internalTexture.isHDRTexture = true;
+        this._cloudNoiseTexture = new CloudNoiseTexture2D(64, 64);
+        this._cloudNoiseTexture.updateUniforms(this.setting);
+        this._cloudNoiseTexture.update();
         this._transmittanceLut = new TransmittanceTexture2D(256, 64);
         this._transmittanceLut.updateUniforms(this.setting);
         this._transmittanceLut.update();
         this._multipleScatteringLut = new MultipleScatteringTexture2D(32, 32);
         this._multipleScatteringLut.updateUniforms(this.setting);
-        this._multipleScatteringLut.updateTransmittance(this._transmittanceLut);
+        this._multipleScatteringLut.updateTransmittance(this._transmittanceLut, this._cloudNoiseTexture);
         this._multipleScatteringLut.update();
         this._skyViewLut = new SkyViewTexture2D(192, 108);
         this._skyViewLut.updateUniforms(this.setting);
-        this._skyViewLut.updateTextures(this._transmittanceLut, this._multipleScatteringLut);
+        this._skyViewLut.updateTextures(this._transmittanceLut, this._multipleScatteringLut, this._cloudNoiseTexture);
         this._skyViewLut.update();
         this._skyTexture = new SkyTexture2D(setting.defaultTexture2DSize, setting.defaultTexture2DSize * 0.5);
         this._skyTexture.updateUniforms(this.setting);
-        this._skyTexture.updateTextures(this._transmittanceLut, this._multipleScatteringLut, this._skyViewLut);
+        this._skyTexture.updateTextures(this._transmittanceLut, this._multipleScatteringLut, this._skyViewLut, this._cloudNoiseTexture);
         this._skyTexture.isHDRTexture = true;
         this._skyTexture.update();
         this.createFromTexture(this._cubeSize, this._skyTexture);
-
         return this;
     }
 
@@ -85,20 +90,16 @@ export class AtmosphericScatteringSky extends HDRTextureCube {
      * @returns
      */
     public apply(view?: any): this {
-        // this._transmittanceLut.updateUniforms(this.setting);
-        // this._transmittanceLut.update();
-        // this._multipleScatteringLut.updateUniforms(this.setting);
-        // this._multipleScatteringLut.updateTransmittance(this._transmittanceLut);
-        // this._multipleScatteringLut.update();
-        // this._skyViewLut.updateUniforms(this.setting);
-        // this._skyViewLut.updateTextures(this._transmittanceLut, this._multipleScatteringLut);
-        // this._skyViewLut.update();
-        this._skyTexture.updateUniforms(this.setting);
-        this._skyTexture.updateTextures(this._transmittanceLut, this._multipleScatteringLut, this._skyViewLut);
-        this._skyTexture.update();
-        // this._internalTexture.updateUniforms(this.setting);
-        // this._internalTexture.update();
-        this._faceData.uploadErpTexture(this._skyTexture);
+        if (this.setting.showV1) {
+            this._internalTexture.updateUniforms(this.setting);
+            this._internalTexture.update();
+            this._faceData.uploadErpTexture(this._internalTexture);
+        } else {
+            this._skyTexture.updateUniforms(this.setting);
+            this._skyTexture.updateTextures(this._transmittanceLut, this._multipleScatteringLut, this._skyViewLut, this._cloudNoiseTexture);
+            this._skyTexture.update();
+            this._faceData.uploadErpTexture(this._skyTexture);
+        }
         return this;
     }
 }
@@ -106,7 +107,7 @@ export class AtmosphericScatteringSky extends HDRTextureCube {
 /**
  * @internal
  */
-class AtmosphericTexture2D extends VirtualTexture {
+class AtmosphericTexture extends VirtualTexture {
     protected _computeShader: ComputeShader;
     private _uniformBuffer: UniformGPUBuffer;
     private _workerSize: Vector3 = new Vector3(8, 8, 1);
@@ -119,16 +120,16 @@ class AtmosphericTexture2D extends VirtualTexture {
         return this._workerSize;
     }
 
-    constructor(width: number, height: number) {
-        super(width, height, GPUTextureFormat.rgba16float, false, GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.TEXTURE_BINDING);
+    constructor(width: number, height: number, numberLayer: number = 1) {
+        super(width, height, GPUTextureFormat.rgba16float, false, GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.TEXTURE_BINDING, numberLayer);
         this._computeShader = new ComputeShader(AtmosphericScatteringSky_shader.cs);
         this._computeShader.entryPoint = 'CsMain';
         this.magFilter = 'linear';
         this.minFilter = 'linear';
-        this.initCompute(width, height);
+        this.initCompute(width, height, numberLayer);
     }
 
-    protected initCompute(w: number, h: number): void {
+    protected initCompute(w: number, h: number, d: number = 1): void {
         this._uniformBuffer = new UniformGPUBuffer(16 * 4);
         this._uniformBuffer.apply();
 
@@ -136,6 +137,7 @@ class AtmosphericTexture2D extends VirtualTexture {
         this._computeShader.setStorageTexture(`outTexture`, this);
         this._computeShader.setSamplerTexture(`transmittanceTexture`, Engine3D.res.blackTexture);
         this._computeShader.setSamplerTexture(`multipleScatteringTexture`, Engine3D.res.blackTexture);
+        this._computeShader.setSamplerTexture(`cloudTexture`, Engine3D.res.blackTexture);
         this._computeShader.workerSizeX = w / this._workerSize.x;
         this._computeShader.workerSizeY = h / this._workerSize.y;
         this._computeShader.workerSizeZ = this._workerSize.z;
@@ -153,6 +155,7 @@ class AtmosphericTexture2D extends VirtualTexture {
         this._uniformBuffer.setFloat('mieHeight', setting.mieHeight);
         this._uniformBuffer.setFloat('sunBrightness', setting.sunBrightness);
         this._uniformBuffer.setFloat('displaySun', setting.displaySun ? 1 : 0);
+        this._uniformBuffer.setFloat('clouds', setting.clouds ? 1 : 0);
         this._uniformBuffer.setFloat('hdrExposure', setting.hdrExposure);
         this._uniformBuffer.setColor('skyColor', setting.skyColor);
         this._uniformBuffer.apply();
@@ -170,7 +173,7 @@ class AtmosphericTexture2D extends VirtualTexture {
 /**
  * @internal
  */
-class TransmittanceTexture2D extends AtmosphericTexture2D {
+class TransmittanceTexture2D extends AtmosphericTexture {
     constructor(width: number, height: number) {
         super(width, height);
         this._computeShader = new ComputeShader(AtmosphericScatteringSky_shader.transmittance_cs);
@@ -181,7 +184,7 @@ class TransmittanceTexture2D extends AtmosphericTexture2D {
 /**
  * @internal
  */
-class MultipleScatteringTexture2D extends AtmosphericTexture2D {
+class MultipleScatteringTexture2D extends AtmosphericTexture {
     constructor(width: number, height: number) {
         super(width, height);
         this._computeShader = new ComputeShader(AtmosphericScatteringSky_shader.multiscatter_cs);
@@ -189,40 +192,56 @@ class MultipleScatteringTexture2D extends AtmosphericTexture2D {
         this.initCompute(width, height);
     }
 
-    public updateTransmittance(transmittanceTexture: TransmittanceTexture2D) {
+    public updateTransmittance(transmittanceTexture: TransmittanceTexture2D, cloudTexture: CloudNoiseTexture2D) {
         this._computeShader.setSamplerTexture(`transmittanceTexture`, transmittanceTexture);
+        this._computeShader.setSamplerTexture(`cloudTexture`, cloudTexture);
     }
 }
 
 /**
  * @internal
  */
-class SkyTexture2D extends AtmosphericTexture2D {
-    constructor(width: number, height: number) {
-        super(width, height);
-        this._computeShader = new ComputeShader(AtmosphericScatteringSky_shader.raymarch_cs);
-        this.initCompute(width, height);
-    }
-
-    public updateTextures(transmittanceTexture: TransmittanceTexture2D, multipleScatteringTexture: MultipleScatteringTexture2D, skyTexture: SkyTexture2D) {
-        this._computeShader.setSamplerTexture(`transmittanceTexture`, transmittanceTexture);
-        this._computeShader.setSamplerTexture(`multipleScatteringTexture`, multipleScatteringTexture);
-        this._computeShader.setSamplerTexture(`skyTexture`, skyTexture);
-    }
-}
-
-/**
- * @internal
- */
-class SkyViewTexture2D extends AtmosphericTexture2D {
+class SkyViewTexture2D extends AtmosphericTexture {
     constructor(width: number, height: number) {
         super(width, height);
         this._computeShader = new ComputeShader(AtmosphericScatteringSky_shader.skyview_cs);
         this.initCompute(width, height);
     }
 
-    public updateTextures(transmittanceTexture: TransmittanceTexture2D, multipleScatteringTexture: MultipleScatteringTexture2D) {
+    public updateTextures(transmittanceTexture: TransmittanceTexture2D, multipleScatteringTexture: MultipleScatteringTexture2D, cloudTexture: CloudNoiseTexture2D) {
         this._computeShader.setSamplerTexture(`transmittanceTexture`, transmittanceTexture);
         this._computeShader.setSamplerTexture(`multipleScatteringTexture`, multipleScatteringTexture);
+        this._computeShader.setSamplerTexture(`cloudTexture`, cloudTexture);
+    }
+}
+
+/**
+ * @internal
+ */
+class SkyTexture2D extends AtmosphericTexture {
+    constructor(width: number, height: number) {
+        super(width, height);
+        this._computeShader = new ComputeShader(AtmosphericScatteringSky_shader.raymarch_cs);
+        this.initCompute(width, height);
+    }
+
+    public updateTextures(transmittanceTexture: TransmittanceTexture2D, multipleScatteringTexture: MultipleScatteringTexture2D, skyViewTexture: SkyViewTexture2D, cloudTexture: CloudNoiseTexture2D) {
+        this._computeShader.setSamplerTexture(`transmittanceTexture`, transmittanceTexture);
+        this._computeShader.setSamplerTexture(`multipleScatteringTexture`, multipleScatteringTexture);
+        this._computeShader.setSamplerTexture(`skyTexture`, skyViewTexture);
+        this._computeShader.setSamplerTexture(`cloudTexture`, cloudTexture);
+    }
+}
+
+/**
+ * @internal
+ */
+class CloudNoiseTexture2D extends AtmosphericTexture {
+    constructor(width: number, height: number) {
+        super(width, height);
+        this._computeShader = new ComputeShader(AtmosphericScatteringSky_shader.cloud_cs);
+        this.addressModeU = GPUAddressMode.repeat;
+        this.addressModeV = GPUAddressMode.repeat;
+        this.initCompute(width, height);
     }
 }

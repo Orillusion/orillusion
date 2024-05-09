@@ -41,12 +41,14 @@ export class GUIUtil {
         GUIHelp.addFolder(name);
         GUIHelp.add(component, 'sunX', 0, 1, 0.01);
         GUIHelp.add(component, 'sunY', 0.45, 0.55, 0.001);
-        GUIHelp.add(component, 'eyePos', 0, 5000, 1);
+        GUIHelp.add(component, 'eyePos', 0, 7000, 1);
         GUIHelp.add(component, 'sunRadius', 0, 1000, 0.01);
         GUIHelp.add(component, 'sunRadiance', 0, 100, 0.01);
         GUIHelp.add(component, 'sunBrightness', 0, 10, 0.01);
         GUIHelp.add(component, 'exposure', 0, 2, 0.01);
         GUIHelp.add(component, 'displaySun', 0, 1, 0.01);
+        GUIHelp.add(component, 'clouds');
+        GUIHelp.add(component, 'showV1');
         GUIHelp.add(component, 'enable');
         GUIHelp.add(component, 'hdrExposure', 0, 20, 0.001);
 
