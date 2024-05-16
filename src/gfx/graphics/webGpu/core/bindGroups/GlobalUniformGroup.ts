@@ -36,8 +36,8 @@ export class GlobalUniformGroup {
     public pointShadowEnd = 0;
 
     /**
-     * 
-     * @param matrixBindGroup global matrix bindgroup 
+     *
+     * @param matrixBindGroup global matrix bindgroup
      */
     constructor(matrixBindGroup: MatrixBindGroup) {
         this.uuid = UUID();
@@ -65,22 +65,20 @@ export class GlobalUniformGroup {
                     resource: {
                         buffer: this.uniformGPUBuffer.buffer,
                         offset: 0, // this.uniformGPUBuffer.memory.shareDataBuffer.byteOffset,
-                        size: this.uniformByteLength,
-                    },
+                        size: this.uniformByteLength
+                    }
                 },
                 {
                     binding: 1,
                     resource: {
                         buffer: this.matrixBindGroup.matrixBufferDst.buffer,
                         offset: 0,
-                        size: this.matrixesByteLength,
-                    },
-                },
-            ],
+                        size: this.matrixesByteLength
+                    }
+                }
+            ]
         });
     }
-
-
 
     public setCamera(camera: Camera3D) {
         this.uniformGPUBuffer.setMatrix(`_projectionMatrix`, camera.projectionMatrix);
@@ -117,7 +115,7 @@ export class GlobalUniformGroup {
 
         this.uniformGPUBuffer.setVector3(`CameraPos`, camera.transform.worldPosition);
         this.uniformGPUBuffer.setFloat(`frame`, Time.frame);
-        this.uniformGPUBuffer.setFloat(`time`, Time.frame);
+        this.uniformGPUBuffer.setFloat(`time`, Time.time);
         this.uniformGPUBuffer.setFloat(`delta`, Time.delta);
         // this.uniformGPUBuffer.setFloat(`shadowBias`, Engine3D.setting.shadow.shadowBias);
         this.uniformGPUBuffer.setFloat(`shadowBias`, camera.getShadowBias(shadowMapSize));
@@ -214,7 +212,5 @@ export class GlobalUniformGroup {
         this.uniformGPUBuffer.apply();
     }
 
-    public setShadowLight() { }
-
-
+    public setShadowLight() {}
 }
