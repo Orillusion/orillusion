@@ -22,6 +22,7 @@ class Sample_SSR {
 
         this.scene = new Scene3D()
         this.sky = this.scene.addComponent(AtmosphericComponent)
+        this.sky.sunX = 0.5
         this.sky.sunY = 0.6
 
         let mainCamera = CameraUtil.createCamera3DObject(this.scene, 'camera')
@@ -85,7 +86,6 @@ class Sample_SSR {
             GUIHelp.init()
             GUIHelp.gui.add(floorMaterial, 'roughness', 0, 1, 0.01)
             GUIHelp.gui.add(floorMaterial, 'metallic', 0, 1, 0.01)
-            GUIUtil.renderAtmosphericSky(this.sky)
         }
 
         {

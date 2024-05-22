@@ -34,8 +34,10 @@ class Sample_ClearCoat {
     }
 
     async initScene() {
+        /******** atmospheric sky *******/
         {
             let atmosphericSky = this.scene.addComponent(AtmosphericComponent);
+            atmosphericSky.sunX = 0.9;
             GUIUtil.renderAtmosphericSky(atmosphericSky);
         }
         /******** sky *******/

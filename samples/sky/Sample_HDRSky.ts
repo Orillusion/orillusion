@@ -18,9 +18,6 @@ class Sample_HDRSky {
 
         // start renderer
         Engine3D.startRenderView(scene.view);
-
-        GUIHelp.init();
-        GUIUtil.renderSceneSetting(scene);
     }
 
 }

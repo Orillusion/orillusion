@@ -54,6 +54,9 @@ export class AtmosphericComponent extends SkyRenderer {
     public set sunX(value) {
         if (this._atmosphericScatteringSky.setting.sunX != value) {
             this._atmosphericScatteringSky.setting.sunX = value;
+            if (this._relatedTransform) {
+                this._relatedTransform.rotationY = value * 360 - 90;
+            }
             this._onChange = true;
         }
     }
@@ -65,6 +68,9 @@ export class AtmosphericComponent extends SkyRenderer {
     public set sunY(value) {
         if (this._atmosphericScatteringSky.setting.sunY != value) {
             this._atmosphericScatteringSky.setting.sunY = value;
+            if (this._relatedTransform) {
+                this._relatedTransform.rotationX = (value - 0.5) * 180;
+            }
             this._onChange = true;
         }
     }

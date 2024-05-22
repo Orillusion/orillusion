@@ -16,7 +16,6 @@ class Sample_AtmosphericSky {
         // add atmospheric sky
         let sky = scene.getComponent(AtmosphericComponent);
         sky.sunX = 0.25;
-        sky.relativeTransform.rotationY = 0;
         let y = 100;
         {
             let texture = sky['_atmosphericScatteringSky']['_transmittanceLut'];

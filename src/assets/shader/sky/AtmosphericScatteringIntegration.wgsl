@@ -191,16 +191,14 @@ fn GetTransmittanceToSun(Atmosphere: AtmosphereParameters, P: vec3<f32>) -> vec3
     var UpVector: vec3<f32> = P / pHeight;
     var SunZenithCosAngle: f32 = dot(getSunDirection(), UpVector);
     var uv = LutTransmittanceParamsToUv(Atmosphere, pHeight, SunZenithCosAngle);
-    var transmittanceTextureSize = vec2<f32>(textureDimensions(transmittanceTexture, 0));
-    var transmittanceTextureCoord = vec2<i32>(transmittanceTextureSize * uv);
-    return textureLoad(transmittanceTexture, transmittanceTextureCoord, 0).rgb;
+    return textureSampleLevel(transmittanceTexture, transmittanceTextureSampler, uv, 0).rgb;
 }
 
 fn GetMultipleScattering(Atmosphere: AtmosphereParameters, scattering: vec3<f32>, extinction: vec3<f32>, worlPos: vec3<f32>, viewZenithCosAngle: f32) -> vec3<f32> {
     var uv = saturate(vec2<f32>(viewZenithCosAngle * 0.5 + 0.5, (length(worlPos) - Atmosphere.BottomRadius) / (Atmosphere.TopRadius - Atmosphere.BottomRadius)));
     uv = vec2<f32>(fromUnitToSubUvs(uv.x, MultiScatteringLUTRes), fromUnitToSubUvs(uv.y, MultiScatteringLUTRes));
 
-    var multiScatteredLuminance: vec3<f32> = textureLoad(multipleScatteringTexture, vec2<i32>(uv * MultiScatteringLUTRes), 0).rgb;
+    var multiScatteredLuminance: vec3<f32> = textureSampleLevel(multipleScatteringTexture, multipleScatteringTextureSampler, uv, 0).rgb;
     return multiScatteredLuminance;
 }
 
