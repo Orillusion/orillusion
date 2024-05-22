@@ -22,7 +22,8 @@ export class PickCompute {
 
         this._outBuffer = new ComputeGPUBuffer(32);
         this._computeShader.setStorageBuffer('outBuffer', this._outBuffer);
-        this._computeShader.setSamplerTexture('visibleMap', rtFrame.getPositionMap());
+        this._computeShader.setSamplerTexture('positionMap', rtFrame.getPositionMap());
+        this._computeShader.setSamplerTexture('normalMap', rtFrame.getNormalMap());
     }
 
     compute(view: View3D) {
@@ -54,6 +55,19 @@ export class PickCompute {
         var y = this._outBuffer.outFloat32Array[5];
         var z = this._outBuffer.outFloat32Array[6];
         target.set(x, y, z);
+        return target;
+    }
+
+    /**
+     * Returns world position of pick result
+     * @returns
+     */
+    public getPickWorldNormal(target?: Vector3): Vector3 {
+        target ||= new Vector3();
+        var x = this._outBuffer.outFloat32Array[8];
+        var y = this._outBuffer.outFloat32Array[9];
+        var z = this._outBuffer.outFloat32Array[10];
+        target.set(x * 255 - 127, y * 255 - 127, z * 255 - 127).normalize();
         return target;
     }
 
