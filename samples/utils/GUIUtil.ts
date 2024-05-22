@@ -47,7 +47,7 @@ export class GUIUtil {
         GUIHelp.add(component, 'sunBrightness', 0, 10, 0.01);
         GUIHelp.add(component, 'exposure', 0, 2, 0.01);
         GUIHelp.add(component, 'displaySun', 0, 1, 0.01);
-        GUIHelp.add(component, 'clouds');
+        GUIHelp.add(component, 'enableClouds');
         GUIHelp.add(component, 'showV1');
         GUIHelp.add(component, 'enable');
         GUIHelp.add(component, 'hdrExposure', 0, 20, 0.001);

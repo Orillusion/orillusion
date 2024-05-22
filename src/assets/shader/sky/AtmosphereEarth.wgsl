@@ -71,7 +71,7 @@ fn sampleMediumRGB(WorldPos: vec3<f32>, Atmosphere: AtmosphereParameters) -> Med
   s.absorptionOzo = densityOzo * Atmosphere.AbsorptionExtinction;
   s.extinctionOzo = s.scatteringOzo + s.absorptionOzo;
 
-  if uniformBuffer.clouds > .5 {
+  if uniformBuffer.enableClouds > .5 {
     var cloudDensity: f32 = sampleCloudDensity(WorldPos, Atmosphere);
     s.scatteringCloud = cloudDensity * Atmosphere.CloudScattering;
     s.absorptionCloud = cloudDensity * Atmosphere.CloudAbsorption;

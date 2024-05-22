@@ -285,7 +285,7 @@ fn IntegrateScatteredLuminance(
     var tMaxFloor: f32 = tMax;
     if VariableSampleCount {
         var spp: vec2<f32> = RayMarchMinMaxSPP;
-        if uniformBuffer.clouds > 0.5 {
+        if uniformBuffer.enableClouds > 0.5 {
             spp = RayMarchMinMaxSPPCloud;
         }
         SampleCount = mix(spp.x, spp.y, clamp(tMax * 0.01, 0.0, 1.0));
@@ -381,7 +381,7 @@ fn IntegrateScatteredLuminance(
         if SHADOWMAP_ENABLED == 1 {
             shadow = getShadow(Atmosphere, P);
         }
-        if VOLUMETRIC_SHADOW_ENABLED == 1 && uniformBuffer.clouds > 0.5 {
+        if VOLUMETRIC_SHADOW_ENABLED == 1 && uniformBuffer.enableClouds > 0.5 {
             shadow = computeVolumetricShadow(P, SunDir, Atmosphere);
         }
 

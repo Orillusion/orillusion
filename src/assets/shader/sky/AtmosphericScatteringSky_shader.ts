@@ -3,6 +3,7 @@ import transmittance from "./RenderTransmittanceLutPS.wgsl?raw";
 import integration from "./AtmosphericScatteringIntegration.wgsl?raw";
 import multiscatter from "./NewMultiScattCS.wgsl?raw";
 import earth from "./AtmosphereEarth.wgsl?raw";
+import uniforms from "./AtmosphereUniforms.wgsl?raw";
 import raymarch from "./RenderSkyRayMarching.wgsl?raw";
 import skyview from "./SkyViewLutPS.wgsl?raw";
 import cloud from "./CloudNoise.wgsl?raw";
@@ -18,5 +19,6 @@ export class AtmosphericScatteringSky_shader {
   public static raymarch_cs: string = raymarch;
   public static skyview_cs: string = skyview;
   public static earth: string = earth;
+  public static uniforms: string = uniforms;
   public static cloud_cs: string = cloud;
 }

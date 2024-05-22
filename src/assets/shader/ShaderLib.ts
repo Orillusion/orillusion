@@ -110,6 +110,7 @@ export class ShaderLib {
         ShaderLib.register('sky_fs_frag_wgsl', CubeSky_Shader.sky_fs_frag_wgsl);
         ShaderLib.register('AtmosphericScatteringIntegration', AtmosphericScatteringSky_shader.integration);
         ShaderLib.register('AtmosphereEarth', AtmosphericScatteringSky_shader.earth);
+        ShaderLib.register('AtmosphereUniforms', AtmosphericScatteringSky_shader.uniforms);
 
         ShaderLib.register("LambertShader", Lambert_shader);
 

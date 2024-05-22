@@ -22,7 +22,7 @@ export class AtmosphericScatteringSkySetting {
     public sunY: number = 0.56;
     public sunBrightness: number = 1.0;
     public displaySun: boolean = true;
-    public clouds: boolean = true;
+    public enableClouds: boolean = true;
     public showV1: boolean = false;
     public defaultTextureCubeSize: number = 512;
     public defaultTexture2DSize: number = 1024;
@@ -155,7 +155,7 @@ class AtmosphericTexture extends VirtualTexture {
         this._uniformBuffer.setFloat('mieHeight', setting.mieHeight);
         this._uniformBuffer.setFloat('sunBrightness', setting.sunBrightness);
         this._uniformBuffer.setFloat('displaySun', setting.displaySun ? 1 : 0);
-        this._uniformBuffer.setFloat('clouds', setting.clouds ? 1 : 0);
+        this._uniformBuffer.setFloat('enableClouds', setting.enableClouds ? 1 : 0);
         this._uniformBuffer.setFloat('hdrExposure', setting.hdrExposure);
         this._uniformBuffer.setColor('skyColor', setting.skyColor);
         this._uniformBuffer.apply();
