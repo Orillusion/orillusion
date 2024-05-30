@@ -14,6 +14,7 @@ export let Common_frag: string = /*wgsl*/ `
     modelIndex = u32(round(vertex_varying.index)) ; 
 
     ORI_VertexVarying = vertex_varying;
+    ORI_VertexVarying.vWorldNormal = normalize(vertex_varying.vWorldNormal);
     ORI_FragmentOutput.color = vec4<f32>(1.0, 0.0, 0.0, 1.0);
     viewDir = normalize(globalUniform.CameraPos.xyz - ORI_VertexVarying.vWorldPos.xyz) ;
     #if USE_WORLDPOS

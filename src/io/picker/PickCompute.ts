@@ -67,7 +67,7 @@ export class PickCompute {
         var x = this._outBuffer.outFloat32Array[8];
         var y = this._outBuffer.outFloat32Array[9];
         var z = this._outBuffer.outFloat32Array[10];
-        target.set(x * 255 - 127, y * 255 - 127, z * 255 - 127).normalize();
+        target.set(x * 2.0 - 1.0, y * 2.0 - 1.0, z * 2.0 - 1.0).normalize();
         return target;
     }
 
