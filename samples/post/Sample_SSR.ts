@@ -1,9 +1,12 @@
 import { DirectLight, Engine3D, View3D, LitMaterial, HoverCameraController, KelvinUtil, MeshRenderer, Object3D, PlaneGeometry, Scene3D, SphereGeometry, SSRPost, Time, CameraUtil, webGPUContext, PostProcessingComponent, BloomPost, AtmosphericComponent } from '@orillusion/core'
+import { GUIHelp } from '@orillusion/debug/GUIHelp'
 import * as dat from '@orillusion/debug/dat.gui.module'
+import { GUIUtil } from '@samples/utils/GUIUtil'
 
 class Sample_SSR {
     lightObj: Object3D
     scene: Scene3D
+    sky: AtmosphericComponent
     mats: any[]
 
     constructor() { }
@@ -18,7 +21,9 @@ class Sample_SSR {
         })
 
         this.scene = new Scene3D()
-        this.scene.addComponent(AtmosphericComponent).sunY = 0.6
+        this.sky = this.scene.addComponent(AtmosphericComponent)
+        this.sky.sunX = 0.5
+        this.sky.sunY = 0.6
 
         let mainCamera = CameraUtil.createCamera3DObject(this.scene, 'camera')
         mainCamera.perspective(60, webGPUContext.aspect, 1, 2000.0)
@@ -78,9 +83,9 @@ class Sample_SSR {
             mr.geometry = planeGeometry
             scene.addChild(floor)
 
-            const GUIHelp = new dat.GUI()
-            GUIHelp.add(floorMaterial, 'roughness', 0, 1, 0.01)
-            GUIHelp.add(floorMaterial, 'metallic', 0, 1, 0.01)
+            GUIHelp.init()
+            GUIHelp.gui.add(floorMaterial, 'roughness', 0, 1, 0.01)
+            GUIHelp.gui.add(floorMaterial, 'metallic', 0, 1, 0.01)
         }
 
         {

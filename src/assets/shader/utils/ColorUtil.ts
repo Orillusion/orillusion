@@ -50,12 +50,10 @@ export let ColorUtil: string = /*wgsl*/ `
         return color2 ;
     }
 
-    fn LinearToGammaSpace(linRGB0: vec3<f32>) -> vec3 < f32 > {
-        var linRGB = max(linRGB0, vec3(0.0, 0.0, 0.0));
-        linRGB.r = pow(linRGB.r, 0.416666667);
-        linRGB.g = pow(linRGB.g, 0.416666667);
-        linRGB.b = pow(linRGB.b, 0.416666667);
-        return max(1.055 * linRGB - 0.055, vec3(0.0, 0.0, 0.0));
+    fn LinearToGammaSpace(linRGB: vec3<f32>) -> vec3<f32> {
+        var linRGB1 = max(linRGB, vec3<f32>(0.0));
+        linRGB1 = pow(linRGB1, vec3<f32>(0.4166666567325592));
+        return max(((1.0549999475479126 * linRGB1) - vec3<f32>(0.054999999701976776)), vec3<f32>(0.0));
     }
 
     var<private>sRGB_2_LMS_MAT: mat3x3<f32> = mat3x3<f32>(

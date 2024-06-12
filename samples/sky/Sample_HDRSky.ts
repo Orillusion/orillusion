@@ -1,5 +1,7 @@
 import { createExampleScene } from "@samples/utils/ExampleScene";
 import { Engine3D, Scene3D, SkyRenderer, Object3DUtil } from "@orillusion/core";
+import { GUIUtil } from "@samples/utils/GUIUtil";
+import { GUIHelp } from "@orillusion/debug/GUIHelp";
 
 // sample to replace hdr sky map
 class Sample_HDRSky {

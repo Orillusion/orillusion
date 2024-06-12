@@ -54,6 +54,9 @@ export class AtmosphericComponent extends SkyRenderer {
     public set sunX(value) {
         if (this._atmosphericScatteringSky.setting.sunX != value) {
             this._atmosphericScatteringSky.setting.sunX = value;
+            if (this._relatedTransform) {
+                this._relatedTransform.rotationY = value * 360 - 90;
+            }
             this._onChange = true;
         }
     }
@@ -65,6 +68,9 @@ export class AtmosphericComponent extends SkyRenderer {
     public set sunY(value) {
         if (this._atmosphericScatteringSky.setting.sunY != value) {
             this._atmosphericScatteringSky.setting.sunY = value;
+            if (this._relatedTransform) {
+                this._relatedTransform.rotationX = (value - 0.5) * 180;
+            }
             this._onChange = true;
         }
     }
@@ -124,6 +130,39 @@ export class AtmosphericComponent extends SkyRenderer {
         }
     }
 
+    public get enableClouds() {
+        return this._atmosphericScatteringSky.setting.enableClouds;
+    }
+
+    public set enableClouds(value) {
+        if (this._atmosphericScatteringSky.setting.enableClouds != value) {
+            this._atmosphericScatteringSky.setting.enableClouds = value;
+            this._onChange = true;
+        }
+    }
+
+    public get showV1() {
+        return this._atmosphericScatteringSky.setting.showV1;
+    }
+
+    public set showV1(value) {
+        if (this._atmosphericScatteringSky.setting.showV1 != value) {
+            this._atmosphericScatteringSky.setting.showV1 = value;
+            this._onChange = true;
+        }
+    }
+
+    public get hdrExposure() {
+        return this._atmosphericScatteringSky.setting.hdrExposure;
+    }
+
+    public set hdrExposure(value) {
+        if (this._atmosphericScatteringSky.setting.hdrExposure != value) {
+            this._atmosphericScatteringSky.setting.hdrExposure = value;
+            this._onChange = true;
+        }
+    }
+
 
     public init(): void {
         super.init();
@@ -134,6 +173,7 @@ export class AtmosphericComponent extends SkyRenderer {
         let scene = this.transform.scene3D;
         this.map = this._atmosphericScatteringSky;
         scene.envMap = this._atmosphericScatteringSky;
+        scene.envMap.isHDRTexture = true;
         this.onUpdate(view3D);
     }
 
@@ -141,6 +181,7 @@ export class AtmosphericComponent extends SkyRenderer {
         let scene = this.transform.scene3D;
         this.map = this._atmosphericScatteringSky;
         scene.envMap = this._atmosphericScatteringSky;
+        scene.envMap.isHDRTexture = true;
         super.start();
     }
 
@@ -168,7 +209,7 @@ export class AtmosphericComponent extends SkyRenderer {
 
         if (this._onChange) {
             this._onChange = false;
-            this._atmosphericScatteringSky.apply();
+            this._atmosphericScatteringSky.apply(view);
         }
 
     }
