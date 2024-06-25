@@ -57,6 +57,11 @@ export class CEvent {
     public ctrlKey: boolean;
 
     /**
+     * Is Meta key pressed when the event occurs
+     */
+    public metaKey: boolean;
+
+    /**
      * Is Alt key pressed when the event occurs
      */
     public altKey: boolean;

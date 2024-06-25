@@ -105,6 +105,9 @@ export class PickFire extends CEventDispatcher {
         if (target) {
             this._downEvent.target = target.object3D;
             this._downEvent.ctrlKey = e.ctrlKey;
+            this._downEvent.metaKey = e.metaKey;
+            this._downEvent.altKey = e.altKey;
+            this._downEvent.shiftKey = e.shiftKey;
             this._downEvent.data = { pick: target, pickInfo: this.getPickInfo(), mouseCode: this._mouseCode };
             this.dispatchEvent(this._downEvent);
 
@@ -124,6 +127,9 @@ export class PickFire extends CEventDispatcher {
         if (target) {
             this._upEvent.target = target.object3D;
             this._upEvent.ctrlKey = e.ctrlKey;
+            this._upEvent.metaKey = e.metaKey;
+            this._upEvent.altKey = e.altKey;
+            this._upEvent.shiftKey = e.shiftKey;
             this._upEvent.data = { pick: target, pickInfo: this.getPickInfo(), mouseCode: this._mouseCode };
             this.dispatchEvent(this._upEvent);
             if (target.object3D.containEventListener(PointerEvent3D.PICK_UP)) {
@@ -140,6 +146,7 @@ export class PickFire extends CEventDispatcher {
             worldPos: this._pickCompute.getPickWorldPosition(),
             screenUv: this._pickCompute.getPickScreenUV(),
             meshID: this._pickCompute.getPickMeshID(),
+            worldNormal: this._pickCompute.getPickWorldNormal(),
         };
     }
 
@@ -151,6 +158,9 @@ export class PickFire extends CEventDispatcher {
         if (target) {
             this._mouseMove.target = target.object3D;
             this._mouseMove.ctrlKey = e.ctrlKey;
+            this._mouseMove.metaKey = e.metaKey;
+            this._mouseMove.altKey = e.altKey;
+            this._mouseMove.shiftKey = e.shiftKey;
             this._mouseMove.data = { pick: target, pickInfo: this.getPickInfo(), mouseCode: this._mouseCode };
             this.dispatchEvent(this._mouseMove);
             if (target.object3D.containEventListener(PointerEvent3D.PICK_MOVE)) {
@@ -163,6 +173,9 @@ export class PickFire extends CEventDispatcher {
                 this._outEvent.target = this._lastFocus.object3D;
                 this._outEvent.data = { pick: this._lastFocus, pickInfo: this.getPickInfo(), mouseCode: this._mouseCode };
                 this._outEvent.ctrlKey = e.ctrlKey;
+                this._outEvent.metaKey = e.metaKey;
+                this._outEvent.altKey = e.altKey;
+                this._outEvent.shiftKey = e.shiftKey;
                 this.dispatchEvent(this._outEvent);
                 if (this._lastFocus.object3D.containEventListener(PointerEvent3D.PICK_OUT)) {
                     this._lastFocus.object3D.dispatchEvent(this._outEvent);
@@ -171,6 +184,9 @@ export class PickFire extends CEventDispatcher {
             if (target) {
                 this._overEvent.target = target.object3D;
                 this._overEvent.ctrlKey = e.ctrlKey;
+                this._overEvent.metaKey = e.metaKey;
+                this._overEvent.altKey = e.altKey;
+                this._overEvent.shiftKey = e.shiftKey;
                 this._overEvent.data = { pick: target, pickInfo: this.getPickInfo(), mouseCode: this._mouseCode };
                 this.dispatchEvent(this._overEvent);
                 if (target.object3D.containEventListener(PointerEvent3D.PICK_OVER)) {
@@ -190,6 +206,9 @@ export class PickFire extends CEventDispatcher {
             let info = Engine3D.setting.pick.mode == `pixel` ? this.getPickInfo() : null;
             this._pickEvent.target = target.object3D;
             this._pickEvent.ctrlKey = e.ctrlKey;
+            this._pickEvent.metaKey = e.metaKey;
+            this._pickEvent.altKey = e.altKey;
+            this._pickEvent.shiftKey = e.shiftKey;
             this._pickEvent.data = { pick: target, pickInfo: info, mouseCode: this._mouseCode };
             this.dispatchEvent(this._pickEvent);
 
