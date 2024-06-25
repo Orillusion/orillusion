@@ -1,4 +1,4 @@
-import { Engine3D, Matrix4, Object3D, PrefabAvatarData, Quaternion, RenderNode, SkinnedMeshRenderer2, StorageGPUBuffer, Time, Vector3, Vector4, View3D } from "../..";
+import { Engine3D, Matrix4, MeshRenderer, Object3D, PrefabAvatarData, Quaternion, RenderNode, RendererMask, RendererMaskUtil, SkinnedMeshRenderer2, StorageGPUBuffer, Time, Vector3, Vector4, View3D } from "../..";
 import { PropertyAnimationClip } from "../../math/AnimationCurveClip";
 import { RegisterComponent } from "../../util/SerializeDecoration";
 import { ComponentBase } from "../ComponentBase";
@@ -38,10 +38,24 @@ export class AnimatorComponent extends ComponentBase {
         this._clipsMap = new Map<string, PropertyAnimationClip>();
         this._clips = [];
         this._clipsState = [];
+
+        this._rendererList = this.object3D.getComponentsInChild(SkinnedMeshRenderer2);
+        let mrs = this.object3D.getComponentsInChild(MeshRenderer);
+        for (let mr of mrs) {
+            let o = mr as any;
+            o.blendShape = mr.morphData;
+            this._rendererList.push(o);
+        }
+        for (const renderer of this._rendererList) {
+            let hasMorphTarget = RendererMaskUtil.hasMask(renderer.rendererMask, RendererMask.MorphTarget);
+            if (hasMorphTarget) {
+                renderer.selfCloneMaterials('MORPH_TARGET_UUID');
+            }
+        }
     }
 
     public start(): void {
-        this._rendererList = this.object3D.getComponentsInChild(SkinnedMeshRenderer2);
+        // this._rendererList = this.object3D.getComponentsInChild(SkinnedMeshRenderer2);
     }
 
     private debug() {
@@ -278,27 +292,7 @@ export class AnimatorComponent extends ComponentBase {
 
                     let x = this._currentBlendAnimClip.floatCurves.get(key).getValue(this._blendShapeTime) as number;
                     let value = x / 100;
-                    for (const renderer of this._rendererList) {
-                        if (renderer.blendShape) {
-                            let property: any = this.propertyCache.get(renderer);
-                            if (property && key in property) {
-                                property[key](value);
-                            } else {
-                                property = renderer;
-                                for (const att of attributes) {
-                                    if (!property[att])
-                                        break;
-                                    property = property[att];
-                                }
-                                if (!property || property == renderer) break;
-
-                                if (!this.propertyCache.get(renderer))
-                                    this.propertyCache.set(renderer, {})
-                                this.propertyCache.get(renderer)[key] = property;
-                                property(value);
-                            }
-                        }
-                    }
+                    this.updateBlendShape(attributes, key, value);
                 }
             }
         }
@@ -313,11 +307,14 @@ export class AnimatorComponent extends ComponentBase {
                 } else {
                     property = renderer;
                     for (const att of attributes) {
-                        if (!property[att])
+                        if (!property[att]) {
+                            property = null;
                             break;
+                        }
                         property = property[att];
                     }
-                    if (!property || property == renderer) break;
+                    if (!property || property == renderer)
+                        continue;
 
                     if (!this.propertyCache.get(renderer))
                         this.propertyCache.set(renderer, {})
@@ -416,6 +413,18 @@ export class AnimatorComponent extends ComponentBase {
             }
         }
         return null;
+    }
+
+    public cloneMorphRenderers(): { [key: string]: SkinnedMeshRenderer2[] } {
+        let dst: { [key: string]: SkinnedMeshRenderer2[] } = {};
+        for (const renderer of this._rendererList) {
+            for (const key in renderer.geometry.morphTargetDictionary) {
+                let renderList = dst[key] || [];
+                renderList.push(renderer);
+                dst[key] = renderList;
+            }
+        }
+        return dst;
     }
 }
 

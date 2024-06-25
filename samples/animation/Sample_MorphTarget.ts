@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, webGPUContext, HoverCameraController, View3D, DirectLight, KelvinUtil, Vector3, MorphTargetBlender, Entity, CameraUtil } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, webGPUContext, HoverCameraController, View3D, DirectLight, KelvinUtil, Vector3, MorphTargetBlender, Entity, CameraUtil, AnimatorComponent } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
 // Sample of how to control the morphtarget animation
@@ -55,25 +55,42 @@ export class Sample_MorphTarget {
         model.x = -30.0;
         this.scene.addChild(model);
 
+        let animator = model.addComponent(AnimatorComponent);
+
         GUIHelp.addFolder('morph controller');
-        // register MorphTargetBlender component
-        let blendShapeComponent = model.addComponent(MorphTargetBlender);
-        let targetRenderers = blendShapeComponent.cloneMorphRenderers();
+
+        let targetRenderers = animator.cloneMorphRenderers();
 
         // bind influenceData to gui
         for (let key in targetRenderers) {
             this.influenceData[key] = 0.0;
             GUIHelp.add(this.influenceData, key, 0, 1, 0.01).onChange((v) => {
-                this.influenceData[key] = v;
-                let list = blendShapeComponent.getMorphRenderersByKey(key);
-                for (let renderer of list) {
-                    renderer.setMorphInfluence(key, v);
-                }
+                animator.updateBlendShape(["blendShape", "blendShape", key], "blendShape.blendShape." + key, v);
             });
         }
 
         GUIHelp.open();
         GUIHelp.endFolder();
+
+        // GUIHelp.addFolder('morph controller');
+        // // register MorphTargetBlender component
+        // let blendShapeComponent = model.addComponent(MorphTargetBlender);
+        // let targetRenderers = blendShapeComponent.cloneMorphRenderers();
+
+        // // bind influenceData to gui
+        // for (let key in targetRenderers) {
+        //     this.influenceData[key] = 0.0;
+        //     GUIHelp.add(this.influenceData, key, 0, 1, 0.01).onChange((v) => {
+        //         this.influenceData[key] = v;
+        //         let list = blendShapeComponent.getMorphRenderersByKey(key);
+        //         for (let renderer of list) {
+        //             renderer.setMorphInfluence(key, v);
+        //         }
+        //     });
+        // }
+
+        // GUIHelp.open();
+        // GUIHelp.endFolder();
 
         // print hierarchy
         this.printHierarchy(model);

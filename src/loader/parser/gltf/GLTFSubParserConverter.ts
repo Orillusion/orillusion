@@ -1,4 +1,4 @@
-import { AnimatorComponent, LitMaterial, Material, Matrix4, PropertyAnimationClip, SkinnedMeshRenderer2 } from "../../..";
+import { AnimatorComponent, BlendShapeData, BlendShapePropertyData, LitMaterial, Material, Matrix4, PropertyAnimationClip, SkinnedMeshRenderer2 } from "../../..";
 import { Engine3D } from "../../../Engine3D";
 import { SkeletonAnimationComponent } from "../../../components/SkeletonAnimationComponent";
 import { DirectLight } from "../../../components/lights/DirectLight";
@@ -386,6 +386,37 @@ export class GLTFSubParserConverter {
             } else {
                 attribArrays[`indices`].data = new Uint16Array(attribArrays[`indices`].data);
             }
+        }
+
+        // BlendShapeData
+        if (primitive.morphTargetsRelative) {
+            let blendShapeData = new BlendShapeData();
+            let targetNames = primitive.targetNames;
+            if (targetNames && targetNames.length > 0) {
+                blendShapeData.shapeNames = [];
+                blendShapeData.shapeIndexs = [];
+                for (let i = 0; i < targetNames.length; i++) {
+                    blendShapeData.shapeNames.push(targetNames[i])
+                    blendShapeData.shapeIndexs.push(i);
+                }
+            }
+            blendShapeData.vertexCount = attribArrays['position'].data.length / 3;
+            blendShapeData.blendCount = blendShapeData.shapeNames.length;
+            blendShapeData.blendShapePropertyDatas = [];
+            blendShapeData.blendShapeMap = new Map<string, BlendShapePropertyData>();
+            for (let i = 0; i < blendShapeData.blendCount; i++) {
+                let propertyData = new BlendShapePropertyData();
+                propertyData.shapeName = blendShapeData.shapeNames[i];
+                propertyData.shapeIndex = blendShapeData.shapeIndexs[i];
+                propertyData.frameCount = 1;
+                propertyData.blendPositionList = attribArrays[GLTFType.MORPH_POSITION_PREFIX + i].data;
+                propertyData.blendNormalList = attribArrays[GLTFType.MORPH_NORMAL_PREFIX + i].data;
+    
+                blendShapeData.blendShapePropertyDatas.push(propertyData);
+                blendShapeData.blendShapeMap.set(propertyData.shapeName, propertyData);
+            }
+            
+            geometry.blendShapeData = blendShapeData;
         }
 
         // geometry.geometrySource = new SerializeGeometrySource().setGLTFGeometry(this.initUrl, name);

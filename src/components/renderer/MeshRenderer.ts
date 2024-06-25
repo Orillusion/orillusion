@@ -21,7 +21,7 @@ export class MeshRenderer extends RenderNode {
      * Enabling this option allows the grid to display any shadows cast on the grid.
      */
     public receiveShadow: boolean;
-    protected morphData: MorphTargetData;
+    public morphData: MorphTargetData;
 
     constructor() {
         super();
