@@ -14,8 +14,9 @@ export class AnimatorComponent extends ComponentBase {
     protected propertyCache: Map<RenderNode, { [name: string]: any }>
 
     protected _clips: PropertyAnimationClip[];
+    protected _clipsState: PropertyAnimationClipState[];
     protected _clipsMap: Map<string, PropertyAnimationClip>;
-    protected _currentSkeletonClip: PropertyAnimationClip;
+    protected _currentSkeletonClip: PropertyAnimationClipState;
     protected _currentBlendAnimClip: PropertyAnimationClip;
 
     private _skeletonTime: number = 0;
@@ -36,6 +37,7 @@ export class AnimatorComponent extends ComponentBase {
         this.propertyCache = new Map<RenderNode, { [name: string]: any }>();
         this._clipsMap = new Map<string, PropertyAnimationClip>();
         this._clips = [];
+        this._clipsState = [];
     }
 
     public start(): void {
@@ -46,11 +48,12 @@ export class AnimatorComponent extends ComponentBase {
     }
 
     public playAnim(anim: string, time: number = 0, speed: number = 1) {
-        if (this._clipsMap.has(anim)) {
+        let clipState = this.getAnimationClipState(anim);
+        if (clipState) {
             if (this._currentSkeletonClip) {
                 this._currentSkeletonClip.weight = 0;
             }
-            this._currentSkeletonClip = this._clipsMap.get(anim);
+            this._currentSkeletonClip = clipState;
             this._currentSkeletonClip.weight = 1.0;
             this._skeletonTime = time;
             this._skeletonSpeed = speed;
@@ -61,7 +64,8 @@ export class AnimatorComponent extends ComponentBase {
     }
 
     public crossFade(anim: string, crossTime: number) {
-        if (!this._clipsMap.has(anim)) {
+        let clipState = this.getAnimationClipState(anim);
+        if (!clipState) {
             console.warn(`not has anim ${anim}`);
             return;
         }
@@ -71,11 +75,11 @@ export class AnimatorComponent extends ComponentBase {
             return;
         }
 
-        if (this._currentSkeletonClip && this._currentSkeletonClip.clipName === anim) {
+        if (this._currentSkeletonClip && this._currentSkeletonClip.clip.clipName === anim) {
             return;
         }
 
-        let inClip = this._clipsMap.get(anim);
+        let inClip = clipState;
         let outClip = this._currentSkeletonClip;
 
         if (this._crossFadeState) {
@@ -166,6 +170,10 @@ export class AnimatorComponent extends ComponentBase {
         for (const clip of clips) {
             this._clipsMap.set(clip.clipName, clip);
         }
+        this._clipsState = [];
+        for (const clip of clips) {
+            this._clipsState.push(new PropertyAnimationClipState(clip));
+        }
         if (!this._currentSkeletonClip) {
             this.playAnim(clips[0].clipName);
         }
@@ -173,6 +181,10 @@ export class AnimatorComponent extends ComponentBase {
 
     public get clips(): PropertyAnimationClip[] {
         return this._clips;
+    }
+
+    public get clipsState(): PropertyAnimationClipState[] {
+        return this._clipsState;
     }
 
     public cloneTo(obj: Object3D): void {
@@ -186,8 +198,8 @@ export class AnimatorComponent extends ComponentBase {
 
         if (this._skeletonStart) {
             this._skeletonTime += delta * this._skeletonSpeed * this.timeScale;
-            if (this._currentSkeletonClip && this._currentSkeletonClip.loopTime) {
-                this._skeletonTime = this._skeletonTime % this._currentSkeletonClip.stopTime;
+            if (this._currentSkeletonClip && this._currentSkeletonClip.clip.loopTime) {
+                this._skeletonTime = this._skeletonTime % this._currentSkeletonClip.clip.stopTime;
             }
         }
 
@@ -215,10 +227,10 @@ export class AnimatorComponent extends ComponentBase {
 
         this.updateTime();
 
-        let mixClip: PropertyAnimationClip[] = [];
-        for (let clip of this.clips) {
-            if (clip.weight > 0) {
-                mixClip.push(clip);
+        let mixClip: PropertyAnimationClipState[] = [];
+        for (let clipState of this._clipsState) {
+            if (clipState.weight > 0) {
+                mixClip.push(clipState);
             }
         }
 
@@ -240,7 +252,7 @@ export class AnimatorComponent extends ComponentBase {
                 const joint = joints[i];
                 let obj = this.skeltonPoseObject3D[joint.boneName];
 
-                if (this._currentSkeletonClip.useSkeletonPos) {
+                if (this._currentSkeletonClip.clip.useSkeletonPos) {
                     let pos = this.getPosition(joint.bonePath, this._skeletonTime);
                     obj.transform.localPosition = pos;
                 }
@@ -248,7 +260,7 @@ export class AnimatorComponent extends ComponentBase {
                 let rot = this.getRotation(joint.bonePath, this._skeletonTime);
                 obj.transform.localRotQuat = rot as Quaternion;
 
-                if (this._currentSkeletonClip.useSkeletonScale) {
+                if (this._currentSkeletonClip.clip.useSkeletonScale) {
                     let scale = this.getScale(joint.bonePath, this._skeletonTime);
                     obj.transform.localScale = scale;
                 }
@@ -316,7 +328,7 @@ export class AnimatorComponent extends ComponentBase {
         }
     }
 
-    private updateSkeletonAnimMix(mixClip: PropertyAnimationClip[]) {
+    private updateSkeletonAnimMix(mixClip: PropertyAnimationClipState[]) {
         let totalWeight = 0;
         for (let clip of mixClip) {
             totalWeight += clip.weight;
@@ -329,35 +341,35 @@ export class AnimatorComponent extends ComponentBase {
                 const joint = joints[i];
                 let obj = this.skeltonPoseObject3D[joint.boneName];
 
-                if (mixClip[0].useSkeletonPos) {
-                    this._bonePos.copyFrom(this.getPosition(joint.bonePath, this._skeletonTime, mixClip[0]));
+                if (mixClip[0].clip.useSkeletonPos) {
+                    this._bonePos.copyFrom(this.getPosition(joint.bonePath, this._skeletonTime, mixClip[0].clip));
                     for (let i = 1; i < mixClip.length; i++) {
-                        const clip = mixClip[i];
-                        if (clip.useSkeletonPos) {
-                            let pos = this.getPosition(joint.bonePath, this._skeletonTime, clip);
-                            Vector3.HELP_0.lerp(this._bonePos, pos, clip.weight / totalWeight);
+                        const clipState = mixClip[i];
+                        if (clipState.clip.useSkeletonPos) {
+                            let pos = this.getPosition(joint.bonePath, this._skeletonTime, clipState.clip);
+                            Vector3.HELP_0.lerp(this._bonePos, pos, clipState.weight / totalWeight);
                             this._bonePos.copyFrom(Vector3.HELP_0);
                         }
                     }
                     obj.transform.localPosition = this._bonePos;
                 }
 
-                this._boneRot.copyFrom(this.getRotation(joint.bonePath, this._skeletonTime, mixClip[0]));
+                this._boneRot.copyFrom(this.getRotation(joint.bonePath, this._skeletonTime, mixClip[0].clip));
                 for (let i = 1; i < mixClip.length; i++) {
-                    const clip = mixClip[i];
-                    let rot = this.getRotation(joint.bonePath, this._skeletonTime, clip);
-                    Quaternion.HELP_2.slerp(this._boneRot, rot, clip.weight / totalWeight);
+                    const clipState = mixClip[i];
+                    let rot = this.getRotation(joint.bonePath, this._skeletonTime, clipState.clip);
+                    Quaternion.HELP_2.slerp(this._boneRot, rot, clipState.weight / totalWeight);
                     this._boneRot.copyFrom(Quaternion.HELP_2);
                 }
                 obj.transform.localRotQuat = this._boneRot;
 
-                if (mixClip[0].useSkeletonScale) {
-                    this._boneScale.copyFrom(this.getScale(joint.bonePath, this._skeletonTime, mixClip[0]));
+                if (mixClip[0].clip.useSkeletonScale) {
+                    this._boneScale.copyFrom(this.getScale(joint.bonePath, this._skeletonTime, mixClip[0].clip));
                     for (let i = 1; i < mixClip.length; i++) {
-                        const clip = mixClip[i];
-                        if (clip.useSkeletonScale) {
-                            let scale = this.getScale(joint.bonePath, this._skeletonTime, clip);
-                            Vector3.HELP_0.lerp(this._boneScale, scale, clip.weight / totalWeight);
+                        const clipState = mixClip[i];
+                        if (clipState.clip.useSkeletonScale) {
+                            let scale = this.getScale(joint.bonePath, this._skeletonTime, clipState.clip);
+                            Vector3.HELP_0.lerp(this._boneScale, scale, clipState.weight / totalWeight);
                             this._boneScale.copyFrom(Vector3.HELP_0);
                         }
                     }
@@ -367,7 +379,7 @@ export class AnimatorComponent extends ComponentBase {
         }
     }
 
-    private getPosition(boneName: string, time: number, clip: PropertyAnimationClip = this._currentSkeletonClip) {
+    private getPosition(boneName: string, time: number, clip: PropertyAnimationClip = this._currentSkeletonClip.clip) {
         if (clip.positionCurves.has(boneName)) {
             let t = clip.positionCurves.get(boneName).getValue(time) as Vector3;
             return t;
@@ -375,7 +387,7 @@ export class AnimatorComponent extends ComponentBase {
         return this.skeltonTPoseObject3D[boneName].localPosition;
     }
 
-    private getRotation(boneName: string, time: number, clip: PropertyAnimationClip = this._currentSkeletonClip) {
+    private getRotation(boneName: string, time: number, clip: PropertyAnimationClip = this._currentSkeletonClip.clip) {
         if (clip.rotationCurves.has(boneName)) {
             let v4 = clip.rotationCurves.get(boneName).getValue(time) as Vector4;
             Quaternion.HELP_0.set(v4.x, v4.y, v4.z, v4.w);
@@ -384,7 +396,7 @@ export class AnimatorComponent extends ComponentBase {
         return this.skeltonTPoseObject3D[boneName].localQuaternion;
     }
 
-    private getScale(boneName: string, time: number, clip: PropertyAnimationClip = this._currentSkeletonClip) {
+    private getScale(boneName: string, time: number, clip: PropertyAnimationClip = this._currentSkeletonClip.clip) {
         if (clip.scaleCurves.has(boneName)) {
             let x = clip.scaleCurves.get(boneName).getValue(time) as Vector3;
             return x;
@@ -392,33 +404,43 @@ export class AnimatorComponent extends ComponentBase {
         return this.skeltonTPoseObject3D[boneName].localScale;
     }
 
-    private getFloat(propertyName: string, time: number) {
-        let x = this._currentSkeletonClip.floatCurves.get(propertyName).getValue(time) as number;
-        return x;
-    }
-
     /**
      * Gets the animation clip data object with the specified name
      * @param name Name of animation
      * @returns Animation clip data object
      */
-    public getAnimationClip(name: string): PropertyAnimationClip {
-        if (this._clipsMap.has(name)) {
-            return this._clipsMap.get(name);
+    public getAnimationClipState(name: string): PropertyAnimationClipState {
+        for (let clipState of this._clipsState) {
+            if (clipState.clip.clipName === name) {
+                return clipState;
+            }
         }
         return null;
     }
 }
 
+export class PropertyAnimationClipState {
+    public clip: PropertyAnimationClip;
+    public weight: number = 0.0;
+
+    public get totalTime(): number {
+        return this.clip.stopTime - this.clip.startTime;
+    }
+
+    constructor(clip: PropertyAnimationClip) {
+        this.clip = clip;
+    }
+}
+
 class SkeletonAnimCrossFadeState {
-    public inClip: PropertyAnimationClip;
-    public outClip: PropertyAnimationClip;
+    public inClip: PropertyAnimationClipState;
+    public outClip: PropertyAnimationClipState;
     public currentTime: number;
     public crossFadeTime: number;
-    constructor(inClip: PropertyAnimationClip, outClip: PropertyAnimationClip, time: number) {
+    constructor(inClip: PropertyAnimationClipState, outClip: PropertyAnimationClipState, time: number) {
         this.reset(inClip, outClip, time);
     }
-    public reset(inClip: PropertyAnimationClip, outClip: PropertyAnimationClip, time: number) {
+    public reset(inClip: PropertyAnimationClipState, outClip: PropertyAnimationClipState, time: number) {
         this.inClip = inClip;
         this.outClip = outClip;
         this.currentTime = 0;

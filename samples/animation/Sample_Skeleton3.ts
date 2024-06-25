@@ -74,22 +74,22 @@ class Sample_Skeleton3 {
 
             // change animation weight
             GUIHelp.addFolder("Animation-weight").open();
-            animation.clips.forEach((clip, _) => {
-                GUIHelp.add(clip, 'weight', 0, 1.0, 0.01).name(clip.clipName);
+            animation.clipsState.forEach((clipState, _) => {
+                GUIHelp.add(clipState, 'weight', 0, 1.0, 0.01).name(clipState.clip.clipName);
             });
             GUIHelp.endFolder();
 
             // toggle play/stop
             GUIHelp.addFolder("Animation-play").open();
-            animation.clips.forEach((clip, _) => {
-                GUIHelp.addButton(clip.clipName, () => animation.playAnim(clip.clipName));
+            animation.clipsState.forEach((clipState, _) => {
+                GUIHelp.addButton(clipState.clip.clipName, () => animation.playAnim(clipState.clip.clipName));
             });
             GUIHelp.endFolder();
 
             // cross fade animation
             GUIHelp.addFolder("Animation-crossFade").open();
-            animation.clips.forEach((clip, _) => {
-                GUIHelp.addButton('crossFade(' + clip.clipName + ')', () => animation.crossFade(clip.clipName, 0.3));
+            animation.clipsState.forEach((clipState, _) => {
+                GUIHelp.addButton('crossFade(' + clipState.clip.clipName + ')', () => animation.crossFade(clipState.clip.clipName, 0.3));
             });
             GUIHelp.endFolder();
         }
