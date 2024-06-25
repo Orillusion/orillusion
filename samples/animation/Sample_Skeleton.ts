@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, LitMaterial, MeshRenderer, BoxGeometry, DirectLight, KelvinUtil, Object3DUtil } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, LitMaterial, MeshRenderer, BoxGeometry, DirectLight, KelvinUtil, Object3DUtil, AnimatorComponent } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
 class Sample_Skeleton {
@@ -20,7 +20,7 @@ class Sample_Skeleton {
         camera.perspective(60, Engine3D.aspect, 0.01, 5000.0);
 
         let ctrl = camera.object3D.addComponent(HoverCameraController);
-        ctrl.setCamera(0, -45, 100);
+        ctrl.setCamera(-45, -45, 100);
         ctrl.maxDistance = 1000;
 
         let view = new View3D();
@@ -42,7 +42,11 @@ class Sample_Skeleton {
             man.scaleX = 30;
             man.scaleY = 30;
             man.scaleZ = 30;
+            man.rotationZ = 90;
             scene.addChild(man);
+
+            let animator = man.getComponentsInChild(AnimatorComponent)[0];
+            animator.playAnim(animator.clips[0].clipName);
 
             GUIUtil.renderTransform(man.transform);
         }

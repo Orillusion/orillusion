@@ -22,6 +22,12 @@ export class PropertyAnimationClip {
     public scaleCurves: Map<string, AnimationCurveT> = new Map<string, AnimationCurveT>();
     public floatCurves: Map<string, AnimationCurveT> = new Map<string, AnimationCurveT>();
 
+    public weight: number = 0.0;
+
+    public get totalTime(): number {
+        return this.stopTime - this.startTime;
+    }
+
     public formBytes(bytes: BytesArray) {
         this.clipName = bytes.readUTF();
         this.loopTime = bytes.readInt32() ? false : true;

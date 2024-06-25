@@ -338,6 +338,9 @@ export class Transform extends ComponentBase {
      * The transformation property of the object relative to the parent, stored in the from of a quaternion
      */
     public get localRotQuat(): Quaternion {
+        if (this.localChange) {
+            this.updateWorldMatrix();
+        }
         return this._localRotQuat;
     }
 
