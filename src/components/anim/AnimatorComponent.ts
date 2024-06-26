@@ -133,6 +133,10 @@ export class AnimatorComponent extends ComponentBase {
         this.jointMatrixIndexTableBuffer = new StorageGPUBuffer(this._avatar.count, 0, jointMatrixIndexTable);
     }
 
+    public get numJoint(): number {
+        return this._avatar.count;   
+    }
+
     public getJointIndexTable(skinJointsName: Array<string>) {
         let result = new Array<number>();
         for (let i = 0; i < skinJointsName.length; i++) {

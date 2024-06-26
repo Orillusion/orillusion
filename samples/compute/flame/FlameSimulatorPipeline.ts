@@ -1,4 +1,4 @@
-import { ComputeGPUBuffer, ComputeShader, GPUContext, GlobalBindGroup, SkeletonAnimationComponent, SkinnedMeshRenderer, VertexAttributeData, VertexAttributeName } from '@orillusion/core';
+import { AnimatorComponent, ComputeGPUBuffer, ComputeShader, GPUContext, GlobalBindGroup, SkeletonAnimationComponent, SkinnedMeshRenderer, SkinnedMeshRenderer2, VertexAttributeData, VertexAttributeName } from '@orillusion/core';
 import { FlameSimulatorBuffer } from './FlameSimulatorBuffer';
 import { FlameSimulatorConfig } from './FlameSimulatorConfig';
 import { Copy } from './shader/copy.wgsl';
@@ -11,12 +11,12 @@ export class FlameSimulatorPipeline extends FlameSimulatorBuffer {
     protected mSimulationComputeShader: ComputeShader;
     protected mCopyComputeShader: ComputeShader;
     protected mFirstFrame: boolean = false;
-    protected mSkeletonAnimation: SkeletonAnimationComponent;
-    protected mSkinnedMeshRenderer: SkinnedMeshRenderer;
-    constructor(config: FlameSimulatorConfig, skeletonAnimation: SkeletonAnimationComponent, skinnedMeshRenderer: SkinnedMeshRenderer) {
+    protected mAnimatorComponent: AnimatorComponent;
+    protected mSkinnedMeshRenderer: SkinnedMeshRenderer2;
+    constructor(config: FlameSimulatorConfig, skeletonAnimation: AnimatorComponent, skinnedMeshRenderer: SkinnedMeshRenderer2) {
         super(config);
         this.mConfig = config;
-        this.mSkeletonAnimation = skeletonAnimation;
+        this.mAnimatorComponent = skeletonAnimation;
         this.mSkinnedMeshRenderer = skinnedMeshRenderer;
     }
 
@@ -135,13 +135,13 @@ export class FlameSimulatorPipeline extends FlameSimulatorBuffer {
 
     protected initPipeline() {
 
-        this.mBoneMatrixBuffer = new ComputeGPUBuffer(16 * this.mSkeletonAnimation.skeleton.numJoint);
+        this.mBoneMatrixBuffer = new ComputeGPUBuffer(16 * this.mAnimatorComponent.numJoint);
 
         this.mCopyBoneMatrixComputeShader = new ComputeShader(CopyBoneMatrix.cs);
         this.mCopyBoneMatrixComputeShader.setStorageBuffer(`matrixs`, GlobalBindGroup.modelMatrixBindGroup.matrixBufferDst);
-        this.mCopyBoneMatrixComputeShader.setStorageBuffer(`jointsMatrixIndexTable`, this.mSkeletonAnimation.jointMatrixIndexTableBuffer);
+        this.mCopyBoneMatrixComputeShader.setStorageBuffer(`jointsMatrixIndexTable`, this.mAnimatorComponent.jointMatrixIndexTableBuffer);
         this.mCopyBoneMatrixComputeShader.setStorageBuffer(`bonesTransformMatrix`, this.mBoneMatrixBuffer);
-        this.mCopyBoneMatrixComputeShader.workerSizeX = Math.ceil(this.mSkeletonAnimation.skeleton.numJoint / 16);
+        this.mCopyBoneMatrixComputeShader.workerSizeX = Math.ceil(this.mAnimatorComponent.numJoint / 16);
 
         const { NUM, GROUP_SIZE } = this.mConfig;
         this.mSimulationComputeShader = new ComputeShader(Simulation.cs);
