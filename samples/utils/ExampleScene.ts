@@ -74,7 +74,7 @@ export function createSceneParam(): ExampleSceneParam {
             },
 
             kelvin: 5355,
-            intensity: 6,
+            intensity: 2,
             castShadow: true
         }
     }

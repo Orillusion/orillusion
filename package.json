@@ -1,6 +1,6 @@
 {
     "name": "@orillusion/core",
-    "version": "0.7.2",
+    "version": "0.7.3",
     "author": "Orillusion",
     "description": "Orillusion WebGPU Engine",
     "type": "module",
@@ -33,7 +33,7 @@
         "build": "tsc --p tsconfig.build.json && vite build && npm run build:types && npm run minify",
         "build:test": "tsc --p tsconfig.build.json && vite build",
         "build:types": "tsc --emitDeclarationOnly -p tsconfig.build.json && rm -rf dist/packages && mv dist/src dist/types",
-        "minify": "./node_modules/vite/node_modules/.bin/esbuild dist/orillusion.es.max.js --minify --outfile=dist/orillusion.es.js && ./node_modules/vite/node_modules/.bin/esbuild dist/orillusion.umd.max.js --minify --outfile=dist/orillusion.umd.js",
+        "minify": "./node_modules/vite/node_modules/.bin/esbuild dist/orillusion.es.max.js --sourcemap --minify --outfile=dist/orillusion.es.js && ./node_modules/vite/node_modules/.bin/esbuild dist/orillusion.umd.max.js --minify --sourcemap --outfile=dist/orillusion.umd.js",
         "test": "electron test/ci/main.js",
         "test:ci": "xvfb-maybe -- electron --enable-unsafe-webgpu --enable-features=Vulkan --use-vulkan=swiftshader --use-webgpu-adapter=swiftshader --no-sandbox test/ci/main.js",
         "docs": "npm run docs:core && npm run docs:physics && npm run docs:media && npm run docs:stats && npm run docs:particle && npm run docs:graphic",
@@ -50,11 +50,11 @@
         "@webgpu/types": "^0.1.40",
         "conventional-changelog-cli": "^2.2.2",
         "earcut": "^2.2.4",
-        "electron": "^28.2.0",
+        "electron": "^31.1.0",
         "typedoc": "^0.25.7",
         "typedoc-plugin-markdown": "^3.17.1",
         "typescript": "^5.3.3",
-        "vite": "^5.0.12",
+        "vite": "^5.3.1",
         "xvfb-maybe": "^0.2.1"
     }
 }

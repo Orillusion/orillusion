@@ -11,18 +11,20 @@ class Sample_POI {
     async run() {
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.updateFrameRate = 1;
+        Engine3D.setting.shadow.shadowSize = 2048;
         Engine3D.setting.shadow.shadowBound = 20;
+        Engine3D.setting.shadow.shadowBias = 0.005;
         Engine3D.setting.shadow.csmScatteringExp = 1;
 
         await Engine3D.init({ renderLoop: () => { this.loop(); } });
         let param = createSceneParam();
-        param.camera.distance = 16;
+        param.camera.distance = 30;
         let exampleScene = createExampleScene(param);
 
         GUIHelp.init();
 
         this.scene = exampleScene.scene;
-        exampleScene.camera.enableCSM = true;
+        // exampleScene.camera.enableCSM = true;
 
         Engine3D.startRenderView(exampleScene.view);
 

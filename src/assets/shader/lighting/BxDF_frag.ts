@@ -123,14 +123,16 @@ export let BxDF_frag: string = /*wgsl*/ `
       }
 
       //***********indirect-ambient part********* 
-      // var kdLast = (1.0 - 0.04) * (1.0 - fragData.Metallic);    
-      var iblDiffuseResult : vec3f ;
+      var kdLast = (1.0 - 0.04) * (1.0 - fragData.Metallic);    
+      var iblDiffuseResult : vec3f;
 
       let MAX_LOD  = i32(textureNumLevels(prefilterMap)) ;
       let mip = roughnessToMipmapLevel(fragData.Roughness,MAX_LOD) * f32(MAX_LOD) * 0.5;
    
       var indirectionDiffuse = indirectionDiffuse_Function(fragData.NoV,fragData.N,fragData.Metallic,fragData.Albedo.rgb,fragData.Roughness,fragData.Ao,fragData.F0);
-      iblDiffuseResult += indirectionDiffuse / 3.14;
+
+      indirectionDiffuse += irradiance * vec3f(kdLast) * fragData.Albedo.rgb;
+      iblDiffuseResult += indirectionDiffuse / 6.28;
 
       var indirectionSpec    = indirectionSpec_Function(fragData.R,fragData.Roughness,fragData.NoV,fragData.Ao,gammaToLiner(fragData.F0));
       #if USE_CASTREFLECTION

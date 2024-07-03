@@ -23,7 +23,7 @@ var baseMap: texture_cube<f32>;
 var<uniform> global: uniformData;
 
 @fragment
-fn main(@location(auto) fragUV: vec2<f32>, @location(auto) vWorldPos: vec4<f32>, @location(auto) vWorldNormal: vec3<f32>) -> FragmentOutput {
+fn main(@location(auto) fragUV: vec2<f32>,@location(auto) vClipPos: vec4<f32>, @location(auto) vWorldPos: vec4<f32>, @location(auto) vWorldNormal: vec3<f32> , @builtin(position) fragCoord : vec4<f32> ) -> FragmentOutput {
     let maxLevel: u32 = textureNumLevels(baseMap);
     let textureColor:vec3<f32> = textureSampleLevel(baseMap, baseMapSampler, normalize(vWorldPos.xyz), global.roughness * f32(maxLevel) ).xyz;
     let o_Color = 0.618 * vec4<f32>(LinearToGammaSpace(textureColor) * globalUniform.skyExposure , 1.0);

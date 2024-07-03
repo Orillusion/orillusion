@@ -43,7 +43,7 @@ export let Combine_cs = /* wgsl */`
         let b = textureSampleLevel( inputBTexture, inputBTextureSampler, inputUV , 0.0 );
 
         let albedoColor = getAbldeoFromGBuffer(gBuffer) / PI ;
-        let bufferColor = getColorFromGBuffer(gBuffer)  ;
+        let bufferColor = getRGBMColorFromGBuffer(gBuffer)  ;
         var colorA = bufferColor.xyz * updateBuffer.colorIns ;
         var color = b.xyz * updateBuffer.indirectIns * albedoColor ;
 

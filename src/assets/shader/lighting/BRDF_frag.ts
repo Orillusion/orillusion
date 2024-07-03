@@ -3,6 +3,7 @@ export let BRDF_frag: string = /*wgsl*/ `
     #include "EnvMap_frag"
     #include "BrdfLut_frag"
     #include "ColorUtil_frag"
+    #include "SHCommon_frag"
     
     struct FragData {
         Ao: f32,

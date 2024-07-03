@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, Graphic3DMesh, Matrix4, BlendMode, Color, Vector4, lineJoin, GeoJsonStruct, GeoJsonUtil, ShapeInfo, DynamicDrawStruct, Object3DUtil, PostProcessingComponent, GTAOPost } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, Graphic3DMesh, Matrix4, BlendMode, Color, Vector4, GeoJsonStruct, GeoJsonUtil, ShapeInfo, DynamicDrawStruct, Object3DUtil, PostProcessingComponent, GTAOPost } from "@orillusion/core";
 import { Stats } from "@orillusion/stats";
 import { GrassNodeStruct, GrassRenderer } from "@orillusion/graphic";
 
@@ -84,14 +84,14 @@ export class Sample_GraphicGrass {
 
     private async addGrass(grassGroup: number) {
         let texts = [];
-        // texts.push(await Engine3D.res.loadTexture("textures/line.png") as BitmapTexture2D);
-        // texts.push(await Engine3D.res.loadTexture("textures/line2.png") as BitmapTexture2D);
+        // texts.push(await Engine3D.res.loadTexture("terrain/grass/GrassRealistic.png") as BitmapTexture2D);
+        // texts.push(await Engine3D.res.loadTexture('terrain/test01/bitmap.png') as BitmapTexture2D);
 
-        // texts.push(await Engine3D.res.loadTexture("textures/line3.png") as BitmapTexture2D);
+        texts.push(await Engine3D.res.loadTexture("textures/line3.png") as BitmapTexture2D);
 
         // texts.push(await Engine3D.res.loadTexture("terrain/grass/single.png") as BitmapTexture2D);
         // texts.push(await Engine3D.res.loadTexture("terrain/grass/single2.png") as BitmapTexture2D);
-        texts.push(await Engine3D.res.loadTexture("terrain/grass/single3.png") as BitmapTexture2D);
+        // texts.push(await Engine3D.res.loadTexture("terrain/grass/single3.png") as BitmapTexture2D);
         // texts.push(await Engine3D.res.loadTexture("terrain/grass/GrassThick.png") as BitmapTexture2D);
         // texts.push(await Engine3D.res.loadTexture("terrain/grass/GrassRealistic.png") as BitmapTexture2D);
         // texts.push(await Engine3D.res.loadTexture("textures/line4.png") as BitmapTexture2D);

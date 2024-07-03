@@ -2,7 +2,7 @@ import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, Graphic3DMesh, Matrix4, BlendMode, Color, Vector4, LineJoin, GeoJsonStruct, GeoJsonUtil, ShapeInfo } from "@orillusion/core";
 import { Stats } from "@orillusion/stats";
 
-export class Sample_GraphicShape {
+export class _Sample_GraphicShape {
     lightObj3D: Object3D;
     scene: Scene3D;
     parts: Object3D[];

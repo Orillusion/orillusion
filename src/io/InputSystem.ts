@@ -292,6 +292,7 @@ export class InputSystem extends CEventDispatcher {
         this._pointerEvent3D.mouseY = e.clientY - this.canvasY;
         this._pointerEvent3D.type = PointerEvent3D.POINTER_MID_UP;
         this._pointerEvent3D.ctrlKey = e.ctrlKey;
+        this._pointerEvent3D.metaKey = e.metaKey;
         this._pointerEvent3D.altKey = e.altKey;
         this._pointerEvent3D.shiftKey = e.shiftKey;
         this._pointerEvent3D.pointerId = e.pointerId;
@@ -308,6 +309,7 @@ export class InputSystem extends CEventDispatcher {
         this._pointerEvent3D.mouseY = e.clientY - this.canvasY;
         this._pointerEvent3D.type = PointerEvent3D.POINTER_CLICK;
         this._pointerEvent3D.ctrlKey = e.ctrlKey;
+        this._pointerEvent3D.metaKey = e.metaKey;
         this._pointerEvent3D.altKey = e.altKey;
         this._pointerEvent3D.shiftKey = e.shiftKey;
 
@@ -333,6 +335,7 @@ export class InputSystem extends CEventDispatcher {
         this._mouseStatus[this._pointerEvent3D.mouseCode] = false;
         this._pointerEvent3D.type = PointerEvent3D.POINTER_UP;
         this._pointerEvent3D.ctrlKey = e.ctrlKey;
+        this._pointerEvent3D.metaKey = e.metaKey;
         this._pointerEvent3D.altKey = e.altKey;
         this._pointerEvent3D.shiftKey = e.shiftKey;
         this._pointerEvent3D.pointerId = e.pointerId;
@@ -362,6 +365,7 @@ export class InputSystem extends CEventDispatcher {
         this._pointerEvent3D.reset();
         this._pointerEvent3D.mouseCode = e.button;
         this._pointerEvent3D.ctrlKey = e.ctrlKey;
+        this._pointerEvent3D.metaKey = e.metaKey;
         this._pointerEvent3D.altKey = e.altKey;
         this._pointerEvent3D.shiftKey = e.shiftKey;
         this._pointerEvent3D.pointerId = e[`pointerId`] ? e[`pointerId`] : 0;
@@ -390,6 +394,7 @@ export class InputSystem extends CEventDispatcher {
         this._pointerEvent3D.reset();
         this._pointerEvent3D.type = PointerEvent3D.POINTER_MOVE;
         this._pointerEvent3D.ctrlKey = e.ctrlKey;
+        this._pointerEvent3D.metaKey = e.metaKey;
         this._pointerEvent3D.altKey = e.altKey;
         this._pointerEvent3D.shiftKey = e.shiftKey;
         this._pointerEvent3D.pointerId = e.pointerId;
@@ -420,6 +425,7 @@ export class InputSystem extends CEventDispatcher {
         this._pointerEvent3D.reset();
         this._pointerEvent3D.type = PointerEvent3D.POINTER_OVER;
         this._pointerEvent3D.ctrlKey = e.ctrlKey;
+        this._pointerEvent3D.metaKey = e.metaKey;
         this._pointerEvent3D.altKey = e.altKey;
         this._pointerEvent3D.shiftKey = e.shiftKey;
         this._pointerEvent3D.pointerId = e.pointerId;
@@ -454,6 +460,7 @@ export class InputSystem extends CEventDispatcher {
         this._pointerEvent3D.reset();
         this._pointerEvent3D.type = PointerEvent3D.POINTER_WHEEL;
         this._pointerEvent3D.ctrlKey = e.ctrlKey;
+        this._pointerEvent3D.metaKey = e.metaKey;
         this._pointerEvent3D.altKey = e.altKey;
         this._pointerEvent3D.shiftKey = e.shiftKey;
         this._pointerEvent3D.mouseX = this.mouseX;

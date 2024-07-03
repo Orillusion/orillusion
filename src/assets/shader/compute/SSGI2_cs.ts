@@ -71,7 +71,7 @@ export let SSGI2_cs: string = /*wgsl*/ `
       i32GbufferFragCoord = vec2i(f32GbufferFragCoord) ; 
 
       gBuffer = getGBuffer(i32GbufferFragCoord) ;
-      wColor = getColorFromGBuffer(gBuffer);
+      wColor = getRGBMColorFromGBuffer(gBuffer);
       var n = getViewNormalFromGBuffer(gBuffer);
       var p = getWorldPositionFromGBuffer(gBuffer,f32GbufferUV);
 
@@ -101,7 +101,7 @@ export let SSGI2_cs: string = /*wgsl*/ `
           var SSOffset = vec2f(0.0);
           
           gBuffer = getGBuffer(i32GbufferFragCoord) ;
-          var VColor = getColorFromGBuffer(gBuffer);
+          var VColor = getRGBMColorFromGBuffer(gBuffer);
           var VNormal = getViewNormalFromGBuffer(gBuffer) ;
           var VPPos = getViewPositionFromGBuffer(gBuffer,f32GbufferUV) ;
           var ModFC = f32InputFragCoord % 4.;
@@ -133,7 +133,7 @@ export let SSGI2_cs: string = /*wgsl*/ `
                 let offsetUV = (SUV / f32InputSize) ;
                 let i32InputUV = vec2i( offsetUV * f32GBufferSize );
                 let stepGBuffer = getGBuffer(vec2i(i32InputUV));
-                var SSVC = getColorFromGBuffer(stepGBuffer);
+                var SSVC = getRGBMColorFromGBuffer(stepGBuffer);
                 
                 var uuv = (SUV * inputToGBuffer);
                 uuv = uuv / f32GBufferSize ;

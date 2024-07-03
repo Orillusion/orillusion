@@ -18,8 +18,6 @@ export class Context3D extends CEventDispatcher {
     public windowWidth: number;
     public windowHeight: number;
     public canvasConfig: CanvasConfig;
-    public super: number = 1;
-
     private _pixelRatio: number = 1.0;
     private _resizeEvent: CEvent;
 
@@ -42,15 +40,11 @@ export class Context3D extends CEventDispatcher {
             }
 
             // check if external canvas has initial with and height style
-            const _width = this.canvas.clientWidth, _height = this.canvas.clientHeight;
-
-            // set a initial style if size changed
-            if (_width != this.canvas.clientWidth) {
-                this.canvas.style.width = _width + 'px';
-            }
-            if (_height != this.canvas.clientHeight) {
-                this.canvas.style.height = _height + 'px';
-            }
+            // TODO: any way to check external css style?
+            if(!this.canvas.style.width)
+                this.canvas.style.width = this.canvas.width + 'px';
+            if(!this.canvas.style.height)
+                this.canvas.style.height = this.canvas.height + 'px';
         } else {
             this.canvas = document.createElement('canvas');
             // this.canvas.style.position = 'fixed';
@@ -141,8 +135,8 @@ export class Context3D extends CEventDispatcher {
     }
 
     public updateSize() {
-        let w = Math.floor(this.canvas.clientWidth * this.pixelRatio * this.super);
-        let h = Math.floor(this.canvas.clientHeight * this.pixelRatio * this.super);
+        let w = Math.floor(this.canvas.clientWidth * this.pixelRatio);
+        let h = Math.floor(this.canvas.clientHeight * this.pixelRatio);
         if (w != this.windowWidth || h != this.windowHeight) {
             this.canvas.width = this.windowWidth = w;
             this.canvas.height = this.windowHeight = h;

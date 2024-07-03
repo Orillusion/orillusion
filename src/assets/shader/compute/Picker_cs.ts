@@ -8,9 +8,15 @@ export let Picker_cs: string = /*wgsl*/ `
         pick_meshID:f32,
         pick_meshID2:f32,
         pick_UV:vec2<f32>,
+
         pick_Position:vec4<f32>,
         pick_Normal:vec4<f32>,
         pick_Tangent:vec4<f32>,
+
+        v4:vec4<f32>,
+        v5:vec4<f32>,
+        v6:vec4<f32>,
+        v7:vec4<f32>
     }
 
     @group(0) @binding(2) var<storage,read_write> outBuffer: PickResult;
