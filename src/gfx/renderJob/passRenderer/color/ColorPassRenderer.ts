@@ -43,7 +43,6 @@ export class ColorPassRenderer extends RendererBase {
 
         {
             this.renderContext.beginOpaqueRenderPass();
-            let command = this.renderContext.command;
             let renderPassEncoder = this.renderContext.encoder;
 
             //     // renderPassEncoder.setViewport(camera.viewPort.x, camera.viewPort.y, camera.viewPort.width, camera.viewPort.height, 0.0, 1.0);
@@ -76,14 +75,14 @@ export class ColorPassRenderer extends RendererBase {
             if (collectInfo.opaqueList) {
                 GPUContext.bindCamera(renderPassEncoder, camera);
                 this.drawNodes(view, this.renderContext, collectInfo.opaqueList, occlusionSystem, clusterLightingBuffer);
-                this.renderContext.endRenderPass();
             }
+            // this.renderContext.endRenderPass();
+
         }
 
         {
-            this.renderContext.beginTransparentRenderPass();
+            // this.renderContext.beginTransparentRenderPass();
 
-            let command = this.renderContext.command;
             let renderPassEncoder = this.renderContext.encoder;
 
             if (tr_bundleList.length > 0) {
@@ -98,19 +97,13 @@ export class ColorPassRenderer extends RendererBase {
             let graphicsList = EntityCollect.instance.getGraphicList();
             for (let i = 0; i < graphicsList.length; i++) {
                 const graphic3DRenderNode = graphicsList[i];
-                let matrixIndex = graphic3DRenderNode.transform.worldMatrix.index;
                 graphic3DRenderNode.nodeUpdate(view, this._rendererType, this.splitRendererPassState, clusterLightingBuffer);
                 graphic3DRenderNode.renderPass2(view, this._rendererType, this.splitRendererPassState, clusterLightingBuffer, renderPassEncoder);
             }
 
-            // let graphicsMesh = EntityCollect.instance.getGraphicMesh(view);
-            // for (const iterator of graphicsMesh) {
-            //     let meshGroup = iterator;
-            //     meshGroup.nodeUpdate(view, this._rendererType, this.splitRendererPassState, clusterLightingBuffer);
-            //     meshGroup.renderPass2(view, this._rendererType, this.splitRendererPassState, clusterLightingBuffer, renderPassEncoder);
-            // }
 
             this.renderContext.endRenderPass();
+
 
             ProfilerUtil.end("ColorPass Draw Transparent");
         }

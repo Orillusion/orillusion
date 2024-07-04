@@ -166,6 +166,7 @@ export class GBufferPost extends PostBase {
 
         let command = GPUContext.beginCommandEncoder();
         GPUContext.computeCommand(command, [this.testCompute]);
+        GPUContext.endCommandEncoder(command);
         GPUContext.lastRenderPassState = this.rendererPassState;
     }
 

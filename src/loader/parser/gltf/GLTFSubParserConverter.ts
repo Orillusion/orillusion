@@ -182,7 +182,12 @@ export class GLTFSubParserConverter {
                     let physicMaterial = (newMat = this.applyMaterialExtensions(gltfMat, newMat));
                     if (`enableBlend` in gltfMat) {
                         if (gltfMat[`enableBlend`]) {
-                            physicMaterial.blendMode = BlendMode.ABOVE;
+                            let defines = gltfMat.defines;
+                            if (defines?.includes('ALPHA_BLEND')) {
+                                physicMaterial.blendMode = BlendMode.ALPHA;
+                            } else {
+                                physicMaterial.blendMode = BlendMode.NORMAL;
+                            }
                             physicMaterial.castShadow = false;
                         } else {
                             physicMaterial.blendMode = BlendMode.NONE;
@@ -248,7 +253,15 @@ export class GLTFSubParserConverter {
                         if (!physicMaterial.shader.getTexture("emissiveMap")) {
                             physicMaterial.shader.setTexture("emissiveMap", Engine3D.res.whiteTexture);
                         }
+                        physicMaterial.shader.setDefine('USE_EMISSIVEMAP', true);
                         physicMaterial.setUniformColor("emissiveColor", new Color(emissiveFactor[0], emissiveFactor[1], emissiveFactor[2], emissiveFactor[3]));
+                        if (physicMaterial.blendMode != BlendMode.NONE) {
+                            physicMaterial.blendMode = BlendMode.ADD;
+                        }
+                        let emissiveIntensity = mat.getUniformFloat('emissiveIntensity')
+                        if (!emissiveIntensity || emissiveIntensity <= 0) {
+                            mat.setUniformFloat('emissiveIntensity', 1.0);
+                        }
                     }
                 }
             }

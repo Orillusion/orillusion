@@ -52,5 +52,7 @@ export class DDGIMultiBouncePass {
         this.computerShader.workerSizeY = probeSourceSize / 8;
         this.computerShader.workerSizeZ = probesCount;
         GPUContext.computeCommand(command, [this.computerShader]);
+        GPUContext.endCommandEncoder(command);
+
     }
 }

@@ -1,4 +1,5 @@
 import { Engine3D } from "../../Engine3D";
+import { Scene3D } from "../../core/Scene3D";
 import { GlobalBindGroup } from "../../gfx/graphics/webGpu/core/bindGroups/GlobalBindGroup";
 import { EntityCollect } from "../../gfx/renderJob/collect/EntityCollect";
 import { DDGIIrradianceVolume } from "../../gfx/renderJob/passRenderer/ddgi/DDGIIrradianceVolume";
@@ -26,16 +27,14 @@ export class GlobalIlluminationComponent extends ComponentBase {
 
     private _debugMr: MeshRenderer[] = [];
 
-    public init(): void {
+    public init(scene: Scene3D): void {
+        scene ||= Engine3D.views[0]?.scene;
         Engine3D.setting.gi.enable = true;
+        this._volume = GlobalBindGroup.getLightEntries(scene).irradianceVolume;
+        this.initProbe(scene);
     }
 
-    public start(): void {
-        this._volume = GlobalBindGroup.getLightEntries(this.transform.scene3D).irradianceVolume;
-        this.initProbe();
-    }
-
-    private initProbe() {
+    private initProbe(scene: Scene3D) {
         let xCount: number = this._volume.setting.probeXCount;
         let yCount: number = this._volume.setting.probeYCount;
         let zCount: number = this._volume.setting.probeZCount;
@@ -78,7 +77,7 @@ export class GlobalIlluminationComponent extends ComponentBase {
         }
 
         for (let i = 0; i < this._probes.length; i++) {
-            EntityCollect.instance.addGIProbe(this.transform.scene3D, this._probes[i]);
+            EntityCollect.instance.addGIProbe(scene, this._probes[i]);
         }
 
         this.object3D.transform.enable = false;

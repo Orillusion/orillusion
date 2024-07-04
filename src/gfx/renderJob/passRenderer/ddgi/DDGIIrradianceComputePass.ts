@@ -76,5 +76,6 @@ export class DDGIIrradianceComputePass {
         this.computeShader.workerSizeY = setting.octRTSideSize / 8;
         this.computeShader.workerSizeZ = probes.length;
         GPUContext.computeCommand(command, [this.computeShader]);
+        GPUContext.endCommandEncoder(command);
     }
 }

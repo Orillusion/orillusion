@@ -1,4 +1,4 @@
-import { Object3D, Scene3D, Engine3D, GlobalIlluminationComponent, Object3DUtil, PostProcessingComponent, TAAPost, BloomPost, FXAAPost, CameraUtil, HoverCameraController, AtmosphericComponent, DirectLight, KelvinUtil, View3D } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, GlobalIlluminationComponent, Object3DUtil, PostProcessingComponent, TAAPost, BloomPost, FXAAPost, CameraUtil, HoverCameraController, AtmosphericComponent, DirectLight, KelvinUtil, View3D, GTAOPost } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 
@@ -59,28 +59,17 @@ class Sample_GI {
         view.scene = this.scene;
         view.camera = camera;
 
+        await this.initScene();
+
+        this.addGIProbes(view);
+
         Engine3D.startRenderView(view);
 
         let postCom = this.scene.addComponent(PostProcessingComponent);
         postCom.addPost(FXAAPost);
 
-        this.addGIProbes();
-        await this.initScene();
-        sky.relativeTransform = this.lightObj3D.transform;
-
         GUIUtil.renderDebug();
-        GUIUtil.renderAtmosphericSky(sky);
-    }
 
-    private giComponent: GlobalIlluminationComponent;
-
-    private addGIProbes() {
-        let probeObj = new Object3D();
-        this.giComponent = probeObj.addComponent(GlobalIlluminationComponent);
-        this.scene.addChild(probeObj);
-    }
-
-    async initScene() {
         /******** light *******/
         {
             this.lightObj3D = new Object3D();
@@ -95,6 +84,21 @@ class Sample_GI {
 
             GUIUtil.renderDirLight(directLight);
         }
+        sky.relativeTransform = this.lightObj3D.transform;
+
+        GUIUtil.renderAtmosphericSky(sky);
+    }
+
+    private giComponent: GlobalIlluminationComponent;
+
+    private addGIProbes(view: View3D) {
+        let probeObj = new Object3D();
+        this.giComponent = probeObj.addComponent(GlobalIlluminationComponent, view.scene);
+        this.scene.addChild(probeObj);
+    }
+
+    async initScene() {
+
         {
             let floorHeight = 20;
             let floor = Object3DUtil.GetSingleCube(1000, floorHeight, 1000, 0.5, 0.5, 0.5);

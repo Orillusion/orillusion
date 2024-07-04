@@ -56,7 +56,7 @@ export class Camera3D extends ComponentBase {
      */
     public frustum: Frustum;
 
-    public sh: Float32Array = new Float32Array([
+    public sh_bak: Float32Array = new Float32Array([
         2.485296, 2.52417, 2.683965, 3.544894,
         0.2323964, 0.1813751, 0.08516902, -4.860471E-05,
         -0.2744142, -0.04131086, 0.2248164, -0.005996059,
@@ -67,6 +67,8 @@ export class Camera3D extends ComponentBase {
         0.2125785, 0.1779549, 0.124602, 0.000503074,
         -0.1039777, -0.09676537, -0.07681116, -0.0004372867,
     ]);
+
+    public sh: Float32Array = new Float32Array(36);
 
     /**
      * this camera is shadow camera
