@@ -48,7 +48,7 @@ export class Sample_PointLightShadow {
 
         //make point light
         let pointLight = lightObj3D.addComponent(PointLight);
-        pointLight.range = 100;
+        pointLight.range = 200;
         pointLight.intensity = 5;
         pointLight.castShadow = true;
         scene.addChild(lightObj3D);

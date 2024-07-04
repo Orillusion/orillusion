@@ -41,7 +41,7 @@ export class LightData extends Struct {
     * 
     * Light source radius
     */
-    public radius: number = 0.0;
+    public radius: number = 0.001;
 
     /**
      *

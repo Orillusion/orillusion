@@ -12,7 +12,8 @@ export class Sample_LoadGLB {
         GUIHelp.init();
         await Engine3D.init();
         Engine3D.setting.shadow.autoUpdate = true;
-        Engine3D.setting.shadow.shadowBias = 0.05;
+        Engine3D.setting.shadow.shadowBound = 150;
+        Engine3D.setting.shadow.shadowBias = 0.1;
 
         let ex = createExampleScene();
         this.scene = ex.scene;
@@ -27,8 +28,6 @@ export class Sample_LoadGLB {
         await this.initScene();
 
         let post = this.scene.addComponent(PostProcessingComponent);
-        let gtao = post.addPost(GTAOPost);
-        // let taa = post.addPost(TAAPost);
         let hdr = post.addPost(BloomPost);
 
         GUIUtil.renderBloom(hdr);

@@ -8,7 +8,8 @@ class Sample_ShadowToggle {
     async run() {
         Engine3D.setting.shadow.enable = true;
         Engine3D.setting.shadow.autoUpdate = true;
-        Engine3D.setting.shadow.shadowSize = 1024;
+        Engine3D.setting.shadow.shadowSize = 2048;
+        Engine3D.setting.shadow.shadowBias = 0.04;
         await Engine3D.init({});
 
         GUIHelp.init();

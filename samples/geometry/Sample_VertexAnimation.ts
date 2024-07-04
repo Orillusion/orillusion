@@ -53,6 +53,7 @@ class Smaple_VertexAnimation {
         let renderer = floor.addComponent(MeshRenderer);
         renderer.geometry = this.floorGeometry;
         renderer.material = new LitMaterial();
+        renderer.material.doubleSide = true;
         renderer.castShadow = true;
         renderer.receiveShadow = true;
         this.scene.addChild(floor);

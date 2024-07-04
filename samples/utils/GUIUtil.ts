@@ -212,10 +212,10 @@ export class GUIUtil {
         GUIHelp.add(light, 'r', 0.0, 1.0, 0.001);
         GUIHelp.add(light, 'g', 0.0, 1.0, 0.001);
         GUIHelp.add(light, 'b', 0.0, 1.0, 0.001);
-        GUIHelp.add(light, 'intensity', 0.0, 1500.0, 0.001);
-        GUIHelp.add(light, 'at', 0.0, 1600.0, 0.001);
-        GUIHelp.add(light, 'radius', 0.0, 5.0, 0.001);
-        GUIHelp.add(light, 'range', 0.0, 5000.0, 0.001);
+        GUIHelp.add(light, 'intensity', 0.0, 100.0, 0.001);
+        GUIHelp.add(light, 'at', 0.0, 100.0, 0.001);
+        GUIHelp.add(light, 'radius', 0.0, 1.0, 0.001);
+        GUIHelp.add(light, 'range', 0.0, 1000.0, 0.001);
         GUIHelp.add(light, 'quadratic', 0.0, 2.0, 0.001);
         GUIHelp.add(light, 'castShadow');
 
@@ -235,9 +235,9 @@ export class GUIUtil {
         GUIHelp.add(light.transform, 'rotationZ', -360, 360.0, 0.01);
 
         GUIHelp.addColor(light, 'lightColor');
-        GUIHelp.add(light, 'intensity', 0.0, 1600.0, 0.001);
-        GUIHelp.add(light, 'at', 0.0, 1600.0, 0.001);
-        GUIHelp.add(light, 'radius', 0.0, 1000.0, 0.001);
+        GUIHelp.add(light, 'intensity', 0.0, 100.0, 0.001);
+        GUIHelp.add(light, 'at', 0.0, 100.0, 0.001);
+        GUIHelp.add(light, 'radius', 0.0, 10.0, 0.001);
         GUIHelp.add(light, 'range', 0.0, 1000.0, 0.001);
         GUIHelp.add(light, 'outerAngle', 0.0, 180.0, 0.001);
         GUIHelp.add(light, 'innerAngle', 0.0, 100.0, 0.001);

@@ -15,7 +15,7 @@ export class Sample_TAA {
 		Engine3D.setting.shadow.enable = true;
 		Engine3D.setting.shadow.shadowSize = 2048;
 		Engine3D.setting.shadow.shadowBound = 40;
-		Engine3D.setting.shadow.shadowBias = 0.05;
+		Engine3D.setting.shadow.shadowBias = 0.005;
 
 		await Engine3D.init();
 

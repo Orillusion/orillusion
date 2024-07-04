@@ -77,7 +77,8 @@ class Sample_drawCallInstance {
             let directLight = this.lightObj3D.addComponent(DirectLight);
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             directLight.castShadow = true;
-            directLight.intensity = 3;
+            directLight.intensity = 30;
+            directLight.indirect = 1;
             GUIHelp.init();
             GUIUtil.renderDirLight(directLight);
             this.scene.addChild(this.lightObj3D);

@@ -11,7 +11,7 @@ class Sample_PBRMaterial {
         //config settings
         Engine3D.setting.render.debug = true;
         Engine3D.setting.shadow.shadowBound = 50;
-
+        Engine3D.setting.shadow.shadowBias = 0.02;
         await Engine3D.init({ canvasConfig: { alpha: true, zIndex: 11, backgroundImage: '/logo/bg.webp' } });
 
         GUIHelp.init(999);

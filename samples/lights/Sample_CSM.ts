@@ -12,6 +12,7 @@ class Sample_CSM {
     async run() {
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.shadowSize = 1024;
+        Engine3D.setting.shadow.shadowBound = 400;
         await Engine3D.init({ renderLoop: () => { this.loop(); } });
 
         GUIHelp.init();

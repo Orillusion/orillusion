@@ -68,7 +68,6 @@ class Sample_BlendMode2 {
                 NONE: BlendMode.NONE,
                 NORMAL: BlendMode.NORMAL,
                 ADD: BlendMode.ADD,
-                ALPHA: BlendMode.ALPHA,
             }
             // change blend mode by click dropdown box
             GUIHelp.add({ blendMode: material.blendMode }, 'blendMode', blendMode).onChange((v) => {

@@ -244,8 +244,8 @@ export class Engine3D {
         shadow: {
             enable: true,
             type: 'HARD',
-            pointShadowBias: 0.002,
-            shadowSize: 1024,
+            pointShadowBias: 0.0005,
+            shadowSize: 2048,
             pointShadowSize: 1024,
             shadowSoft: 0.005,
             shadowBound: 100,
