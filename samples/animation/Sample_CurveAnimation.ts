@@ -15,8 +15,8 @@ export class Sample_AnimCurve {
 
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.updateFrameRate = 1;
-        Engine3D.setting.shadow.shadowBound = 100;
-        Engine3D.setting.shadow.shadowBias = 0.05;
+        Engine3D.setting.shadow.shadowBound = 150;
+        Engine3D.setting.shadow.shadowBias = 0.02;
 
         GUIHelp.init();
         await Engine3D.init({ renderLoop: () => { this.renderUpdate() } });

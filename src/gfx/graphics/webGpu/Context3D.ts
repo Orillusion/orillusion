@@ -119,10 +119,6 @@ export class Context3D extends CEventDispatcher {
             colorSpace: `srgb`,
         });
 
-        if (this.context) {
-            console.log("device request success!");
-        }
-
         this._resizeEvent = new CResizeEvent(CResizeEvent.RESIZE, { width: this.windowWidth, height: this.windowHeight })
         const resizeObserver = new ResizeObserver(() => {
             this.updateSize()
