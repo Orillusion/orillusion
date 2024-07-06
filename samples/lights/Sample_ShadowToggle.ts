@@ -9,7 +9,8 @@ class Sample_ShadowToggle {
         Engine3D.setting.shadow.enable = true;
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.shadowSize = 2048;
-        Engine3D.setting.shadow.shadowBias = 0.04;
+        Engine3D.setting.shadow.shadowBound = 200;
+        Engine3D.setting.shadow.shadowBias = 0.02;
         await Engine3D.init({});
 
         GUIHelp.init();
@@ -54,7 +55,7 @@ class Sample_ShadowToggle {
     initScene() {
         // add sphere
         {
-            let geometry = new SphereGeometry(20, 20, 20);
+            let geometry = new SphereGeometry(20, 64, 64);
             let material = new LitMaterial();
             material.name = 'Sphere Material';
             let obj = new Object3D();
