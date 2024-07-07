@@ -1,4 +1,4 @@
-export let graphicTrailCompute = (segmentCode: number) => {
+export let graphicDecCompute = (segmentCode: number) => {
     let code = /*wgsl*/`
     #include "GlobalUniform"
     struct VertexInfo{

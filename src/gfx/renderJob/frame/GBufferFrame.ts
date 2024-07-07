@@ -47,6 +47,7 @@ export class GBufferFrame extends RTFrame {
     }
 
     public getPositionMap() {
+        return this.renderTargets[1];
     }
 
     public getNormalMap() {
