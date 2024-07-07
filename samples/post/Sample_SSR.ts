@@ -60,10 +60,20 @@ export class Sample_SSR {
         minimalObj.y = -1.1;
         scene.addChild(minimalObj)
 
+        minimalObj.forChild((obj: Object3D) => {
+            let mr = obj.getComponent(MeshRenderer)
+            if (mr && mr.material) {
+                if (mr.material.name == 'ToyCar') {
+                    let mat = mr.material as LitMaterial;
+                    mat.metallic = 0.5;
+                    mat.clearcoatFactor = 0.25;
+                }
+            }
+        }
+        );
         await this.createPlane(scene)
         return true
     }
-
     private sphere: Object3D
 
     private async createPlane(scene: Scene3D) {
