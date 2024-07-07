@@ -31,7 +31,7 @@ class Sample_GICornellBox {
         Engine3D.setting.gi.autoRenderProbe = true;
 
         Engine3D.setting.shadow.debug = true;
-        Engine3D.setting.shadow.shadowBound = 40;
+        Engine3D.setting.shadow.shadowBound = 80;
         Engine3D.setting.shadow.shadowSize = 2048;
         Engine3D.setting.shadow.shadowBias = 0.02;
         Engine3D.setting.shadow.autoUpdate = true;

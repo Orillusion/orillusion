@@ -6,6 +6,7 @@ import { VideoTexture } from "@orillusion/media-extention";
 
 class Sample_UIPanelScissor {
 
+    videoTexture: VideoTexture;
     async run() {
         Engine3D.setting.shadow.autoUpdate = true;
 
@@ -28,12 +29,15 @@ class Sample_UIPanelScissor {
         //create UI root
         let panelRoot: Object3D = new Object3D();
         panelRoot.scaleX = panelRoot.scaleY = panelRoot.scaleZ = 0.1;
+        this.videoTexture = new VideoTexture();
+        await this.videoTexture.load('/video/dt.mp4');
+
         await Engine3D.res.loadFont('fnt/0.fnt');
 
         this.createPanel(panelRoot, canvas, new Color(1, 1, 1, 1));
     }
 
-    private async createPanel(panelRoot: Object3D, canvas: GUICanvas, color: Color) {
+    private createPanel(panelRoot: Object3D, canvas: GUICanvas, color: Color) {
         let panel = panelRoot.addComponent(WorldPanel);
         panel.cullMode = "none";
         canvas.addChild(panel.object3D);
@@ -61,9 +65,7 @@ class Sample_UIPanelScissor {
 
         {
             // make video
-            let videoTexture = new VideoTexture();
-            await videoTexture.load('/video/dt.mp4');
-            image.sprite = makeAloneSprite('dt.mp4', videoTexture);
+            image.sprite = makeAloneSprite('dt.mp4', this.videoTexture);
             image.uiTransform.resize(350, 250);
         }
 
