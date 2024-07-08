@@ -29,7 +29,7 @@ export class GlobalFog extends PostBase {
      * @internal
      */
     private fogSetting: GlobalFogSetting;
-    private fogOpTexture: VirtualTexture;
+    public fogOpTexture: VirtualTexture;
     private fogCompute: ComputeShader;
     private fogUniform: UniformGPUBuffer;
     private rendererPassState: RendererPassState;
