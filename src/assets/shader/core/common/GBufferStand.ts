@@ -125,6 +125,12 @@ export let GBufferStand = /* wgsl */ `
         return worldPos;
     }
 
+    fn getSkyPositionFromGBuffer(uv:vec2f) -> vec3f {
+        var sampleUV = uv ;
+        sampleUV.y = 1.0 - sampleUV.y ;
+        let worldPos = getWorldPosition(0.9999999, sampleUV);
+        return worldPos;
+    }
 
     fn getRGBMColorFromGBuffer(gBuffer:GBuffer) -> vec3f {
         let rgb = unpack4x8unorm(u32(gBuffer.z)).rgb ;
