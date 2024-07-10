@@ -1,4 +1,4 @@
-import { GLTFMaterial, LitMaterial, Material } from "../../..";
+import { AnimatorComponent, BlendShapeData, BlendShapePropertyData, GLTFMaterial, LitMaterial, Material, Matrix4, PropertyAnimationClip, SkinnedMeshRenderer2 } from "../../..";
 import { Engine3D } from "../../../Engine3D";
 import { SkeletonAnimationComponent } from "../../../components/SkeletonAnimationComponent";
 import { DirectLight } from "../../../components/lights/DirectLight";
@@ -34,7 +34,7 @@ export class GLTFSubParserConverter {
     }
 
     public async convertNodeToObject3D(nodeInfo: GLTF_Node, parentNode): Promise<Object3D> {
-        const node = new Object3D();
+        const node: Object3D = new Object3D();
         node.name = nodeInfo.name;
         node[GLTFType.GLTF_NODE_INDEX_PROPERTY] = nodeInfo.nodeId;
         nodeInfo['nodeObj'] = node;
@@ -73,19 +73,37 @@ export class GLTFSubParserConverter {
         }
 
         if (nodeInfo['skeleton']) {
-            let skeletonAnimation = node.addComponent(SkeletonAnimationComponent);
-            if (skeletonAnimation) {
-                skeletonAnimation.skeleton = this.subParser.parseSkeleton(nodeInfo['skeleton'].skeleton);
-                for (let i = 0; i < this.gltf.animations.length; i++) {
-                    let animation = this.gltf.animations[i];
-                    if (!animation.name) animation.name = i.toString();
-                    let animationClip = this.subParser.parseSkeletonAnimation(skeletonAnimation.skeleton, animation);
-                    skeletonAnimation.addAnimationClip(animationClip);
-                }
-            }
+            // let skeletonAnimation = node.addComponent(SkeletonAnimationComponent);
+            // if (skeletonAnimation) {
+            //     skeletonAnimation.skeleton = this.subParser.parseSkeleton(nodeInfo['skeleton'].skeleton);
+            //     for (let i = 0; i < this.gltf.animations.length; i++) {
+            //         let animation = this.gltf.animations[i];
+            //         if (!animation.name) animation.name = i.toString();
+            //         let animationClip = this.subParser.parseSkeletonAnimation(skeletonAnimation.skeleton, animation);
+            //         skeletonAnimation.addAnimationClip(animationClip);
+            //     }
+            // }
+            this.convertSkeletonAnim(node, nodeInfo['skeleton']);
         }
 
         return node;
+    }
+
+    private convertSkeletonAnim(node: Object3D, skeletonInfo: any) {
+        let avatarData = this.subParser.parseSkeleton(skeletonInfo.skeleton);
+        Engine3D.res.addObj(avatarData.name, avatarData);
+
+        let clips: PropertyAnimationClip[] = [];
+        for (let i = 0; i < this.gltf.animations.length; i++) {
+            let animation = this.gltf.animations[i];
+            if (!animation.name) animation.name = i.toString();
+            let clip = this.subParser.parseSkeletonAnimation(avatarData, animation);
+            clips.push(clip);
+        }
+
+        let animator = node.addComponent(AnimatorComponent);
+        animator.avatar = avatarData.name;
+        animator.clips = clips;
     }
 
     private convertLight(nodeInfo: GLTF_Node, node: Object3D) {
@@ -303,42 +321,40 @@ export class GLTFSubParserConverter {
                 let meshName = primitive.meshName();
                 if (this.gltf.resources[meshName]) {
                     geometry = this.gltf.resources[meshName];
-                } else {
-                    geometry ||= this.createGeometryBase(meshName, attribArrays, primitive);
-                    this.gltf.resources[meshName] = geometry;
                 }
 
                 const model: Object3D = new Object3D(); //new Model( primitive.attribArrays.mesh );
                 model.name = modelName + i;
 
                 if (this.gltf.animations && attribArrays[VertexAttributeName.joints0] != undefined) {
-                    geometry ||= this.createGeometryBase(modelName, attribArrays, primitive);
+                    geometry ||= this.createGeometryBase(modelName, attribArrays, primitive, nodeInfo.skin);
                     this.gltf.resources[meshName] = geometry;
 
                     let skeletonNode = this.gltf.nodes[nodeInfo.skin.skeleton];
                     if (skeletonNode.dnode && skeletonNode.dnode['nodeObj']) {
-                        let node = skeletonNode.dnode['nodeObj'];
-                        let skeletonAnimation = node.addComponent(SkeletonAnimationComponent);
-                        if (skeletonAnimation) {
-                            skeletonAnimation.skeleton = this.subParser.parseSkeleton(nodeInfo.skin.skeleton);
-                            for (let i = 0; i < this.gltf.animations.length; i++) {
-                                let animation = this.gltf.animations[i];
-                                if (!animation.name) animation.name = i.toString();
-                                let animationClip = this.subParser.parseSkeletonAnimation(skeletonAnimation.skeleton, animation);
-                                skeletonAnimation.addAnimationClip(animationClip);
-                            }
-                        }
+                        // let node = skeletonNode.dnode['nodeObj'];
+                        // let skeletonAnimation = node.addComponent(SkeletonAnimationComponent);
+                        // if (skeletonAnimation) {
+                        //     skeletonAnimation.skeleton = this.subParser.parseSkeleton(nodeInfo.skin.skeleton);
+                        //     for (let i = 0; i < this.gltf.animations.length; i++) {
+                        //         let animation = this.gltf.animations[i];
+                        //         if (!animation.name) animation.name = i.toString();
+                        //         let animationClip = this.subParser.parseSkeletonAnimation(skeletonAnimation.skeleton, animation);
+                        //         skeletonAnimation.addAnimationClip(animationClip);
+                        //     }
+                        // }
+                        this.convertSkeletonAnim(node, nodeInfo.skin);
                     } else {
                         skeletonNode.dnode['skeleton'] = nodeInfo.skin;
                     }
 
-                    let smr = model.addComponent(SkinnedMeshRenderer);
-                    smr.castShadow = true;
-                    smr.castGI = true;
+                    let smr = model.addComponent(SkinnedMeshRenderer2);
+                    // smr.castShadow = true;
+                    // smr.castGI = true;
                     smr.geometry = geometry;
                     smr.material = mat;
-                    smr.skinJointsName = this.parseSkinJoints(nodeInfo.skin);
-                    smr.skinInverseBindMatrices = nodeInfo.skin.inverseBindMatrices;
+                    // smr.skinJointsName = this.parseSkinJoints(nodeInfo.skin);
+                    // smr.skinInverseBindMatrices = nodeInfo.skin.inverseBindMatrices;
                 } else {
                     geometry ||= this.createGeometryBase(modelName, attribArrays, primitive);
                     this.gltf.resources[meshName] = geometry;
@@ -390,7 +406,7 @@ export class GLTFSubParserConverter {
         //  }
     }
 
-    private createGeometryBase(name: string, attribArrays: any, primitive: any): GeometryBase {
+    private createGeometryBase(name: string, attribArrays: any, primitive: any, skin?:any): GeometryBase {
         if ('indices' in attribArrays) {
             let bigIndices = attribArrays[`indices`].data.length > 65534;
             if (bigIndices) {
@@ -399,6 +415,7 @@ export class GLTFSubParserConverter {
                 attribArrays[`indices`].data = new Uint16Array(attribArrays[`indices`].data);
             }
         }
+
         let geometry = new GeometryBase();
         geometry.name = name;
 
@@ -410,6 +427,37 @@ export class GLTFSubParserConverter {
             } else {
                 attribArrays[`indices`].data = new Uint16Array(attribArrays[`indices`].data);
             }
+        }
+
+        // BlendShapeData
+        if (primitive.morphTargetsRelative) {
+            let blendShapeData = new BlendShapeData();
+            let targetNames = primitive.targetNames;
+            if (targetNames && targetNames.length > 0) {
+                blendShapeData.shapeNames = [];
+                blendShapeData.shapeIndexs = [];
+                for (let i = 0; i < targetNames.length; i++) {
+                    blendShapeData.shapeNames.push(targetNames[i])
+                    blendShapeData.shapeIndexs.push(i);
+                }
+            }
+            blendShapeData.vertexCount = attribArrays['position'].data.length / 3;
+            blendShapeData.blendCount = blendShapeData.shapeNames.length;
+            blendShapeData.blendShapePropertyDatas = [];
+            blendShapeData.blendShapeMap = new Map<string, BlendShapePropertyData>();
+            for (let i = 0; i < blendShapeData.blendCount; i++) {
+                let propertyData = new BlendShapePropertyData();
+                propertyData.shapeName = blendShapeData.shapeNames[i];
+                propertyData.shapeIndex = blendShapeData.shapeIndexs[i];
+                propertyData.frameCount = 1;
+                propertyData.blendPositionList = attribArrays[GLTFType.MORPH_POSITION_PREFIX + i].data;
+                propertyData.blendNormalList = attribArrays[GLTFType.MORPH_NORMAL_PREFIX + i].data;
+    
+                blendShapeData.blendShapePropertyDatas.push(propertyData);
+                blendShapeData.blendShapeMap.set(propertyData.shapeName, propertyData);
+            }
+            
+            geometry.blendShapeData = blendShapeData;
         }
 
         // geometry.geometrySource = new SerializeGeometrySource().setGLTFGeometry(this.initUrl, name);
@@ -439,6 +487,23 @@ export class GLTFSubParserConverter {
         for (const attributeName in attribArrays) {
             let attributeData = attribArrays[attributeName];
             geometry.setAttribute(attributeName, attributeData.data);
+        }
+
+        if (skin) {
+            geometry.skinNames = new Array<string>(skin.joints.length);
+            for (let i = 0; i < skin.joints.length; i++) {
+                const id = skin.joints[i];
+                const node = this.gltf.nodes[id];
+                geometry.skinNames[i] = node.name;
+            }
+
+            geometry.bindPose = new Array<Matrix4>(skin.inverseBindMatrices.length);
+            for (let i = 0; i < skin.inverseBindMatrices.length; i++) {
+                const m = skin.inverseBindMatrices[i];
+                let mat = new Matrix4();
+                mat.rawData.set(m);
+                geometry.bindPose[i] = mat;
+            }
         }
 
         let indicesAttribute = geometry.getAttribute(VertexAttributeName.indices);

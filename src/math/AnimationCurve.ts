@@ -30,6 +30,10 @@ export class AnimationCurve {
 
     public rotationOrder: number;
 
+    public get cacheOut(): { lhsIndex: number; rhsIndex: number } {
+        return this._cacheOut;
+    }
+
     constructor(frames?: Keyframe[], preWarpMode: WrapTimeMode = WrapTimeMode.Repeat, postWarpMode: WrapTimeMode = WrapTimeMode.Repeat) {
         if (frames) for (let i = 0; i < frames.length; i++) {
             const frame = frames[i];
@@ -138,6 +142,19 @@ export class AnimationCurve {
     }
 
     /**
+     * get caculate frames extent
+     * @param time 
+     * @returns 
+     */
+    public getCurveFramesExtent(time: number): { lhsIndex: number; rhsIndex: number; time: number } {
+        time = this.wrapTime(time);
+
+        this.findCurve(time, this._cacheOut);
+
+        return { lhsIndex: this._cacheOut.lhsIndex, rhsIndex: this._cacheOut.rhsIndex, time: time };
+    }
+
+    /**
      * get has Keyframe list count
      * @returns  int 
      */
@@ -182,7 +199,7 @@ export class AnimationCurve {
         return this;
     }
 
-    private wrapTime(curveT: number) {
+    public wrapTime(curveT: number) {
         let m_Curve = this.curve;
         let begTime = m_Curve[0].time;
         let endTime = m_Curve[m_Curve.length - 1].time;

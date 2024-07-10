@@ -58,6 +58,7 @@ export class GPUBufferBase {
         node.setX(v ? 1 : 0);
     }
 
+
     public readBoole(name: string): boolean {
         let node = this.memoryNodes.get(name);
         if (node) {
@@ -151,6 +152,7 @@ export class GPUBufferBase {
         return null;
     }
 
+
     public setUint16(name: string, v: number) {
         let node = this.memoryNodes.get(name);
         if (!node) {
@@ -167,7 +169,6 @@ export class GPUBufferBase {
         }
         return null;
     }
-
 
     public setUint32(name: string, v: number) {
         let node = this.memoryNodes.get(name);
@@ -431,6 +432,7 @@ export class GPUBufferBase {
                 });
                 tBuffer['usedSize'] = mapAsyncArray.byteLength;
                 this.mapAsyncBuffersOutstanding++;
+
                 if (this.mapAsyncBuffersOutstanding > 20) {
                     // ${(this.mapAsync.value * this.mapAsyncBuffersOutstanding).toFixed(2)}
                     console.warn(` Warning: mapAsync requests from ${this.mapAsyncBuffersOutstanding} frames ago have not resolved yet.  MB of staging buffers allocated.`);
