@@ -51,7 +51,7 @@ class Sample_UseComponent {
             let directLight = lightObj3D.addComponent(DirectLight);
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             directLight.castShadow = true;
-            directLight.intensity = 40;
+            directLight.intensity = 3;
             GUIUtil.renderDirLight(directLight);
             scene.addChild(lightObj3D);
         }

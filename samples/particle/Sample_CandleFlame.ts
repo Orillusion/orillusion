@@ -46,8 +46,8 @@ export class Sample_CandleFlame {
             let lightObj = this.lightObj = new Object3D();
             let pl = lightObj.addComponent(PointLight);
             pl.range = 56;
-            pl.radius = 1;
-            pl.intensity = 15;
+            pl.radius = 0.01;
+            pl.intensity = 5;
             pl.castShadow = true;
             pl.realTimeShadow = true;
             pl.lightColor = new Color(67 / 255, 195 / 255, 232 / 255);

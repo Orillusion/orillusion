@@ -25,7 +25,7 @@ import { Reference } from "../../../../util/Reference";
 import { CSM } from "../../../../core/csm/CSM";
 import { GPUCompareFunction, GPUCullMode } from "../WebGPUConst";
 import { UniformValue } from "./value/UniformValue";
-import { PassType } from "../../../renderJob/passRenderer/state/RendererType";
+import { PassType } from "../../../renderJob/passRenderer/state/PassType";
 import { Vector4 } from "../../../../math/Vector4";
 import { PipelinePool } from "../PipelinePool";
 
@@ -70,6 +70,7 @@ export class RenderShaderPass extends ShaderPassBase {
     public envMap: Texture;
 
     public prefilterMap: Texture;
+    public reflectionMap: Texture;
 
     protected _sourceVS: string;
     protected _sourceFS: string;
@@ -288,6 +289,8 @@ export class RenderShaderPass extends ShaderPassBase {
                 this.envMap = texture;
             } else if (name == "prefilterMap") {
                 this.prefilterMap = texture;
+            } else if (name == "reflectionMap") {
+                this.reflectionMap = texture;
             }
             texture.bindStateChange(() => {
                 this._textureChange = true;
@@ -393,6 +396,11 @@ export class RenderShaderPass extends ShaderPassBase {
             this.defineValue[`USEGBUFFER`] = false;
         }
 
+        if (Engine3D.setting.render.useCompressGBuffer) {
+            this.defineValue[`USE_COMPRESSGBUFFER`] = true;
+        } else {
+            this.defineValue[`USE_COMPRESSGBUFFER`] = false;
+        }
 
         //*********************************/
         //*********************************/

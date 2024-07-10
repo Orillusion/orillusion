@@ -143,6 +143,10 @@ export class OrbitController extends ComponentBase {
     public set maxPolarAngle(v: number) {
         this._maxPolarAngle = clamp(v, this._minPolarAngle, 90);
     }
+
+    public get spherical(): Spherical {
+        return this._spherical
+    }
     /**
      * @internal
      */
@@ -190,6 +194,7 @@ export class OrbitController extends ComponentBase {
             this._spherical.theta -= this.autoRotateSpeed * Math.PI / 180;
             this.updateCamera();
         }
+        // lerp _cPosition to _position
         let x = (this._position.x - this._cPosition.x) / step
         let y = (this._position.y - this._cPosition.y) / step
         let z = (this._position.z - this._cPosition.z) / step
@@ -235,7 +240,13 @@ export class OrbitController extends ComponentBase {
         // pan
         } else if (e.mouseCode === 2) {
             Vector3Ex.mulScale(this.object3D.transform.up, e.movementY * this.panFactor * this._camera.aspect, Vector3.HELP_1);
-            this._target.y += Vector3.HELP_1.y;
+            if (e.ctrlKey || e.metaKey) {
+                this._target.y += Vector3.HELP_1.y;
+            }else{
+                this._target.x += Vector3.HELP_1.x;
+                this._target.z += Vector3.HELP_1.z;
+            }
+
             Vector3Ex.mulScale(this.object3D.transform.right, -e.movementX * this.panFactor, Vector3.HELP_1);
             this._target.x -= Vector3.HELP_1.x;
             this._target.z -= Vector3.HELP_1.z;
@@ -261,7 +272,7 @@ export class OrbitController extends ComponentBase {
     /**
      * @internal
      */
-    private updateCamera() {
+    public updateCamera() {
         this._spherical.makeSafe();
         let pos = this._spherical.getCoords();
         this._position.set(pos.x + this._target.x, pos.y + this._target.y, pos.z + this._target.z);
@@ -290,6 +301,11 @@ export class OrbitController extends ComponentBase {
 
 /**
  * @internal
+ * Epsilon to test whether numbers are close enough to be considered equal.
+ */
+const EPS = Math.PI / 180 / 100;
+/**
+ * @internal
  */
 class Spherical {
     public radius: number;
@@ -311,7 +327,6 @@ class Spherical {
     }
     // restrict phi to be between EPS and PI-EPS
     public makeSafe(): this {
-        const EPS = 0.0002;
         this.phi = Math.max(EPS, Math.min(Math.PI - EPS, this.phi));
         return this;
     }

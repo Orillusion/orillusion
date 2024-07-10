@@ -1,4 +1,5 @@
 import { Engine3D } from '../Engine3D';
+import { SphereReflection } from '../components/renderer/SphereReflection';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
 import { EntityCollect } from '../gfx/renderJob/collect/EntityCollect';
 import { View3D } from './View3D';
@@ -45,6 +46,15 @@ export class Scene3D extends Object3D {
         this._envMap = value;
         if (EntityCollect.instance.sky && `map` in EntityCollect.instance.sky)
             EntityCollect.instance.sky.map = value;
+
+        // let reflection = new Object3D();
+        // let ref = reflection.addComponent(SphereReflection);
+        // ref.autoUpdate = true;
+        // ref.debug(0, 5);
+        // reflection.x = 0;
+        // reflection.y = 300;
+        // reflection.z = 0;
+        // this.addChild(reflection);
     }
 
     /**

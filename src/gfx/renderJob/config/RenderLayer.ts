@@ -7,6 +7,7 @@ export enum RenderLayer {
     None = 1 << 1,
     StaticBatch = 1 << 2,
     DynamicBatch = 1 << 3,
+    Hiden = 1 << 4,
 }
 
 /**

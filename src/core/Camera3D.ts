@@ -20,6 +20,7 @@ import { CSM } from './csm/CSM';
  * @group Components
  */
 export class Camera3D extends ComponentBase {
+
     /**
      * camera Perspective
      */
@@ -55,6 +56,20 @@ export class Camera3D extends ComponentBase {
      */
     public frustum: Frustum;
 
+    public sh_bak: Float32Array = new Float32Array([
+        2.485296, 2.52417, 2.683965, 3.544894,
+        0.2323964, 0.1813751, 0.08516902, -4.860471E-05,
+        -0.2744142, -0.04131086, 0.2248164, -0.005996059,
+        0.1551732, 0.137717, 0.1002693, -0.0006728604,
+        0.2209381, 0.2109673, 0.1770538, -1.395991E-05,
+        0.3529238, 0.2824739, 0.1817433, -0.0005164869,
+        -0.1344275, -0.1289607, -0.1347626, 7.825881E-06,
+        0.2125785, 0.1779549, 0.124602, 0.000503074,
+        -0.1039777, -0.09676537, -0.07681116, -0.0004372867,
+    ]);
+
+    public sh: Float32Array = new Float32Array(36);
+
     /**
      * this camera is shadow camera
      */
@@ -66,6 +81,7 @@ export class Camera3D extends ComponentBase {
     private _projectionMatrixInv: Matrix4 = new Matrix4();
     private _projectionMatrix: Matrix4 = new Matrix4();
     private _viewMatrix: Matrix4 = new Matrix4();
+    private _viewMatrixInv: Matrix4 = new Matrix4();
     private _unprojection: Matrix4 = new Matrix4();
     private _pvMatrixInv: Matrix4 = new Matrix4();
     private _pvMatrix: Matrix4 = new Matrix4();
@@ -73,6 +89,7 @@ export class Camera3D extends ComponentBase {
     private _halfh: number;
     private _ray: Ray;
     private _enableCSM: boolean = false;
+    public mainCamera: Camera3D;
 
     /**
      * @internal
@@ -122,6 +139,8 @@ export class Camera3D extends ComponentBase {
         this.viewPort.w = webGPUContext.presentationSize[0];
         this.viewPort.h = webGPUContext.presentationSize[1];
         this.lookTarget = new Vector3(0, 0, 0);
+
+        this.perspective(60, webGPUContext.aspect, 1, 1000.0);
     }
 
     public getShadowBias(depthTexSize: number): number {
@@ -140,10 +159,20 @@ export class Camera3D extends ComponentBase {
         return shadowBound;
     }
 
-    public getCSMShadowBias(index: number, depthTexSize: number): number {
-        let sizeOnePixel = 2.0 * this.getCSMShadowWorldExtents(index) / depthTexSize;
-        let depth = this.far - this.near;
-        return sizeOnePixel / depth;
+    // public getCSMShadowBias(index: number, depthTexSize: number): number {
+    //     let sizeOnePixel = 2.0 * this.getCSMShadowWorldExtents(index) / depthTexSize;
+    //     let depth = this.far - this.near;
+    //     return sizeOnePixel / depth;
+    // }
+
+    public getCSMShadowBiasScale(shadowCamera: Camera3D): number {
+        if (shadowCamera == this)
+            return 1.0;
+
+        let currentSize = this.far - this.near;
+        let baseCamera = this.csm.children[0].shadowCamera;
+        let baseSize = baseCamera.far - baseCamera.near;
+        return baseSize / currentSize;
     }
 
     public getCSMShadowWorldExtents(index: number): number {
@@ -294,6 +323,27 @@ export class Camera3D extends ComponentBase {
         let matrix = this._pvMatrixInv.copyFrom(this.pvMatrix);
         matrix.invert();
         return matrix;
+    }
+
+    public get vMatrixInv(): Matrix4 {
+        let matrix = this._viewMatrixInv.copyFrom(this.viewMatrix);
+        matrix.invert();
+        return matrix;
+    }
+
+    public get cameraToWorld(): Matrix4 {
+        let cameraToWorld = Matrix4.helpMatrix;
+        cameraToWorld.identity();
+        cameraToWorld.copyFrom(this.projectionMatrixInv);
+        cameraToWorld.multiply(this.vMatrixInv);
+        return cameraToWorld;
+    }
+
+    public get ndcToView(): Matrix4 {
+        let cameraToWorld = Matrix4.helpMatrix;
+        cameraToWorld.identity();
+        cameraToWorld.copyFrom(this.projectionMatrixInv);
+        return cameraToWorld;
     }
 
     /**
@@ -450,7 +500,7 @@ export class Camera3D extends ComponentBase {
         this._useJitterProjection = value;
         this._haltonSeq ||= new HaltonSeq();
         this._jitterOffsetList = [];
-        for (let i = 0; i < 8; i++) {
+        for (let i = 0; i < 32; i++) {
             let offset = this.generateRandomOffset();
             this._jitterOffsetList.push(offset);
         }
@@ -459,7 +509,7 @@ export class Camera3D extends ComponentBase {
 
     private generateRandomOffset(): Vector2 {
         let offset = new Vector2(HaltonSeq.get((this._sampleIndex & 1023) + 1, 2) - 0.5, HaltonSeq.get((this._sampleIndex & 1023) + 1, 3) - 0.5);
-        const k_SampleCount = 8;
+        const k_SampleCount = 32;
         if (++this._sampleIndex >= k_SampleCount) this._sampleIndex = 0;
 
         return offset;

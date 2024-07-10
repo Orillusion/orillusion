@@ -36,7 +36,7 @@ class Smaple_VertexAnimation {
         // add light
         let lightObj3D = this.lightObj = new Object3D();
         let directLight = lightObj3D.addComponent(DirectLight);
-        directLight.intensity = 25;
+        directLight.intensity = 3;
         directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
         directLight.castShadow = true;
         lightObj3D.rotationX = 53.2;
@@ -53,6 +53,7 @@ class Smaple_VertexAnimation {
         let renderer = floor.addComponent(MeshRenderer);
         renderer.geometry = this.floorGeometry;
         renderer.material = new LitMaterial();
+        renderer.material.doubleSide = true;
         renderer.castShadow = true;
         renderer.receiveShadow = true;
         this.scene.addChild(floor);

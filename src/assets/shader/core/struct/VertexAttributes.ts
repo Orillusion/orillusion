@@ -1,7 +1,7 @@
 import { SkeletonAnimation_shader } from "../../anim/SkeletonAnimation_shader";
 import { MorphTarget_shader } from "../../../../components/anim/morphAnim/MorphTarget_shader";
 
-export let VertexAttributes: string = /*wgsl*/ `
+export let VertexAttributes_vert: string = /*wgsl*/ `
     var<private> PI: f32 = 3.14159265359;
     #if USE_METAHUMAN
         ${MorphTarget_shader.getMorphTargetShaderBinding(3, 0)}

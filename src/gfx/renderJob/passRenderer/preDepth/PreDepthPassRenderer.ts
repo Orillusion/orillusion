@@ -14,7 +14,7 @@ import { RTResourceMap } from "../../frame/RTResourceMap";
 import { OcclusionSystem } from "../../occlusion/OcclusionSystem";
 import { RendererBase } from "../RendererBase";
 import { ClusterLightingBuffer } from "../cluster/ClusterLightingBuffer";
-import { PassType } from "../state/RendererType";
+import { PassType } from "../state/PassType";
 import { ZCullingCompute } from "./ZCullingCompute";
 
 /**
@@ -79,7 +79,7 @@ export class PreDepthPassRenderer extends RendererBase {
             let nodeMap = renderList[1];
             for (const iterator of nodeMap) {
                 let node = iterator[1];
-                if (node.preInit) {
+                if (node.preInit(this._rendererType)) {
                     node.nodeUpdate(view, this._rendererType, this.rendererPassState, null);
                     break;
                 }
@@ -110,7 +110,7 @@ export class PreDepthPassRenderer extends RendererBase {
                 continue;
             if (!renderNode.enable)
                 continue;
-            if (!renderNode.preInit) {
+            if (!renderNode.preInit(this._rendererType)) {
                 renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState);
             }
             renderNode.renderPass2(view, this._rendererType, this.rendererPassState, clusterLightingBuffer, encoder);

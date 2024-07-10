@@ -117,9 +117,9 @@ export let IBLEnvMapCreator_cs: string = /*wgsl*/ `
         return normalize(sampleVec);
     }
     
-    fn multiSample(localPos:vec3<f32>, roughness:f32) -> vec4<f32>
+    fn multiSample(normal:vec3<f32>, roughness:f32) -> vec4<f32>
     {
-        var N: vec3<f32> = normalize(localPos);
+        var N: vec3<f32> = normalize(normal);
         var R: vec3<f32> = N;
         var V: vec3<f32> = R;
     

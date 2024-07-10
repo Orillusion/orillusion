@@ -34,7 +34,7 @@ light.rotationX = 45;
 light.rotationY = 30;
 // add direct light component
 let dirLight: DirectLight = light.addComponent(DirectLight);
-dirLight.intensity = 1;
+dirLight.intensity = 3;
 // add light object to scene
 scene3D.addChild(light);
 

@@ -1,5 +1,8 @@
 export let SSR_RayTrace_cs: string = /*wgsl*/ `
   #include "GlobalUniform"
+  #include "MathShader"
+  #include "BitUtil"
+  #include "GBufferStand"
 
   struct SSRUniformData {
     ssrBufferSizeX: f32,
@@ -41,16 +44,12 @@ export let SSR_RayTrace_cs: string = /*wgsl*/ `
     fresnel:f32,
   }
 
-  @group(0) @binding(0) var<uniform> standUniform: GlobalUniform;
-  @group(0) @binding(1) var<uniform> ssrUniform: SSRUniformData;
-  @group(0) @binding(2) var<storage, read_write> rayTraceBuffer : array<RayTraceRetData>;
+  @group(0) @binding(2) var<uniform> ssrUniform: SSRUniformData;
+  @group(0) @binding(3) var<storage, read_write> rayTraceBuffer : array<RayTraceRetData>;
   @group(0) @binding(4) var<storage, read_write> historyPosition : array<vec4<f32>>;
 
-  @group(0) @binding(5) var zBufferTexture : texture_2d<f32>;
-  @group(0) @binding(6) var normalBufferTex : texture_2d<f32>;
-  @group(0) @binding(7) var materialBufferTex : texture_2d<f32>;
-  @group(0) @binding(8) var prefilterMapSampler: sampler;
-  @group(0) @binding(9) var prefilterMap: texture_cube<f32>;
+  @group(0) @binding(5) var prefilterMap: texture_cube<f32>;
+  @group(0) @binding(6) var prefilterMapSampler: sampler;
 
   var<private> rayOrigin: vec3<f32>;
   var<private> rayDirection: vec3<f32>;
@@ -70,6 +69,7 @@ export let SSR_RayTrace_cs: string = /*wgsl*/ `
   var<private> historyPos: vec3<f32>;
   var<private> coordIndex: i32;
 
+  var<private> sampleUV: vec2<f32>;
   var <private> PI: f32 = 3.14159;
 
   @compute @workgroup_size( 8 , 8 , 1 )
@@ -78,8 +78,9 @@ export let SSR_RayTrace_cs: string = /*wgsl*/ `
     ssrBufferCoord = vec2<i32>( globalInvocation_id.xy);
     ssrBufferSize = vec2<i32>(i32(ssrUniform.ssrBufferSizeX), i32(ssrUniform.ssrBufferSizeY));
     if(ssrBufferCoord.x >= ssrBufferSize.x || ssrBufferCoord.y >= ssrBufferSize.y){
-        return;
+      return;
     }
+    useNormalMatrixInv();
     coordIndex = ssrBufferCoord.x + ssrBufferCoord.y * ssrBufferSize.x;
 
     colorTexSize = vec2<i32>(i32(ssrUniform.colorMapSizeX), i32(ssrUniform.colorMapSizeY));
@@ -91,7 +92,10 @@ export let SSR_RayTrace_cs: string = /*wgsl*/ `
     hitData.hitNormal = vec3<f32>(0.0, 1.0, 0.0);
     hitData.hitSky = 1;
 
-    worldPosition = textureLoad(zBufferTexture, fragCoordColor , 0).xyz;
+    sampleUV =  vec2f(fragCoordColor) / vec2f(colorTexSize) ;
+    //gBufferTexture
+    let gBuffer : GBuffer = getGBuffer( vec2i(fragCoordColor) );
+    worldPosition = getWorldPositionFromGBuffer(gBuffer,sampleUV) ;
     historyPos = historyPosition[coordIndex].xyz;
     
     var mixFactor = 0.2;
@@ -100,13 +104,12 @@ export let SSR_RayTrace_cs: string = /*wgsl*/ `
     }
     historyPosition[coordIndex] = vec4<f32>(worldPosition, mixFactor);
     
-    let normal_v4 = textureLoad(normalBufferTex, fragCoordColor , 0);
-    worldNormal = normalize(vec3<f32>(normal_v4.xyz) * 2.0 - 1.0);
-    let materialData = textureLoad(materialBufferTex, fragCoordColor , 0 );
-    let roughness = materialData.g * (1.0 - materialData.b);
-    fresnel = (1.0 - roughness) * ssrUniform.reflectionRatio;
+    worldNormal = getWorldNormalFromGBuffer(gBuffer) ;
 
-    cameraPosition = vec3<f32>(standUniform.cameraWorldMatrix[3].xyz);
+    let roughness = getRoughnessFromGBuffer(gBuffer);
+    fresnel = (1.0 - roughness) * ssrUniform.reflectionRatio;
+    fresnel *= fresnel;
+    cameraPosition = vec3<f32>(globalUniform.cameraWorldMatrix[3].xyz);
     rayOrigin = vec3<f32>(worldPosition.xyz);
 
     rayDirection = normalize(vec3<f32>(worldPosition.xyz - cameraPosition));
@@ -120,13 +123,13 @@ export let SSR_RayTrace_cs: string = /*wgsl*/ `
     
     reflectionDir = normalize(reflect(rayDirection, normalRandom));
 
-    if(normal_v4.w > 0.5 && roughness < ssrUniform.roughnessThreshold){
+    if(roughness > 0.0 && roughness < ssrUniform.roughnessThreshold){
       let uvOrigin = vec2<f32>(f32(fragCoordColor.x), f32(fragCoordColor.y));
       let rayMarchPosition = rayOrigin + reflectionDir * 100.0;
-      var uvRayMarch = standUniform.projMat * (standUniform.viewMat * vec4<f32>(rayMarchPosition, 1.0));
+      var uvRayMarch = globalUniform.projMat * (globalUniform.viewMat * vec4<f32>(rayMarchPosition, 1.0));
       var uvOffset = (vec2<f32>(uvRayMarch.xy / uvRayMarch.w) + 1.0) * 0.5;
       uvOffset.y = 1.0 - uvOffset.y;
-      uvOffset = uvOffset * vec2<f32>(colorTexSize - 1) - uvOrigin;
+      uvOffset = uvOffset * vec2<f32>(colorTexSize) - uvOrigin;
       uvOffset = normalize(uvOffset);
 
       rayTrace(uvOffset);
@@ -213,13 +216,7 @@ export let SSR_RayTrace_cs: string = /*wgsl*/ `
     let calcRoughness = clamp(roughness, 0.0, 1.0);
     let MAX_REFLECTION_LOD  = f32(textureNumLevels(prefilterMap)) ;
     var prefilterColor = textureSampleLevel(prefilterMap, prefilterMapSampler, reflectionDir, calcRoughness * MAX_REFLECTION_LOD);
-    return LinearToGammaSpace(vec3<f32>(prefilterColor.xyz)) * standUniform.skyExposure;
-  }
-
-  fn LinearToGammaSpace(linRGB: vec3<f32>) -> vec3<f32> {
-      var linRGB1 = max(linRGB, vec3<f32>(0.0));
-      linRGB1 = pow(linRGB1, vec3<f32>(0.4166666567325592));
-      return max(((1.0549999475479126 * linRGB1) - vec3<f32>(0.054999999701976776)), vec3<f32>(0.0));
+    return LinearToGammaSpace(vec3<f32>(prefilterColor.xyz)) * globalUniform.skyExposure;
   }
 
   fn convertColorCoordFromSSRCoord(coord:vec2<i32>) -> vec2<i32>{
@@ -280,12 +277,13 @@ export let SSR_RayTrace_cs: string = /*wgsl*/ `
           var uv = fromUV + vec2<i32>(i32(offsetFloat32.x), i32(offsetFloat32.y));
           let hitRet = rayInterestScene(uv);
           if(hitRet == 1){
-            let WN = textureLoad(normalBufferTex, hitData.hitCoord , 0 );
-            if(WN.w > 0.5){
-                hitData.hitSky = 0;
+            let gBuffer = getGBuffer(hitData.hitCoord);
+            if(getRoughnessFromGBuffer(gBuffer) >= 0.0){
+              hitData.hitSky = 0;
             }
-            let normal = vec3<f32>(WN.xyz) * 2.0 - 1.0;
-            hitData.hitNormal = normalize(vec3<f32>(normal.xyz));
+            
+            let WN = getWorldNormalFromGBuffer(gBuffer);
+            hitData.hitNormal = normalize(WN);
             break;
           }
         }
@@ -296,7 +294,8 @@ export let SSR_RayTrace_cs: string = /*wgsl*/ `
     if(uv.x < 0 || uv.y < 0 || uv.x >= colorTexSize.x || uv.y >= colorTexSize.y){
       return 2;
     }else{
-      let hitPos = textureLoad(zBufferTexture, uv , 0 );
+      let gBuffer = getGBuffer(uv);
+      let hitPos = getWorldPositionFromGBuffer(gBuffer , vec2f(uv) / vec2f(colorTexSize) );
       let testDir = normalize(vec3<f32>(hitPos.xyz - rayOrigin));
       let cosValue = dot(reflectionDir, testDir);
 

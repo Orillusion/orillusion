@@ -138,6 +138,7 @@ export class Entity extends CEventDispatcher {
             child.transform.parent = this.transform;
             this.entityChildren.push(child);
             this._numChildren = this.entityChildren.length;
+            this.noticeComponents(`onAddChild`, child);
             return child;
         }
         return null;
@@ -156,6 +157,7 @@ export class Entity extends CEventDispatcher {
             this.entityChildren.splice(index, 1);
             child.transform.parent = null;
             this._numChildren = this.entityChildren.length;
+            this.noticeComponents(`onRemoveChild`, child);
         }
     }
 
@@ -314,15 +316,19 @@ export class Entity extends CEventDispatcher {
             this.components.clear();
         } else {
             ComponentCollect.waitStartComponent.forEach((v, k) => {
-                // v.forEach((v) => {
-                //     v[`__start`]();
-                // })
                 while (v.length > 0) {
                     const element = v.shift();
                     element[`__start`]();
                     ComponentCollect.waitStartComponent.delete(element.object3D);
                 }
             });
+        }
+    }
+
+    public noticeComponents(key: keyof IComponent, data: any) {
+        for (let item of this.components.values()) {
+            let typeKey = key as string;
+            item[typeKey]?.(data);
         }
     }
 

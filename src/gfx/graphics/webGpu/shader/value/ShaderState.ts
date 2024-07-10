@@ -8,7 +8,7 @@ import { GPUCompareFunction, GPUCullMode, GPUPrimitiveTopology } from '../../Web
  */
 export class ShaderState {
     public blendMode?: BlendMode = BlendMode.NONE;
-    public depthCompare?: GPUCompareFunction = GPUCompareFunction.less;
+    public depthCompare?: GPUCompareFunction = GPUCompareFunction.less_equal;
     public depthWriteEnabled?: boolean = true;
     public frontFace?: GPUFrontFace = `ccw`;
     public cullMode?: GPUCullMode = GPUCullMode.back;
@@ -20,7 +20,7 @@ export class ShaderState {
     public acceptGI: boolean = false;
     public acceptShadow: boolean = false;
     public castShadow: boolean = false;
-    public castReflection: boolean = false;
+    public castReflection: boolean = true;
     public receiveEnv: boolean = false;
     public renderLayer: number = 1000;
     public renderOrder: number = 2000;

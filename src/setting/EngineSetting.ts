@@ -1,3 +1,4 @@
+import { ReflectionSetting } from "..";
 import { GlobalIlluminationSetting } from "./GlobalIlluminationSetting";
 import { LightSetting } from "./LightSetting";
 import { LoaderSetting } from "./LoaderSetting";
@@ -54,4 +55,9 @@ export type EngineSetting = {
      * loader setting
      */
     loader: LoaderSetting;
+
+    /**
+     * reflectionSetting setting
+     */
+    reflectionSetting: ReflectionSetting
 }

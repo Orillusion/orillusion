@@ -2,7 +2,61 @@
  * @internal
  */
 export let MathShader = /* wgsl */ `
+  #include 'BitUtil'
+  // fn getViewPosition(z:f32,uv:vec2f) -> vec3f {
+  //   let pvMatrix = globalUniform.projMat * globalUniform.viewMat ;
+  //   let worldPos = getWorldPosition(z,uv) ;
+  //   var viewPos = pvMatrix * worldPos ;
+  //   return viewPos.xyz;
+  // }
 
+  
+
+  struct TBN_ret{
+    tan:vec3f,
+    bit:vec3f,
+  }
+  
+  fn TBN( N:vec3f) -> mat3x3<f32>{
+    //Returns the simple tangent space matrix
+    var Nb : vec3f;
+    var Nt : vec3f;
+    if (abs(N.y)>0.999) {
+        Nb = vec3f(1.0,0.0,0.0);
+        Nt = vec3f(0.0,0.0,1.0);
+    } else {
+      Nb = normalize(cross(N,vec3f(0.0,1.0,0.0)));
+      Nt = normalize(cross(Nb,N));
+    }
+
+    var mat3 = mat3x3<f32>(
+      Nb.x,Nt.x,N.x,
+      Nb.y,Nt.y,N.y,
+      Nb.z,Nt.z,N.z
+    );
+
+    return mat3;
+  }
+
+  fn TBN_out( N : vec3f ) -> TBN_ret {
+      var tbn_ret : TBN_ret;
+      //Returns the simple tangent space directions
+      if (abs(N.y)>0.999) {
+          tbn_ret.tan = vec3f(1.0,0.0,0.0);
+          tbn_ret.bit = vec3f(0.0,0.0,1.0);
+      } else {
+          tbn_ret.tan = normalize(cross(N,vec3f(0.0,1.0,0.0)));
+          tbn_ret.bit = normalize(cross(tbn_ret.tan,N));
+      }
+
+      return tbn_ret;
+  }
+
+
+  fn ARand21( uv: vec2f) -> f32 {
+      //Returns 1D noise from 2D
+      return fract(sin(uv.x*uv.y)*403.125+cos(dot(uv,vec2f(13.18273,51.2134)))*173.137);
+  }
 
 fn applyQuaternion(position:vec3<f32>, q:vec4<f32>) -> vec3<f32>{
   let x:f32 = position.x;
@@ -66,9 +120,41 @@ fn dir_to_faceId(pt:vec3<f32>) -> i32 {
     return 5;
   }
 
-  fn convert_xyz_to_cube_uv(x:f32, y:f32, z:f32 ) -> vec2<f32>
+  const us = 1.0 /6.0 ;
+  fn uv_2_xyz(u:f32,v:f32) -> vec3f 
   {
-    var dir = vec3<f32>(x, y, z);
+    let face = floor(u / us);
+    var uu = (u - face * us) / us ;
+
+    var uc = 2.0 * uu - 1.0;
+    var vc = 2.0 * v - 1.0;
+    var xyz = vec3f(0,0,0);
+
+    if(face == 0.0){
+    // x,y,z = 1.0,vc,-uc
+      xyz = vec3f(1.0,-vc,uc);
+    }else if(face == 1.0){
+    // x,y,z = -1.0,vc,uc
+      xyz = vec3f(-1.0,-vc,-uc);
+    }else if(face == 2.0){
+    // x,y,z = uc,1.0,-vc
+      xyz = vec3f(uc,1.0,-vc);
+    }else if(face == 3.0){
+    // x,y,z = uc,-1.0,vc
+      xyz = vec3f(uc,-1.0,vc);
+    }else if(face == 4.0){
+    // x,y,z = uc,vc,1.0
+      xyz = vec3f(-uc,-vc,1.0);
+    }else if(face == 5.0){
+    // x,y,z = -uc,vc,-1.0
+      xyz = vec3f(uc,-vc,-1.0);
+    }
+    return xyz ;
+  }
+
+  fn convert_xyz_to_cube_uv(x:f32, y:f32, z:f32 ) -> vec2f
+  {
+    var dir = vec3f(x, y, z);
     var absX = abs(dir.x);
     var absY = abs(dir.y);
     var absZ = abs(dir.z);
@@ -137,7 +223,7 @@ fn dir_to_faceId(pt:vec3<f32>) -> i32 {
     var u = 0.5f * (uc / maxAxis + 1.0f);
     var v = 0.5f * (vc / maxAxis + 1.0f);
 
-    return vec2(u, v);
+    return vec2f(u, v);
   }
 
     // Returns ±1
@@ -319,4 +405,174 @@ fn dir_to_faceId(pt:vec3<f32>) -> i32 {
       return mat3x3<f32>(xAxis, yAxis, zAxis);
     }
 
+    struct SH9Struct{
+      SHAr:vec4f,
+      SHAg:vec4f,
+      SHAb:vec4f,
+      SHBr:vec4f,
+      SHBg:vec4f,
+      SHBb:vec4f,
+      SHC:vec4f,
+    }
+
+    fn ShadeSH9 ( normal:vec4f , sh9:SH9Struct) -> vec3f
+    {
+      var x1:vec3f = vec3f(0.0);
+      var x2:vec3f = vec3f(0.0);
+      var x3:vec3f = vec3f(0.0);
+      
+      // Linear + constant polynomial terms
+      x1.r = dot(sh9.SHAr,normal);
+      x1.g = dot(sh9.SHAg,normal);
+      x1.b = dot(sh9.SHAb,normal);
+      
+      // 4 of the quadratic polynomials
+      var vB = normal.xyzz * normal.yzzx;
+      x2.r = dot(sh9.SHBr,vB);
+      x2.g = dot(sh9.SHBg,vB);
+      x2.b = dot(sh9.SHBb,vB);
+      
+      // Final quadratic polynomial
+      var vC = normal.x*normal.x - normal.y*normal.y;
+      x3 = sh9.SHC.rgb * vC;
+      return x1 + x2 + x3;
+    } 
+
+    fn clipViewUV(viewRectangle:vec4f,size:vec2f,fragCoord:vec2f) -> vec2u {
+        let subViewUV = (fragCoord - viewRectangle.xy) / viewRectangle.zw ;
+        return vec2u(subViewUV*size) ;
+    }
+
+    fn insideRectangle( point:vec2f , rec:vec4f) -> bool {
+      if( point.x > rec.x &&  point.y > rec.y &&  point.x < (rec.x + rec.z ) &&  point.y < (rec.y + rec.w ) ){
+         return true ;
+      }
+      return false;
+    }
+
+    fn convert_cube_uv_to_xyz( index:i32,  u:f32,  v:f32) -> vec3f
+    {
+      var ret : vec3f ;
+      // convert range 0 to 1 to -1 to 1
+      var uc = 2.0f * u - 1.0f;
+      var vc = 2.0f * v - 1.0f;
+      switch (index)
+      {
+        case 0: {
+          ret.x =  1.0f; 
+          ret.y =    vc; 
+          ret.z =   -uc; 
+          break;
+        }	// POSITIVE X
+        case 1: {
+          ret.x = -1.0f; 
+          ret.y =    vc; 
+          ret.z =    uc; 
+          break;
+        }	// NEGATIVE X
+        case 2: {
+          ret.x =    uc; 
+          ret.y =  1.0f; 
+          ret.z =   -vc; 
+          break;
+        }	// POSITIVE Y
+        case 3: {
+          ret.x =    uc; 
+          ret.y = -1.0f; 
+          ret.z =    vc; 
+          break;
+        }	// NEGATIVE Y
+        case 4: {
+          ret.x =    uc; 
+          ret.y =    vc; 
+          ret.z =  1.0f; 
+          break;
+        }	// POSITIVE Z
+        case 5: {
+          ret.x =   -uc; 
+          ret.y =    vc; 
+          ret.z = -1.0f; 
+          break;
+        }	// NEGATIVE Z
+        default:{
+          ret = vec3f(0.0);
+        }
+      }
+      return ret ;
+    }
+
+    fn convert_cube_uv_to_normal( index:i32, u:f32, v:f32) -> vec3f
+    {
+      var ret : vec3f ;
+      // convert range 0 to 1 to -1 to 1
+      var uc = 2.0f * u - 1.0f;
+      var vc = 2.0f * v - 1.0f;
+      switch (index)
+      {
+        case 0: {
+          ret.x =  1.0f; 
+          ret.y =    vc; 
+          ret.z =   -uc; 
+          break;
+        }	// POSITIVE X
+        case 1: {
+          ret.x = -1.0f; 
+          ret.y =    vc; 
+          ret.z =    uc; 
+          break;
+        }	// NEGATIVE X
+        case 2: {
+          ret.x =    uc; 
+          ret.y =  1.0f; 
+          ret.z =   -vc; 
+          break;
+        }	// POSITIVE Y
+        case 3: {
+          ret.x =    uc; 
+          ret.y = -1.0f; 
+          ret.z =    vc; 
+          break;
+        }	// NEGATIVE Y
+        case 4: {
+          ret.x =    uc; 
+          ret.y =    vc; 
+          ret.z =  1.0f; 
+          break;
+        }	// POSITIVE Z
+        case 5: {
+          ret.x =   -uc; 
+          ret.y =    vc; 
+          ret.z = -1.0f; 
+          break;
+        }	// NEGATIVE Z
+        default:{
+          ret = vec3f(0.0);
+        }
+      }
+      return ret ;
+    }
+
+    fn UvToDir( uv1:vec2f) -> vec3f{
+      var uv = uv1 ;
+      uv *= vec2f(2.0*3.1415926535897932384626433832795, 3.1415926535897932384626433832795);
+      var theta = uv.y;
+      var phi = uv.x + 3.1415926535897932384626433832795 * 0.5 ;
+      // var phi = uv.x ;
+      var dir = vec3f(0.0,0.0,0.0);
+      dir.x = sin(phi) * sin(theta) * -1;
+      dir.y = cos(theta) * -1;
+      dir.z = cos(phi) * sin(theta);
+      return dir;
+    }
+
+    fn DirTOUV( a_coords:vec3f ) ->vec2f
+    {
+      var coords = normalize(a_coords);
+      var lon = atan2(coords.z, coords.x);
+      var lat = acos(coords.y);
+      var sphereCoords = vec2f(lon, lat) * (1.0 / 3.1415926535897932384626433832795);
+      return vec2f(sphereCoords.x * 0.5 + 0.5 , 1.0 - sphereCoords.y);
+      // return vec2f(sphereCoords.y, (sphereCoords.x * 0.5 ));
+    }
+    
 `;

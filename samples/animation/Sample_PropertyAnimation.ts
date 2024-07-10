@@ -1,7 +1,7 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { createExampleScene, createSceneParam } from "@samples/utils/ExampleScene";
 import { GUIUtil } from "@samples/utils/GUIUtil";
-import { Scene3D, PropertyAnimation, Engine3D, Object3D, Object3DUtil, PropertyAnimClip, WrapMode } from "@orillusion/core";
+import { Scene3D, PropertyAnimation, Engine3D, Object3D, Object3DUtil, PropertyAnimClip, WrapMode, PostProcessingComponent, FXAAPost, GBufferPost } from "@orillusion/core";
 
 class Sample_PropertyAnimation {
     scene: Scene3D;
@@ -12,20 +12,27 @@ class Sample_PropertyAnimation {
         Engine3D.setting.shadow.updateFrameRate = 1;
         Engine3D.setting.shadow.shadowBound = 20;
         Engine3D.setting.shadow.shadowSize = 2048;
+        Engine3D.setting.shadow.shadowBias = 0.05;
 
         await Engine3D.init();
+        GUIHelp.init();
         let param = createSceneParam();
         param.camera.distance = 16;
         let exampleScene = createExampleScene(param);
 
-        GUIHelp.init();
         GUIUtil.renderDirLight(exampleScene.light, false);
 
         this.scene = exampleScene.scene;
-        exampleScene.camera.enableCSM = true;
+        // exampleScene.camera.enableCSM = true;
         await this.initScene(this.scene);
 
         Engine3D.startRenderView(exampleScene.view);
+
+        let postCom = this.scene.addComponent(PostProcessingComponent);
+        postCom.addPost(FXAAPost);
+
+        let gBufferPost = postCom.addPost(GBufferPost);
+        GUIUtil.renderGBufferPost(gBufferPost);
 
         this.displayGUI();
     }

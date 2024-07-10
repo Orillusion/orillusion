@@ -44,7 +44,7 @@ class Sample_Fog {
             let lc = this.lightObj.addComponent(DirectLight);
             lc.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             lc.castShadow = true;
-            lc.intensity = 30;
+            lc.intensity = 5;
             this.scene.addChild(this.lightObj);
         }
 

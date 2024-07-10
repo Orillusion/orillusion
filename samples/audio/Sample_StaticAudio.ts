@@ -8,18 +8,20 @@ export class Static_Audio {
     camera: Object3D
     mats: any[];
     audio: StaticAudio
-    constructor() {}
+    constructor() { }
 
     async run() {
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.updateFrameRate = 1;
         Engine3D.setting.shadow.type = 'HARD';
-        Engine3D.setting.shadow.shadowBound = 100;
+        Engine3D.setting.shadow.shadowSize = 2048;
+        Engine3D.setting.shadow.shadowBound = 200;
+        Engine3D.setting.shadow.shadowBias = 0.002;
 
         await Engine3D.init();
         this.scene = new Scene3D();
         this.scene.addComponent(AtmosphericComponent);
-        
+
         this.camera = new Object3D()
         this.camera.localPosition = new Vector3(0, 20, 50)
         let mainCamera = this.camera.addComponent(Camera3D)
@@ -43,7 +45,7 @@ export class Static_Audio {
         {
             let group = new Object3D()
             let speaker = await Engine3D.res.loadGltf('gltfs/speaker/scene.gltf')
-            speaker.localScale.set(4,4,4)
+            speaker.localScale.set(4, 4, 4)
             speaker.rotationX = -120
             //speaker.y = 1.5
             group.addChild(speaker)
@@ -56,16 +58,16 @@ export class Static_Audio {
 
             await audio.load('https://cdn.orillusion.com/audio.ogg')
             GUIHelp.init();
-            GUIHelp.addButton('play', ()=>{
+            GUIHelp.addButton('play', () => {
                 audio.play()
             })
-            GUIHelp.addButton('pause', ()=>{
+            GUIHelp.addButton('pause', () => {
                 audio.pause()
             })
-            GUIHelp.addButton('stop', ()=>{
+            GUIHelp.addButton('stop', () => {
                 audio.stop()
             })
-            GUIHelp.add({volume:1}, 'volume', 0, 1, 0.01).onChange( (v:number) =>{
+            GUIHelp.add({ volume: 1 }, 'volume', 0, 1, 0.01).onChange((v: number) => {
                 audio.setVolume(v)
             })
             GUIHelp.open()
@@ -75,7 +77,7 @@ export class Static_Audio {
             let mr = wall.addComponent(MeshRenderer)
             mr.geometry = new BoxGeometry(40, 30, 1)
             let mat = new LitMaterial()
-            mat.baseColor = new Color(1,0,0)
+            mat.baseColor = new Color(1, 0, 0)
             mr.material = mat
             this.scene.addChild(wall)
             wall.z = -5
@@ -98,7 +100,7 @@ export class Static_Audio {
             let directLight = this.lightObj.addComponent(DirectLight);
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             directLight.castShadow = true;
-            directLight.intensity = 30;
+            directLight.intensity = 3;
             this.scene.addChild(this.lightObj);
         }
     }

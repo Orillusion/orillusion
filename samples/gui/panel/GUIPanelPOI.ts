@@ -107,7 +107,7 @@ export class GUIPanelPOI {
             text.uiTransform.x = 110;
             text.uiTransform.y = -48;
             text.alignment = TextAnchor.UpperLeft;
-            text.text = 'Orilussion';
+            text.text = 'Orillusion';
             text.fontSize = 22;
             text.color = new Color(0.9, 0.9, 0.9, 1.0);
         }

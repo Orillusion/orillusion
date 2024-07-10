@@ -10,9 +10,9 @@ export class Demo_Cloth {
 
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.updateFrameRate = 1;
-        Engine3D.setting.shadow.shadowBound = 8;
-        Engine3D.setting.shadow.shadowSize = 1024;
-        Engine3D.setting.shadow.shadowBias = 0.00001;
+        Engine3D.setting.shadow.shadowBound = 10;
+        Engine3D.setting.shadow.shadowSize = 2048;
+        Engine3D.setting.shadow.shadowBias = 0.001;
 
         await Engine3D.init({});
 
@@ -23,7 +23,7 @@ export class Demo_Cloth {
         await this.initScene(scene);
 
         let camera = CameraUtil.createCamera3DObject(scene);
-        
+
         camera.perspective(60, webGPUContext.aspect, 0.01, 10000.0);
         let ctl = camera.object3D.addComponent(HoverCameraController);
         ctl.setCamera(30, -28, 2);
@@ -77,7 +77,7 @@ export class Demo_Cloth {
             lightObj.rotationY = 0;
             lightObj.rotationZ = 0;
             let lc = lightObj.addComponent(DirectLight);
-            lc.intensity = 20;
+            lc.intensity = 3;
             lc.castShadow = true;
             scene.addChild(lightObj);
         }

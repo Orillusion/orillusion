@@ -2,7 +2,7 @@ import { Color } from '../../math/Color';
 import { BlendMode } from '../BlendMode';
 import { Engine3D } from '../../Engine3D';
 import { RenderShaderPass } from '../../gfx/graphics/webGpu/shader/RenderShaderPass';
-import { PassType } from '../..';
+import { PassType } from '../../gfx/renderJob/passRenderer/state/PassType';
 
 /**
  * @internal

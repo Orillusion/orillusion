@@ -531,6 +531,34 @@ export class Vector3 {
         return this;
     }
 
+    public addScalar(scalar: number): Vector3{
+        this.x += scalar;
+        this.y += scalar;
+        this.z += scalar;
+        return this;
+    }
+
+    public subScalar(scalar: number): Vector3{
+        this.x -= scalar;
+        this.y -= scalar;
+        this.z -= scalar;
+        return this;
+    }
+
+    public min(v: Vector3, target: Vector3 = this): Vector3 {
+        target.x = Math.min(this.x, v.x);
+        target.y = Math.min(this.y, v.y);
+        target.z = Math.min(this.z, v.z);
+        return target;
+    }
+
+    public max(v: Vector3, target: Vector3 = this): Vector3 {
+        target.x = Math.max(this.x, v.x);
+        target.y = Math.max(this.y, v.y);
+        target.z = Math.max(this.z, v.z);
+        return target;
+    }
+
     public distanceToSquared(v: Vector3): number {
         let dx = this.x - v.x;
         let dy = this.y - v.y;
@@ -716,6 +744,10 @@ export class Vector3 {
         this.z = iz * qw + iw * -qz + ix * -qy - iy * -qx;
 
         return this;
+    }
+
+    public applyMatrix4(m): Vector3 {
+        return m.transformPoint(this, this);
     }
 
     /**
@@ -1066,6 +1098,13 @@ export class Vector3 {
         this.x = value;
         this.y = value;
         this.z = value;
+        return this;
+    }
+
+    public addScaledVector(v: Vector3, scale: number): Vector3 {
+        this.x += v.x * scale;
+        this.y += v.y * scale;
+        this.z += v.z * scale;
         return this;
     }
 

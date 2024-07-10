@@ -3,7 +3,7 @@ import { Object3D } from "../../core/entities/Object3D";
 import { MeshRenderer } from "./MeshRenderer";
 import { RendererMask } from "../../gfx/renderJob/passRenderer/state/RendererMask";
 import { StorageGPUBuffer } from "../../gfx/graphics/webGpu/core/buffer/StorageGPUBuffer";
-import { PassType } from "../../gfx/renderJob/passRenderer/state/RendererType";
+import { PassType } from "../../gfx/renderJob/passRenderer/state/PassType";
 import { RendererPassState } from "../../gfx/renderJob/passRenderer/state/RendererPassState";
 import { ClusterLightingBuffer } from "../../gfx/renderJob/passRenderer/cluster/ClusterLightingBuffer";
 import { AnimatorComponent, GeometryBase, LitMaterial, Matrix4, RegisterComponent } from "../..";

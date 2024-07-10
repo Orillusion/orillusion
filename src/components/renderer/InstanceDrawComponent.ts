@@ -7,7 +7,7 @@ import { RenderNode } from "./RenderNode";
 import { StorageGPUBuffer } from "../../gfx/graphics/webGpu/core/buffer/StorageGPUBuffer";
 import { View3D } from "../../core/View3D";
 import { RendererPassState } from "../../gfx/renderJob/passRenderer/state/RendererPassState";
-import { PassType } from "../../gfx/renderJob/passRenderer/state/RendererType";
+import { PassType } from "../../gfx/renderJob/passRenderer/state/PassType";
 import { ClusterLightingBuffer } from "../../gfx/renderJob/passRenderer/cluster/ClusterLightingBuffer";
 
 export class InstanceDrawComponent extends RenderNode {
@@ -15,6 +15,11 @@ export class InstanceDrawComponent extends RenderNode {
     private _keyRenderGroup: Map<string, MeshRenderer[]>;
     private _keyBufferGroup: Map<string, StorageGPUBuffer>;
     private _keyIdsGroup: Map<string, number[]>;
+
+    constructor() {
+        super();
+    }
+
     public init(param?: any): void {
         this._keyRenderGroup = new Map<string, MeshRenderer[]>();
         this._keyBufferGroup = new Map<string, StorageGPUBuffer>();
@@ -80,7 +85,6 @@ export class InstanceDrawComponent extends RenderNode {
             }
             renderNode.nodeUpdate(view, passType, renderPassState, clusterLightingBuffer);
         })
-        this.preInit = false;
     }
 
 

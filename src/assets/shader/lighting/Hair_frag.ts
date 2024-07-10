@@ -228,7 +228,7 @@ export let Hair_frag: string = /*wgsl*/ `
       S += KajiyaKayDiffuseAttenuation(L,V,N,Shadow) ;//* saturate(KajiyaKayDiffuseFactor);
       // S = vec3f((KajiyaKayDiffuseFactor));
       S = -min(-S, vec3f(0.0));
-      return 2.0 * PI *vec3f(S) * (lightAtt / LUMEN) ;
+      return 2.0 * PI *vec3f(S) * (lightAtt ) ;
   }
 
   fn BSSSRDFShading(){
@@ -265,13 +265,6 @@ export let Hair_frag: string = /*wgsl*/ `
               fHairTransmittanceData.bUseLegacyAbsorption = false ;
 
               //use shadow visible backlit
-              // var shadow = 0.0 ;
-              // if(light.castShadow>=0){
-              //     #if USE_SHADOWMAPING
-              //       shadow = shadowStrut.directShadowVisibility[i32(light.castShadow)] ; 
-              //     #endif
-              // }
-
               specColor = hairShading(light,fragData.V, ORI_ShadingInput.HairNormal , 1.0 ,fHairTransmittanceData,1.0,materialUniform.area,vec2f(0.0));
           }
           case SpotLightType: {

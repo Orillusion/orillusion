@@ -145,8 +145,15 @@ class _GUIHelp {
     }
 
     _addLabel(gui: GUI, label: string) {
-        GUIHelp._add(gui, { label: label }, 'label');
+        return GUIHelp._add(gui, { label: label }, 'label');
     }
+
+    _addLabelValue(gui: GUI, label: string, value: number) {
+        let obj = {};
+        obj[label] = value;
+        return GUIHelp._add(gui, obj, label);
+    }
+
 
     _addButton(gui: GUI, label: string, fun: Function) {
         var controls = new (function () {

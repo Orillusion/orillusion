@@ -19,6 +19,7 @@ import { OutlineCalcOutline_cs } from '../../../assets/shader/compute/OutlineCal
 import { Outline_cs } from '../../../assets/shader/compute/Outline_cs';
 import { OutLineBlendColor_cs } from '../../../assets/shader/compute/OutLineBlendColor_cs';
 import { OutlinePostSlot, outlinePostData } from '../../../io/OutlinePostData';
+import { GlobalBindGroup } from '../../graphics/webGpu/core/bindGroups/GlobalBindGroup';
 
 
 /**
@@ -95,6 +96,7 @@ export class OutlinePost extends PostBase {
      * @internal
      */
     private rtFrame: RTFrame;
+    private view: View3D;
 
     constructor() {
         super();
@@ -104,6 +106,7 @@ export class OutlinePost extends PostBase {
      * @internal
      */
     onAttach(view: View3D,) {
+        this.view = view;
         Engine3D.setting.render.postProcessing.outline.enable = true;
     }
 
@@ -162,15 +165,18 @@ export class OutlinePost extends PostBase {
     }
 
     private createCompute() {
-        let rtFrame = GBufferFrame.getGBufferFrame("ColorPassGBuffer");
-        let visibleMap = rtFrame.getPositionMap();
+        let rtFrame = GBufferFrame.getGBufferFrame(GBufferFrame.colorPass_GBuffer);
 
         this.calcWeightCompute = new ComputeShader(OutlineCalcOutline_cs);
+
+        let globalUniform = GlobalBindGroup.getCameraGroup(this.view.camera);
+
+        this.calcWeightCompute.setUniformBuffer('globalUniform', globalUniform.uniformGPUBuffer);
         this.calcWeightCompute.setStorageBuffer('outlineSetting', this.outlineSetting);
         this.calcWeightCompute.setStorageBuffer('slotsBuffer', this.slotsBuffer);
         this.calcWeightCompute.setStorageBuffer(`weightBuffer`, this.weightBuffer);
         this.calcWeightCompute.setStorageBuffer(`entitiesBuffer`, this.entitiesBuffer);
-        this.calcWeightCompute.setSamplerTexture(`indexTexture`, visibleMap);
+        this.calcWeightCompute.setSamplerTexture(`gBufferTexture`, rtFrame.getCompressGBufferTexture());
 
         this.calcWeightCompute.workerSizeX = Math.ceil(this.lowTex.width / 8);
         this.calcWeightCompute.workerSizeY = Math.ceil(this.lowTex.height / 8);
