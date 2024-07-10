@@ -98,8 +98,6 @@ export class GodRayPost extends PostBase {
 
 
     private createCompute(view: View3D) {
-        let setting = Engine3D.setting.render.postProcessing.godRay;
-
         this.godRayCompute = new ComputeShader(GodRay_cs);
 
         let godRaySetting: UniformGPUBuffer = new UniformGPUBuffer(4 * 3); //vector4 * 2
@@ -108,10 +106,8 @@ export class GodRayPost extends PostBase {
         this.historyGodRayData = new StorageGPUBuffer(4 * this.godRayTexture.width * this.godRayTexture.height);
         this.godRayCompute.setStorageBuffer('historyGodRayData', this.historyGodRayData);
 
-        let rtFrame = GBufferFrame.getGBufferFrame("ColorPassGBuffer");
-
-        this.godRayCompute.setSamplerTexture(`posTex`, rtFrame.renderTargets[1]);
-        this.godRayCompute.setSamplerTexture(`normalTex`, rtFrame.renderTargets[2]);
+        let rtFrame = GBufferFrame.getGBufferFrame(GBufferFrame.colorPass_GBuffer);
+        this.godRayCompute.setSamplerTexture(`gBufferTexture`, rtFrame.getCompressGBufferTexture());
         this.autoSetColorTexture('inTex', this.godRayCompute);
         this.godRayCompute.setStorageTexture(`outTex`, this.godRayTexture);
 
@@ -125,9 +121,7 @@ export class GodRayPost extends PostBase {
 
     private createResource() {
         let presentationSize = webGPUContext.presentationSize;
-        let w = presentationSize[0];
-        let h = presentationSize[1];
-
+        let [w, h] = presentationSize;
         this.godRayTexture = new VirtualTexture(w, h, GPUTextureFormat.rgba16float, false, GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC | GPUTextureUsage.TEXTURE_BINDING);
         this.godRayTexture.name = 'godRayTexture';
         let gtaoDec = new RTDescriptor();
@@ -137,9 +131,7 @@ export class GodRayPost extends PostBase {
 
     public onResize() {
         let presentationSize = webGPUContext.presentationSize;
-        let w = presentationSize[0];
-        let h = presentationSize[1];
-
+        let [w, h] = presentationSize;
         this.godRayTexture.resize(w, h);
         this.historyGodRayData.resizeBuffer(4 * this.godRayTexture.width * this.godRayTexture.height);
         this.godRayCompute.setStorageBuffer('historyGodRayData', this.historyGodRayData);
@@ -174,8 +166,7 @@ export class GodRayPost extends PostBase {
         this.godRaySetting.setFloat('rayMarchCount', setting.rayMarchCount);
 
         let presentationSize = webGPUContext.presentationSize;
-        let w = presentationSize[0];
-        let h = presentationSize[1];
+        let [w, h] = presentationSize;
         this.godRaySetting.setFloat('viewPortWidth', w);
         this.godRaySetting.setFloat('viewPortHeight', h);
         this.godRaySetting.setFloat('blendColor', setting.blendColor ? 1 : 0);

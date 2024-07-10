@@ -3,7 +3,7 @@ import { GUIUtil } from "@samples/utils/GUIUtil";
 import { createExampleScene } from "@samples/utils/ExampleScene";
 import { Object3D, Scene3D, Color, Engine3D, OutlinePost, SphereGeometry, LitMaterial, MeshRenderer, ColliderComponent, PointerEvent3D, outlinePostManager, FXAAPost } from "@orillusion/core";
 
-class Sample_OutlineEffectPick {
+export class Sample_OutlineEffectPick {
     lightObj: Object3D;
     scene: Scene3D;
     selectColor: Color;
@@ -15,7 +15,11 @@ class Sample_OutlineEffectPick {
     }
 
     async run() {
-        Engine3D.setting.pick.enable = true;
+        Engine3D.setting.shadow.enable = true;
+        Engine3D.setting.shadow.shadowSize = 2048
+        Engine3D.setting.shadow.shadowBound = 50;
+        Engine3D.setting.shadow.shadowBias = 0.05;
+
         Engine3D.setting.pick.mode = `pixel`;
 
         Engine3D.setting.render.postProcessing.outline.outlinePixel = 3;
@@ -32,7 +36,6 @@ class Sample_OutlineEffectPick {
         GUIUtil.renderDirLight(exampleScene.light, false);
 
         let job = Engine3D.startRenderView(exampleScene.view);
-        // job.addPost(new FXAAPost());
         job.addPost(new OutlinePost());
 
         this.initPickObject(this.scene);
@@ -107,4 +110,4 @@ class Sample_OutlineEffectPick {
 
 }
 
-new Sample_OutlineEffectPick().run();
+// new Sample_OutlineEffectPick().run();

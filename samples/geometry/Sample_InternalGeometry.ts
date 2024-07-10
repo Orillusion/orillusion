@@ -8,6 +8,7 @@ class Sample_InternalGeometry {
     async run() {
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.shadowBound = 200;
+        Engine3D.setting.shadow.shadowSize = 2048;
         GUIHelp.init();
 
         await Engine3D.init();
@@ -30,7 +31,7 @@ class Sample_InternalGeometry {
         // add a direction light
         let lightObj3D = this.lightObj = new Object3D();
         let sunLight = lightObj3D.addComponent(DirectLight);
-        sunLight.intensity = 15;
+        sunLight.intensity = 3;
         sunLight.lightColor = KelvinUtil.color_temperature_to_rgb(6553);
         sunLight.castShadow = true;
         lightObj3D.rotationX = 53.2;

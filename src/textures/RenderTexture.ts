@@ -48,14 +48,13 @@ export class RenderTexture extends Texture {
 
         this.resize(width, height);
 
-        if (autoResize) {
+        if (this.autoResize) {
             webGPUContext.addEventListener(CResizeEvent.RESIZE, (e) => {
                 let { width, height } = e.data;
                 this.resize(width, height);
                 this._textureChange = true;
             }, this);
         }
-
     }
 
     public resize(width, height) {
@@ -112,7 +111,7 @@ export class RenderTexture extends Texture {
             this.minFilter = 'linear';
             this.magFilter = 'linear';
             this.mipmapFilter = `linear`;
-            this.maxAnisotropy = 16;
+            // this.maxAnisotropy = 16;
 
             this.addressModeU = GPUAddressMode.clamp_to_edge;
             this.addressModeV = GPUAddressMode.clamp_to_edge;

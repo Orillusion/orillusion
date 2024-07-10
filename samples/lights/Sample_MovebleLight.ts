@@ -27,8 +27,9 @@ class Sample_MovebleLight {
         //create PointLight
         let lightObj = new Object3D();
         this.light = lightObj.addComponent(PointLight);
-        this.light.intensity = 10;
+        this.light.intensity = 4;
         this.light.range = 20;
+        this.light.radius = 0.1;
         lightObj.z = 5;
         this.light.lightColor = KelvinUtil.color_temperature_to_rgb(2345);
         this.light.castShadow = true;
@@ -41,8 +42,8 @@ class Sample_MovebleLight {
         const gui = new dat.GUI();
         let light = gui.addFolder("light");
         light.add(this.light, "intensity", 5, 30, 1);
-        light.add(this.light, "range", 10, 30, 1);
-        light.add(this.light, "radius", 0.1, 2, 0.1);
+        light.add(this.light, "range", 1, 30, 1);
+        light.add(this.light, "radius", 0.01, 2, 0.01);
         light.addColor(lightColor, "color").onChange((v) => {
             this.light.lightColor = new Color(v[0] / 255, v[1] / 255, v[2] / 255);
         });

@@ -17,7 +17,7 @@ export let ClusterDebug_frag: string = /*wgsl*/`
             #if USE_LIGHT
               var tileID : u32 = getClusterId3().z;
               let clusterDebug = vec4<f32>(colorSet[tileID % 9u], 1.0);
-              ORI_FragmentOutput.color = clusterDebug ;
+              // ORI_FragmentOutput.color = clusterDebug ;
             #endif
           }
       
@@ -27,10 +27,10 @@ export let ClusterDebug_frag: string = /*wgsl*/`
               let px = f32(clusterId3.x) / clustersUniform.clusterTileX ;
               let py = f32(clusterId3.y) / clustersUniform.clusterTileY ;
               let pz = f32(clusterId3.z) / clustersUniform.clusterTileZ ;
-              ORI_FragmentOutput.color = vec4<f32>(px,py,pz, 1.0);
+              // ORI_FragmentOutput.color = vec4<f32>(px,py,pz, 1.0);
 
               var screenUV = ORI_VertexVarying.fragCoord.xy / vec2<f32>( globalUniform.windowWidth , globalUniform.windowHeight );
-              ORI_FragmentOutput.color = vec4<f32>(screenUV.x,screenUV.y,0.0, 1.0);
+              // ORI_FragmentOutput.color = vec4<f32>(screenUV.x,screenUV.y,0.0, 1.0);
 
               // let clusterId : u32 = getClusterIndex();
               // let cluster = clusterBuffer[clusterId];
@@ -52,7 +52,7 @@ export let ClusterDebug_frag: string = /*wgsl*/`
               let cluster : LightIndex = getCluster();
               let lightCount : u32 = u32(cluster.count);
               let lightFactor : f32 = f32(lightCount) / f32(clustersUniform.maxNumLightsPerCluster);
-              ORI_FragmentOutput.color =  mix(vec4<f32>(0.0, 0.0,0.0, 1.0), vec4<f32>(1.0, 1.0, 1.0, 1.0), vec4<f32>(lightFactor, lightFactor, lightFactor, lightFactor));
+              // ORI_FragmentOutput.color =  mix(vec4<f32>(0.0, 0.0,0.0, 1.0), vec4<f32>(1.0, 1.0, 1.0, 1.0), vec4<f32>(lightFactor, lightFactor, lightFactor, lightFactor));
             #endif
           }
           #endif

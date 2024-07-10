@@ -4,7 +4,7 @@ import { GPUCompareFunction, GPUCullMode } from "../../../gfx/graphics/webGpu/We
 import { Texture } from "../../../gfx/graphics/webGpu/core/texture/Texture";
 import { RenderShaderPass } from "../../../gfx/graphics/webGpu/shader/RenderShaderPass";
 import { Shader } from "../../../gfx/graphics/webGpu/shader/Shader";
-import { PassType } from "../../../gfx/renderJob/passRenderer/state/RendererType";
+import { PassType } from "../../../gfx/renderJob/passRenderer/state/PassType";
 import { BlendMode } from "../../../materials/BlendMode";
 import { Material } from "../../../materials/Material";
 import { Vector2 } from "../../../math/Vector2";

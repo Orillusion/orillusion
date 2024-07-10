@@ -47,21 +47,23 @@ export let PBRLItShader: string = /*wgsl*/ `
     }
 
     fn frag(){
-        var transformUV1 = materialUniform.transformUV1;
-        var transformUV2 = materialUniform.transformUV2;
-
-        var uv = transformUV1.zw * ORI_VertexVarying.fragUV0 + transformUV1.xy; 
+   
+        let baseMapOffsetSize = materialUniform.baseMapOffsetSize;
+        var uv = transformUV(ORI_VertexVarying.fragUV0,baseMapOffsetSize) ; 
 
         #if USE_SRGB_ALBEDO
             ORI_ShadingInput.BaseColor = textureSample(baseMap, baseMapSampler, uv )  ;
-            ORI_ShadingInput.BaseColor = gammaToLiner(ORI_ShadingInput.BaseColor.rgb)  ;
+            // ORI_ShadingInput.BaseColor = sRGBToLinear(ORI_ShadingInput.BaseColor.rgb)  ;
             ORI_ShadingInput.BaseColor = vec4<f32>( ORI_ShadingInput.BaseColor * materialUniform.baseColor.rgb, ORI_ShadingInput.BaseColor.w * materialUniform.baseColor.a)  ;
         #else
             ORI_ShadingInput.BaseColor = textureSample(baseMap, baseMapSampler, uv )  ;
-            ORI_ShadingInput.BaseColor = vec4f(gammaToLiner(ORI_ShadingInput.BaseColor.rgb) * materialUniform.baseColor.rgb,ORI_ShadingInput.BaseColor.a)  ;
+            ORI_ShadingInput.BaseColor = vec4f(gammaToLiner(ORI_ShadingInput.BaseColor.rgb),ORI_ShadingInput.BaseColor.a)  ;
+            ORI_ShadingInput.BaseColor *= vec4f(materialUniform.baseColor.rgba)  ;
         #endif
 
-        var maskTex = textureSample(maskMap, maskMapSampler, uv ) ;
+        let roughnessMapOffsetSize = materialUniform.roughnessMapOffsetSize;
+        var uv4 = transformUV(ORI_VertexVarying.fragUV0,roughnessMapOffsetSize); 
+        var maskTex = textureSample(maskMap, maskMapSampler, uv4 );
        
         #if USE_ALPHA_A
             ORI_ShadingInput.BaseColor.a =  ORI_ShadingInput.BaseColor.a * (maskTex.a) ;
@@ -118,7 +120,9 @@ export let PBRLItShader: string = /*wgsl*/ `
    
         var aoChannel:f32 = 1.0 ;
         #if USE_AOTEX
-            var aoMap = textureSample(aoMap, aoMapSampler, uv );
+            let aoMapOffsetSize = materialUniform.aoMapOffsetSize;
+            var aoMapOffsetSizeUV = transformUV(ORI_VertexVarying.fragUV0,aoMapOffsetSize); 
+            var aoMap = textureSample(aoMap, aoMapSampler, ORI_VertexVarying.fragUV0 );
             aoChannel = aoMap.g ;
         #else
             #if USE_AO_A
@@ -135,8 +139,10 @@ export let PBRLItShader: string = /*wgsl*/ `
         ORI_ShadingInput.AmbientOcclusion = aoChannel ;
         ORI_ShadingInput.Specular = 1.0 ;
 
+        let emissiveMapOffsetSize = materialUniform.emissiveMapOffsetSize;
+        var emissiveUV = transformUV(ORI_VertexVarying.fragUV0,emissiveMapOffsetSize) ;
         #if USE_EMISSIVEMAP
-            var emissiveMapColor = textureSample(emissiveMap, emissiveMapSampler , ORI_VertexVarying.fragUV0.xy) ;
+            var emissiveMapColor = textureSample(emissiveMap, emissiveMapSampler , emissiveUV ) ;
             let emissiveColor = materialUniform.emissiveColor.rgb * emissiveMapColor.rgb * materialUniform.emissiveIntensity ;
             ORI_ShadingInput.EmissiveColor = vec4<f32>(emissiveColor.rgb,1.0);
         #else
@@ -144,11 +150,12 @@ export let PBRLItShader: string = /*wgsl*/ `
             ORI_ShadingInput.EmissiveColor = vec4<f32>(emissiveColor,1.0);
         #endif
 
-
-        var Normal = textureSample(normalMap,normalMapSampler,uv).rgb ;
+        let normalMapOffsetSize = materialUniform.normalMapOffsetSize;
+        var nomralUV = transformUV(ORI_VertexVarying.fragUV0,normalMapOffsetSize) ;
+        var Normal = textureSample(normalMap,normalMapSampler,nomralUV).rgb ;
         let normal = unPackRGNormal(Normal,1.0,1.0) ;  
         ORI_ShadingInput.Normal = normal ;
-
+     
         BxDFShading();
 
         // ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(normal.rgb),1.0) ;

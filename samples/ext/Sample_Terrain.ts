@@ -55,7 +55,7 @@ class Sample_Terrain {
             let sunLight = sunObj.addComponent(DirectLight);
             sunLight.lightColor = KelvinUtil.color_temperature_to_rgb(6553);
             sunLight.castShadow = true;
-            sunLight.intensity = 49;
+            sunLight.intensity = 3;
             sunObj.transform.rotationX = 50;
             sunObj.transform.rotationY = 50;
             GUIUtil.renderDirLight(sunLight);

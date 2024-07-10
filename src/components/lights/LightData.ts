@@ -41,13 +41,13 @@ export class LightData extends Struct {
     * 
     * Light source radius
     */
-    public radius: number = 0.5;
+    public radius: number = 0.001;
 
     /**
      *
      * The illumination distance of the light source, which is 0, means that the intensity of the light will not decrease due to the distance
      */
-    public linear: number = 1.0;
+    public linear: number = 8.0;
 
     public lightPosition: Vector3 = new Vector3();
 

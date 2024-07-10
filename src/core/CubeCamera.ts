@@ -16,6 +16,8 @@ export class CubeCamera extends Object3D {
     public right_camera: Camera3D;
     public front_camera: Camera3D;
     public back_camera: Camera3D;
+    private _near: number;
+    private _far: number;
 
     /**
      *
@@ -70,4 +72,32 @@ export class CubeCamera extends Object3D {
         this.back_camera.type = CameraType.shadow;
     }
 
+    public set near(value: number) {
+        this._near = value;
+        this.up_camera.near = value;
+        this.down_camera.near = value;
+        this.left_camera.near = value;
+        this.right_camera.near = value;
+        this.front_camera.near = value;
+        this.back_camera.near = value;
+    }
+
+    public get near() {
+        return this._near;
+    }
+
+
+    public set far(value: number) {
+        this._far = value;
+        this.up_camera.far = value;
+        this.down_camera.far = value;
+        this.left_camera.far = value;
+        this.right_camera.far = value;
+        this.front_camera.far = value;
+        this.back_camera.far = value;
+    }
+
+    public get far() {
+        return this._far;
+    }
 }

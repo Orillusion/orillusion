@@ -69,7 +69,7 @@ class Sample_AddRemovePointLight {
                 let script = pointLight.addComponent(PointLight);
                 script.lightColor = Color.random();
                 script.intensity = 6 * Math.random() + 3;
-                script.range = 25 * Math.random() + 15;
+                script.range = 45 * Math.random() + 80;
                 script.castShadow = true;
                 pointLight.x = Math.random() * 200 - 100;
                 pointLight.y = 5;

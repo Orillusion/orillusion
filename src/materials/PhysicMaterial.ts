@@ -36,8 +36,6 @@ export class PhysicMaterial extends Material {
     public setDefault() {
         let colorPass = this.shader.getDefaultColorShader();
         colorPass.setUniformFloat(`shadowBias`, 0.00035);
-        colorPass.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));
-        colorPass.setUniformVector4(`transformUV2`, new Vector4(0, 0, 1, 1));
         colorPass.setUniformColor(`baseColor`, new Color());
         colorPass.setUniformColor(`emissiveColor`, new Color(1, 1, 1));
         colorPass.setUniformVector4(`materialF0`, new Vector4(0.04, 0.04, 0.04, 1));
@@ -54,10 +52,19 @@ export class PhysicMaterial extends Material {
         colorPass.setUniformFloat(`emissiveIntensity`, 0.0);
         colorPass.setUniformFloat(`alphaCutoff`, 0.0);
         colorPass.setUniformFloat(`ior`, 1.5);
+        colorPass.setUniformFloat(`empty`, 1.5);
         colorPass.setUniformFloat(`clearcoatFactor`, 0.0);
         colorPass.setUniformFloat(`clearcoatRoughnessFactor`, 0.0);
         colorPass.setUniformColor(`clearcoatColor`, new Color(1, 1, 1));
         colorPass.setUniformFloat(`clearcoatWeight`, 0.0);
+        colorPass.setUniformFloat(`empty`, 0.0);
+
+        colorPass.setUniformVector4(`baseMapOffsetSize`, new Vector4(0, 0, 1, 1));
+        colorPass.setUniformVector4(`normalMapOffsetSize`, new Vector4(0, 0, 1, 1));
+        colorPass.setUniformVector4(`emissiveMapOffsetSize`, new Vector4(0, 0, 1, 1));
+        colorPass.setUniformVector4(`roughnessMapOffsetSize`, new Vector4(0, 0, 1, 1));
+        colorPass.setUniformVector4(`metallicMapOffsetSize`, new Vector4(0, 0, 1, 1));
+        colorPass.setUniformVector4(`aoMapOffsetSize`, new Vector4(0, 0, 1, 1));
     }
 
 
@@ -120,31 +127,57 @@ export class PhysicMaterial extends Material {
     /**
      * get transformUV1
      */
-    public get uvTransform_1(): Vector4 {
-        return this.shader.getDefaultColorShader().uniforms[`transformUV1`].vector4;
+    public get baseMapUVOffsetSize(): Vector4 {
+        return this.shader.getDefaultColorShader().uniforms[`baseMapOffsetSize`].vector4;
     }
 
     /**
      * set transformUV1
      */
-    public set uvTransform_1(value: Vector4) {
-        // this.shader.getDefaultColorShader().uniforms[`transformUV1`].v4 = value;
-        this.shader.getDefaultColorShader().setUniform(`transformUV1`, value);
+    public set baseMapUVOffsetSize(value: Vector4) {
+        this.shader.getDefaultColorShader().setUniform(`baseMapOffsetSize`, value);
     }
 
     /**
-     * get transformUV2
-     */
-    public get uvTransform_2(): Vector4 {
-        return this.shader.getDefaultColorShader().uniforms[`transformUV2`].vector4;
+    * get transformUV1
+    */
+    public get normalMapUVOffsetSize(): Vector4 {
+        return this.shader.getDefaultColorShader().uniforms[`normalMapOffsetSize`].vector4;
     }
 
     /**
-     * set transformUV2
+     * set transformUV1
      */
-    public set uvTransform_2(value: Vector4) {
-        // this.shader.getDefaultColorShader().uniforms[`transformUV2`].v4 = value;
-        this.shader.getDefaultColorShader().setUniform(`transformUV2`, value);
+    public set normalMapUVOffsetSize(value: Vector4) {
+        this.shader.getDefaultColorShader().setUniform(`normalMapOffsetSize`, value);
+    }
+
+    /**
+     * get transformUV1
+     */
+    public get emissiveMapUVOffsetSize(): Vector4 {
+        return this.shader.getDefaultColorShader().uniforms[`emissiveMapOffsetSize`].vector4;
+    }
+
+    /**
+     * set transformUV1
+     */
+    public set emissiveMapUVOffsetSize(value: Vector4) {
+        this.shader.getDefaultColorShader().setUniform(`emissiveMapOffsetSize`, value);
+    }
+
+    /**
+    * get transformUV1
+    */
+    public get pbrMetallicMapUVOffsetSize(): Vector4 {
+        return this.shader.getDefaultColorShader().uniforms[`roughnessMapOffsetSize`].vector4;
+    }
+
+    /**
+     * set transformUV1
+     */
+    public set pbrMetallicMapUVOffsetSize(value: Vector4) {
+        this.shader.getDefaultColorShader().setUniform(`roughnessMapOffsetSize`, value);
     }
 
     public get depthWriteEnabled(): boolean {

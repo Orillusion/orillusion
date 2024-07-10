@@ -59,7 +59,7 @@ export class Sample_InitEngine {
             let directLight = lightObj3D.addComponent(DirectLight);
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             directLight.castShadow = true;
-            directLight.intensity = 140;
+            directLight.intensity = 3;
             this.view.scene.addChild(lightObj3D);
 
             GUIUtil.renderDirLight(directLight, true);

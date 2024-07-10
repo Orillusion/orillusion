@@ -3,7 +3,7 @@ import { AtmosphericComponent, BoxGeometry, CameraUtil, DirectLight, Engine3D, F
 import { BunnySimulator } from "./softbody/BunnySimulator";
 
 export class Demo_Softbody {
-    constructor() {}
+    constructor() { }
 
     async run() {
 
@@ -21,8 +21,8 @@ export class Demo_Softbody {
         await this.initScene(scene);
 
         let camera = CameraUtil.createCamera3DObject(scene);
-        
-        camera.perspective(60, webGPUContext.aspect, 1 , 5000.0);
+
+        camera.perspective(60, webGPUContext.aspect, 1, 5000.0);
         let ctl = camera.object3D.addComponent(HoverCameraController);
         ctl.setCamera(30, -28, 15);
 
@@ -61,7 +61,7 @@ export class Demo_Softbody {
         simulator.castShadow = true;
         simulator.SetInteractionBox(box);
         scene.addChild(bunny);
-        
+
         // {
         //     let mat = new HDRLitMaterial();
         //     mat.baseMap = defaultTexture.createTexture(32, 32, 72, 126, 2, 255);
@@ -85,7 +85,7 @@ export class Demo_Softbody {
             lightObj.rotationZ = 0;
             let lc = lightObj.addComponent(DirectLight);
             lc.castShadow = true;
-            lc.intensity = 20;
+            lc.intensity = 3;
             scene.addChild(lightObj);
         }
 

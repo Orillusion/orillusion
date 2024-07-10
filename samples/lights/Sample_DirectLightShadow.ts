@@ -6,12 +6,16 @@ import { GUIUtil } from "@samples/utils/GUIUtil";
 class Sample_DirectLightShadow {
     scene: Scene3D;
     async run() {
-        Engine3D.setting.shadow.enable = true;
-        // Engine3D.setting.render.zPrePass = true;
-        Engine3D.setting.shadow.autoUpdate = true;
-        Engine3D.setting.shadow.shadowSize = 1024;
         Engine3D.setting.render.debug = true;
         Engine3D.setting.render.useLogDepth = false;
+
+        Engine3D.setting.shadow.enable = true;
+        Engine3D.setting.shadow.autoUpdate = true;
+        Engine3D.setting.shadow.updateFrameRate = 1;
+        Engine3D.setting.shadow.shadowBound = 400;
+        Engine3D.setting.shadow.shadowSize = 2048;
+        Engine3D.setting.shadow.shadowBias = 0.02;
+
         Engine3D.setting.occlusionQuery.octree = { width: 1000, height: 1000, depth: 1000, x: 0, y: 0, z: 0 }
         await Engine3D.init({});
 
@@ -47,7 +51,7 @@ class Sample_DirectLightShadow {
         lightObj3D.rotationY = 62;
         lightObj3D.rotationZ = 0;
         let sunLight = lightObj3D.addComponent(DirectLight);
-        sunLight.intensity = 15;
+        sunLight.intensity = 3;
         sunLight.lightColor = KelvinUtil.color_temperature_to_rgb(6553);
         sunLight.castShadow = true;
 

@@ -3,7 +3,7 @@ import { Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraControl
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
 // sample of point light shadow
-class Sample_PointLightShadow {
+export class Sample_PointLightShadow {
     scene: Scene3D;
     lightObj: Object3D;
     async run() {
@@ -48,7 +48,7 @@ class Sample_PointLightShadow {
 
         //make point light
         let pointLight = lightObj3D.addComponent(PointLight);
-        pointLight.range = 100;
+        pointLight.range = 200;
         pointLight.intensity = 5;
         pointLight.castShadow = true;
         scene.addChild(lightObj3D);
@@ -81,5 +81,3 @@ class Sample_PointLightShadow {
         this.scene.addChild(floor);
     }
 }
-
-new Sample_PointLightShadow().run();

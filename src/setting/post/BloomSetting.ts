@@ -12,4 +12,5 @@ export type BloomSetting = {
     upSampleBlurSigma: number;
     luminanceThreshole: number;
     bloomIntensity: number;
+    hdr: number;
 };

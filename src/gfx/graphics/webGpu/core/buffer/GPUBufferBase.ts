@@ -58,6 +58,14 @@ export class GPUBufferBase {
         node.setX(v ? 1 : 0);
     }
 
+    public readBoole(name: string): boolean {
+        let node = this.memoryNodes.get(name);
+        if (node) {
+            return node.getFloat() == 0 ? false : true;
+        }
+        return null;
+    }
+
     public setFloat(name: string, v: number) {
         let node = this.memoryNodes.get(name);
         if (!node) {
@@ -65,6 +73,14 @@ export class GPUBufferBase {
             this.memoryNodes.set(name, node);
         }
         node.setX(v);
+    }
+
+    public getFloat(name: string): number {
+        let node = this.memoryNodes.get(name);
+        if (node) {
+            return node.getFloat();
+        }
+        return null;
     }
 
     public setInt8(name: string, v: number) {
@@ -76,6 +92,14 @@ export class GPUBufferBase {
         node.setInt8(v);
     }
 
+    public getInt8(name: string): number {
+        let node = this.memoryNodes.get(name);
+        if (node) {
+            return node.getInt8();
+        }
+        return null;
+    }
+
     public setInt16(name: string, v: number) {
         let node = this.memoryNodes.get(name);
         if (!node) {
@@ -83,6 +107,14 @@ export class GPUBufferBase {
             this.memoryNodes.set(name, node);
         }
         node.setInt16(v);
+    }
+
+    public getInt16(name: string): number {
+        let node = this.memoryNodes.get(name);
+        if (node) {
+            return node.getInt16();
+        }
+        return null;
     }
 
     public setInt32(name: string, v: number) {
@@ -94,6 +126,14 @@ export class GPUBufferBase {
         node.setInt32(v);
     }
 
+    public getInt32(name: string): number {
+        let node = this.memoryNodes.get(name);
+        if (node) {
+            return node.getInt32();
+        }
+        return null;
+    }
+
     public setUint8(name: string, v: number) {
         let node = this.memoryNodes.get(name);
         if (!node) {
@@ -101,6 +141,14 @@ export class GPUBufferBase {
             this.memoryNodes.set(name, node);
         }
         node.setUint8(v);
+    }
+
+    public getUint8(name: string): number {
+        let node = this.memoryNodes.get(name);
+        if (node) {
+            return node.getUint8();
+        }
+        return null;
     }
 
     public setUint16(name: string, v: number) {
@@ -112,6 +160,15 @@ export class GPUBufferBase {
         node.setUint16(v);
     }
 
+    public getUint16(name: string): number {
+        let node = this.memoryNodes.get(name);
+        if (node) {
+            return node.getUint16();
+        }
+        return null;
+    }
+
+
     public setUint32(name: string, v: number) {
         let node = this.memoryNodes.get(name);
         if (!node) {
@@ -119,6 +176,14 @@ export class GPUBufferBase {
             this.memoryNodes.set(name, node);
         }
         node.setUint32(v);
+    }
+
+    public getUint32(name: string): number {
+        let node = this.memoryNodes.get(name);
+        if (node) {
+            return node.getUint32();
+        }
+        return null;
     }
 
     public setVector2(name: string, v2: Vector2) {
@@ -130,6 +195,14 @@ export class GPUBufferBase {
         node.setXY(v2.x, v2.y);
     }
 
+    public getVector2(name: string): Vector2 {
+        let node = this.memoryNodes.get(name);
+        if (node) {
+            return new Vector2(node.x, node.y);
+        }
+        return null;
+    }
+
     public setVector3(name: string, v3: Vector3) {
         let node = this.memoryNodes.get(name);
         if (!node) {
@@ -139,6 +212,14 @@ export class GPUBufferBase {
         node.setXYZ(v3.x, v3.y, v3.z);
     }
 
+    public getVector3(name: string): Vector3 {
+        let node = this.memoryNodes.get(name);
+        if (node) {
+            return new Vector3(node.x, node.y, node.z);
+        }
+        return null;
+    }
+
     public setVector4(name: string, v4: Vector4 | Quaternion) {
         let node = this.memoryNodes.get(name);
         if (!node) {
@@ -146,6 +227,14 @@ export class GPUBufferBase {
             this.memoryNodes.set(name, node);
         }
         node.setXYZW(v4.x, v4.y, v4.z, v4.w);
+    }
+
+    public getVector4(name: string): Vector4 {
+        let node = this.memoryNodes.get(name);
+        if (node) {
+            return new Vector4(node.x, node.y, node.z, node.w);
+        }
+        return null;
     }
 
     public setVector4Array(name: string, v4Array: Vector3[] | Vector4[] | Quaternion[]) {
@@ -164,6 +253,14 @@ export class GPUBufferBase {
             this.memoryNodes.set(name, node);
         }
         node.setXYZW(color.r, color.g, color.b, color.a);
+    }
+
+    public getColor(name: string): Color {
+        let node = this.memoryNodes.get(name);
+        if (node) {
+            return new Color(node.x, node.y, node.z, node.w);
+        }
+        return null;
     }
 
     public setColorArray(name: string, colorArray: Color[]) {
@@ -334,7 +431,7 @@ export class GPUBufferBase {
                 });
                 tBuffer['usedSize'] = mapAsyncArray.byteLength;
                 this.mapAsyncBuffersOutstanding++;
-                if (this.mapAsyncBuffersOutstanding > 10) {
+                if (this.mapAsyncBuffersOutstanding > 20) {
                     // ${(this.mapAsync.value * this.mapAsyncBuffersOutstanding).toFixed(2)}
                     console.warn(` Warning: mapAsync requests from ${this.mapAsyncBuffersOutstanding} frames ago have not resolved yet.  MB of staging buffers allocated.`);
                 }

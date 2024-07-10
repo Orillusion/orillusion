@@ -17,13 +17,12 @@ export class PickCompute {
     constructor() { }
 
     public init() {
-        let rtFrame = GBufferFrame.getGBufferFrame("ColorPassGBuffer");
+        let rtFrame = GBufferFrame.getGBufferFrame(GBufferFrame.colorPass_GBuffer);
         this._computeShader = new ComputeShader(Picker_cs);
 
         this._outBuffer = new ComputeGPUBuffer(32);
         this._computeShader.setStorageBuffer('outBuffer', this._outBuffer);
-        this._computeShader.setSamplerTexture('positionMap', rtFrame.getPositionMap());
-        this._computeShader.setSamplerTexture('normalMap', rtFrame.getNormalMap());
+        this._computeShader.setSamplerTexture('gBufferTexture', rtFrame.getCompressGBufferTexture());
     }
 
     compute(view: View3D) {

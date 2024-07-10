@@ -35,7 +35,7 @@ class Sample_Destroy {
         // adjust lighting
         light.rotationX = 45
         light.rotationY = 30
-        component.intensity = 1
+        component.intensity = 3
         // add light object
         scene3D.addChild(light)
         {

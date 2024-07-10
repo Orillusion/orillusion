@@ -1,6 +1,6 @@
 export let GrassBaseShader = /*wgsl*/ `
     #include "GlobalUniform"
-    #include "ColorPassFragmentOutput"
+    #include "FragmentOutput"
     #include "ShadingInput"
  
     struct FragmentVarying {

@@ -7,13 +7,11 @@ import { GlobalBindGroup } from "../../gfx/graphics/webGpu/core/bindGroups/Globa
 import { ShaderReflection } from "../../gfx/graphics/webGpu/shader/value/ShaderReflectionInfo";
 import { GPUContext } from "../../gfx/renderJob/GPUContext";
 import { EntityCollect } from "../../gfx/renderJob/collect/EntityCollect";
-import { ShadowLightsCollect } from "../../gfx/renderJob/collect/ShadowLightsCollect";
 import { RTResourceMap } from "../../gfx/renderJob/frame/RTResourceMap";
 import { RenderContext } from "../../gfx/renderJob/passRenderer/RenderContext";
 import { ClusterLightingBuffer } from "../../gfx/renderJob/passRenderer/cluster/ClusterLightingBuffer";
 import { RendererMask, RendererMaskUtil } from "../../gfx/renderJob/passRenderer/state/RendererMask";
 import { RendererPassState } from "../../gfx/renderJob/passRenderer/state/RendererPassState";
-import { PassType } from "../../gfx/renderJob/passRenderer/state/RendererType";
 import { GetCountInstanceID, UUID } from "../../util/Global";
 import { Reference } from "../../util/Reference";
 import { ComponentBase } from "../ComponentBase";
@@ -23,7 +21,9 @@ import { OctreeEntity } from "../../core/tree/octree/OctreeEntity";
 import { Transform } from "../Transform";
 import { Material } from "../../materials/Material";
 import { RenderLayer } from "../../gfx/renderJob/config/RenderLayer";
-import { RenderShaderCompute, ComputeShader } from "../..";
+import { RenderShaderCompute } from "../../gfx/graphics/webGpu/compute/RenderShaderCompute";
+import { PassType } from "../../gfx/renderJob/passRenderer/state/PassType";
+import { ProfilerUtil } from "../../util/ProfilerUtil";
 
 
 /**
@@ -31,6 +31,7 @@ import { RenderShaderCompute, ComputeShader } from "../..";
  * @group Components
  */
 export class RenderNode extends ComponentBase {
+
     public instanceCount: number = 0;
     public lodLevel: number = 0;
     public alwaysRender: boolean = false;
@@ -40,7 +41,7 @@ export class RenderNode extends ComponentBase {
     protected _geometry: GeometryBase;
     protected _materials: Material[] = [];
     protected _castShadow: boolean = true;
-    protected _castReflection: boolean = false;
+    protected _castReflection: boolean = true;
     protected _castGI: boolean = false;
     protected _rendererMask: number = RendererMask.Default;
     protected _inRenderer: boolean = false;
@@ -50,11 +51,11 @@ export class RenderNode extends ComponentBase {
     protected _ignorePrefilterMap?: boolean;
     protected __renderOrder: number = 0;//cameraDepth + _renderOrder
     protected _renderOrder: number = 0;
+    protected _passInit: Map<PassType, boolean> = new Map<PassType, boolean>();
     public isRenderOrderChange?: boolean;
     public needSortOnCameraZ?: boolean;
     protected _octreeBinder: { octree: Octree, entity: OctreeEntity };
 
-    public preInit: boolean = false;
     /**
      *
      * The layer membership of the object.
@@ -237,6 +238,7 @@ export class RenderNode extends ComponentBase {
     }
 
     public onDisable(): void {
+        this._enable = false;
         EntityCollect.instance.removeRenderNode(this.transform.scene3D, this);
         super.onDisable?.();
     }
@@ -314,8 +316,8 @@ export class RenderNode extends ComponentBase {
         if (this.castReflection) {
             for (let i = 0; i < this.materials.length; i++) {
                 const mat = this.materials[i];
-                if (mat.castShadow) {
-                    PassGenerate.createShadowPass(this, mat.shader);
+                if (mat.castReflection) {
+                    PassGenerate.createReflectionPass(this, mat.shader);
                 }
             }
         }
@@ -340,7 +342,6 @@ export class RenderNode extends ComponentBase {
         return this._castShadow;
     }
 
-    @EditorInspector
     public set castShadow(value: boolean) {
         this._castShadow = value;
     }
@@ -350,7 +351,6 @@ export class RenderNode extends ComponentBase {
         return this._castGI;
     }
 
-    @EditorInspector
     public set castGI(value: boolean) {
         this._castGI = value;
     }
@@ -377,6 +377,8 @@ export class RenderNode extends ComponentBase {
                 continue;
 
             GPUContext.bindGeometryBuffer(renderContext.encoder, renderNode._geometry);
+            ProfilerUtil.viewCount_vertex(view, PassType[passType], renderNode._geometry.vertexCount);
+
             for (let j = 0; j < passes.length; j++) {
                 if (!passes || passes.length == 0)
                     continue;
@@ -396,16 +398,26 @@ export class RenderNode extends ComponentBase {
                         GPUContext.bindCamera(renderContext.encoder, view.camera);
                         GPUContext.bindGeometryBuffer(renderContext.encoder, renderNode._geometry);
                     }
-                    GPUContext.bindPipeline(renderContext.encoder, renderShader);
+
+                    let noneShare = GPUContext.bindPipeline(renderContext.encoder, renderShader);
+                    if (noneShare) {
+                        ProfilerUtil.viewCount_pipeline(view, PassType[passType]);
+                    }
                     let subGeometry = renderNode._geometry.subGeometries[i];
                     let lodInfos = subGeometry.lodLevels;
                     let lodInfo = lodInfos[renderNode.lodLevel];
 
                     if (renderNode.instanceCount > 0) {
+                        ProfilerUtil.viewCount_instance(view, PassType[passType], renderNode.instanceCount);
+                        ProfilerUtil.viewCount_indices(view, PassType[passType], lodInfo.indexCount);
+                        ProfilerUtil.viewCount_tri(view, PassType[passType], lodInfo.indexCount / 3 * renderNode.instanceCount);
                         GPUContext.drawIndexed(renderContext.encoder, lodInfo.indexCount, renderNode.instanceCount, lodInfo.indexStart, 0, 0);
                     } else {
+                        ProfilerUtil.viewCount_indices(view, PassType[passType], lodInfo.indexCount);
+                        ProfilerUtil.viewCount_tri(view, PassType[passType], lodInfo.indexCount / 3);
                         GPUContext.drawIndexed(renderContext.encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
                     }
+                    ProfilerUtil.viewCount_draw(view, PassType[passType],);
                 }
             }
         }
@@ -490,12 +502,17 @@ export class RenderNode extends ComponentBase {
     private noticeShaderChange() {
         if (this.enable) {
             this.onEnable();
-            this.preInit = false;
+            this._passInit.forEach((v, k) => {
+                this._passInit.set(k, false);
+            })
         }
     }
 
+    preInit(_rendererType: PassType): boolean {
+        return this._passInit.get(_rendererType);
+    }
+
     public nodeUpdate(view: View3D, passType: PassType, renderPassState: RendererPassState, clusterLightingBuffer?: ClusterLightingBuffer) {
-        this.preInit = true;
         let node = this;
         let envMap = view.scene.envMap;
 
@@ -505,7 +522,6 @@ export class RenderNode extends ComponentBase {
             if (passes) {
                 for (let i = 0; i < passes.length; i++) {
                     const pass = passes[i];
-
                     const renderShader = pass;
 
                     if (renderShader.shaderState.splitTexture) {
@@ -518,8 +534,16 @@ export class RenderNode extends ComponentBase {
                     }
 
                     // if (!node._ignorePrefilterMap && renderShader.prefilterMap != envMap) {
-                    renderShader.setTexture(`prefilterMap`, envMap);
+                    if (!renderShader.prefilterMap) {
+                        renderShader.setTexture(`prefilterMap`, envMap);
+                    }
                     // }
+
+                    let reflectionEntries = GlobalBindGroup.getReflectionEntries(view.scene);
+                    if (!renderShader.reflectionMap && reflectionEntries && reflectionEntries.reflectionMap) {
+                        renderShader.setTexture(`reflectionMap`, reflectionEntries.reflectionMap);
+                        renderShader.setStorageBuffer(`reflectionBuffer`, reflectionEntries.storageGPUBuffer);
+                    }
 
                     if (renderShader.pipeline) {
                         renderShader.apply(node._geometry, renderPassState, () => node.noticeShaderChange());
@@ -567,6 +591,8 @@ export class RenderNode extends ComponentBase {
                     }
 
                     renderShader.apply(node._geometry, renderPassState);
+
+                    this._passInit.set(passType, true);
                 }
             }
         }

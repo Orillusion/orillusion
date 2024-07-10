@@ -1,3 +1,4 @@
+import { GlobalBindGroup } from "../../../..";
 import { Engine3D } from "../../../../Engine3D";
 import { RenderNode } from "../../../../components/renderer/RenderNode";
 import { View3D } from "../../../../core/View3D";
@@ -10,7 +11,7 @@ import { OcclusionSystem } from "../../occlusion/OcclusionSystem";
 import { RenderContext } from "../RenderContext";
 import { RendererBase } from "../RendererBase";
 import { ClusterLightingBuffer } from "../cluster/ClusterLightingBuffer";
-import { PassType } from "../state/RendererType";
+import { PassType } from "../state/PassType";
 
 /**
  *  @internal
@@ -27,31 +28,28 @@ export class ColorPassRenderer extends RendererBase {
     public render(view: View3D, occlusionSystem: OcclusionSystem, clusterLightingBuffer?: ClusterLightingBuffer, maskTr: boolean = false) {
         this.renderContext.clean();
 
+
         let scene = view.scene;
         let camera = view.camera;
 
+        GlobalBindGroup.updateCameraGroup(camera);
+
         this.rendererPassState.camera3D = camera;
+
         let collectInfo = EntityCollect.instance.getRenderNodes(scene, camera);
 
         let op_bundleList = this.renderBundleOp(view, collectInfo, occlusionSystem, clusterLightingBuffer);
         let tr_bundleList = maskTr ? [] : this.renderBundleTr(view, collectInfo, occlusionSystem, clusterLightingBuffer);
 
-        ProfilerUtil.start("colorPass Renderer");
         {
-            ProfilerUtil.start("ColorPass Draw Opaque");
-
             this.renderContext.beginOpaqueRenderPass();
-
-            let command = this.renderContext.command;
             let renderPassEncoder = this.renderContext.encoder;
 
-            // renderPassEncoder.setViewport(camera.viewPort.x, camera.viewPort.y, camera.viewPort.width, camera.viewPort.height, 0.0, 1.0);
-            // renderPassEncoder.setScissorRect(camera.viewPort.x, camera.viewPort.y, camera.viewPort.width, camera.viewPort.height);
+            //     // renderPassEncoder.setViewport(camera.viewPort.x, camera.viewPort.y, camera.viewPort.width, camera.viewPort.height, 0.0, 1.0);
+            //     // renderPassEncoder.setScissorRect(camera.viewPort.x, camera.viewPort.y, camera.viewPort.width, camera.viewPort.height);
 
-            // renderPassEncoder.setViewport(view.viewPort.x, view.viewPort.y, view.viewPort.width, view.viewPort.height, 0.0, 1.0);
-            // renderPassEncoder.setScissorRect(view.viewPort.x, view.viewPort.y, view.viewPort.width, view.viewPort.height);
-
-            GPUContext.bindCamera(renderPassEncoder, camera);
+            //     // renderPassEncoder.setViewport(view.viewPort.x, view.viewPort.y, view.viewPort.width, view.viewPort.height, 0.0, 1.0);
+            //     // renderPassEncoder.setScissorRect(view.viewPort.x, view.viewPort.y, view.viewPort.width, view.viewPort.height);
 
             if (op_bundleList.length > 0) {
                 //  GPUContext.bindCamera(renderPassEncoder,camera);
@@ -68,7 +66,7 @@ export class ColorPassRenderer extends RendererBase {
 
             if (!maskTr && EntityCollect.instance.sky) {
                 GPUContext.bindCamera(renderPassEncoder, camera);
-                if (!EntityCollect.instance.sky.preInit) {
+                if (!EntityCollect.instance.sky.preInit(this._rendererType)) {
                     EntityCollect.instance.sky.nodeUpdate(view, this._rendererType, this.rendererPassState, clusterLightingBuffer);
                 }
                 EntityCollect.instance.sky.renderPass2(view, this._rendererType, this.rendererPassState, clusterLightingBuffer, renderPassEncoder);
@@ -77,17 +75,14 @@ export class ColorPassRenderer extends RendererBase {
             if (collectInfo.opaqueList) {
                 GPUContext.bindCamera(renderPassEncoder, camera);
                 this.drawNodes(view, this.renderContext, collectInfo.opaqueList, occlusionSystem, clusterLightingBuffer);
-                this.renderContext.endRenderPass();
-                ProfilerUtil.end("ColorPass Draw Opaque");
             }
+            // this.renderContext.endRenderPass();
+
         }
 
         {
-            ProfilerUtil.start("ColorPass Draw Transparent");
+            // this.renderContext.beginTransparentRenderPass();
 
-            this.renderContext.beginTransparentRenderPass();
-
-            let command = this.renderContext.command;
             let renderPassEncoder = this.renderContext.encoder;
 
             if (tr_bundleList.length > 0) {
@@ -102,24 +97,18 @@ export class ColorPassRenderer extends RendererBase {
             let graphicsList = EntityCollect.instance.getGraphicList();
             for (let i = 0; i < graphicsList.length; i++) {
                 const graphic3DRenderNode = graphicsList[i];
-                let matrixIndex = graphic3DRenderNode.transform.worldMatrix.index;
                 graphic3DRenderNode.nodeUpdate(view, this._rendererType, this.splitRendererPassState, clusterLightingBuffer);
                 graphic3DRenderNode.renderPass2(view, this._rendererType, this.splitRendererPassState, clusterLightingBuffer, renderPassEncoder);
             }
 
-            // let graphicsMesh = EntityCollect.instance.getGraphicMesh(view);
-            // for (const iterator of graphicsMesh) {
-            //     let meshGroup = iterator;
-            //     meshGroup.nodeUpdate(view, this._rendererType, this.splitRendererPassState, clusterLightingBuffer);
-            //     meshGroup.renderPass2(view, this._rendererType, this.splitRendererPassState, clusterLightingBuffer, renderPassEncoder);
-            // }
 
             this.renderContext.endRenderPass();
+
 
             ProfilerUtil.end("ColorPass Draw Transparent");
         }
 
-        ProfilerUtil.end("colorPass Renderer");
+        // ProfilerUtil.end("colorPass Renderer");
     }
 
     public drawNodes(view: View3D, renderContext: RenderContext, nodes: RenderNode[], occlusionSystem: OcclusionSystem, clusterLightingBuffer: ClusterLightingBuffer) {
@@ -129,7 +118,7 @@ export class ColorPassRenderer extends RendererBase {
                 let nodeMap = renderList[1];
                 for (const iterator of nodeMap) {
                     let node = iterator[1];
-                    if (node.preInit) {
+                    if (node.preInit(this._rendererType)) {
                         node.nodeUpdate(view, this._rendererType, this.rendererPassState, clusterLightingBuffer);
                         break;
                     }
@@ -145,7 +134,7 @@ export class ColorPassRenderer extends RendererBase {
                 if (!renderNode.enable)
                     continue;
 
-                if (!renderNode.preInit) {
+                if (!renderNode.preInit(this._rendererType)) {
                     renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState, clusterLightingBuffer);
                 }
                 renderNode.renderPass(view, this.passType, this.renderContext);

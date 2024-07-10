@@ -257,7 +257,7 @@ export class ComputeShader extends ShaderPassBase {
 
         shaderModule.getCompilationInfo().then((e) => {
             if (e.messages.length > 0) {
-                console.log(this._destCS);
+                console.warn('[shader error]', e, this._destCS);
             }
         });
 

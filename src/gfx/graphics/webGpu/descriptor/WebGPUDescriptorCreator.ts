@@ -9,22 +9,23 @@ import { CResizeEvent } from '../../../../event/CResizeEvent';
  * @author sirxu
  */
 export class WebGPUDescriptorCreator {
-    public static bindGroupDescriptorCount: number = 0;
-    public static bindTextureDescriptorCount: number = 0;
-    public static renderPassDescriptorCount: number = 0;
-    public static pipelineDescriptorCount: number = 0;
 
+    private static rendererPassState: Map<RTFrame, RendererPassState> = new Map<RTFrame, RendererPassState>();
     public static createRendererPassState(rtFrame: RTFrame, loadOp: GPULoadOp = null) {
-        let rps = new RendererPassState();
-        rps.label = rtFrame.label;
-        rps.customSize = rtFrame.customSize;
-        rps.rtFrame = rtFrame;
-        rps.zPreTexture = rtFrame.zPreTexture;
-        rps.depthTexture = rtFrame.depthTexture;
-        rps.depthViewIndex = rtFrame.depthViewIndex;
-        rps.isOutTarget = rtFrame.isOutTarget;
-        rps.depthCleanValue = rtFrame.depthCleanValue;
-        rps.depthLoadOp = rtFrame.depthLoadOp;
+        let rps: RendererPassState = WebGPUDescriptorCreator.rendererPassState.get(rtFrame);
+        if (!rps) {
+            rps = new RendererPassState();
+            rps.label = rtFrame.label;
+            rps.customSize = rtFrame.customSize;
+            rps.rtFrame = rtFrame;
+            rps.zPreTexture = rtFrame.zPreTexture;
+            rps.depthTexture = rtFrame.depthTexture;
+            rps.depthViewIndex = rtFrame.depthViewIndex;
+            rps.isOutTarget = rtFrame.isOutTarget;
+            rps.depthCleanValue = rtFrame.depthCleanValue;
+            rps.depthLoadOp = rtFrame.depthLoadOp;
+            WebGPUDescriptorCreator.rendererPassState.set(rtFrame, rps);
+        }
 
         if (rtFrame && rtFrame.renderTargets.length > 0) {
             rps.renderTargets = rtFrame.renderTargets;
@@ -68,6 +69,7 @@ export class WebGPUDescriptorCreator {
      */
     // static getRenderPassDescriptor(attachMentTextures: VirtualTexture[], renderPassState:RenderPassState): any {
     public static getRenderPassDescriptor(renderPassState: RendererPassState, loadOp: GPULoadOp = null): any {
+        if (renderPassState.renderPassDescriptor) return renderPassState.renderPassDescriptor;
         let device = webGPUContext.device;
         let presentationSize = webGPUContext.presentationSize;
         let attachMentTexture = [];
@@ -128,8 +130,7 @@ export class WebGPUDescriptorCreator {
                 label: 'renderPassDescriptor not writeDepth',
             };
         }
-
-        this.renderPassDescriptorCount++;
+        renderPassState.renderPassDescriptor = renderPassDescriptor;
         return renderPassDescriptor;
     }
 
@@ -142,6 +143,7 @@ export class WebGPUDescriptorCreator {
      * @returns
      */
     public static getRenderBundleDescriptor(renderPassState: RendererPassState): GPURenderBundleEncoderDescriptor {
+        if (renderPassState.renderBundleEncoderDescriptor) return renderPassState.renderBundleEncoderDescriptor;
         let presentationSize = webGPUContext.presentationSize;
         let attachMentTexture = [];
         let size = [];
@@ -168,7 +170,7 @@ export class WebGPUDescriptorCreator {
                 colorFormats: attachMentTexture,
             };
         }
-        this.renderPassDescriptorCount++;
-        return renderPassDescriptor;
+        renderPassState.renderBundleEncoderDescriptor = renderPassDescriptor;
+        return renderPassState.renderBundleEncoderDescriptor;
     }
 }

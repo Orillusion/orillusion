@@ -1,5 +1,5 @@
 import { RenderShaderPass } from "../../gfx/graphics/webGpu/shader/RenderShaderPass";
-import { PassType } from "../../gfx/renderJob/passRenderer/state/RendererType";
+import { PassType } from "../../gfx/renderJob/passRenderer/state/PassType";
 import { Vector3 } from "../../math/Vector3";
 
 /**

@@ -6,7 +6,7 @@ import { UniformGPUBuffer } from "../core/buffer/UniformGPUBuffer";
 import { Texture } from "../core/texture/Texture";
 import { RenderShaderPass } from "./RenderShaderPass";
 import { UniformValue } from "./value/UniformValue";
-import { PassType } from "../../../renderJob/passRenderer/state/RendererType";
+import { PassType } from "../../../renderJob/passRenderer/state/PassType";
 import { Color } from "../../../../math/Color";
 import { Vector2 } from "../../../../math/Vector2";
 import { Vector3 } from "../../../../math/Vector3";
@@ -83,6 +83,17 @@ export class Shader {
                 rd.setDefine(arg0, arg1);
             }
         }
+    }
+
+    public hasDefine(arg0: string) {
+        for (const pass of this.passShader) {
+            for (const rd of pass[1]) {
+                let has = rd.hasDefine(arg0);
+                if (has)
+                    return has;
+            }
+        }
+        return false
     }
 
     public deleteDefine(arg0: string) {
