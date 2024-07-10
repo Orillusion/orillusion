@@ -13,7 +13,7 @@ import { ComponentBase } from "../ComponentBase";
 
 /**
  * Hovering camera controller
- * @group CameraController 
+ * @group CameraController
  */
 export class HoverCameraController extends ComponentBase {
     /**
@@ -54,7 +54,7 @@ export class HoverCameraController extends ComponentBase {
     /**
      * Right mouse movement coefficient
      */
-    public mouseRightFactor: number = 0.5;
+    public mouseRightFactor: number = 0.25;
 
     /**
      * Left mouse movement coefficient
@@ -103,6 +103,24 @@ export class HoverCameraController extends ComponentBase {
     private _mouseRightDown: boolean = false;
     private _bottomClamp: number = 89.99;
     private _topClamp: number = -89.99;
+    /**
+     * Max angle of pitch
+     */
+    get bottomClamp(): number {
+        return this._bottomClamp;
+    }
+    set bottomClamp(value: number) {
+        this._bottomClamp = value > 89.99 ? 89.99 : value;
+    }
+    /**
+     * Min angle of pitch
+     */
+    get topClamp(): number {
+        return this._topClamp;
+    }
+    set topClamp(value: number) {
+        this._topClamp = value < -89.99 ? -89.99 : value;
+    }
     private _tempDir = new Vector3();
     private _tempPos = new Vector3();
 
@@ -121,8 +139,8 @@ export class HoverCameraController extends ComponentBase {
     public start(): void {
         this.camera = this.object3D.getOrAddComponent(Camera3D);
         Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_DOWN, this.onMouseDown, this);
-        Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_MOVE, this.onMouseMove, this);
-        Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_UP, this.onMouseUp, this);
+        Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_MOVE, this.onMouseMove, this, null, 10);
+        Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_UP, this.onMouseUp, this, null, 10);
         Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_WHEEL, this.onMouseWheel, this);
     }
 
@@ -147,7 +165,7 @@ export class HoverCameraController extends ComponentBase {
         this.roll = roll;
         this.pitch = pitch;
         this.distance = distance;
-        if(this.maxDistance < distance * 1.5){
+        if (this.maxDistance < distance * 1.5) {
             this.maxDistance = distance * 1.5;
         }
         if (target) {
@@ -213,18 +231,10 @@ export class HoverCameraController extends ComponentBase {
         // return;
         if (!this.enable) return;
         if (this._mouseRightDown) {
-            let p = 0.25; //this.distance / (this.camera.far - this.camera.near);
-            let f = this.camera.transform.forward;
-            Vector3Ex.mulScale(f, e.movementY * p * this.camera.aspect, Vector3.HELP_1);
+            Vector3.HELP_1.x = -1 * e.movementX * Math.cos((this._roll * Math.PI) / 180) - e.movementY * Math.sin((this._roll * Math.PI) / 180);
+            Vector3.HELP_1.z = -1 * e.movementY * Math.cos((this._roll * Math.PI) / 180) + e.movementX * Math.sin((this._roll * Math.PI) / 180);
             this._targetPos.x += Vector3.HELP_1.x * this.mouseRightFactor;
-            // this._targetPos.y -= Vector3.HELP_1.y;
             this._targetPos.z += Vector3.HELP_1.z * this.mouseRightFactor;
-
-            let f2 = this.camera.transform.right;
-            Vector3Ex.mulScale(f2, -e.movementX * p, Vector3.HELP_1);
-            this._targetPos.x -= Vector3.HELP_1.x * this.mouseRightFactor;
-            // this._targetPos.y -= Vector3.HELP_1.y;
-            this._targetPos.z -= Vector3.HELP_1.z * this.mouseRightFactor;
         }
 
         if (this._mouseLeftDown) {
@@ -235,8 +245,7 @@ export class HoverCameraController extends ComponentBase {
     }
 
     public onBeforeUpdate(view?: View3D) {
-        if (!this.enable)
-            return;
+        if (!this.enable) return;
 
         if (this._flowTarget) {
             Vector3.HELP_0.copyFrom(this._flowTarget.transform.worldPosition);

@@ -6,7 +6,7 @@ import { EntityCollect } from '../../collect/EntityCollect';
 import { GPUContext } from '../../GPUContext';
 import { OcclusionSystem } from '../../occlusion/OcclusionSystem';
 import { RendererBase } from '../RendererBase';
-import { PassType } from '../state/RendererType';
+import { PassType } from '../state/PassType';
 import { ILight } from '../../../../components/lights/ILight';
 import { ClusterLightingBuffer } from './ClusterLightingBuffer';
 import { ClusterBoundsSource_cs } from '../../../../assets/shader/cluster/ClusterBoundsSource_cs';

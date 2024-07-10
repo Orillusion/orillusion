@@ -1,5 +1,8 @@
 
 export let OutlineCalcOutline_cs: string = /*wgsl*/ `
+#include "GlobalUniform"
+#include "GBufferStand"
+
   struct OutlineSettingData{
     strength: f32,
     useAddMode: f32,
@@ -27,25 +30,29 @@ export let OutlineCalcOutline_cs: string = /*wgsl*/ `
     list: array<f32, 16u>,
   }
 
-  @group(0) @binding(0) var<uniform> outlineSetting: OutlineSettingData;
-  @group(0) @binding(1) var<storage, read_write> slotsBuffer : array<OutlineSlotData>;
-  @group(0) @binding(2) var<storage, read_write> weightBuffer : array<OutlineWeightData>;
-  @group(0) @binding(3) var<storage, read_write> entitiesBuffer : array<OutlineEntities>;
-  @group(0) @binding(4) var indexTexture : texture_2d<f32>;
+  @group(0) @binding(2) var<uniform> outlineSetting: OutlineSettingData;
+  @group(0) @binding(3) var<storage, read_write> slotsBuffer : array<OutlineSlotData>;
+  @group(0) @binding(4) var<storage, read_write> weightBuffer : array<OutlineWeightData>;
+  @group(0) @binding(5) var<storage, read_write> entitiesBuffer : array<OutlineEntities>;
 
   var<private> texSize: vec2<u32>;
   var<private> lowSize: vec2<i32>;
   var<private> fragCoord: vec2<i32>;
+  var<private> fragUV: vec2<f32>;
   var<private> fragCoordLow: vec2<i32>;
   var<private> coordIndex: i32;
 
   var<private> fragOutline: OutlineWeightData;
+  const PI = 3.1415926 ;
 
   @compute @workgroup_size( 8 , 8 , 1 )
   fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_invocation_id) globalInvocation_id : vec3<u32>)
   {
+    useNormalMatrixInv();
     fragCoordLow = vec2<i32>( globalInvocation_id.xy );
-    texSize = textureDimensions(indexTexture).xy;
+    texSize = textureDimensions(gBufferTexture).xy;
+    fragUV = vec2<f32>(fragCoordLow) / vec2<f32>(texSize);
+
     lowSize = vec2<i32>(i32(outlineSetting.lowTexWidth), i32(outlineSetting.lowTexHeight));
     let scaleValue = f32(texSize.x) / f32(lowSize.x);
     fragCoord.x = i32(f32(fragCoordLow.x) * scaleValue);
@@ -60,9 +67,9 @@ export let OutlineCalcOutline_cs: string = /*wgsl*/ `
     
     coordIndex = fragCoordLow.x + fragCoordLow.y * lowSize.x;
     fragOutline = weightBuffer[coordIndex];
-    var wPos = textureLoad(indexTexture, fragCoord, 0 ) ;
-    
-    fragOutline.entityIndex = round(wPos.w);
+
+    var gBuffer = getGBuffer( fragCoord ) ;
+    fragOutline.entityIndex = f32(getIDFromGBuffer_i32(gBuffer));
     fragOutline.slotIndex = -1.0;
     fragOutline.outerSlotIndex = -1.0;
     fragOutline.weight = 0.0;

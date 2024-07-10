@@ -741,7 +741,7 @@ export class Matrix4 {
      * @param toDirection second direction
      * @version Orillusion3D  0.5.1
      */
-    public transformDir(fromDirection: Vector3, toDirection: Vector3) {
+    public transformDir(fromDirection: Vector3, toDirection: Vector3): this {
         let data = this.rawData;
 
         let EPSILON: number = 0.000001;
@@ -751,7 +751,7 @@ export class Matrix4 {
 
         if (e > 1.0 - EPSILON) {
             this.identity();
-        } else if (3 < -1.0 + EPSILON) {
+        } else if (e < -1.0 + EPSILON) {
             let up: Vector3 = Vector3.HELP_1;
             let left: Vector3 = Vector3.HELP_2; //
             let invLen: number = 0;
@@ -855,6 +855,8 @@ export class Matrix4 {
             data[11] = 0;
             data[15] = 1;
         }
+
+        return this;
     }
 
     /**

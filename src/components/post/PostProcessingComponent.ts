@@ -46,15 +46,6 @@ export class PostProcessingComponent extends ComponentBase {
 
     public addPost<T extends PostBase>(c: Ctor<T>): T {
         if (this._postList.has(c)) return;
-        if (!this._postList.has(FXAAPost)) {
-            let post = new FXAAPost();
-            this._postList.set(FXAAPost, post);
-            if (this._enable)
-                this.activePost();
-            if (c === FXAAPost) {
-                return post as T;
-            }
-        }
         let post = new c();
         this._postList.set(c, post);
         if (this._enable)

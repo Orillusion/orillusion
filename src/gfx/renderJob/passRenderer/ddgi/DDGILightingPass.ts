@@ -65,5 +65,7 @@ export class DDGILightingPass {
         this.computeShader.workerSizeY = giSetting.probeSourceTextureSize / 8;
         this.computeShader.workerSizeZ = 1;
         GPUContext.computeCommand(command, [this.computeShader]);
+        GPUContext.endCommandEncoder(command);
+
     }
 }

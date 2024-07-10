@@ -30,7 +30,7 @@ export class VirtualTexture extends Texture {
      * @param useMipmap whether or not gen mipmap
      * @returns
      */
-    constructor(width: number, height: number, format: GPUTextureFormat = GPUTextureFormat.rgba8unorm, useMipMap: boolean = false, usage?: GPUFlagsConstant, numberLayer: number = 1, sampleCount: number = 0, clear: boolean = true) {
+    constructor(width: number, height: number, format: GPUTextureFormat = GPUTextureFormat.rgba8unorm, useMipMap: boolean = false, usage?: GPUFlagsConstant, numberLayer: number = 1, sampleCount: number = 0, mipmapCount: number = 1) {
         super(width, height, numberLayer);
         let device = webGPUContext.device;
         this.name = UUID();
@@ -39,6 +39,7 @@ export class VirtualTexture extends Texture {
         this.sampleCount = sampleCount;
         this.format = format;
         this.numberLayer = numberLayer;
+        this.mipmapCount = mipmapCount;
 
         if (usage != undefined) {
             this.usage = usage;
@@ -59,7 +60,7 @@ export class VirtualTexture extends Texture {
 
         this.width = width;
         this.height = height;
-        this.createTextureDescriptor(width, height, 1, this.format, this.usage, this.numberLayer, this.sampleCount);
+        this.createTextureDescriptor(width, height, this.mipmapCount, this.format, this.usage, this.numberLayer, this.sampleCount);
         this.useMipmap = false;
         this.visibility = GPUShaderStage.COMPUTE | GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT;
 
@@ -95,13 +96,17 @@ export class VirtualTexture extends Texture {
             if (this.sampleCount > 0) {
                 this.textureBindingLayout.multisampled = true;
             }
-            this.minFilter = 'linear';
-            this.magFilter = 'linear';
-            this.mipmapFilter = `linear`;
-            this.maxAnisotropy = 16;
+            // this.minFilter = 'linear';
+            // this.magFilter = 'linear';
 
-            this.addressModeU = GPUAddressMode.clamp_to_edge;
-            this.addressModeV = GPUAddressMode.clamp_to_edge;
+            this.minFilter = `linear`;
+            this.magFilter = 'linear';
+
+            this.mipmapFilter = `nearest`;
+            this.maxAnisotropy = 1;
+
+            this.addressModeU = GPUAddressMode.mirror_repeat;
+            this.addressModeV = GPUAddressMode.mirror_repeat;
             this.gpuSampler = device.createSampler(this);
         }
 

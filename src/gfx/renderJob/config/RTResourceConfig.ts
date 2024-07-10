@@ -1,4 +1,5 @@
 export class RTResourceConfig {
+    public static compressGBufferTex_NAME: string = 'compressGBufferTex_NAME';
     public static colorBufferTex_NAME: string = 'colorBufferTex';
     public static positionBufferTex_NAME: string = 'positionBufferTex';
     public static normalBufferTex_NAME: string = 'normalBufferTex';

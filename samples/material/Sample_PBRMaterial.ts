@@ -11,7 +11,7 @@ class Sample_PBRMaterial {
         //config settings
         Engine3D.setting.render.debug = true;
         Engine3D.setting.shadow.shadowBound = 50;
-
+        Engine3D.setting.shadow.shadowBias = 0.02;
         await Engine3D.init({ canvasConfig: { alpha: true, zIndex: 11, backgroundImage: '/logo/bg.webp' } });
 
         GUIHelp.init(999);
@@ -48,7 +48,7 @@ class Sample_PBRMaterial {
             let directLight = this.lightObj3D.addComponent(DirectLight);
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             directLight.castShadow = true;
-            directLight.intensity = 72;
+            directLight.intensity = 5;
             GUIUtil.renderDirLight(directLight);
             this.scene.addChild(this.lightObj3D);
 

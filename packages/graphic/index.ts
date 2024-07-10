@@ -1,3 +1,6 @@
+export * from "./compute/grass/GrassAnimCompute_cs"
+export * from "./compute/grass/GrassGeometryCompute_cs"
+export * from "./renderer/GrassRenderer"
 export * from "./renderer/Shape3DRenderer"
 export * from "./renderer/Shape3DMaker"
 export * from "./renderer/shape3d/RoundRectShape3D"

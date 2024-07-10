@@ -1,7 +1,7 @@
 import { Vector3 } from '../..';
 import { GPUCompareFunction, GPUCullMode } from '../../gfx/graphics/webGpu/WebGPUConst';
 import { RenderShaderPass } from '../../gfx/graphics/webGpu/shader/RenderShaderPass';
-import { PassType } from '../../gfx/renderJob/passRenderer/state/RendererType';
+import { PassType } from '../../gfx/renderJob/passRenderer/state/PassType';
 
 /**
  * @internal

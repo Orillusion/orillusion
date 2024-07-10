@@ -3,6 +3,7 @@ import { GeometryBase } from "../../core/geometry/GeometryBase";
 import { ProfilerUtil } from "../../util/ProfilerUtil";
 import { webGPUContext } from "../graphics/webGpu/Context3D";
 import { GlobalBindGroup } from "../graphics/webGpu/core/bindGroups/GlobalBindGroup";
+import { Texture } from "../graphics/webGpu/core/texture/Texture";
 import { ComputeShader } from "../graphics/webGpu/shader/ComputeShader";
 import { RenderShaderPass } from "../graphics/webGpu/shader/RenderShaderPass";
 import { RendererPassState } from "./passRenderer/state/RendererPassState";
@@ -32,7 +33,7 @@ export class GPUContext {
         if (GPUContext.lastShader != renderShader) {
             GPUContext.lastShader = renderShader;
         } else {
-            return;
+            return false;
         }
 
         if (GPUContext.lastPipeline != renderShader.pipeline) {
@@ -46,6 +47,7 @@ export class GPUContext {
                 encoder.setBindGroup(i, bindGroup);
             }
         }
+        return true;
     }
 
     /**
@@ -97,7 +99,8 @@ export class GPUContext {
      */
     public static createPipeline(gpuRenderPipeline: GPURenderPipelineDescriptor) {
         ProfilerUtil.countStart("GPUContext", "pipeline");
-        return webGPUContext.device.createRenderPipeline(gpuRenderPipeline);
+        let pipeline: GPURenderPipeline = webGPUContext.device.createRenderPipeline(gpuRenderPipeline);
+        return pipeline;
     }
 
     /**
@@ -145,11 +148,14 @@ export class GPUContext {
         this.cleanCache();
         this.renderPassCount++;
         this.lastRenderPassState = renderPassState;
+        if (renderPassState.depthTexture) {
+            let depth = renderPassState.renderPassDescriptor.depthStencilAttachment;
+            depth.view = renderPassState.depthTexture.getGPUView() as any;
+        }
         if (renderPassState.renderTargets && renderPassState.renderTargets.length > 0) {
             for (let i = 0; i < renderPassState.renderTargets.length; ++i) {
                 const renderTarget = renderPassState.renderTargets[i];
                 let att = renderPassState.renderPassDescriptor.colorAttachments[i];
-
                 if (renderPassState.multisample > 0 && renderPassState.renderTargets.length == 1) {
                     att.view = renderPassState.multiTexture.createView();
                     att.resolveTarget = renderTarget.getGPUView();
@@ -219,5 +225,25 @@ export class GPUContext {
             compute.compute(computePass);
         }
         computePass.end();
+    }
+
+    public static copyTexture(command: GPUCommandEncoder, source: Texture, dest: Texture) {
+        command.copyTextureToTexture(
+            {
+                texture: source.getGPUTexture(),
+                mipLevel: 0,
+                origin: { x: 0, y: 0, z: 0 },
+            },
+            {
+                texture: dest.getGPUTexture(),
+                mipLevel: 0,
+                origin: { x: 0, y: 0, z: 0 },
+            },
+            {
+                width: dest.width,
+                height: dest.height,
+                depthOrArrayLayers: 1,
+            },
+        );
     }
 }

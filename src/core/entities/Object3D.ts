@@ -61,7 +61,7 @@ export class Object3D extends Entity {
             ComponentCollect.appendWaitStart(instance);
             return instance;
         }
-        return null;
+        return this.components.get(c) as T;
     }
 
 

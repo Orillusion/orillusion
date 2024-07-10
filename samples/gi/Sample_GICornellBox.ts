@@ -1,5 +1,5 @@
 import { createExampleScene, createSceneParam } from "@samples/utils/ExampleScene";
-import { Object3D, Scene3D, Engine3D, GlobalIlluminationComponent, Vector3, GTAOPost, PostProcessingComponent, BloomPost } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, GlobalIlluminationComponent, Vector3, GTAOPost, PostProcessingComponent, BloomPost, View3D } from "@orillusion/core";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
@@ -31,7 +31,9 @@ class Sample_GICornellBox {
         Engine3D.setting.gi.autoRenderProbe = true;
 
         Engine3D.setting.shadow.debug = true;
-        Engine3D.setting.shadow.shadowSize = 1024;
+        Engine3D.setting.shadow.shadowBound = 80;
+        Engine3D.setting.shadow.shadowSize = 2048;
+        Engine3D.setting.shadow.shadowBias = 0.02;
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.updateFrameRate = 1;
 
@@ -50,25 +52,22 @@ class Sample_GICornellBox {
 
         let exampleScene = createExampleScene(param);
         exampleScene.hoverCtrl.setCamera(0, 0, 50, new Vector3(0, 10, 0));
-        exampleScene.camera.enableCSM = true;
+        // exampleScene.camera.enableCSM = true;
         this.scene = exampleScene.scene;
-        this.addGIProbes();
+        this.addGIProbes(this.scene.view);
         Engine3D.startRenderViews([exampleScene.view]);
 
         let postProcessing = this.scene.addComponent(PostProcessingComponent);
-        postProcessing.addPost(GTAOPost);
         postProcessing.addPost(BloomPost);
 
-        Engine3D.setting.shadow.csmScatteringExp = 0.8;
-        GUIHelp.add(Engine3D.setting.shadow, 'csmScatteringExp', 0.5, 1, 0.001);
         await this.initScene();
     }
 
     private giComponent: GlobalIlluminationComponent;
-    private addGIProbes() {
+    private addGIProbes(view: View3D) {
         let probeObj = new Object3D();
         GUIHelp.init();
-        this.giComponent = probeObj.addComponent(GlobalIlluminationComponent);
+        this.giComponent = probeObj.addComponent(GlobalIlluminationComponent, view.scene);
         this.scene.addChild(probeObj);
     }
 

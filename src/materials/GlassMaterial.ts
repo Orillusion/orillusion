@@ -4,7 +4,7 @@ import { GlassShader } from '../assets/shader/materials/GlassShader';
 import { Material } from './Material';
 import { Shader } from '../gfx/graphics/webGpu/shader/Shader';
 import { RenderShaderPass } from '../gfx/graphics/webGpu/shader/RenderShaderPass';
-import { PassType } from '../gfx/renderJob/passRenderer/state/RendererType';
+import { PassType } from '../gfx/renderJob/passRenderer/state/PassType';
 
 /**
  * GlassMaterial
@@ -48,7 +48,7 @@ export class GlassMaterial extends Material {
     //     ret.aoMap = this.aoMap;
     //     if (this.maskMap) ret.maskMap = this.maskMap;
     //     ret.emissiveMap = this.emissiveMap;
-    //     this.uvTransform_1 && (ret.uvTransform_1 = new Vector4().copyFrom(this.uvTransform_1));
+    //     this.transformUV1 && (ret.transformUV1 = new Vector4().copyFrom(this.transformUV1));
     //     this.uvTransform_2 && (ret.uvTransform_2 = new Vector4().copyFrom(this.uvTransform_2));
     //     ret.baseColor = this.baseColor.clone();
     //     ret.emissiveColor = this.emissiveColor.clone();

@@ -8,7 +8,7 @@ import { PlaneGeometry } from '../shape/PlaneGeometry';
 import { Object3D } from './entities/Object3D';
 import { RendererPassState } from '../gfx/renderJob/passRenderer/state/RendererPassState';
 import { GPUContext } from '../gfx/renderJob/GPUContext';
-import { PassType } from '../gfx/renderJob/passRenderer/state/RendererType';
+import { PassType } from '../gfx/renderJob/passRenderer/state/PassType';
 import { View3D } from './View3D';
 import { Material } from '../materials/Material';
 import { QuadShader } from '../loader/parser/prefab/mats/shader/QuadShader';

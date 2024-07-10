@@ -2,7 +2,7 @@ import {
 	View3D, DirectLight, Engine3D,
 	PostProcessingComponent, LitMaterial, HoverCameraController,
 	KelvinUtil, MeshRenderer, Object3D, PlaneGeometry, Scene3D, SphereGeometry,
-	CameraUtil, webGPUContext, BoxGeometry, AtmosphericComponent, Time, GodRayPost, BloomPost
+	CameraUtil, webGPUContext, BoxGeometry, AtmosphericComponent, GTAOPost, Color, FXAAPost, GBufferPost, GodRayPost, Time, BloomPost
 } from '@orillusion/core';
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { GUIUtil } from '@samples/utils/GUIUtil';
@@ -12,14 +12,17 @@ export class Sample_GodRay {
 	scene: Scene3D;
 
 	async run() {
-		Engine3D.setting.shadow.shadowSize = 1024;
+		Engine3D.setting.shadow.shadowSize = 2048
 		Engine3D.setting.shadow.shadowBound = 400;
+		Engine3D.setting.shadow.shadowBias = 0.1;
+		Engine3D.setting.render.debug = true;
 
 		await Engine3D.init({ renderLoop: () => { this.loop() } });
+		GUIHelp.init();
 
 		this.scene = new Scene3D();
 		let sky = this.scene.addComponent(AtmosphericComponent);
-		GUIHelp.init();
+		sky.sunY = 0.6;
 
 		let mainCamera = CameraUtil.createCamera3DObject(this.scene, 'camera');
 		mainCamera.perspective(60, webGPUContext.aspect, 1, 5000.0);
@@ -27,35 +30,34 @@ export class Sample_GodRay {
 		ctrl.setCamera(110, -10, 300);
 		await this.initScene();
 
-		sky.relativeTransform = this.lightObj.transform;
 
 		let view = new View3D();
 		view.scene = this.scene;
 		view.camera = mainCamera;
-		mainCamera.enableCSM = true;
 		Engine3D.startRenderView(view);
+
+		this.lightObj = new Object3D();
+		this.lightObj.rotationX = 15;
+		this.lightObj.rotationY = 134;
+		this.lightObj.rotationZ = 0;
+		let lc = this.lightObj.addComponent(DirectLight);
+		lc.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
+		lc.castShadow = true;
+		lc.intensity = 45;
+		lc.indirect = 0.3;
+		this.scene.addChild(this.lightObj);
+		GUIUtil.renderDirLight(lc);
+		sky.relativeTransform = this.lightObj.transform;
 
 		let postProcessing = this.scene.addComponent(PostProcessingComponent);
 		let godRay = postProcessing.addPost(GodRayPost);
-		postProcessing.addPost(BloomPost);
+		// postProcessing.addPost(BloomPost);
 
 		GUIUtil.renderAtmosphericSky(sky, false);
 		GUIUtil.renderGodRay(godRay);
 	}
-	async initScene() {
-		{
-			this.lightObj = new Object3D();
-			this.lightObj.rotationX = 15;
-			this.lightObj.rotationY = 110;
-			this.lightObj.rotationZ = 0;
-			let lc = this.lightObj.addComponent(DirectLight);
-			lc.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
-			lc.castShadow = true;
-			lc.intensity = 20;
-			this.scene.addChild(this.lightObj);
-			GUIUtil.renderDirLight(lc, false);
-		}
 
+	async initScene() {
 		{
 			let mat = new LitMaterial();
 			mat.roughness = 0.5;
@@ -69,7 +71,6 @@ export class Sample_GodRay {
 
 		this.createPlane(this.scene);
 	}
-
 	private ball: Object3D;
 	private createPlane(scene: Scene3D) {
 		let mat = new LitMaterial();
@@ -115,7 +116,4 @@ export class Sample_GodRay {
 			this.ball.localPosition = position;
 		}
 	}
-
 }
-
-// new Sample_GodRay().run();

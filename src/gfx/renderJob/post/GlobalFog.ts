@@ -1,10 +1,8 @@
 import { GlobalFog_shader } from '../../../assets/shader/post/GlobalFog_shader';
 import { ShaderLib } from '../../../assets/shader/ShaderLib';
-import { ViewQuad } from '../../../core/ViewQuad';
 import { Engine3D } from '../../../Engine3D';
 import { Color } from '../../../math/Color';
 import { VirtualTexture } from '../../../textures/VirtualTexture';
-import { UniformNode } from '../../graphics/webGpu/core/uniforms/UniformNode';
 import { GPUTextureFormat } from '../../graphics/webGpu/WebGPUConst';
 import { webGPUContext } from '../../graphics/webGpu/Context3D';
 import { PostBase } from './PostBase';
@@ -14,6 +12,14 @@ import { SkyRenderer } from '../../../components/renderer/SkyRenderer';
 import { EntityCollect } from '../collect/EntityCollect';
 import { GlobalFogSetting } from '../../../setting/post/GlobalFogSetting';
 import { Texture } from '../../graphics/webGpu/core/texture/Texture';
+import { RTDescriptor } from '../../graphics/webGpu/descriptor/RTDescriptor';
+import { RTFrame } from '../frame/RTFrame';
+import { ComputeShader } from '../../graphics/webGpu/shader/ComputeShader';
+import { UniformGPUBuffer } from '../../graphics/webGpu/core/buffer/UniformGPUBuffer';
+import { GPUContext } from '../GPUContext';
+import { RendererPassState } from '../passRenderer/state/RendererPassState';
+import { WebGPUDescriptorCreator } from '../../graphics/webGpu/descriptor/WebGPUDescriptorCreator';
+import { GlobalBindGroup } from '../../graphics/webGpu/core/bindGroups/GlobalBindGroup';
 /**
  * screen space fog
  * @group Post Effects
@@ -22,49 +28,75 @@ export class GlobalFog extends PostBase {
     /**
      * @internal
      */
-    viewQuad: ViewQuad;
-    /**
-     * @internal
-     */
-    rtTexture: VirtualTexture;
-    _globalFog: GlobalFogSetting;
+    private fogSetting: GlobalFogSetting;
+    public fogOpTexture: VirtualTexture;
+    private fogCompute: ComputeShader;
+    private fogUniform: UniformGPUBuffer;
+    private rendererPassState: RendererPassState;
 
     constructor() {
         super();
-        let globalFog = this._globalFog = Engine3D.setting.render.postProcessing.globalFog;
+        this.fogSetting = Engine3D.setting.render.postProcessing.globalFog;
+    }
 
-        let rtFrame = GBufferFrame.getGBufferFrame("ColorPassGBuffer");
-
-        let presentationSize = webGPUContext.presentationSize;
-
+    private createCompute(view: View3D) {
         ShaderLib.register("GlobalFog_shader", GlobalFog_shader);
-        let shaderUniforms = {
-            isSkyHDR: new UniformNode(0),
-        };
+        this.fogCompute = new ComputeShader(GlobalFog_shader);
 
-        this.rtTexture = this.createRTTexture(`GlobalFog`, presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float);
-        this.viewQuad = this.createViewQuad(`GlobalFog`, 'GlobalFog_shader', this.rtTexture);
-        let shader = this.viewQuad.quadShader;
+        this.fogUniform = new UniformGPUBuffer(4 * 5); //vector4 * 5
+        this.fogCompute.setUniformBuffer('fogUniform', this.fogUniform);
 
-        shader.setUniformColor("fogColor", new Color(globalFog.fogColor.r, globalFog.fogColor.g, globalFog.fogColor.b, globalFog.fogColor.a));
-        shader.setUniform("fogType", globalFog.fogType);
-        shader.setUniform("fogHeightScale", globalFog.fogHeightScale);
-        shader.setUniform("start", globalFog.start);
-        shader.setUniform("end", globalFog.end);
-        shader.setUniform("density", globalFog.density);
-        shader.setUniform("ins", globalFog.ins);
-        shader.setUniform("falloff", globalFog.falloff);
-        shader.setUniform("rayLength", globalFog.rayLength);
-        shader.setUniform("scatteringExponent", globalFog.scatteringExponent);
-        shader.setUniform("dirHeightLine", globalFog.dirHeightLine);
-        shader.setUniform("skyFactor", globalFog.skyFactor);
-        shader.setUniform("skyRoughness", globalFog.skyRoughness);
-        shader.setUniform("overrideSkyFactor", globalFog.overrideSkyFactor);
-        shader.setUniform("isSkyHDR", 0);
+        let rtFrame = GBufferFrame.getGBufferFrame(GBufferFrame.colorPass_GBuffer);
+        this.fogCompute.setSamplerTexture('gBufferTexture', rtFrame.getCompressGBufferTexture());
+        this.fogCompute.setSamplerTexture('inTex', rtFrame.getColorTexture());
+        this._lastSkyTexture = this.getSkyTexture();
+        this.fogCompute.setSamplerTexture(`prefilterMap`, this._lastSkyTexture);
+        this.fogCompute.setStorageTexture(`outTex`, this.fogOpTexture);
 
-        let ptex = rtFrame.getPositionMap();
-        let ntex = rtFrame.getNormalMap();
-        this.setInputTexture(ptex, ntex);
+        this.rendererPassState = WebGPUDescriptorCreator.createRendererPassState(this.rtFrame, null);
+        this.rendererPassState.label = "FOG";
+
+        let lightUniformEntries = GlobalBindGroup.getLightEntries(view.scene);
+        this.fogCompute.setStorageBuffer(`lightBuffer`, lightUniformEntries.storageGPUBuffer);
+    }
+
+    private uploadSetting() {
+        let fogUniform = this.fogUniform;
+        let globalFog = this.fogSetting;
+
+        fogUniform.setColor("fogColor", globalFog.fogColor);
+
+        fogUniform.setFloat("fogType", globalFog.fogType);
+        fogUniform.setFloat("fogHeightScale", globalFog.fogHeightScale);
+        fogUniform.setFloat("start", globalFog.start);
+        fogUniform.setFloat("end", globalFog.end);
+
+        fogUniform.setFloat("density", globalFog.density);
+        fogUniform.setFloat("ins", globalFog.ins);
+        fogUniform.setFloat("falloff", globalFog.falloff);
+        fogUniform.setFloat("rayLength", globalFog.rayLength);
+
+        fogUniform.setFloat("scatteringExponent", globalFog.scatteringExponent);
+        fogUniform.setFloat("dirHeightLine", globalFog.dirHeightLine);
+        fogUniform.setFloat("skyFactor", globalFog.skyFactor);
+        fogUniform.setFloat("skyRoughness", globalFog.skyRoughness);
+
+        fogUniform.setFloat("overrideSkyFactor", globalFog.overrideSkyFactor);
+        fogUniform.setFloat("isSkyHDR", 0);
+
+        fogUniform.apply();
+        this.fogCompute.setUniformBuffer('fogUniform', this.fogUniform);
+    }
+
+    rtFrame: RTFrame;
+
+    private createResource() {
+        let [w, h] = webGPUContext.presentationSize;
+        this.fogOpTexture = new VirtualTexture(w, h, GPUTextureFormat.rgba16float, false, GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC | GPUTextureUsage.TEXTURE_BINDING);
+        this.fogOpTexture.name = 'fogTex';
+        let fogDesc = new RTDescriptor();
+        fogDesc.loadOp = `load`;
+        this.rtFrame = new RTFrame([this.fogOpTexture], [fogDesc]);
     }
 
     /**
@@ -81,131 +113,107 @@ export class GlobalFog extends PostBase {
     }
 
     public set fogType(v: number) {
-        this._globalFog.fogType = v;
-        this.viewQuad.quadShader.setUniform('fogType', v);
+        this.fogSetting.fogType = v;
     }
     public get fogType() {
-        return this._globalFog.fogType;
+        return this.fogSetting.fogType;
     }
     public set fogHeightScale(v: number) {
-        this._globalFog.fogHeightScale = v;
-        this.viewQuad.quadShader.setUniform('fogHeightScale', v);
+        this.fogSetting.fogHeightScale = v;
     }
     public get fogHeightScale() {
-        return this.viewQuad.quadShader.getUniform('fogHeightScale');
+        return this.fogSetting.fogHeightScale;
     }
     public set start(v: number) {
-        this._globalFog.start = v;
-        this.viewQuad.quadShader.setUniform('start', v);
+        this.fogSetting.start = v;
     }
     public get start() {
-        return this.viewQuad.quadShader.getUniform('start');
+        return this.fogSetting.start;
     }
     public set end(v: number) {
-        this._globalFog.end = v;
-        this.viewQuad.quadShader.setUniform('end', v);
+        this.fogSetting.end = v;
     }
     public get end() {
-        return this.viewQuad.quadShader.getUniform('end');
+        return this.fogSetting.end;
     }
     public set ins(v: number) {
-        this._globalFog.ins = v;
-        this.viewQuad.quadShader.setUniform('ins', v);
+        this.fogSetting.ins = v;
     }
     public get ins() {
-        return this.viewQuad.quadShader.getUniform('ins');
+        return this.fogSetting.ins;
     }
     public set density(v: number) {
-        this._globalFog.density = v;
-        this.viewQuad.quadShader.setUniform('density', v);
+        this.fogSetting.density = v;
     }
     public get density() {
-        return this.viewQuad.quadShader.getUniform('density');
+        return this.fogSetting.density;
     }
     public set skyRoughness(v: number) {
-        this._globalFog.skyRoughness = v;
-        this.viewQuad.quadShader.setUniform('skyRoughness', v);
+        this.fogSetting.skyRoughness = v;
     }
     public get skyRoughness() {
-        return this._globalFog.skyRoughness;
+        return this.fogSetting.skyRoughness;
     }
     public set skyFactor(v: number) {
-        this._globalFog.skyFactor = v;
-        this.viewQuad.quadShader.setUniform('skyFactor', v);
+        this.fogSetting.skyFactor = v;
     }
     public get skyFactor() {
-        return this._globalFog.skyFactor;
+        return this.fogSetting.skyFactor;
     }
 
     public set overrideSkyFactor(v: number) {
-        this._globalFog.overrideSkyFactor = v;
-        this.viewQuad.quadShader.setUniform('overrideSkyFactor', v);
+        this.fogSetting.overrideSkyFactor = v;
     }
     public get overrideSkyFactor() {
-        return this._globalFog.overrideSkyFactor;
+        return this.fogSetting.overrideSkyFactor;
     }
 
     /**
      * @internal
      */
     public get fogColor(): Color {
-        return this._globalFog.fogColor;
+        return this.fogSetting.fogColor;
     }
 
     /**
      * @internal
      */
     public set fogColor(value: Color) {
-        this._globalFog.fogColor.copyFrom(value);
-        this.viewQuad.quadShader.setUniformColor('fogColor', value);
+        this.fogSetting.fogColor.copyFrom(value);
     }
 
     public set falloff(v: number) {
-        this._globalFog.falloff = v;
-        this.viewQuad.quadShader.setUniform('falloff', v);
+        this.fogSetting.falloff = v;
     }
 
     public get falloff() {
-        return this.viewQuad.quadShader.getUniform('falloff');
+        return this.fogSetting.falloff;
     }
 
     public set rayLength(v: number) {
-        this._globalFog.rayLength = v;
-        this.viewQuad.quadShader.setUniform('rayLength', v);
+        this.fogSetting.rayLength = v;
     }
 
     public get rayLength() {
-        return this._globalFog.rayLength;
+        return this.fogSetting.rayLength;
     }
 
     public set scatteringExponent(v: number) {
-        this._globalFog.scatteringExponent = v;
-        this.viewQuad.quadShader.setUniform('scatteringExponent', v);
+        this.fogSetting.scatteringExponent = v;
     }
 
     public get scatteringExponent() {
-        return this._globalFog.scatteringExponent;
+        return this.fogSetting.scatteringExponent;
     }
 
     public set dirHeightLine(v: number) {
-        this._globalFog.dirHeightLine = v;
-        this.viewQuad.quadShader.setUniform('dirHeightLine', v);
+        this.fogSetting.dirHeightLine = v;
     }
 
     public get dirHeightLine() {
-        return this._globalFog.dirHeightLine;
+        return this.fogSetting.dirHeightLine;
     }
 
-    /**
-     * @internal
-     */
-    public setInputTexture(positionMap: VirtualTexture, normalMap: VirtualTexture) {
-        const pass = this.viewQuad.quadShader;
-        pass.setTexture('positionMap', positionMap);
-        pass.setTexture('normalMap', normalMap);
-        this._lastSkyTexture = this.getSkyTexture();
-        pass.setTexture(`prefilterMap`, this._lastSkyTexture);
-    }
 
     private _lastSkyTexture: Texture;
     private getSkyTexture(): Texture {
@@ -220,15 +228,35 @@ export class GlobalFog extends PostBase {
      * @internal
      */
     render(view: View3D, command: GPUCommandEncoder) {
-        const pass = this.viewQuad.quadShader;
+        if (!this.fogCompute) {
+            this.createResource();
+            this.createCompute(view);
+            this.onResize();
+
+
+            let globalUniform = GlobalBindGroup.getCameraGroup(view.camera);
+            this.fogCompute.setUniformBuffer('globalUniform', globalUniform.uniformGPUBuffer);
+        }
+
         let skyTexture = this.getSkyTexture();
         if (skyTexture != this._lastSkyTexture) {
             this._lastSkyTexture = skyTexture;
-            pass.setTexture(`prefilterMap`, this._lastSkyTexture);
+            this.fogCompute.setSamplerTexture(`prefilterMap`, this._lastSkyTexture);
         }
-        pass.setTexture('colorMap', this.getOutTexture());
-        pass.setUniformFloat('isSkyHDR', skyTexture.isHDRTexture ? 1 : 0);
-        this.viewQuad.renderTarget(view, this.viewQuad, command);
+        this.fogCompute.setUniformFloat('isSkyHDR', skyTexture.isHDRTexture ? 1 : 0);
+
+        this.uploadSetting();
+        GPUContext.computeCommand(command, [this.fogCompute]);
+        GPUContext.lastRenderPassState = this.rendererPassState;
+
+    }
+
+    public onResize() {
+        let [w, h] = webGPUContext.presentationSize;
+        this.fogOpTexture.resize(w, h);
+        this.fogCompute.workerSizeX = Math.ceil(this.fogOpTexture.width / 8);
+        this.fogCompute.workerSizeY = Math.ceil(this.fogOpTexture.height / 8);
+        this.fogCompute.workerSizeZ = 1;
     }
 
 }

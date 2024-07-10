@@ -11,6 +11,8 @@ export enum RendererMask {
     MorphTarget = 1 << 5,
     Terrain = 1 << 6,
     UI = 1 << 7,
+    Reflection = 1 << 8,
+    ReflectionDebug = 1 << 9,
 }
 
 /**

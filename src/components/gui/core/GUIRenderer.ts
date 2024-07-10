@@ -3,7 +3,7 @@ import { View3D } from "../../../core/View3D";
 import { ClusterLightingBuffer } from "../../../gfx/renderJob/passRenderer/cluster/ClusterLightingBuffer";
 import { RendererMask } from "../../../gfx/renderJob/passRenderer/state/RendererMask";
 import { RendererPassState } from "../../../gfx/renderJob/passRenderer/state/RendererPassState";
-import { PassType } from "../../../gfx/renderJob/passRenderer/state/RendererType";
+import { PassType } from "../../../gfx/renderJob/passRenderer/state/PassType";
 import { MeshRenderer } from "../../renderer/MeshRenderer";
 import { GUIGeometry } from "./GUIGeometry";
 

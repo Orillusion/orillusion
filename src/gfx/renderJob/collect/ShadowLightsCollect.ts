@@ -4,6 +4,7 @@ import { Scene3D } from '../../../core/Scene3D';
 import { View3D } from '../../../core/View3D';
 import { CameraUtil } from '../../../util/CameraUtil';
 import { GlobalBindGroup } from '../../graphics/webGpu/core/bindGroups/GlobalBindGroup';
+import { GlobalUniformGroup } from '../../graphics/webGpu/core/bindGroups/GlobalUniformGroup';
 /**
  * @internal
  * @group Lights
@@ -20,7 +21,7 @@ export class ShadowLightsCollect {
     public static init() {
         this.directionLightList = new Map<Scene3D, ILight[]>();
         this.pointLightList = new Map<Scene3D, ILight[]>();
-        this.shadowLights = new Map<Scene3D, Float32Array>;
+        this.shadowLights = new Map<Scene3D, Float32Array>();
     }
 
     public static createBuffer(view: View3D) {
@@ -158,7 +159,7 @@ export class ShadowLightsCollect {
 
 
     public static update(view: View3D) {
-        let globalUniform = GlobalBindGroup.getCameraGroup(view.camera);
+
         let shadowLights = this.shadowLights.get(view.scene);
         let directionLightList = ShadowLightsCollect.directionLightList.get(view.scene);
         let pointLightList = ShadowLightsCollect.pointLightList.get(view.scene);
@@ -177,8 +178,6 @@ export class ShadowLightsCollect {
             }
             nDirShadowEnd = directionLightList.length;
         }
-        globalUniform.dirShadowStart = nDirShadowStart;
-        globalUniform.dirShadowEnd = nDirShadowEnd;
 
         if (pointLightList) {
             nPointShadowStart = nDirShadowEnd;
@@ -191,8 +190,13 @@ export class ShadowLightsCollect {
             nPointShadowEnd = nPointShadowStart + pointLightList.length;
         }
 
-        globalUniform.pointShadowStart = nPointShadowStart;
-        globalUniform.pointShadowEnd = nPointShadowEnd;
-        globalUniform.shadowLights = shadowLights;
+        let cameraGroup = GlobalBindGroup.getAllCameraGroup();
+        cameraGroup.forEach((group: GlobalUniformGroup) => {
+            group.dirShadowStart = nDirShadowStart;
+            group.dirShadowEnd = nDirShadowEnd;
+            group.pointShadowStart = nPointShadowStart;
+            group.pointShadowEnd = nPointShadowEnd;
+            group.shadowLights = shadowLights;
+        });
     }
 }

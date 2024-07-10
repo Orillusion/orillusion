@@ -110,11 +110,12 @@ export class Quaternion {
      * @param z The Z component of a quaternion.
      * @param w The W component of a quaternion.
      */
-    public set(x: number = 0, y: number = 0, z: number = 0, w: number = 1) {
+    public set(x: number = 0, y: number = 0, z: number = 0, w: number = 1): Quaternion {
         this.x = x;
         this.y = y;
         this.z = z;
         this.w = w;
+        return this;
     }
 
     public divide(v): Quaternion {

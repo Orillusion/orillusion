@@ -1,6 +1,6 @@
 import { RenderNode } from '../../components/renderer/RenderNode';
 import { RendererMaskUtil, RendererMask } from '../renderJob/passRenderer/state/RendererMask';
-import { PassType } from '../renderJob/passRenderer/state/RendererType';
+import { PassType } from '../renderJob/passRenderer/state/PassType';
 import { GLTFType } from '../../loader/parser/gltf/GLTFType';
 import { Shader } from '../graphics/webGpu/shader/Shader';
 import { SkyGBufferPass } from '../../materials/multiPass/SkyGBufferPass';
@@ -9,12 +9,14 @@ import { VertexAttributeName } from '../../core/geometry/VertexAttributeName';
 import { CastShadowMaterialPass } from '../../materials/multiPass/CastShadowMaterialPass';
 import { CastPointShadowMaterialPass } from '../../materials/multiPass/CastPointShadowMaterialPass';
 import { DepthMaterialPass } from '../../materials/multiPass/DepthMaterialPass';
+import { RenderShaderPass } from '../..';
 
 /**
  * @internal
  * @group GFX
  */
 export class PassGenerate {
+
     public static createGIPass(renderNode: RenderNode, shader: Shader) {
         if (RendererMaskUtil.hasMask(renderNode.rendererMask, RendererMask.Sky)) {
             let pass0 = shader.passShader.get(PassType.GI);
@@ -157,6 +159,46 @@ export class PassGenerate {
                     depthPass.preCompile(renderNode.geometry);
                     shader.addRenderPass(depthPass);
                 }
+            }
+        }
+    }
+
+    static createReflectionPass(renderNode: RenderNode, shader: Shader) {
+        let colorPassList = shader.getDefaultShaders();
+        for (let jj = 0; jj < colorPassList.length; jj++) {
+            const colorPass = colorPassList[jj];
+
+            let colorSubPassList = shader.getSubShaders(PassType.REFLECTION);
+            if (!colorSubPassList || colorSubPassList.length == 0 || colorSubPassList.length < jj) {
+                let pass = new RenderShaderPass(colorPass.vsName, colorPass.fsName);
+                pass.vsEntryPoint = colorPass.vsEntryPoint;
+                pass.fsEntryPoint = colorPass.fsEntryPoint;
+                pass.passType = PassType.REFLECTION;
+
+                for (const state in colorPass.shaderState) {
+                    var v = colorPass.shaderState[state];
+                    pass.shaderState[state] = v;
+                }
+
+                for (const textureName in colorPass.textures) {
+                    var texture = colorPass.getTexture(textureName);
+                    pass.setTexture(textureName, texture);
+                }
+
+                for (const uniformName in colorPass.uniforms) {
+                    var value = colorPass.getUniform(uniformName);
+                    pass.setUniform(uniformName, value);
+                }
+
+                for (const defineName in colorPass.defineValue) {
+                    var value = colorPass.defineValue[defineName];
+                    pass.setDefine(defineName, value);
+                }
+
+                pass.setDefine("USE_CASTREFLECTION", true);
+
+                pass.preCompile(renderNode.geometry);
+                shader.addRenderPass(pass);
             }
         }
     }

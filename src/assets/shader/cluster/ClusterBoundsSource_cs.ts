@@ -34,15 +34,15 @@ export let ClusterBoundsSource_cs: string = /* wgsl */`
             return v ;
         }
 
-        fn gridToIndex(i:vec3<u32>) -> u32{
-            return i.z * u32(clusterTileX) * u32(clusterTileY) + i.y * u32(clusterTileX) + i.x ;
-        }
-
         fn ScreenToView(screen : vec4<f32>) -> vec4<f32> {
             let texCoord = screen.xy / vec2<f32>(clustersUniform.screenWidth, clustersUniform.screenHeight);
             let clip = vec4<f32>(vec2<f32>(texCoord.x, 1.0 - texCoord.y) * 2.0 - vec2<f32>(1.0, 1.0), screen.z, screen.w);
             return convertNDCToView(clip);
-          }
+        }
+
+        fn gridToIndex(i:vec3<u32>) -> u32{
+            return i.z * u32(clusterTileX) * u32(clusterTileY) + i.y * u32(clusterTileX) + i.x ;
+        }
 
         fn LineIntersectionToZPlane( eye:vec3<f32> , ndcPoint :vec3<f32> , z:f32) -> vec3<f32>
         {

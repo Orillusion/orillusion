@@ -45,7 +45,7 @@ class Sample_PBR {
             let directLight = this.lightObj3D.addComponent(DirectLight);
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             directLight.castShadow = false;
-            directLight.intensity = 10;
+            directLight.intensity = 3;
             GUIUtil.renderDirLight(directLight);
             this.scene.addChild(this.lightObj3D);
         }

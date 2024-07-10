@@ -45,7 +45,7 @@ class Sample_BlendMode2 {
             let directLight = lightObj.addComponent(DirectLight);
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             directLight.castShadow = true;
-            directLight.intensity = 6;
+            directLight.intensity = 2;
             directLight.debug();
             this.scene.addChild(lightObj);
         }
@@ -55,20 +55,19 @@ class Sample_BlendMode2 {
             let plane = new Object3D();
             let renderer = plane.addComponent(MeshRenderer);
             let material = new UnLitMaterial();
-            material.baseMap = await Engine3D.res.loadTexture("particle/T_Fx_Object_229.png");;
+            material.baseMap = await Engine3D.res.loadTexture("particle/T_Fx_Object_229.png");
+            material.blendMode = BlendMode.NORMAL;
             renderer.material = material;
             renderer.geometry = new PlaneGeometry(100, 100, 1, 1);
-            material.blendMode = BlendMode.NORMAL;
             this.scene.addChild(plane);
 
             GUIHelp.init();
 
             // blend mode
-            let blendMode = {
-                NONE: BlendMode.NONE,
-                NORMAL: BlendMode.NORMAL,
-                ADD: BlendMode.ADD,
-                ALPHA: BlendMode.ALPHA,
+            let blendMode = {}
+            for(let i in BlendMode){
+                if(!i.match(/\d/))
+                    blendMode[i] = BlendMode[i];
             }
             // change blend mode by click dropdown box
             GUIHelp.add({ blendMode: material.blendMode }, 'blendMode', blendMode).onChange((v) => {

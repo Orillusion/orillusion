@@ -1,18 +1,25 @@
 import { DirectLight, Engine3D, View3D, LitMaterial, HoverCameraController, KelvinUtil, MeshRenderer, Object3D, PlaneGeometry, Scene3D, SphereGeometry, PostProcessingComponent, CameraUtil, webGPUContext, OutlinePost, outlinePostManager, AtmosphericComponent, Color, FXAAPost } from '@orillusion/core'
+import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import * as dat from '@orillusion/debug/dat.gui.module'
+import { GUIUtil } from '@samples/utils/GUIUtil';
 
-class Sample_Outline {
+export class Sample_Outline {
     lightObj: Object3D
     scene: Scene3D
 
     constructor() { }
 
     async run() {
-        Engine3D.setting.shadow.enable = false
+        Engine3D.setting.shadow.enable = true;
+        Engine3D.setting.shadow.shadowSize = 2048
+        Engine3D.setting.shadow.shadowBound = 50;
+        Engine3D.setting.shadow.shadowBias = 0.05;
+
         await Engine3D.init({
             canvasConfig: {
                 devicePixelRatio: 1
-            }
+            },
+            renderLoop: () => this.loop()
         })
 
         this.scene = new Scene3D()
@@ -21,8 +28,7 @@ class Sample_Outline {
         let mainCamera = CameraUtil.createCamera3DObject(this.scene, 'camera')
         mainCamera.perspective(60, webGPUContext.aspect, 1, 2000.0)
         let ctrl = mainCamera.object3D.addComponent(HoverCameraController)
-        ctrl.setCamera(180, -45, 15)
-
+        ctrl.setCamera(-75, -30, 20)
         await this.initScene(this.scene)
 
         let view = new View3D()
@@ -31,7 +37,7 @@ class Sample_Outline {
         Engine3D.startRenderView(view)
 
         let postProcessing = this.scene.addComponent(PostProcessingComponent)
-        // let outlinePost = postProcessing.addPost(FXAAPost)
+        postProcessing.addPost(FXAAPost)
         let outlinePost = postProcessing.addPost(OutlinePost)
 
         const GUIHelp = new dat.GUI()
@@ -57,16 +63,15 @@ class Sample_Outline {
         /******** light *******/
         {
             this.lightObj = new Object3D()
-            this.lightObj.x = 0
-            this.lightObj.y = 30
-            this.lightObj.z = -40
-            this.lightObj.rotationX = 45
-            this.lightObj.rotationY = 0
-            this.lightObj.rotationZ = 45
+            this.lightObj.rotationX = 15
+            this.lightObj.rotationY = 110
+            this.lightObj.rotationZ = 0
             let lc = this.lightObj.addComponent(DirectLight)
             lc.lightColor = KelvinUtil.color_temperature_to_rgb(5355)
-            lc.intensity = 10
+            lc.castShadow = true
+            lc.intensity = 5
             scene.addChild(this.lightObj)
+            GUIUtil.renderDirLight(lc);
         }
         this.createPlane(scene)
 
@@ -114,6 +119,9 @@ class Sample_Outline {
             this.sphereList.push(obj)
         }
     }
+
+    loop() {
+    }
 }
 
-new Sample_Outline().run()
+// new Sample_Outline().run()
