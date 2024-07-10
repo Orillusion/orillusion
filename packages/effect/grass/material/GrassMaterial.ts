@@ -42,7 +42,7 @@ export class GrassMaterial extends Material {
         colorPass.setUniformVector4("windBound", new Vector4(0, 0, 2000, 2000));
         colorPass.setUniformVector2("windDirection", new Vector2(0.6, 0.8));
         colorPass.setUniformFloat("windPower", 0.8);
-        colorPass.setUniformFloat("windSpeed", 12);
+        colorPass.setUniformFloat("windSpeed", 1.2);
         colorPass.setUniformFloat("translucent", 0.35);
         colorPass.setUniformFloat("roughness", 0.35);
         colorPass.setUniformFloat("curvature", 0.4068);
@@ -57,7 +57,7 @@ export class GrassMaterial extends Material {
         shadowPass.setUniformVector4("windBound", new Vector4(0, 0, 2000, 2000));
         shadowPass.setUniformVector2("windDirection", new Vector2(0.6, 0.8));
         shadowPass.setUniformFloat("windPower", 0.8);
-        shadowPass.setUniformFloat("windSpeed", 10);
+        shadowPass.setUniformFloat("windSpeed", 1.0);
         shadowPass.setUniformFloat("translucent", 0.35);
         shadowPass.setUniformFloat("roughness", 0.35);
         shadowPass.setUniformFloat("curvature", 0.4068);
