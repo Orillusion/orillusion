@@ -195,6 +195,7 @@ export class GlobalUniformGroup {
         this.uniformGPUBuffer.setVector3(`CameraPos`, camera.transform.worldPosition);
 
         this.uniformGPUBuffer.setFloat(`frame`, Time.frame);
+        this.uniformGPUBuffer.setFloat32Array(`SH`, camera.sh);
         this.uniformGPUBuffer.setFloat(`time`, Time.time);
         this.uniformGPUBuffer.setFloat(`delta`, Time.delta);
         this.uniformGPUBuffer.setFloat(`shadowBias`, Engine3D.setting.shadow.shadowBias);
