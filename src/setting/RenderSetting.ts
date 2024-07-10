@@ -25,6 +25,7 @@ export type RenderSetting = {
     drawTrMax: number;
     zPrePass: boolean;
     useLogDepth: boolean;
+    useCompressGBuffer: boolean;
     gi: boolean;
     /**
      * post effect
@@ -42,6 +43,7 @@ export type RenderSetting = {
         ssr?: SSRSetting;
         taa?: TAASetting;
         gtao?: GTAOSetting;
+        ssgi?: GTAOSetting;
         outline?: OutlineSetting;
         globalFog?: GlobalFogSetting;
         godRay?: GodRaySetting;

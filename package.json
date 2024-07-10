@@ -1,6 +1,6 @@
 {
     "name": "@orillusion/core",
-    "version": "0.7.2",
+    "version": "0.8.0",
     "author": "Orillusion",
     "description": "Orillusion WebGPU Engine",
     "type": "module",
@@ -50,11 +50,11 @@
         "@webgpu/types": "^0.1.40",
         "conventional-changelog-cli": "^2.2.2",
         "earcut": "^2.2.4",
-        "electron": "^28.2.0",
+        "electron": "^31.1.0",
         "typedoc": "^0.25.7",
         "typedoc-plugin-markdown": "^3.17.1",
         "typescript": "^5.3.3",
-        "vite": "^5.0.12",
+        "vite": "^5.3.1",
         "xvfb-maybe": "^0.2.1"
     }
 }

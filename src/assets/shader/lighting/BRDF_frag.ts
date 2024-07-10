@@ -3,6 +3,7 @@ export let BRDF_frag: string = /*wgsl*/ `
     #include "EnvMap_frag"
     #include "BrdfLut_frag"
     #include "ColorUtil_frag"
+    #include "SHCommon_frag"
     
     struct FragData {
         Ao: f32,
@@ -32,6 +33,8 @@ export let BRDF_frag: string = /*wgsl*/ `
         FaceDirection:f32,
 
         ClearcoatRoughness:f32,
+        ClearcoatFactor:f32,
+        ClearcoatIor:f32,
         EnvColor: vec3<f32>,
         Irradiance: vec3<f32>,
 
@@ -81,6 +84,8 @@ export let BRDF_frag: string = /*wgsl*/ `
         return (2.0 * NoL * roughness) + 0.4;
     }
 
+  
+
     fn KDisneyTerm( NoL:f32, NoV:f32 , roughness:f32) -> f32
     {
         return (1.0 + Fd90(NoL, roughness) * pow(1.0 - NoL, 5.0)) * (1.0 + Fd90(NoV, roughness) * pow(1.0 - NoV, 5.0));
@@ -128,6 +133,14 @@ export let BRDF_frag: string = /*wgsl*/ `
         var Vis_SmithV = NoL * sqrt(NoV * (NoV - NoV * a2) + a2);
         var Vis_SmithL = NoV * sqrt(NoL * (NoL - NoL * a2) + a2);
         return 0.5 * rcp(Vis_SmithV + Vis_SmithL);
+    }
+
+    fn Vis_SmithJointApprox( NoV : f32 ,  NoL : f32 ,  a2 : f32 ) -> f32
+    {
+        let a = sqrt(a2);
+        let Vis_SmithV = NoL * ( NoV * ( 1.0 - a ) + a );
+        let Vis_SmithL = NoV * ( NoL * ( 1.0 - a ) + a );
+        return 0.5 * rcp( Vis_SmithV + Vis_SmithL );
     }
 
     fn GeometrySchlickGGX( NdotV : f32 , roughness : f32 ) -> f32
@@ -215,13 +228,65 @@ export let BRDF_frag: string = /*wgsl*/ `
         return rcp( Vis_SmithV * Vis_SmithL );
     }
 
+    fn F_Function( HdotL:f32, F0:vec3f ) -> vec3f
+  {
+      var fresnel = exp2((-5.55473 * HdotL - 6.98316) * HdotL);
+      return mix(vec3f(fresnel),vec3f(1.0),F0);
+  }
+
+  fn D_Function( NdotH:f32, roughness:f32) ->f32
+  {
+      var a      = roughness*roughness;
+      var a2     = a*a;
+      var NdotH2 = NdotH*NdotH;
+      var nom   = a2;
+      var denom = (NdotH2 * (a2 - 1.0) + 1.0);
+      denom = PI * denom * denom;
+      return nom / denom;
+  }
+
+  //G项 几何函数
+  fn G_SubFunction( NdotW : f32,  K : f32)->f32
+  {
+      return NdotW / mix(NdotW,1.0,K);
+  }
+
+  fn G_Function( NdotL: f32, NdotV: f32, roughness: f32)->f32
+  {
+      var K = (1.0+roughness) * (1.0+roughness) / 8.0;
+      return G_SubFunction(NdotL,K) * G_SubFunction(NdotV,K);
+  }
+  
+  fn DGF_Function( NdotH:f32, NdotL:f32,NdotV:f32, HdotL:f32, roughness:f32, shadow:f32, F0:vec3f , lightColor:vec3f )-> vec3f
+  {
+      var  D = D_Function(NdotH,roughness);
+      var  G = G_Function(NdotL,NdotV,roughness);
+      var F = F_Function(HdotL,F0);
+      // var light_BRDF = saturate(( D * G * F ) / (4 * NdotL * NdotV + 0.001));
+      let light_BRDF = ( D * G * F ) / (4.0 * NdotV * NdotL + 0.001);
+      return light_BRDF * lightColor * NdotL * PI * shadow;
+  }
+
+  fn LightDiffuse_Function( HdotL:f32, NdotL:f32 ,  baseColor:vec3f,  metallic:f32,  shadow:f32, F0:vec3f, lightColor:vec3f) -> vec3f
+  {
+      var KS = F_Function(HdotL,F0);
+      var KD = (1 - KS) * (1 - metallic);
+      return KD * baseColor * lightColor.rgb * NdotL * shadow; 
+  }
+
+  fn lightContribution( NdotH:f32, NdotL:f32, NdotV:f32, HdotL:f32, roughness:f32, baseColor:vec3f, metallic:f32, shadow:f32, F0:vec3f, lightColor:vec3f ) ->vec3f
+  {
+      return LightDiffuse_Function(HdotL,NdotL,baseColor,metallic,shadow,F0,lightColor) + DGF_Function(NdotH,NdotL,NdotV,HdotL,roughness,shadow,F0,lightColor);
+  }
+
     fn simpleBRDF( albedo:vec3<f32>, N:vec3<f32>, V:vec3<f32>,L:vec3<f32>,att:f32,lightColor:vec3<f32>,roughness:f32 ,metallic:f32)-> vec3<f32>{
         let H = normalize(V + L);
         let Context:BxDFContext = getContext(N,V,H,L);
-        let alpha = roughness ;//pow(roughness,5.0) ;
-        let F0 = mix(vec3<f32>(materialUniform.materialF0.rgb), albedo , metallic);
-        let D = DistributionGGX( Context.NoH , alpha);
-        let G = GeometrySmith(Context.NoV,Context.NoL, alpha );
+        let alpha = roughness * roughness;
+        let a2 = alpha * alpha;
+        let F0 = mix(vec3<f32>(materialUniform.materialF0.rgb), albedo.rgb , metallic);
+        let D = D_GGX( Context.NoH , a2);
+        let G = Vis_SmithJointApprox(Context.NoV,Context.NoL, a2 );
         let F = FresnelSchlick(Context.VoH, vec3<f32>(F0));
         let specular = ( D * G * F ) / (4.0 * Context.NoV * Context.NoL + 0.001);
         
@@ -241,7 +306,7 @@ export let BRDF_frag: string = /*wgsl*/ `
         // diffuseColor = vec3f(0.0) ; 
         var specularColor = specular * lightAtt; 
         var col = (diffuseColor + specularColor ) ;
-        return (col.rgb) ;
+        return vec3f(col) ;
     }
 
     fn getSpecularDominantDir (  N : vec3<f32> , R : vec3<f32> , roughness : f32 ) -> vec3<f32>
@@ -255,12 +320,11 @@ export let BRDF_frag: string = /*wgsl*/ `
     fn approximateSpecularIBL( specularColor:vec3<f32> , roughness:f32 , R:vec3<f32> , NoV:f32 ) -> vec3<f32> {
        
         let MAX_REFLECTION_LOD  = i32(textureNumLevels(prefilterMap)) ;
-        let mip = roughnessToMipmapLevel(roughness,MAX_REFLECTION_LOD);
+        let mip = roughnessToMipmapLevel(roughness,MAX_REFLECTION_LOD) * f32(MAX_REFLECTION_LOD);
         fragData.EnvColor = (textureSampleLevel(prefilterMap, prefilterMapSampler, getSpecularDominantDir(fragData.N,R,roughness) , mip ).rgb);
-        // var prefilteredColor: vec3<f32> = (textureSampleLevel(prefilterMap, prefilterMapSampler, getSpecularDominantDir(fragData.N,R,roughness) , mip ).rgb);
         fragData.EnvColor = globalUniform.skyExposure * (fragData.EnvColor);
         var envBRDF = textureSampleLevel(brdflutMap, brdflutMapSampler, vec2<f32>(NoV, roughness) , 0.0 ) ;
-        return fragData.EnvColor * (specularColor.rgb * envBRDF.x + saturate( 50.0 * specularColor.g ) * envBRDF.y) ;
+        return (specularColor.rgb * envBRDF.x + envBRDF.y) ;
     }
 
     fn fresnel_coat(n:vec3<f32>,v:vec3<f32>,ior:f32) -> f32 {
@@ -334,7 +398,7 @@ export let BRDF_frag: string = /*wgsl*/ `
         var clearcoatAlpha = factor * factor + fragData.ClearcoatRoughness;
 
         // var lightColor = getHDRColor( lightCC.rgb , light.linear )  ;
-        var att = light.intensity / LUMEN ;
+        var att = light.intensity ;
         let l = light.direction ;
    
         let NdotV = max(dot(n,v),0.0);
@@ -362,16 +426,86 @@ export let BRDF_frag: string = /*wgsl*/ `
         return GF;
     }
 
+    fn EnvBRDF_FD90( F0: vec3f , F90: vec3f ,  Roughness: f32,  NoV: f32)-> vec3f
+    {
+        // Importance sampled preintegrated G * F
+        var AB = textureSampleLevel(brdflutMap, brdflutMapSampler, vec2f(NoV, Roughness), 0.0).rg;
+        var GF = F0 * AB.x + F90 * AB.y;
+        return GF;
+    }
+
     fn IBLEnv( V:vec3f , N:vec3f , Roughness : f32) -> vec3f 
     {
-        let NdotV = max(dot(N,V),0.0);
         let MAX_REFLECTION_LOD  = i32(textureNumLevels(prefilterMap));
-
         let mip = roughnessToMipmapLevel(Roughness,MAX_REFLECTION_LOD);
-
         let R = 2.0 * dot( V , N ) * N - V ;
         var envIBL: vec3<f32> = textureSampleLevel(prefilterMap, prefilterMapSampler, R , mip ).rgb ;
         return envIBL;
     }
+
+    fn IBLEnv2( R:vec3f , Roughness : f32) -> vec3f 
+    {
+        let MAX_REFLECTION_LOD  = i32(textureNumLevels(reflectionMap));
+        let mip = roughnessToMipmapLevel(Roughness,MAX_REFLECTION_LOD);
+        var envIBL: vec3<f32> ;
+        // envIBL = textureSampleLevel(envMap, envMapSampler, R , mip * 12.0 ).rgb ;
+        envIBL = getReflectionsEnv(R,ORI_VertexVarying.vWorldPos.xyz, mip).rgb ;
+        envIBL = gammaToLiner(envIBL);
+        return envIBL;
+    }
+
+
+    fn F_indirect_Function( NdotV:f32, roughness:f32, F0:vec3f) -> vec3f
+    {
+        var fresnel = exp2((-5.55473 * NdotV - 6.98316) * NdotV);
+        return F0 + fresnel * saturate(1.0 - roughness - F0);
+    }
+
+
+     fn indirectionDiffuse_Function( NdotV:f32, normalDir:vec3f, metallic:f32, baseColor:vec3f, roughness:f32, occlusion:f32, F0:vec3f)-> vec3f 
+     {
+        //  var SHColor = SH9(normalDir,globalUniform.SH).rgb * globalUniform.skyExposure ;
+         var SHColor = fragData.Irradiance.rgb ;
+         
+         var KS = F_indirect_Function(NdotV,roughness,F0);
+         var KD = (1.0 - KS) * (1.0 - metallic); 
+         return SHColor * KD * baseColor * occlusion;
+        //  return SHColor ;
+     }
+ 
+     fn indirectionSpec_Function( reflectDir:vec3f, roughness:f32, NdotV:f32,occlusion:f32, F0:vec3f )-> vec3f 
+     {
+         var mipRoughness = roughness * (1.7 - 0.7 * roughness) ;
+         var env : vec3f ;
+         #if USE_CASTREFLECTION
+            env = textureSampleLevel(envMap, envMapSampler, reflectDir , mipRoughness * 12.0 ).rgb ;
+         #else
+            useSphereReflection();
+            env = getReflectionsEnv(reflectDir,ORI_VertexVarying.vWorldPos.xyz, mipRoughness).rgb ;
+        #endif
+
+        //  env *= 0.45 ;
+         var indirectionCube: vec3<f32> = globalUniform.skyExposure * env ;
+         var F_IndirectionLight = F_indirect_Function(NdotV,roughness,F0);
+
+         var AB = LUT_Approx(roughness,NdotV);
+        //  var AB = textureSampleLevel(brdflutMap, brdflutMapSampler, vec2f(NdotV, roughness), 0.0).rg;
+         var indirectionSpecFactor = indirectionCube.rgb * (F_IndirectionLight * AB.r + AB.g) ;
+         return indirectionSpecFactor * occlusion;
+     }
+
+     const  c0 = vec4f(-1, -0.0275, -0.572, 0.022 );
+     const  c1 = vec4f(1, 0.0425, 1.04, -0.04 );
+     fn LUT_Approx( roughness:f32,  NoV:f32 )->vec2f
+     {
+         // [ Lazarov 2013, "Getting More Physical in Call of Duty: Black Ops II" ]
+         // Adaptation to fit our G term.
+         var r = roughness * c0 + c1;
+         var a004 = min( r.x * r.x, exp2( -9.28 * NoV ) ) * r.x + r.y;
+         var AB = vec2f( -1.04, 1.04 ) * a004 + r.zw;
+         return saturate(AB);
+     }
+
 `
+
 

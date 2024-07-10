@@ -19,14 +19,17 @@ import { Time } from '../../../../util/Time';
 import { RTDescriptor } from '../../../graphics/webGpu/descriptor/RTDescriptor';
 import { WebGPUDescriptorCreator } from '../../../graphics/webGpu/descriptor/WebGPUDescriptorCreator';
 import { RendererPassState } from '../state/RendererPassState';
-import { PassType } from '../state/RendererType';
+import { PassType } from '../state/PassType';
 import { ILight } from '../../../../components/lights/ILight';
 import { Reference } from '../../../../util/Reference';
+import { GlobalBindGroup } from '../../../graphics/webGpu/core/bindGroups/GlobalBindGroup';
+import { RenderContext } from '../RenderContext';
+import { ClusterLightingBuffer } from '../cluster/ClusterLightingBuffer';
 
 type CubeShadowMapInfo = {
     cubeCamera: CubeCamera,
     depthTexture: VirtualTexture[],
-    rendererPassState: RendererPassState[]
+    renderContext: RenderContext[]
 }
 
 /**
@@ -61,26 +64,26 @@ export class PointLightShadowRenderer extends RendererBase {
             let camera = new PointShadowCubeCamera(view.camera.near, view.camera.far, 90, true);
             camera.label = lightBase.name;
             let depths: VirtualTexture[] = [];
-            let rendererPassStates: RendererPassState[] = [];
+            let renderContext: RenderContext[] = [];
             for (let i = 0; i < 6; i++) {
 
                 let depthTexture = new VirtualTexture(this.shadowSize, this.shadowSize, this.cubeArrayTexture.format, false);
                 let rtFrame = new RTFrame([this.colorTexture], [new RTDescriptor()]);
                 depthTexture.name = `shadowDepthTexture_` + lightBase.name + i + "_face";
+                depths[i] = depthTexture;
+
                 rtFrame.depthTexture = depthTexture;
                 rtFrame.label = "shadowRender"
                 rtFrame.customSize = true;
 
-                let rendererPassState = WebGPUDescriptorCreator.createRendererPassState(rtFrame);
-                rendererPassStates[i] = rendererPassState;
-                depths[i] = depthTexture;
+                renderContext[i] = this.getRenderContext(rtFrame);
 
-                Engine3D.getRenderJob(view).postRenderer?.setDebugTexture([depthTexture]);
+                // Engine3D.getRenderJob(view).postRenderer?.setDebugTexture([depthTexture]);
             }
             cubeShadowMapInfo = {
-                cubeCamera: camera,
+                cubeCamera: camera as any as CubeCamera,
                 depthTexture: depths,
-                rendererPassState: rendererPassStates,
+                renderContext: renderContext,
             }
             this._shadowCameraDic.set(lightBase, cubeShadowMapInfo);
         }
@@ -96,6 +99,7 @@ export class PointLightShadowRenderer extends RendererBase {
 
         let camera = view.camera;
         let scene = view.scene;
+
         // return ;
         // if (!Engine3D.engineSetting.Shadow.needUpdate) return;
         // if (!(Time.frame % Engine3D.engineSetting.Shadow.updateFrameRate == 0)) return;
@@ -110,6 +114,7 @@ export class PointLightShadowRenderer extends RendererBase {
             let light = shadowLight[si];
             if (light.lightData.lightType == LightType.DirectionLight)
                 continue;
+            // if (light.lightData.castShadowIndex > -1 && (light.needUpdateShadow || this._forceUpdate || Time.frame < 5)) {
             if (light.lightData.castShadowIndex > -1 && (light.needUpdateShadow || this._forceUpdate || Time.frame < 5 || light.realTimeShadow)) {
                 light.needUpdateShadow = false;
 
@@ -176,75 +181,130 @@ export class PointLightShadowRenderer extends RendererBase {
 
 
     private renderSceneOnce(face: number, cubeShadowMapInfo: CubeShadowMapInfo, view: View3D, shadowCamera: Camera3D, collectInfo: CollectInfo, occlusionSystem: OcclusionSystem) {
-        this.rendererPassState = cubeShadowMapInfo.rendererPassState[face];
-        let command = GPUContext.beginCommandEncoder();
-        let encoder = GPUContext.beginRenderPass(command, this.rendererPassState);
+        let renderContext = cubeShadowMapInfo.renderContext[face];
+        renderContext.clean();
+        renderContext.beginOpaqueRenderPass();
 
-        encoder.setViewport(0, 0, this.shadowSize, this.shadowSize, 0.0, 1.0);
-        encoder.setScissorRect(0, 0, this.shadowSize, this.shadowSize);
+        renderContext.encoder.setViewport(0, 0, this.shadowSize, this.shadowSize, 0.0, 1.0);
+        renderContext.encoder.setScissorRect(0, 0, this.shadowSize, this.shadowSize);
 
         shadowCamera.onUpdate();
         shadowCamera.transform.updateWorldMatrix(true);
 
-        let viewRenderList = EntityCollect.instance.getRenderShaderCollect(view);
-        for (const renderList of viewRenderList) {
-            let nodeMap = renderList[1];
-            for (const iterator of nodeMap) {
-                let node = iterator[1];
-                if (node.preInit) {
-                    node.nodeUpdate(view, this._rendererType, this.rendererPassState, null);
-                    break;
-                }
+        for (const iterator of collectInfo.opaqueList) {
+            let node = iterator;
+            if (node.preInit(this._rendererType)) {
+                node.nodeUpdate(view, this._rendererType, renderContext.rendererPassState, null);
+                break;
             }
         }
 
-        this.drawShadowRenderNodes(view, shadowCamera, encoder, collectInfo.opaqueList, occlusionSystem);
-        this.drawShadowRenderNodes(view, shadowCamera, encoder, collectInfo.transparentList, occlusionSystem);
+        this.drawShadowRenderNodes(view, shadowCamera, renderContext, collectInfo.opaqueList, occlusionSystem);
+        this.drawShadowRenderNodes(view, shadowCamera, renderContext, collectInfo.transparentList, occlusionSystem);
 
-        GPUContext.endPass(encoder);
-        GPUContext.endCommandEncoder(command);
+        renderContext.endRenderPass();
     }
 
-    protected drawShadowRenderNodes(view: View3D, shadowCamera: Camera3D, encoder: GPURenderPassEncoder, nodes: RenderNode[], occlusionSystem: OcclusionSystem) {
-        GPUContext.bindCamera(encoder, shadowCamera);
-        if (nodes) {
+    protected drawShadowRenderNodes(view: View3D, shadowCamera: Camera3D, renderContext: RenderContext, nodes: RenderNode[], occlusionSystem: OcclusionSystem) {
+        GlobalBindGroup.updateCameraGroup(shadowCamera);
+        GPUContext.bindCamera(renderContext.encoder, shadowCamera);
+
+        let scene = view.scene;
+        let camera = view.camera;
+
+        this.drawNodes(view, shadowCamera, renderContext, nodes, occlusionSystem, null);
+
+        // if (nodes) {
+        //     for (let i = Engine3D.setting.render.drawOpMin; i < Math.min(nodes.length, Engine3D.setting.render.drawOpMax); ++i) {
+        //         let renderNode = nodes[i];
+        //         let matrixIndex = renderNode.transform.worldMatrix.index;
+        //         if (!renderNode.transform.enable)
+        //             continue;
+        //         // if (!occlusionSystem.renderCommitTesting(shadowCamera, renderNode))
+        //         //     continue;
+        //         if (!renderNode.enable)
+        //             continue;
+
+        //         if (!renderNode.castShadow)
+        //             continue;
+
+        // if (!renderNode.preInit(this._rendererType)) {
+        //     renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState);
+        // }
+
+        // for (let material of renderNode.materials) {
+        //     let passes = material.getPass(this._rendererType);
+        //     if (!passes || passes.length == 0)
+        //         continue;
+
+        //     GPUContext.bindGeometryBuffer(encoder, renderNode.geometry);
+        //     let worldMatrix = renderNode.object3D.transform._worldMatrix;
+        //     for (let pass of passes) {
+        //         const renderShader = pass;
+        //         if (renderShader.pipeline) {
+        //             renderShader.setUniformFloat("cameraFar", shadowCamera.far);
+        //             renderShader.setUniformVector3("lightWorldPos", shadowCamera.transform.worldPosition);
+        //             renderShader.materialDataUniformBuffer.apply();
+
+        //             GPUContext.bindPipeline(encoder, renderShader);
+        //             let subGeometries = renderNode.geometry.subGeometries;
+        //             for (const subGeometry of subGeometries) {
+        //                 let lodInfos = subGeometry.lodLevels;
+        //                 let lodInfo = lodInfos[renderNode.lodLevel];
+        //                 GPUContext.drawIndexed(encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
+        //             }
+        //         }
+        //     }
+        // }
+        // }
+        // }
+    }
+
+    public drawNodes(view: View3D, camera: Camera3D, renderContext: RenderContext, nodes: RenderNode[], occlusionSystem: OcclusionSystem, clusterLightingBuffer: ClusterLightingBuffer) {
+
+        let viewRenderList = EntityCollect.instance.getRenderShaderCollect(view);
+        if (viewRenderList) {
+            for (const renderList of viewRenderList) {
+                let nodeMap = renderList[1];
+                for (const iterator of nodeMap) {
+                    let node = iterator[1];
+                    if (node.preInit(this._rendererType)) {
+                        node.nodeUpdate(view, this._rendererType, renderContext.rendererPassState, clusterLightingBuffer);
+                        break;
+                    }
+                }
+            }
+
             for (let i = Engine3D.setting.render.drawOpMin; i < Math.min(nodes.length, Engine3D.setting.render.drawOpMax); ++i) {
                 let renderNode = nodes[i];
-                let matrixIndex = renderNode.transform.worldMatrix.index;
+                // if (!occlusionSystem.renderCommitTesting(view.camera, renderNode))
+                //     continue;
                 if (!renderNode.transform.enable)
                     continue;
-                // if (!occlusionSystem.renderCommitTesting(shadowCamera, renderNode))
-                //     continue;
                 if (!renderNode.enable)
                     continue;
-                if (!renderNode.preInit) {
-                    renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState);
+                if (!renderNode.castShadow)
+                    continue;
+
+                if (!renderNode.preInit(this._rendererType)) {
+                    renderNode.nodeUpdate(view, this._rendererType, renderContext.rendererPassState, clusterLightingBuffer);
                 }
 
                 for (let material of renderNode.materials) {
                     let passes = material.getPass(this._rendererType);
                     if (!passes || passes.length == 0)
                         continue;
-
-                    GPUContext.bindGeometryBuffer(encoder, renderNode.geometry);
-                    let worldMatrix = renderNode.object3D.transform._worldMatrix;
                     for (let pass of passes) {
                         const renderShader = pass;
                         if (renderShader.pipeline) {
-                            renderShader.setUniformFloat("cameraFar", shadowCamera.far);
-                            renderShader.setUniformVector3("lightWorldPos", shadowCamera.transform.worldPosition);
+                            renderShader.setUniformFloat("cameraFar", camera.far);
+                            renderShader.setUniformVector3("lightWorldPos", camera.transform.worldPosition);
                             renderShader.materialDataUniformBuffer.apply();
-
-                            GPUContext.bindPipeline(encoder, renderShader);
-                            let subGeometries = renderNode.geometry.subGeometries;
-                            for (const subGeometry of subGeometries) {
-                                let lodInfos = subGeometry.lodLevels;
-                                let lodInfo = lodInfos[renderNode.lodLevel];
-                                GPUContext.drawIndexed(encoder, lodInfo.indexCount, 1, lodInfo.indexStart, 0, worldMatrix.index);
-                            }
                         }
                     }
                 }
+
+                renderNode.renderPass(view, this.passType, renderContext);
             }
         }
     }

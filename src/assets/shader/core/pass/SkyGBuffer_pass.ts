@@ -1,5 +1,6 @@
 export let SkyGBuffer_pass: string = /*wgsl*/ `
 #include "GlobalUniform"
+#include "ColorUtil_frag"
 
 struct uniformData {
     eyesPos: vec3<f32>,
@@ -21,14 +22,8 @@ var baseMap: texture_cube<f32>;
 @group(2) @binding(0)
 var<uniform> global: uniformData;
 
-fn LinearToGammaSpace(linRGB: vec3<f32>) -> vec3<f32> {
-    var linRGB1 = max(linRGB, vec3<f32>(0.0));
-    linRGB1 = pow(linRGB1, vec3<f32>(0.4166666567325592));
-    return max(((1.0549999475479126 * linRGB1) - vec3<f32>(0.054999999701976776)), vec3<f32>(0.0));
-  }
-
 @fragment
-fn main(@location(auto) fragUV: vec2<f32>, @location(auto) vWorldPos: vec4<f32>, @location(auto) vWorldNormal: vec3<f32>) -> FragmentOutput {
+fn main(@location(auto) fragUV: vec2<f32>,@location(auto) vClipPos: vec4<f32>, @location(auto) vWorldPos: vec4<f32>, @location(auto) vWorldNormal: vec3<f32> , @builtin(position) fragCoord : vec4<f32> ) -> FragmentOutput {
     let maxLevel: u32 = textureNumLevels(baseMap);
     let textureColor:vec3<f32> = textureSampleLevel(baseMap, baseMapSampler, normalize(vWorldPos.xyz), global.roughness * f32(maxLevel) ).xyz;
     let o_Color = 0.618 * vec4<f32>(LinearToGammaSpace(textureColor) * globalUniform.skyExposure , 1.0);

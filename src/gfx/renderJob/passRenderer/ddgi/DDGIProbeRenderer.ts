@@ -8,7 +8,7 @@ import { GPUContext } from '../../GPUContext';
 import { ProbeGBufferFrame } from '../../frame/ProbeGBufferFrame';
 import { OcclusionSystem } from '../../occlusion/OcclusionSystem';
 import { RendererBase } from '../RendererBase';
-import { PassType } from '../state/RendererType';
+import { PassType } from '../state/PassType';
 import { DDGIIrradianceComputePass } from './DDGIIrradianceComputePass';
 import { DDGIIrradianceVolume } from './DDGIIrradianceVolume';
 import { DDGIMultiBouncePass } from './DDGIMultiBouncePass';
@@ -114,7 +114,6 @@ export class DDGIProbeRenderer extends RendererBase {
     }
 
 
-
     public updateProbe(view: View3D, probe: Probe, encoder: GPURenderPassEncoder,) {
         let lights = EntityCollect.instance.getLights(view.scene);
         let cubeSize = this.volume.setting.probeSize; // cubeSize * 2 * 2 * 2;
@@ -198,7 +197,7 @@ export class DDGIProbeRenderer extends RendererBase {
             let nodeMap = renderList[1];
             for (const iterator of nodeMap) {
                 let node = iterator[1];
-                if (node.preInit) {
+                if (node.preInit(this.passType)) {
                     node.nodeUpdate(view, this.passType, this.rendererPassState, null);
                     break;
                 }
@@ -208,7 +207,7 @@ export class DDGIProbeRenderer extends RendererBase {
         for (let i = drawMin; i < drawMax; ++i) {
             let renderNode = collectInfo.opaqueList[i];
             if (renderNode.enable && renderNode.transform.enable) {
-                if (!renderNode.preInit) {
+                if (!renderNode.preInit(this.passType)) {
                     renderNode.nodeUpdate(view, this.passType, this.rendererPassState, null);
                 }
                 renderNode.renderPass2(view, this.passType, this.rendererPassState, null, encoder);
@@ -216,7 +215,7 @@ export class DDGIProbeRenderer extends RendererBase {
         }
 
         if (EntityCollect.instance.sky) {
-            if (!EntityCollect.instance.sky.preInit) {
+            if (!EntityCollect.instance.sky.preInit(this.passType)) {
                 EntityCollect.instance.sky.nodeUpdate(view, this.passType, this.rendererPassState, null);
             }
             EntityCollect.instance.sky.renderPass2(view, this.passType, this.rendererPassState, null, encoder);
@@ -228,7 +227,7 @@ export class DDGIProbeRenderer extends RendererBase {
         for (let i = drawMin; i < drawMax; ++i) {
             let renderNode = collectInfo.transparentList[i];
             if (renderNode.enable && renderNode.transform.enable) {
-                if (!renderNode.preInit) {
+                if (!renderNode.preInit(this.passType)) {
                     renderNode.nodeUpdate(view, this.passType, this.rendererPassState, null);
                 }
                 renderNode.renderPass2(view, this.passType, this.rendererPassState, null, encoder);

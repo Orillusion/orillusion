@@ -10,6 +10,7 @@ import { Orientation3D } from "../math/Orientation3D";
 import { Quaternion } from "../math/Quaternion";
 import { Vector3 } from "../math/Vector3";
 import { ComponentBase } from "./ComponentBase";
+import { Entity } from "..";
 
 /**
  * The Transform component contains the position, rotation, and scaling of an object in 3D space.
@@ -17,6 +18,8 @@ import { ComponentBase } from "./ComponentBase";
  * @group Components
  */
 export class Transform extends ComponentBase {
+
+
     /**
     * @internal
     */
@@ -663,11 +666,16 @@ export class Transform extends ComponentBase {
     }
 
     public set localPosition(v: Vector3) {
-        // if (this._localPos.x != v.x || this._localPos.y != v.y || this._localPos.z != v.z) {
+        if (this.onPositionChange) {
+            if (this._localPos.x != v.x || this._localPos.y != v.y || this._localPos.z != v.z) {
+                this.onPositionChange(this._localPos, v);
+            }
+        }
         this._localPos.copyFrom(v);
         WasmMatrix.setTranslate(this.index, v.x, v.y, v.z);
         this.notifyLocalChange();
-        this.onPositionChange?.();
+
+
 
         if (this.eventPositionChange) {
             this.eventDispatcher.dispatchEvent(this.eventPositionChange);
@@ -683,11 +691,15 @@ export class Transform extends ComponentBase {
     }
 
     public set localRotation(v: Vector3) {
-        // if (this._localRot.x != v.x || this._localRot.y != v.y || this._localRot.z != v.z) {
+        if (this.onRotationChange) {
+            if (this._localRot.x != v.x || this._localRot.y != v.y || this._localRot.z != v.z) {
+                this.onRotationChange(this._localRot, v);
+            }
+        }
+
         WasmMatrix.setRotation(this.index, v.x, v.y, v.z);
         this._localRot.copyFrom(v);
         this.notifyLocalChange();
-        this.onRotationChange?.();
 
         if (this.eventRotationChange) {
             this.eventDispatcher.dispatchEvent(this.eventRotationChange);

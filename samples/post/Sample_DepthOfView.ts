@@ -32,14 +32,14 @@ class Sample_DepthOfView {
 
         let postProcessing = this.scene.addComponent(PostProcessingComponent)
         let DOFPost = postProcessing.addPost(DepthOfFieldPost)
-        DOFPost.near = 0
-        DOFPost.far = 150
+        DOFPost.near = 160
+        DOFPost.far = 550
         DOFPost.pixelOffset = 2
 
         let GUIHelp = new dat.GUI()
         GUIHelp.addFolder('Depth of Field')
-        GUIHelp.add(DOFPost, 'near', 0, 100, 1)
-        GUIHelp.add(DOFPost, 'far', 150, 300, 1)
+        GUIHelp.add(DOFPost, 'near', 0, 400, 1)
+        GUIHelp.add(DOFPost, 'far', 150, 1000, 1)
 
         console.log("run");
 
@@ -55,7 +55,7 @@ class Sample_DepthOfView {
             let lc = this.lightObj.addComponent(DirectLight)
             lc.lightColor = KelvinUtil.color_temperature_to_rgb(5355)
             lc.castShadow = true
-            lc.intensity = 10
+            lc.intensity = 5
             scene.addChild(this.lightObj)
         }
 

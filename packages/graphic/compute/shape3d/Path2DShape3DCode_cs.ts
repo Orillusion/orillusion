@@ -442,10 +442,10 @@ fn drawPath2DCorner(shapeData:Path2DShape3D, currentPoint:Path3DKeyPoint){
             var rotateFrom:vec3<f32>;
             if(isPositive){
                 rotateFrom = -prevPoint.right;
-                rotateMat = buildRotateYMat3(-cornerAngle * 2.0 / f32(cornerPointExt));
+                rotateMat = buildRotateZ(-cornerAngle * 2.0 / f32(cornerPointExt));
             }else{
                 rotateFrom = prevPoint.right;
-                rotateMat = buildRotateYMat3(cornerAngle * 2.0 / f32(cornerPointExt));
+                rotateMat = buildRotateZ(cornerAngle * 2.0 / f32(cornerPointExt));
             }
     
             tempV = currentPoint.overallLength - cornerUVLength * lastLengthUVRatio;

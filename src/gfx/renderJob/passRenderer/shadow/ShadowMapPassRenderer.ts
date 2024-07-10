@@ -14,13 +14,14 @@ import { ShadowLightsCollect } from "../../collect/ShadowLightsCollect";
 import { RTFrame } from "../../frame/RTFrame";
 import { OcclusionSystem } from "../../occlusion/OcclusionSystem";
 import { RendererPassState } from "../state/RendererPassState";
-import { PassType } from "../state/RendererType";
+import { PassType } from "../state/PassType";
 import { RendererBase } from "../RendererBase";
 import { ClusterLightingBuffer } from "../cluster/ClusterLightingBuffer";
 import { Reference } from "../../../../util/Reference";
 import { Texture } from "../../../graphics/webGpu/core/texture/Texture";
 import { CSM } from "../../../../core/csm/CSM";
 import { VirtualTexture } from "../../../../textures/VirtualTexture";
+import { GlobalBindGroup } from "../../../graphics/webGpu/core/bindGroups/GlobalBindGroup";
 
 /**
  * @internal
@@ -36,6 +37,7 @@ export class ShadowMapPassRenderer extends RendererBase {
         super();
         this.setShadowMap(Engine3D.setting.shadow.shadowSize, CSM.Cascades);
         this.passType = PassType.SHADOW;
+
     }
 
     setShadowMap(size: number, cascades: number) {
@@ -86,7 +88,8 @@ export class ShadowMapPassRenderer extends RendererBase {
                 let nodeMap = renderList[1];
                 for (const iterator of nodeMap) {
                     let node = iterator[1];
-                    if (node.preInit) {
+
+                    if (node.preInit(this._rendererType)) {
                         node.nodeUpdate(view, this._rendererType, this.rendererPassState, null);
                         break;
                     }
@@ -168,6 +171,7 @@ export class ShadowMapPassRenderer extends RendererBase {
             occlusionSystem.update(shadowCamera, view.scene);
             occlusionSystem.collect(collectInfo, shadowCamera);
         }
+        GlobalBindGroup.updateCameraGroup(shadowCamera);
         GPUContext.bindCamera(encoder, shadowCamera);
         let op_bundleList = this.renderShadowBundleOp(view, shadowCamera, state);
         let tr_bundleList = this.renderShadowBundleTr(view, shadowCamera, state);
@@ -227,6 +231,7 @@ export class ShadowMapPassRenderer extends RendererBase {
 
 
     protected recordShadowRenderBundleNode(view: View3D, shadowCamera: Camera3D, encoder, nodes: RenderNode[], clusterLightingBuffer?: ClusterLightingBuffer) {
+        GlobalBindGroup.updateCameraGroup(shadowCamera);
         GPUContext.bindCamera(encoder, shadowCamera);
         if (nodes) {
             GPUContext.bindGeometryBuffer(encoder, nodes[0].geometry);
@@ -240,6 +245,7 @@ export class ShadowMapPassRenderer extends RendererBase {
     }
 
     protected drawShadowRenderNodes(view: View3D, shadowCamera: Camera3D, encoder: GPURenderPassEncoder, nodes: RenderNode[], clusterLightingBuffer?: ClusterLightingBuffer) {
+        GlobalBindGroup.updateCameraGroup(shadowCamera);
         GPUContext.bindCamera(encoder, shadowCamera);
         if (nodes) {
             for (let i = Engine3D.setting.render.drawOpMin; i < Math.min(nodes.length, Engine3D.setting.render.drawOpMax); ++i) {
@@ -252,6 +258,9 @@ export class ShadowMapPassRenderer extends RendererBase {
                     continue;
                 if (!renderNode.castShadow) {
                     continue;
+                }
+                if (!renderNode.preInit(this._rendererType)) {
+                    renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState, clusterLightingBuffer);
                 }
                 renderNode.renderPass2(view, this._rendererType, this.rendererPassState, clusterLightingBuffer, encoder);
             }

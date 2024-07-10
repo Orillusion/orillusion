@@ -1,4 +1,5 @@
 export let FXAAShader: string = /*wgsl*/ `
+    #include 'BitUtil'
     struct FragmentOutput {
         @location(auto) o_Target: vec4<f32>
     };
@@ -8,6 +9,8 @@ export let FXAAShader: string = /*wgsl*/ `
     var baseMapSampler: sampler;
     @group(1) @binding(1)
     var baseMap: texture_2d<f32>;
+    // @group(1) @binding(2)
+    // var gBuffer: texture_2d<f32>;
 
     struct MaterialUniform{
         u_texel: vec2<f32>,
@@ -27,7 +30,8 @@ export let FXAAShader: string = /*wgsl*/ `
     }
 
     fn texture2D( uv:vec2<f32> , offset:vec2<f32> ) -> vec4<f32> {
-        return textureSample(baseMap, baseMapSampler, uv.xy + offset ).rgba ;
+        let buffer = textureSample(baseMap, baseMapSampler, uv.xy + offset ).rgba ;
+        return buffer ;
     }
 
     @fragment
@@ -63,6 +67,7 @@ export let FXAAShader: string = /*wgsl*/ `
 
         var resultA = 0.5 * (texture2D(v_vTexcoord , dir * -0.166667).rgb  +
                             texture2D(v_vTexcoord , dir * 0.166667).rgb);
+                            
         var resultB = resultA * 0.5 + 0.25 * (texture2D( v_vTexcoord , dir * -0.5).rgb +
                                             texture2D( v_vTexcoord , dir * 0.5).rgb);
         var monoB = dot(resultB.rgb, gray);

@@ -3,7 +3,7 @@ import { View3D } from "../../../../core/View3D";
 import { Color } from "../../../../math/Color";
 import { Vector3 } from "../../../../math/Vector3";
 import { RendererPassState } from "../state/RendererPassState";
-import { PassType } from "../state/RendererType";
+import { PassType } from "../state/PassType";
 import { Graphics3DShape } from "./Graphics3DShape";
 import { ClusterLightingBuffer } from "../cluster/ClusterLightingBuffer";
 import { GeometryBase, Graphic3DFixedRenderMaterial, VertexAttributeName } from "../../../..";
@@ -119,7 +119,7 @@ export class Graphic3DBatchRenderer extends RenderNode {
             let count = offset / 4;
             let indexCount = count;
             this.geometry.subGeometries[0].lodLevels[0].indexCount = indexCount;
-            
+
 
             this.mDirtyData = false;
         }

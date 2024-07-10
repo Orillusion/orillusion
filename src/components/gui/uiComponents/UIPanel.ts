@@ -177,6 +177,7 @@ export class UIPanel extends UIImage {
             }
         }
 
+
         //clear flag
         panel.needUpdateGeometry = false;
     }

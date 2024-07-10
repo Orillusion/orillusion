@@ -2,62 +2,61 @@ export let BxdfDebug_frag: string = /*wgsl*/ `
 #include "ClusterDebug_frag" 
 
         fn debugPosition(){
-            ORI_FragmentOutput.color = vec4<f32>(ORI_VertexVarying.vWorldPos.xyz,1.0);
+            //ORI_FragmentOutput.color = vec4<f32>(ORI_VertexVarying.vWorldPos.xyz,1.0);
         }
 
         fn debugMeshID(){
             let meshIDColor = u32(round(ORI_VertexVarying.vWorldPos.w) ) ;
             let color = colorSet[ meshIDColor % 9u] ;
-            ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(color.rgb),1.0);
+            // ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(color.rgb),1.0);
         }
 
         fn debugNormal(){
-            ORI_FragmentOutput.color = vec4<f32>(ORI_ShadingInput.Normal.xyz,1.0);
+            // ORI_FragmentOutput.color = vec4<f32>(ORI_ShadingInput.Normal.xyz,1.0);
         }
 
         fn debugUV(){
-            ORI_FragmentOutput.color = vec4<f32>(ORI_VertexVarying.fragUV0.xy,0.0,1.0);
+            // ORI_FragmentOutput.color = vec4<f32>(ORI_VertexVarying.fragUV0.xy,0.0,1.0);
         }
 
         fn debugColor(){
-            ORI_FragmentOutput.color = vec4<f32>(fragData.Albedo.rgb,1.0);
+            // ORI_FragmentOutput.color = vec4<f32>(fragData.Albedo.rgb,1.0);
         }
 
         fn debugDiffuse(){
-            ORI_FragmentOutput.color = vec4<f32>( fragData.LightChannel.rgb,1.0);
-            // ORI_FragmentOutput.color = vec4<f32>(0.2,0.2,0.2,1.0);
+            // ORI_FragmentOutput.color = vec4<f32>( fragData.LightChannel.rgb,1.0);
         }
 
         fn debugAmbient(){
-            ORI_FragmentOutput.color = vec4<f32>(vec3f(fragData.Alpha) ,1.0);
+            // ORI_FragmentOutput.color = vec4<f32>(vec3f(fragData.Alpha) ,1.0);
         }
         
         fn debugEmissive(){
-            ORI_FragmentOutput.color = vec4<f32>(fragData.Emissive.rgb,1.0);
+            // ORI_FragmentOutput.color = vec4<f32>(fragData.Emissive.rgb,1.0);
         }
 
         fn debugEnvment(){
-            ORI_FragmentOutput.color = vec4<f32>(fragData.EnvColor.rgb,1.0);
+            // ORI_FragmentOutput.color = vec4<f32>(fragData.EnvColor.rgb,1.0);
         }
 
         fn debugAo(){
-            ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(fragData.Ao),1.0);
+            // ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(fragData.Ao),1.0);
         }
 
         fn debugRoughness(){
-            ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(fragData.Roughness),1.0);
+            // ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(fragData.Roughness),1.0);
         }
 
         fn debugMetallic(){
-            ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(fragData.Metallic),1.0);
+            // ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(fragData.Metallic),1.0);
         }
 
         fn debugIrradiance(){
-            ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(fragData.Irradiance),1.0);
+            // ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(fragData.Irradiance),1.0);
         }
 
         fn debugTangent(){
-            ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(fragData.T),1.0);
+            // ORI_FragmentOutput.color = vec4<f32>(vec3<f32>(fragData.T),1.0);
         }
 
         fn debugFragmentOut(){

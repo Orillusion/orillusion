@@ -1,3 +1,16 @@
+import { Sample_AnimCurve } from "./animation/Sample_CurveAnimation";
+import { Sample_PointLight } from "./lights/Sample_PointLight";
+import { Sample_PointLightShadow } from "./lights/Sample_PointLightShadow";
+import { Sample_CarPaint } from "./material/Sample_CarPaint";
+import { Sample_SSGI } from "./post/Sample_SSGI";
+
+// new Sample_CarPaint().run();
+// new Sample_SSGI().run();
+
+// new Sample_AnimCurve().run();
+
+// new Sample_PointLightShadow().run();
+
 /******** Load all samples in /src/sample/ ********/
 {
     // find all demos in /sample

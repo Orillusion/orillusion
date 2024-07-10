@@ -1,8 +1,8 @@
-import { Object3D, Scene3D, AnimationCurve, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, Keyframe, Object3DUtil, Time } from "@orillusion/core";
+import { Object3D, Scene3D, AnimationCurve, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, Keyframe, Object3DUtil, Time, PostProcessingComponent, FXAAPost, GBufferPost } from "@orillusion/core";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
-class Sample_AnimCurve {
+export class Sample_AnimCurve {
     lightObj3D: Object3D;
     scene: Scene3D;
     Duck: Object3D;
@@ -12,23 +12,24 @@ class Sample_AnimCurve {
     curve4: AnimationCurve;
 
     async run() {
-        await Engine3D.init({ beforeRender: () => this.renderUpdate() });
 
-        Engine3D.setting.render.debug = true;
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.updateFrameRate = 1;
-        Engine3D.setting.shadow.type = `HARD`;
-        Engine3D.setting.shadow.csmScatteringExp = 0.5;
+        Engine3D.setting.shadow.shadowBound = 150;
+        Engine3D.setting.shadow.shadowBias = 0.02;
+
         GUIHelp.init();
+        await Engine3D.init({ renderLoop: () => { this.renderUpdate() } });
 
         this.scene = new Scene3D();
         let sky = this.scene.addComponent(AtmosphericComponent);
 
         let camera = CameraUtil.createCamera3DObject(this.scene);
-        camera.enableCSM = true;
         camera.perspective(60, Engine3D.aspect, 0.01, 5000.0);
 
-        camera.object3D.addComponent(HoverCameraController).setCamera(-30, -45, 200);
+        let ctrl = camera.object3D.addComponent(HoverCameraController);
+        ctrl.setCamera(0, -45, 200);
+        ctrl.maxDistance = 1000;
 
         let view = new View3D();
         view.scene = this.scene;
@@ -36,10 +37,13 @@ class Sample_AnimCurve {
 
         Engine3D.startRenderView(view);
 
+        let postCom = this.scene.addComponent(PostProcessingComponent);
+        postCom.addPost(FXAAPost);
+        let post = postCom.addPost(GBufferPost);
+        GUIUtil.renderGBufferPost(post);
+
         await this.initScene();
         sky.relativeTransform = this.lightObj3D.transform;
-
-        GUIUtil.renderDebug();
     }
 
     async initScene() {
@@ -52,7 +56,7 @@ class Sample_AnimCurve {
             let directLight = this.lightObj3D.addComponent(DirectLight);
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             directLight.castShadow = true;
-            directLight.intensity = 30;
+            directLight.intensity = 3;
             this.scene.addChild(this.lightObj3D);
 
             GUIUtil.renderDirLight(directLight);
@@ -89,7 +93,6 @@ class Sample_AnimCurve {
         }
 
         this.scene.addChild(Object3DUtil.GetSingleCube(300, 5, 300, 1, 1, 1));
-
         // load a gltf model
         this.Duck = (await Engine3D.res.loadGltf('PBR/Duck/Duck.gltf')) as Object3D;
         this.Duck.scaleX = this.Duck.scaleY = this.Duck.scaleZ = 0.3;
@@ -108,5 +111,3 @@ class Sample_AnimCurve {
         }
     }
 }
-
-new Sample_AnimCurve().run();

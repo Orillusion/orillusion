@@ -8,46 +8,42 @@ import { RTFrame } from "./RTFrame";
 import { RTResourceMap } from "./RTResourceMap";
 
 export class GBufferFrame extends RTFrame {
+    public static colorPass_GBuffer: string = "ColorPassGBuffer";
+    public static reflections_GBuffer: string = "reflections_GBuffer";
     public static gBufferMap: Map<string, GBufferFrame> = new Map<string, GBufferFrame>();
-    public static bufferTexture: boolean = false;
+    // public static bufferTexture: boolean = false;
+
+    private _colorBufferTex: RenderTexture;
+    private _compressGBufferTex: RenderTexture;
+
     constructor() {
         super([], []);
     }
 
-    crateGBuffer(key: string, rtWidth: number, rtHeight: number) {
+    createGBuffer(key: string, rtWidth: number, rtHeight: number, autoResize: boolean = true, outColor: boolean = true) {
         let attachments = this.renderTargets;
         let reDescriptors = this.rtDescriptors;
-        let colorBufferTex = RTResourceMap.createRTTexture(key + RTResourceConfig.colorBufferTex_NAME, rtWidth, rtHeight, GPUTextureFormat.rgba16float, false);
-        let positionBufferTex = RTResourceMap.createRTTexture(key + RTResourceConfig.positionBufferTex_NAME, rtWidth, rtHeight, GPUTextureFormat.rgba16float, false);
-        let normalBufferTex = RTResourceMap.createRTTexture(key + RTResourceConfig.normalBufferTex_NAME, rtWidth, rtHeight, GPUTextureFormat.rgba16float, false);
-        let materialBufferTex = RTResourceMap.createRTTexture(key + RTResourceConfig.materialBufferTex_NAME, rtWidth, rtHeight, GPUTextureFormat.rgba8unorm, false);
-
-        if (GBufferFrame.bufferTexture) {
-            attachments.push(colorBufferTex);
-            attachments.push(positionBufferTex);
-            attachments.push(normalBufferTex);
-            attachments.push(materialBufferTex);
+        if (outColor) {
+            let colorDec = new RTDescriptor();
+            colorDec.loadOp = 'clear';
+            this._colorBufferTex = RTResourceMap.createRTTexture(key + RTResourceConfig.colorBufferTex_NAME, rtWidth, rtHeight, GPUTextureFormat.rgba16float, true);
+            attachments.push(this._colorBufferTex);
+            reDescriptors.push(colorDec);
         }
 
-        let colorRTDes = new RTDescriptor();
-        colorRTDes.loadOp = `clear`;
+        this._compressGBufferTex = new RenderTexture(rtWidth, rtHeight, GPUTextureFormat.rgba32float, false, undefined, 1, 0, true, true);
+        attachments.push(this._compressGBufferTex);
 
-        let depthTexture = new RenderTexture(rtWidth, rtHeight, GPUTextureFormat.depth24plus, false);
-        depthTexture.name = `depthTexture`;
+        this.depthTexture = new RenderTexture(rtWidth, rtHeight, GPUTextureFormat.depth24plus, false, undefined, 1, 0, true, true);
+        this.depthTexture.name = key + `_depthTexture`;
+
         let depthDec = new RTDescriptor();
         depthDec.loadOp = `load`;
-        this.depthTexture = depthTexture;
 
-        if (GBufferFrame.bufferTexture) {
-            reDescriptors.push(colorRTDes);
-            reDescriptors.push(new RTDescriptor());
-            reDescriptors.push(new RTDescriptor());
-            reDescriptors.push(new RTDescriptor());
-        }
-    }
+        let compressGBufferRTDes: RTDescriptor;
+        compressGBufferRTDes = new RTDescriptor();
 
-    public getColorMap() {
-        return this.renderTargets[0];
+        reDescriptors.push(compressGBufferRTDes);
     }
 
     public getPositionMap() {
@@ -58,19 +54,30 @@ export class GBufferFrame extends RTFrame {
         return this.renderTargets[2];
     }
 
-    public getMaterialMap() {
-        return this.renderTargets[3];
+    public getColorTexture() {
+        return this._colorBufferTex;
+    }
+
+    public getCompressGBufferTexture() {
+        return this._compressGBufferTex;
     }
 
     /**
      * @internal
      */
-    public static getGBufferFrame(key: string): GBufferFrame {
+    public static getGBufferFrame(key: string, fixedWidth: number = 0, fixedHeight: number = 0, outColor: boolean = true): GBufferFrame {
         let gBuffer: GBufferFrame;
         if (!GBufferFrame.gBufferMap.has(key)) {
             gBuffer = new GBufferFrame();
             let size = webGPUContext.presentationSize;
-            gBuffer.crateGBuffer(key, size[0], size[1]);
+            // gBuffer.createGBuffer(key, size[0], size[1]);
+            gBuffer.createGBuffer(
+                key,
+                fixedWidth == 0 ? size[0] : fixedWidth,
+                fixedHeight == 0 ? size[1] : fixedHeight,
+                fixedWidth != 0 && fixedHeight != 0,
+                outColor
+            );
             GBufferFrame.gBufferMap.set(key, gBuffer);
         } else {
             gBuffer = GBufferFrame.gBufferMap.get(key);

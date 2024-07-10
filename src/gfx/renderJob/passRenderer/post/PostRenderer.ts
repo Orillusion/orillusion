@@ -7,7 +7,7 @@ import { GPUContext } from "../../GPUContext";
 import { RTFrame } from "../../frame/RTFrame";
 import { PostBase } from "../../post/PostBase";
 import { RendererBase } from "../RendererBase";
-import { PassType } from "../state/RendererType";
+import { PassType } from "../state/PassType";
 
 
 /**
@@ -16,13 +16,13 @@ import { PassType } from "../state/RendererType";
  */
 export class PostRenderer extends RendererBase {
     public finalQuadView: ViewQuad;
-    public postList: PostBase[];
+    public postList: Map<string, PostBase>;
     constructor() {
         super();
 
         this._rendererType = PassType.POST;
 
-        this.postList = [];
+        this.postList = new Map<string, PostBase>();
 
         this.initRenderer();
     }
@@ -34,30 +34,39 @@ export class PostRenderer extends RendererBase {
 
     public attachPost(view: View3D, post: PostBase) {
         post.postRenderer = this;
-        let has = this.postList.indexOf(post) != -1;
+        let clsName = post.constructor.name;
+        let has = this.postList.get(clsName);
         if (!has) {
-            this.postList.push(post);
+            this.postList.set(clsName, post);
             post.onAttach(view);
         }
     }
 
     public detachPost(view: View3D, post: PostBase): boolean {
-        let index = this.postList.indexOf(post);
-        if (index >= 0) {
-            this.postList.splice(index, 1);
+        let clsName = post.constructor.name;
+        let has = this.postList.get(clsName);
+        if (has) {
+            this.postList.delete(clsName);
             post.onDetach(view);
             post.postRenderer = null;
         }
-        return index >= 0;
+        return has != null;
     }
 
     public render(view: View3D) {
+
+        this.postList.forEach((v) => {
+            if (v.enable) {
+                v.compute(view);
+            }
+        });
+
         let command = GPUContext.beginCommandEncoder();
-        for (let i = 0; i < this.postList.length; i++) {
-            const post = this.postList[i];
-            if (!post.enable) continue;
-            post.render(view, command);
-        }
+        this.postList.forEach((v) => {
+            if (v.enable) {
+                v.render(view, command);
+            }
+        });
 
         let lastTexture = GPUContext.lastRenderPassState.getLastRenderTexture();
         this.finalQuadView.renderToViewQuad(view, this.finalQuadView, command, lastTexture);

@@ -1,6 +1,7 @@
 import { Engine3D } from "../../../Engine3D";
 import { Vector4 } from "../../../math/Vector4";
 import { GLTF_Info } from "./GLTFInfo";
+import { GLTFMaterial } from "./GLTFMaterial";
 import { GLTFParser } from "./GLTFParser";
 import { GLTFSubParser } from "./GLTFSubParser";
 
@@ -31,7 +32,7 @@ export class GLTFSubParserMaterial {
             return material.dmaterial;
 
         let { name, pbrMetallicRoughness, normalTexture, occlusionTexture, emissiveTexture, emissiveFactor, alphaMode, alphaCutoff, doubleSided, extensions } = material;
-        const dmaterial = {
+        const dmaterial: GLTFMaterial = {
             name,
             defines: [],
             doubleSided: !!doubleSided,
@@ -44,9 +45,15 @@ export class GLTFSubParserMaterial {
             normalTexture: null,
             occlusionTexture: null,
             emissiveTexture: null,
-            transformUV1: null,
-            transformUV2: null,
             extensions: null,
+            baseMapOffsetSize: null,
+            normalMapOffsetSize: null,
+            emissiveMapOffsetSize: null,
+            roughnessMapOffsetSize: null,
+            metallicMapOffsetSize: null,
+            aoMapOffsetSize: null,
+            metallicFactor: 0,
+            roughnessFactor: 1
         };
 
         if (pbrMetallicRoughness) {
@@ -64,12 +71,13 @@ export class GLTFSubParserMaterial {
                 if (ext) {
                     let KHR_texture_transform = ext.KHR_texture_transform;
                     if (KHR_texture_transform) {
-                        dmaterial.transformUV1 = new Vector4(
+                        let offsetSize = new Vector4(
                             KHR_texture_transform.offset ? KHR_texture_transform.offset[0] : 0.0,
                             KHR_texture_transform.offset ? KHR_texture_transform.offset[1] : 0.0,
                             KHR_texture_transform.scale ? KHR_texture_transform.scale[0] : 1.0,
                             KHR_texture_transform.scale ? KHR_texture_transform.scale[1] : 1.0,
                         );
+                        dmaterial.baseMapOffsetSize = offsetSize;
                     }
                 }
                 const texture = await this.parseTexture(baseColorTexture.index);
@@ -80,7 +88,44 @@ export class GLTFSubParserMaterial {
                 }
             }
 
+            if (normalTexture) {
+                //extensions:{KHR_texture_transform: {…}}
+                let ext = normalTexture.extensions;
+                if (ext) {
+                    let KHR_texture_transform = ext.KHR_texture_transform;
+                    if (KHR_texture_transform) {
+                        let offsetSize = new Vector4(
+                            KHR_texture_transform.offset ? KHR_texture_transform.offset[0] : 0.0,
+                            KHR_texture_transform.offset ? KHR_texture_transform.offset[1] : 0.0,
+                            KHR_texture_transform.scale ? KHR_texture_transform.scale[0] : 1.0,
+                            KHR_texture_transform.scale ? KHR_texture_transform.scale[1] : 1.0,
+                        );
+                        dmaterial.normalMapOffsetSize = offsetSize;
+                    }
+                }
+                const texture = await this.parseTexture(normalTexture.index);
+                if (texture) {
+                    dmaterial.normalTexture = texture;
+                } else {
+                    dmaterial.normalTexture = Engine3D.res.normalTexture;
+                }
+            }
+
             if (metallicRoughnessTexture) {
+                let ext = metallicRoughnessTexture.extensions;
+                if (ext) {
+                    let KHR_texture_transform = ext.KHR_texture_transform;
+                    if (KHR_texture_transform) {
+                        let offsetSize = new Vector4(
+                            KHR_texture_transform.offset ? KHR_texture_transform.offset[0] : 0.0,
+                            KHR_texture_transform.offset ? KHR_texture_transform.offset[1] : 0.0,
+                            KHR_texture_transform.scale ? KHR_texture_transform.scale[0] : 1.0,
+                            KHR_texture_transform.scale ? KHR_texture_transform.scale[1] : 1.0,
+                        );
+                        dmaterial.roughnessMapOffsetSize = offsetSize;
+                    }
+                }
+
                 const texture = await this.parseTexture(metallicRoughnessTexture.index);
                 if (texture) {
                     dmaterial.metallicRoughnessTexture = texture;

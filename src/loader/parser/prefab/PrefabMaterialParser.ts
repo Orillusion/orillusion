@@ -23,7 +23,7 @@ export class PrefabMaterialParser extends ParserBase {
             let id = matBytes.readUTF();
             let renderType = matBytes.readUTF();
             let defines = matBytes.readStringArray();
-            let uvTransform_1 = matBytes.readVector4();
+            let transformUV1 = matBytes.readVector4();
             let uvTransform_2 = matBytes.readVector4();
             let shaderName = matBytes.readUTF();
             let properties: KV[] = [];
@@ -55,7 +55,7 @@ export class PrefabMaterialParser extends ParserBase {
 
             let mat = MaterialUtilities.GetMaterial(shaderName);
             mat.name = matName;
-            // mat.uvTransform_1 = uvTransform_1;
+            // mat.transformUV1 = transformUV1;
             // mat.uvTransform_2 = uvTransform_2;
             // mat.roughness = 1;
             // mat.metallic = 1;

@@ -1,6 +1,6 @@
 import { Engine3D } from "../Engine3D";
 import { Texture } from "../gfx/graphics/webGpu/core/texture/Texture";
-import { PassType } from "../gfx/renderJob/passRenderer/state/RendererType";
+import { PassType } from "../gfx/renderJob/passRenderer/state/PassType";
 import { SkyShader } from "../loader/parser/prefab/mats/shader/SkyShader";
 import { Vector3 } from "../math/Vector3";
 import { Material } from "./Material";

@@ -6,7 +6,8 @@ import { CanvasConfig } from './CanvasConfig';
 /**
  * @internal
  */
-class Context3D extends CEventDispatcher {
+export class Context3D extends CEventDispatcher {
+
     public adapter: GPUAdapter;
     public device: GPUDevice;
     public context: GPUCanvasContext;
@@ -19,10 +20,11 @@ class Context3D extends CEventDispatcher {
     public canvasConfig: CanvasConfig;
     private _pixelRatio: number = 1.0;
     private _resizeEvent: CEvent;
-    // initSize: number[];
+
     public get pixelRatio() {
         return this._pixelRatio;
     }
+
     /**
      * Configure canvas by CanvasConfig
      * @param canvasConfig
@@ -33,8 +35,9 @@ class Context3D extends CEventDispatcher {
 
         if (canvasConfig && canvasConfig.canvas) {
             this.canvas = canvasConfig.canvas;
-            if (this.canvas === null)
+            if (this.canvas === null) {
                 throw new Error('no Canvas')
+            }
 
             // check if external canvas has initial with and height style
             // TODO: any way to check external css style?
@@ -53,29 +56,35 @@ class Context3D extends CEventDispatcher {
             this.canvas.style.zIndex = canvasConfig?.zIndex ? canvasConfig.zIndex.toString() : '0';
             document.body.appendChild(this.canvas);
         }
+
         // set canvas bg
         if (canvasConfig && canvasConfig.backgroundImage) {
-            this.canvas.style.background = `url(${canvasConfig.backgroundImage})`
-            this.canvas.style['background-size'] = 'cover'
-            this.canvas.style['background-position'] = 'center'
-        } else
+            this.canvas.style.background = `url(${canvasConfig.backgroundImage})`;
+            this.canvas.style['background-size'] = 'cover';
+            this.canvas.style['background-position'] = 'center';
+        } else {
             this.canvas.style.background = 'transparent';
+        }
+
         // prevent touch scroll
-        this.canvas.style['touch-action'] = 'none'
-        this.canvas.style['object-fit'] = 'cover'
+        this.canvas.style['touch-action'] = 'none';
+        this.canvas.style['object-fit'] = 'cover';
 
         // check webgpu support
         if (navigator.gpu === undefined) {
             throw new Error('Your browser does not support WebGPU!');
         }
+
         // request adapter
         this.adapter = await navigator.gpu.requestAdapter({
             powerPreference: 'high-performance',
             // powerPreference: 'low-power',
         });
+
         if (this.adapter == null) {
             throw new Error('Your browser does not support WebGPU!');
         }
+
         // request device
         this.device = await this.adapter.requestDevice({
             requiredFeatures: [
@@ -90,6 +99,7 @@ class Context3D extends CEventDispatcher {
                 maxStorageBufferBindingSize: this.adapter.limits.maxStorageBufferBindingSize
             }
         });
+
         if (this.device == null) {
             throw new Error('Your browser does not support WebGPU!');
         }
@@ -114,6 +124,7 @@ class Context3D extends CEventDispatcher {
             this.updateSize()
             Texture.destroyTexture()
         });
+
         resizeObserver.observe(this.canvas);
         this.updateSize();
         return true;

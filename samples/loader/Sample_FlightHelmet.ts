@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, HoverCameraController, Engine3D, CameraUtil, View3D, SSRPost, AtmosphericComponent, DirectLight, KelvinUtil, Time } from "@orillusion/core";
+import { Object3D, Scene3D, HoverCameraController, Engine3D, CameraUtil, View3D, SSRPost, AtmosphericComponent, DirectLight, KelvinUtil, Time, PostProcessingComponent, FXAAPost, SphereReflection } from "@orillusion/core";
 import { GUIUtil as GUIUtil } from "@samples/utils/GUIUtil";
 
 class Sample_FlightHelmet {
@@ -19,7 +19,8 @@ class Sample_FlightHelmet {
         });
 
         Engine3D.setting.shadow.autoUpdate = true;
-        Engine3D.setting.shadow.shadowBound = 10;
+        Engine3D.setting.shadow.shadowBound = 20;
+        Engine3D.setting.shadow.shadowBias = 0.001;
         Engine3D.setting.render.postProcessing.ssao.radius = 0.018;
         Engine3D.setting.render.postProcessing.ssao.aoPower = 1;
 
@@ -35,7 +36,11 @@ class Sample_FlightHelmet {
 
         Engine3D.startRenderView(view);
 
+        let postCom = this.scene.addComponent(PostProcessingComponent);
+        postCom.addPost(FXAAPost);
         await this.initScene();
+
+        GUIUtil.renderShadowSetting();
     }
 
     async initScene() {
@@ -62,7 +67,7 @@ class Sample_FlightHelmet {
             let directLight = this.lightObj3D.addComponent(DirectLight);
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             directLight.castShadow = true;
-            directLight.intensity = 44;
+            directLight.intensity = 5;
             this.scene.addChild(this.lightObj3D);
             GUIUtil.renderDirLight(directLight);
         }

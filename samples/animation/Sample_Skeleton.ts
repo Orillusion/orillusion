@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, LitMaterial, MeshRenderer, BoxGeometry, DirectLight, KelvinUtil, Object3DUtil, AnimatorComponent } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, LitMaterial, MeshRenderer, BoxGeometry, DirectLight, KelvinUtil, Object3DUtil, AnimatorComponent, PostProcessingComponent, FXAAPost } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
 class Sample_Skeleton {
@@ -28,6 +28,9 @@ class Sample_Skeleton {
         view.camera = camera;
 
         Engine3D.startRenderView(view);
+
+        let postCom = this.scene.addComponent(PostProcessingComponent);
+        postCom.addPost(FXAAPost);
 
         await this.initScene(this.scene);
         sky.relativeTransform = this.lightObj3D.transform;
@@ -66,7 +69,7 @@ class Sample_Skeleton {
             let directLight = this.lightObj3D.addComponent(DirectLight);
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             directLight.castShadow = true;
-            directLight.intensity = 25;
+            directLight.intensity = 3;
             GUIUtil.renderDirLight(directLight);
             scene.addChild(this.lightObj3D);
         }

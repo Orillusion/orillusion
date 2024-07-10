@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { AtmosphericComponent, BoxGeometry, CameraUtil, Engine3D, HoverCameraController, LitMaterial, MeshRenderer, Object3D, PointLight, Scene3D, SphereGeometry, View3D, } from "@orillusion/core";
+import { AtmosphericComponent, BoxGeometry, CameraUtil, Engine3D, FXAAPost, HoverCameraController, LitMaterial, MeshRenderer, Object3D, PointLight, PostProcessingComponent, Scene3D, SphereGeometry, View3D, } from "@orillusion/core";
 import { PointLightsScript } from "./PointLightsScript";
 import { Object3DUtil } from "../../src/util/Object3DUtil";
 import { GUIUtil } from "@samples/utils/GUIUtil";
@@ -33,6 +33,9 @@ export class Sample_PointLight {
 
         Engine3D.startRenderViews([view]);
 
+        let postProcessing = this.scene.addComponent(PostProcessingComponent);
+        postProcessing.addPost(FXAAPost);
+
         GUIUtil.renderDebug();
     }
 
@@ -53,7 +56,7 @@ export class Sample_PointLight {
         let mat = new LitMaterial();
 
         // make 20 box
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < 10; i++) {
             for (let j = 0; j < 10; j++) {
                 let box = new Object3D();
                 let mr2 = box.addComponent(MeshRenderer);
