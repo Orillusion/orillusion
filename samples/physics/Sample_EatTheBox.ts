@@ -24,7 +24,8 @@ class Sample_EatTheBox {
         //set shadow
         Engine3D.setting.shadow.updateFrameRate = 1;
         Engine3D.setting.shadow.shadowSize = 2048;
-        Engine3D.setting.shadow.shadowBound = 64;
+        Engine3D.setting.shadow.shadowBound = 100;
+        Engine3D.setting.shadow.shadowBias = 0.01;
         //get original ammo world for processing more custom function
         this.ammoWorld = Physics.world;
 
@@ -44,7 +45,7 @@ class Sample_EatTheBox {
         //add DirectLight
         let lightObj = new Object3D();
         let light = lightObj.addComponent(DirectLight);
-        light.intensity = 50;
+        light.intensity = 8;
         light.castShadow = true;
         lightObj.rotationX = 60;
         lightObj.rotationY = 80;

@@ -31,10 +31,7 @@ export class Sample_PointLight {
         view.scene = this.scene;
         view.camera = mainCamera;
 
-        Engine3D.startRenderViews([view]);
-
-        let postProcessing = this.scene.addComponent(PostProcessingComponent);
-        postProcessing.addPost(FXAAPost);
+        Engine3D.startRenderView(view);
 
         GUIUtil.renderDebug();
     }

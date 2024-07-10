@@ -13,8 +13,8 @@ export class Sample_GodRay {
 
 	async run() {
 		Engine3D.setting.shadow.shadowSize = 2048
-		Engine3D.setting.shadow.shadowBound = 500;
-		Engine3D.setting.shadow.shadowBias = 0.05;
+		Engine3D.setting.shadow.shadowBound = 400;
+		Engine3D.setting.shadow.shadowBias = 0.1;
 		Engine3D.setting.render.debug = true;
 
 		await Engine3D.init({ renderLoop: () => { this.loop() } });
@@ -58,19 +58,6 @@ export class Sample_GodRay {
 	}
 
 	async initScene() {
-		{
-			this.lightObj = new Object3D();
-			this.lightObj.rotationX = 15;
-			this.lightObj.rotationY = 110;
-			this.lightObj.rotationZ = 0;
-			let lc = this.lightObj.addComponent(DirectLight);
-			lc.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
-			lc.castShadow = true;
-			lc.intensity = 5;
-			this.scene.addChild(this.lightObj);
-			GUIUtil.renderDirLight(lc, false);
-		}
-
 		{
 			let mat = new LitMaterial();
 			mat.roughness = 0.5;

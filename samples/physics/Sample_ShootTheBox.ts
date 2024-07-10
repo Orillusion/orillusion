@@ -20,7 +20,8 @@ class Sample_ShootTheBox {
         //set shadow
         Engine3D.setting.shadow.updateFrameRate = 1;
         Engine3D.setting.shadow.shadowSize = 2048;
-        Engine3D.setting.shadow.shadowBound = 64;
+        Engine3D.setting.shadow.shadowBound = 50;
+        Engine3D.setting.shadow.shadowBias = 0.005;
 
         //add mouse event listener
         Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_DOWN, this.MouseDown, this);
@@ -42,7 +43,7 @@ class Sample_ShootTheBox {
         //add DirectLight
         let lightObj = new Object3D();
         let light = lightObj.addComponent(DirectLight);
-        light.intensity = 50;
+        light.intensity = 8;
         light.castShadow = true;
         lightObj.rotationX = 60;
         lightObj.rotationY = 140;
