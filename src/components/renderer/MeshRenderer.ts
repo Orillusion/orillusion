@@ -57,25 +57,31 @@ export class MeshRenderer extends RenderNode {
     public set geometry(value: GeometryBase) {
         //this must use super geometry has reference in super
         super.geometry = value;
-        let isMorphTarget = value.morphTargetDictionary != null;
-        if (isMorphTarget) {
-            this.morphData ||= new MorphTargetData();
-            this.morphData.morphTargetsRelative = value.morphTargetsRelative;
-            this.morphData.initMorphTarget(value);
-        }
-        this.morphData && (this.morphData.enable = isMorphTarget);
-        if (this.morphData && this.morphData.enable) {
-            this.addRendererMask(RendererMask.MorphTarget);
-        } else {
-            this.removeRendererMask(RendererMask.MorphTarget);
-            // this.onCompute = null;
-        }
+        if (value) {
+            let isMorphTarget = value.morphTargetDictionary != null;
+            if (isMorphTarget) {
+                this.morphData ||= new MorphTargetData();
+                this.morphData.morphTargetsRelative = value.morphTargetsRelative;
+                this.morphData.initMorphTarget(value);
+            }
+            this.morphData && (this.morphData.enable = isMorphTarget);
+            if (this.morphData?.enable) {
+                this.addRendererMask(RendererMask.MorphTarget);
+            } else {
+                this.removeRendererMask(RendererMask.MorphTarget);
+            }
 
-        this.object3D.bound = this._geometry.bounds.clone();
+            this.object3D.bound = this._geometry.bounds.clone();
+        } else {
+            if (this.morphData) {
+                this.morphData.enable = false;
+            }
+            this.removeRendererMask(RendererMask.MorphTarget);
+        }
         if (!this._readyPipeline) {
             this.initPipeline();
 
-            if (this._computes && this._computes) {
+            if (this._computes) {
                 this.onCompute = mergeFunctions(this.onCompute, () => {
                     for (let i = 0; i < this._computes.length; i++) {
                         const compute = this._computes[i];
