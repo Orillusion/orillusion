@@ -123,10 +123,14 @@ export class RenderNode extends ComponentBase {
 
     public set geometry(value: GeometryBase) {
         if (this._geometry != value) {
+            this._readyPipeline = false;
+
             if (this._geometry) {
                 Reference.getInstance().detached(this._geometry, this)
             }
-            Reference.getInstance().attached(value, this)
+            if (value) {
+                Reference.getInstance().attached(value, this)
+            }
         }
         this._geometry = value;
     }
@@ -258,7 +262,6 @@ export class RenderNode extends ComponentBase {
 
     protected initPipeline() {
         if (this._geometry && this._materials.length > 0) {
-            let index = 0;
             for (let j = 0; j < this._materials.length; j++) {
                 const material = this._materials[j];
                 let passList = material.getPass(PassType.COLOR);
@@ -274,7 +277,6 @@ export class RenderNode extends ComponentBase {
             }
             this._readyPipeline = true;
 
-            let transparent = false;
             let sort = 0;
             for (let i = 0; i < this.materials.length; i++) {
                 const element = this.materials[i];
@@ -364,6 +366,8 @@ export class RenderNode extends ComponentBase {
     }
 
     public renderPass(view: View3D, passType: PassType, renderContext: RenderContext) {
+        if (!this._geometry)
+            return;
         let renderNode = this;
         let worldMatrix = renderNode.transform._worldMatrix;
         for (let i = 0; i < renderNode.materials.length; i++) {
@@ -433,6 +437,8 @@ export class RenderNode extends ComponentBase {
         if (!this.enable)
             return;
         // this.nodeUpdate(view, passType, rendererPassState, clusterLightingBuffer);
+        if (!this._geometry)
+            return;
 
         let node = this;
         let worldMatrix = node.object3D.transform._worldMatrix;
