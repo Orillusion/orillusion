@@ -95,40 +95,39 @@ export class InputSystem extends CEventDispatcher {
      */
     public initCanvas(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
+        // temp vars to check click
+        let _t = 0, _x = 0, _y = 0, _button = 0
+        canvas.onpointerdown = (ev: PointerEvent) => {
+            _t = performance.now();
+            _x = ev.clientX;
+            _y = ev.clientY;
+            _button = ev.button;
 
-        // canvas.onpointerdown = (ev: PointerEvent) => {
-        //     if (ev.button == 0) {
-        //         this.mouseStart(ev);
-        //     } else if (ev.button == 1) {
-        //         this.middleDown(ev);
-        //     } else if (ev.button == 2) {
-        //         this.mouseStart(ev);
-        //     }
-        // }
-
-        canvas.onmousedown = (ev: MouseEvent) => {
             if (ev.button == 0) {
                 this.mouseStart(ev);
             } else if (ev.button == 1) {
                 this.middleDown(ev);
             } else if (ev.button == 2) {
+                this.isRightMouseDown = true
                 this.mouseStart(ev);
             }
         }
-
         canvas.onpointerup = (ev: PointerEvent) => {
             if (ev.button == 0) {
                 this.mouseEnd(ev);
             } else if (ev.button == 1) {
                 this.middleUp(ev);
             } else if (ev.button == 2) {
+                this.isRightMouseDown = false
                 this.mouseEnd(ev);
+            }
+            if(ev.button === _button && performance.now() - _t < 300 && Math.abs(_x - ev.clientX) < 20 && Math.abs(_y - ev.clientY) < 20){
+                ev.button === 0 ? this.mouseClick(ev) : this.rightClick(ev);
             }
         }
         canvas.onpointerenter = (ev: PointerEvent) => {
             this.mouseOver(ev);
         }
-
         canvas.onpointermove = (ev: PointerEvent) => {
             this.mouseMove(ev);
         }
@@ -141,21 +140,6 @@ export class InputSystem extends CEventDispatcher {
         canvas.onpointerout = (ev: PointerEvent) => {
             this.mouseEnd(ev);
         }
-
-        canvas.addEventListener(
-            'click',
-            (e: MouseEvent) => {
-                //if right click
-                if (e.button == 2) {
-                    this.isRightMouseDown = false;
-                    this.rightClick(e);
-                } else if (e.button == 0) {
-                    this.isMouseDown = false;
-                    this.mouseClick(e);
-                }
-            },
-            true,
-        );
 
         // let input = document.createElement(`input`);
         // input.setSelectionRange(-1000, 1000);
