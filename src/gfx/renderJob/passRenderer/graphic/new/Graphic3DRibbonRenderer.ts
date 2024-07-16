@@ -1,4 +1,3 @@
-import { NonSerialize, StructStorageGPUBuffer, Vector3 } from "../../../../..";
 import { graphicTrailCompute } from "../../../../../assets/shader/graphic/GraphicTrailCompute";
 import { MeshRenderer } from "../../../../../components/renderer/MeshRenderer";
 import { View3D } from "../../../../../core/View3D";
@@ -11,9 +10,11 @@ import { Vector4 } from "../../../../../math/Vector4";
 import { TrailGeometry } from "../../../../../shape/TrailGeometry";
 import { BitmapTexture2DArray } from "../../../../../textures/BitmapTexture2DArray";
 import { GeometryUtil } from "../../../../../util/GeometryUtil";
+import { NonSerialize } from "../../../../../util/SerializeDecoration";
 import { Struct } from "../../../../../util/struct/Struct";
 import { GlobalBindGroup } from "../../../../graphics/webGpu/core/bindGroups/GlobalBindGroup";
 import { StorageGPUBuffer } from "../../../../graphics/webGpu/core/buffer/StorageGPUBuffer";
+import { StructStorageGPUBuffer } from "../../../../graphics/webGpu/core/buffer/StructStorageGPUBuffer";
 import { ComputeShader } from "../../../../graphics/webGpu/shader/ComputeShader";
 import { GPUContext } from "../../../GPUContext";
 

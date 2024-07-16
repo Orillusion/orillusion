@@ -259,10 +259,12 @@ export class Texture implements GPUSamplerDescriptor {
 
         if (sizeCount > 1) {
             this.viewDescriptor = {
+                format: format,
                 dimension: `2d-array`,
             };
         } else {
             this.viewDescriptor = {
+                format: format,
                 dimension: this.textureBindingLayout.viewDimension,
                 mipLevelCount: mipLevelCount,
                 baseMipLevel: 0

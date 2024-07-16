@@ -14,27 +14,35 @@ export let Inline_vert: string = /*wgsl*/ `
     var<private> ORI_CameraWorldDir: vec3<f32>;
     var<private> ORI_ViewDir: vec3<f32>;
 
-    var<private> TIME: vec4<f32>;
-    var<private> MOUSE: vec4<f32>;
-    var<private> SCREEN: vec4<f32>;
+    fn TIME() -> vec3f {
+        return vec3f(globalUniform.frame, globalUniform.time , globalUniform.delta);
+    }
 
-    var<private> ProjectionParams: vec4<f32>;
+    fn TIME_frame() -> f32 {
+        return globalUniform.frame ;
+    }
+
+    fn TIME_time() -> f32 {
+        return globalUniform.time ;
+    }
+
+    fn TIME_delta() -> f32 {
+        return globalUniform.delta ;
+    }
+
+    fn MOUSE() -> vec2f {
+        return vec2f( globalUniform.mouseX, globalUniform.mouseY) ;
+    }
+
+    fn SCREEN() -> vec2f {
+        return vec2f( globalUniform.windowWidth, globalUniform.windowHeight) ;
+    }
+
+    fn ProjectionParams() -> vec3f {
+        return vec3f( globalUniform.near, globalUniform.far,1.0 + 1.0 / globalUniform.far) ;
+    }
 
     fn vertex_inline(vertex:VertexAttributes){
-        TIME.x = globalUniform.frame;
-        TIME.y = globalUniform.time;
-        TIME.z = globalUniform.delta;
-
-        MOUSE.x = globalUniform.mouseX;
-        MOUSE.y = globalUniform.mouseY;
-
-        SCREEN.x = globalUniform.windowWidth;
-        SCREEN.y = globalUniform.windowHeight;
-
-        ProjectionParams.x = globalUniform.near;
-        ProjectionParams.y = globalUniform.far;
-        ProjectionParams.z = 1.0 + 1.0 / globalUniform.far;
-
         ORI_MATRIX_P = globalUniform.projMat ;
         ORI_MATRIX_V = globalUniform.viewMat ;
         ORI_MATRIX_PV = ORI_MATRIX_P * ORI_MATRIX_V ;

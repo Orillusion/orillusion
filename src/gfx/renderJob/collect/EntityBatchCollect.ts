@@ -1,5 +1,5 @@
 import { RenderNode } from '../../../components/renderer/RenderNode';
-import { PassType } from '../passRenderer/state/RendererType';
+import { PassType } from '../passRenderer/state/PassType';
 import { RenderGroup } from './RenderGroup';
 /**
  * @internal

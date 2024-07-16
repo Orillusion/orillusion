@@ -39,7 +39,7 @@ export class Sample_drawCallShareGeometry {
         lightObj.rotationZ = 150;
         let dirLight = lightObj.addComponent(DirectLight);
         dirLight.lightColor = KelvinUtil.color_temperature_to_rgb(5500);
-        dirLight.intensity = 100;
+        dirLight.intensity = 40;
         dirLight.indirect = 1;
         this.scene.addChild(lightObj);
 

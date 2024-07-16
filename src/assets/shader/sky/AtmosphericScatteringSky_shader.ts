@@ -3,7 +3,7 @@
  */
 export class AtmosphericScatteringSky_shader {
   public static cs: string = /* wgsl */ `
-    #include 'ColorUtil'
+    #include 'ColorUtil_frag'
     struct UniformData {
         width: f32,
         height: f32,

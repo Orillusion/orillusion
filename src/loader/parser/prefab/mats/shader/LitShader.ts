@@ -26,7 +26,7 @@ export class LitShader extends Shader {
         shaderState.acceptGI = true;
         shaderState.useLight = true;
         this.setDefine('USE_BRDF', true);
-        this.setDefine('USE_AO_R', true);
+        // this.setDefine('USE_AO_R', true);
         this.setDefine('USE_ROUGHNESS_G', true);
         this.setDefine('USE_METALLIC_B', true);
         this.setDefine('USE_ALPHA_A', true);

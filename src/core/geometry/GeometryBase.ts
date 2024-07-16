@@ -45,6 +45,7 @@ export class GeometryBase {
     public bindPose: Matrix4[];
     public blendShapeData: BlendShapeData;
     public vertexDim: number;
+    public vertexCount: number = 0;
 
     private _bounds: BoundingBox;
     private _attributeMap: Map<string, VertexAttributeData>;
@@ -135,6 +136,7 @@ export class GeometryBase {
         this._bounds = value;
     }
 
+
     /**
      * add subGeometry from lod level 
      * @param lodLevels @see LODDescriptor
@@ -156,6 +158,7 @@ export class GeometryBase {
             this._indicesBuffer.upload(this.getAttribute(VertexAttributeName.indices).data);
             this._vertexBuffer.createVertexBuffer(this._attributeMap, shaderReflection);
             this._vertexBuffer.updateAttributes(this._attributeMap);
+            this.vertexCount = this._vertexBuffer.vertexCount;
         }
     }
 

@@ -47,7 +47,7 @@ class Sample_UVMove {
             let directLight = lightObj.addComponent(DirectLight);
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             directLight.castShadow = true;
-            directLight.intensity = 6;
+            directLight.intensity = 2;
             this.scene.addChild(lightObj);
         }
 
@@ -73,7 +73,7 @@ class Sample_UVMove {
             let material = new LitMaterial();
             material.baseMap = await Engine3D.res.loadTexture("particle/T_Fx_Object_229.png");;
             renderer.material = material;
-            material.blendMode = BlendMode.ADD;
+            material.blendMode = BlendMode.NORMAL;
             renderer.geometry = new PlaneGeometry(100, 100, 1, 1);
             this.scene.addChild(plane);
 

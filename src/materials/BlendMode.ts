@@ -103,6 +103,7 @@ export class BlendFactor {
             case BlendMode.ALPHA:
                 blend.color.srcFactor = `src-alpha`;
                 blend.color.dstFactor = `one-minus-src-alpha`;
+                blend.color.operation = 'add';
 
                 // blend.alpha.srcFactor = `one`;
                 // blend.alpha.dstFactor = `one`;

@@ -24,4 +24,6 @@ export interface IComponent {
     beforeDestroy(force?: boolean);
     onParentChange?(lastParent?: Object3D, currentParent?: Object3D);
 
+    onAddChild?(child: Object3D);
+    onRemoveChild?(child: Object3D);
 }

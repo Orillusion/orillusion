@@ -1,5 +1,5 @@
 import { BoxGeometry, Camera3D, DirectLight, Engine3D, LitMaterial, KelvinUtil, MeshRenderer, Object3D, Scene3D, Vector3, Color, OrbitController, View3D, AtmosphericComponent } from '@orillusion/core';
-import { PositionAudio, AudioListener } from  '@orillusion/media-extention'
+import { PositionAudio, AudioListener } from '@orillusion/media-extention'
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 
 export class Static_Audio {
@@ -11,20 +11,22 @@ export class Static_Audio {
     private a = 40
     private b = 80
     private angle = 0
-    constructor() {}
+    constructor() { }
 
     async run() {
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.updateFrameRate = 1;
         Engine3D.setting.shadow.type = 'HARD';
-        Engine3D.setting.shadow.shadowBound = 100;
+        Engine3D.setting.shadow.shadowSize = 2048;
+        Engine3D.setting.shadow.shadowBound = 200;
+        Engine3D.setting.shadow.shadowBias = 0.002;
 
         await Engine3D.init({
             renderLoop: this.loop.bind(this)
         });
         this.scene = new Scene3D();
         this.scene.addComponent(AtmosphericComponent);
-        
+
         this.camera = new Object3D()
         this.camera.localPosition = new Vector3(0, 20, 50)
         let mainCamera = this.camera.addComponent(Camera3D)
@@ -49,9 +51,9 @@ export class Static_Audio {
             let [speaker, man, music] = await Promise.all([
                 Engine3D.res.loadGltf('gltfs/speaker/scene.gltf'),
                 Engine3D.res.loadGltf('gltfs/glb/CesiumMan.glb'),
-                fetch('https://cdn.orillusion.com/audio.ogg').then(res=>res.arrayBuffer())
+                fetch('https://cdn.orillusion.com/audio.ogg').then(res => res.arrayBuffer())
             ])
-            speaker.localScale.set(4,4,4)
+            speaker.localScale.set(4, 4, 4)
             speaker.rotationX = -120
             speaker.y = 0.5
             let group = new Object3D()
@@ -74,23 +76,23 @@ export class Static_Audio {
             await audio.loadBuffer(music)
             audio.refDistance = 10;
             audio.maxDistance = 100;
-			audio.setDirectionalCone( 180, 230, 0.1 );
+            audio.setDirectionalCone(180, 230, 0.1);
             audio.showHelper()
 
             GUIHelp.init();
-            GUIHelp.addButton('play', ()=>{
+            GUIHelp.addButton('play', () => {
                 audio.play()
             })
-            GUIHelp.addButton('pause', ()=>{
+            GUIHelp.addButton('pause', () => {
                 audio.pause()
             })
-            GUIHelp.addButton('stop', ()=>{
+            GUIHelp.addButton('stop', () => {
                 audio.stop()
             })
-            GUIHelp.add({volume:1}, 'volume', 0, 1, 0.01).onChange( (v:number) =>{
+            GUIHelp.add({ volume: 1 }, 'volume', 0, 1, 0.01).onChange((v: number) => {
                 audio.setVolume(v)
             })
-            GUIHelp.addButton('Toggle Helper', ()=>{
+            GUIHelp.addButton('Toggle Helper', () => {
                 audio.toggleHelper()
             })
             GUIHelp.open()
@@ -100,7 +102,7 @@ export class Static_Audio {
             let mr = wall.addComponent(MeshRenderer)
             mr.geometry = new BoxGeometry(40, 30, 1)
             let mat = new LitMaterial()
-            mat.baseColor = new Color(1,0,0)
+            mat.baseColor = new Color(1, 0, 0)
             mr.material = mat
             this.scene.addChild(wall)
             wall.z = -5
@@ -123,13 +125,13 @@ export class Static_Audio {
             let directLight = this.lightObj.addComponent(DirectLight);
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             directLight.castShadow = true;
-            directLight.intensity = 30;
+            directLight.intensity = 3;
             this.scene.addChild(this.lightObj);
         }
     }
-    loop(){
+    loop() {
         let man = this.scene.getChildByName('man') as Object3D
-        if(man){
+        if (man) {
             this.angle += 0.005
             man.x = this.a * Math.cos(this.angle)
             man.z = this.b * Math.sin(this.angle) + 30

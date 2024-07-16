@@ -2,7 +2,7 @@ import { StorageGPUBuffer } from "../gfx/graphics/webGpu/core/buffer/StorageGPUB
 import { UniformGPUBuffer } from "../gfx/graphics/webGpu/core/buffer/UniformGPUBuffer";
 import { Texture } from "../gfx/graphics/webGpu/core/texture/Texture";
 import { RenderShaderPass } from "../gfx/graphics/webGpu/shader/RenderShaderPass";
-import { PassType } from "../gfx/renderJob/passRenderer/state/RendererType";
+import { PassType } from "../gfx/renderJob/passRenderer/state/PassType";
 import { Shader } from "../gfx/graphics/webGpu/shader/Shader";
 import { Color } from "../math/Color";
 import { Vector2 } from "../math/Vector2";
@@ -72,6 +72,14 @@ export class Material {
             this._defaultSubShader.noticeShaderChange();
             this._defaultSubShader.noticeValueChange();
         }
+    }
+
+    public get castReflection(): boolean {
+        return this._defaultSubShader.shaderState.castReflection;
+    }
+
+    public set castReflection(value: boolean) {
+        this._defaultSubShader.shaderState.castReflection = value;
     }
 
     public get blendMode(): BlendMode {

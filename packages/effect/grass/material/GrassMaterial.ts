@@ -42,7 +42,7 @@ export class GrassMaterial extends Material {
         colorPass.setUniformVector4("windBound", new Vector4(0, 0, 2000, 2000));
         colorPass.setUniformVector2("windDirection", new Vector2(0.6, 0.8));
         colorPass.setUniformFloat("windPower", 0.8);
-        colorPass.setUniformFloat("windSpeed", 12);
+        colorPass.setUniformFloat("windSpeed", 1.2);
         colorPass.setUniformFloat("translucent", 0.35);
         colorPass.setUniformFloat("roughness", 0.35);
         colorPass.setUniformFloat("curvature", 0.4068);
@@ -57,7 +57,7 @@ export class GrassMaterial extends Material {
         shadowPass.setUniformVector4("windBound", new Vector4(0, 0, 2000, 2000));
         shadowPass.setUniformVector2("windDirection", new Vector2(0.6, 0.8));
         shadowPass.setUniformFloat("windPower", 0.8);
-        shadowPass.setUniformFloat("windSpeed", 10);
+        shadowPass.setUniformFloat("windSpeed", 1.0);
         shadowPass.setUniformFloat("translucent", 0.35);
         shadowPass.setUniformFloat("roughness", 0.35);
         shadowPass.setUniformFloat("curvature", 0.4068);
@@ -93,7 +93,7 @@ export class GrassMaterial extends Material {
     }
 
     public get windBound(): Vector4 {
-        return this.shader.getUniform("windBound").data;
+        return this.shader.getUniformVector4("windBound");
     }
 
     public set grassBaseColor(v: Color) {
@@ -117,7 +117,7 @@ export class GrassMaterial extends Material {
     }
 
     public get windDirection(): Vector2 {
-        return this.shader.getUniform("windDirection").data;
+        return this.shader.getUniformVector2("windDirection");
     }
 
     public set windPower(v: number) {
@@ -125,7 +125,7 @@ export class GrassMaterial extends Material {
     }
 
     public get windPower(): number {
-        return this.shader.getUniform("windPower").data;
+        return this.shader.getUniformFloat("windPower");
     }
 
     public set windSpeed(v: number) {
@@ -133,7 +133,7 @@ export class GrassMaterial extends Material {
     }
 
     public get windSpeed(): number {
-        return this.shader.getUniform("windSpeed").data;
+        return this.shader.getUniformFloat("windSpeed");
     }
 
     public set grassHeight(v: number) {
@@ -141,7 +141,7 @@ export class GrassMaterial extends Material {
     }
 
     public get grassHeight(): number {
-        return this.shader.getUniform("grassHeight").data;
+        return this.shader.getUniformFloat("grassHeight");
     }
 
     public set curvature(v: number) {
@@ -149,7 +149,7 @@ export class GrassMaterial extends Material {
     }
 
     public get curvature(): number {
-        return this.shader.getUniform("curvature").data;
+        return this.shader.getUniformFloat("curvature");
     }
 
     public set roughness(v: number) {
@@ -157,7 +157,7 @@ export class GrassMaterial extends Material {
     }
 
     public get roughness(): number {
-        return this.shader.getUniform("roughness").data;
+        return this.shader.getUniformFloat("roughness");
     }
 
     public set translucent(v: number) {
@@ -165,7 +165,7 @@ export class GrassMaterial extends Material {
     }
 
     public get translucent(): number {
-        return this.shader.getUniform("translucent").data;
+        return this.shader.getUniformFloat("translucent");
     }
 
     public set soft(v: number) {
@@ -173,7 +173,7 @@ export class GrassMaterial extends Material {
     }
 
     public get soft(): number {
-        return this.shader.getUniform("soft").data;
+        return this.shader.getUniformFloat("soft");
     }
 
     public set specular(v: number) {
@@ -181,6 +181,6 @@ export class GrassMaterial extends Material {
     }
 
     public get specular(): number {
-        return this.shader.getUniform("specular").data;
+        return this.shader.getUniformFloat("specular");
     }
 }

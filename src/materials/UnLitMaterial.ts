@@ -4,7 +4,7 @@ import { RenderShaderPass } from '../gfx/graphics/webGpu/shader/RenderShaderPass
 import { Color } from '../math/Color';
 import { Vector4 } from '../math/Vector4';
 import { Material } from './Material';
-import { PassType } from '../gfx/renderJob/passRenderer/state/RendererType';
+import { PassType } from '../gfx/renderJob/passRenderer/state/PassType';
 import { Shader, UnLitShader } from '..';
 
 /**

@@ -1,4 +1,4 @@
-import { LitMaterial, Material } from "../../..";
+import { AnimatorComponent, BlendShapeData, BlendShapePropertyData, GLTFMaterial, LitMaterial, Material, Matrix4, PropertyAnimationClip, SkinnedMeshRenderer2 } from "../../..";
 import { Engine3D } from "../../../Engine3D";
 import { SkeletonAnimationComponent } from "../../../components/SkeletonAnimationComponent";
 import { DirectLight } from "../../../components/lights/DirectLight";
@@ -34,7 +34,7 @@ export class GLTFSubParserConverter {
     }
 
     public async convertNodeToObject3D(nodeInfo: GLTF_Node, parentNode): Promise<Object3D> {
-        const node = new Object3D();
+        const node: Object3D = new Object3D();
         node.name = nodeInfo.name;
         node[GLTFType.GLTF_NODE_INDEX_PROPERTY] = nodeInfo.nodeId;
         nodeInfo['nodeObj'] = node;
@@ -73,19 +73,37 @@ export class GLTFSubParserConverter {
         }
 
         if (nodeInfo['skeleton']) {
-            let skeletonAnimation = node.addComponent(SkeletonAnimationComponent);
-            if (skeletonAnimation) {
-                skeletonAnimation.skeleton = this.subParser.parseSkeleton(nodeInfo['skeleton'].skeleton);
-                for (let i = 0; i < this.gltf.animations.length; i++) {
-                    let animation = this.gltf.animations[i];
-                    if (!animation.name) animation.name = i.toString();
-                    let animationClip = this.subParser.parseSkeletonAnimation(skeletonAnimation.skeleton, animation);
-                    skeletonAnimation.addAnimationClip(animationClip);
-                }
-            }
+            // let skeletonAnimation = node.addComponent(SkeletonAnimationComponent);
+            // if (skeletonAnimation) {
+            //     skeletonAnimation.skeleton = this.subParser.parseSkeleton(nodeInfo['skeleton'].skeleton);
+            //     for (let i = 0; i < this.gltf.animations.length; i++) {
+            //         let animation = this.gltf.animations[i];
+            //         if (!animation.name) animation.name = i.toString();
+            //         let animationClip = this.subParser.parseSkeletonAnimation(skeletonAnimation.skeleton, animation);
+            //         skeletonAnimation.addAnimationClip(animationClip);
+            //     }
+            // }
+            this.convertSkeletonAnim(node, nodeInfo['skeleton']);
         }
 
         return node;
+    }
+
+    private convertSkeletonAnim(node: Object3D, skeletonInfo: any) {
+        let avatarData = this.subParser.parseSkeleton(skeletonInfo.skeleton);
+        Engine3D.res.addObj(avatarData.name, avatarData);
+
+        let clips: PropertyAnimationClip[] = [];
+        for (let i = 0; i < this.gltf.animations.length; i++) {
+            let animation = this.gltf.animations[i];
+            if (!animation.name) animation.name = i.toString();
+            let clip = this.subParser.parseSkeletonAnimation(avatarData, animation);
+            clips.push(clip);
+        }
+
+        let animator = node.addComponent(AnimatorComponent);
+        animator.avatar = avatarData.name;
+        animator.clips = clips;
     }
 
     private convertLight(nodeInfo: GLTF_Node, node: Object3D) {
@@ -174,31 +192,54 @@ export class GLTFSubParserConverter {
                 this.gltf.resources[materialKey] = newMat;
                 // newMat.doubleSided
                 newMat.name = md.name;
-                if (primitive.material) {
-                    const { baseColorTexture, baseColorFactor, metallicFactor, roughnessFactor, doubleSided, metallicRoughnessTexture, normalTexture, occlusionTexture, emissiveTexture, emissiveFactor, enableBlend, alphaCutoff } = primitive.material;
 
-                    let physicMaterial = (newMat = this.applyMaterialExtensions(primitive.material, newMat));
-                    if (`enableBlend` in primitive.material) {
-                        if (primitive.material[`enableBlend`]) {
-                            physicMaterial.blendMode = BlendMode.SOFT_ADD;
+                let gltfMat = md as GLTFMaterial;
+                if (gltfMat) {
+                    const { baseColorTexture, baseColorFactor, metallicFactor, roughnessFactor, doubleSided, metallicRoughnessTexture, normalTexture, occlusionTexture, emissiveTexture, emissiveFactor, enableBlend, alphaCutoff } = gltfMat;
+
+                    let physicMaterial = (newMat = this.applyMaterialExtensions(gltfMat, newMat));
+                    if (`enableBlend` in gltfMat) {
+                        if (gltfMat[`enableBlend`]) {
+                            let defines = gltfMat.defines;
+                            if (defines?.includes('ALPHA_BLEND')) {
+                                physicMaterial.blendMode = BlendMode.ALPHA;
+                            } else {
+                                physicMaterial.blendMode = BlendMode.NORMAL;
+                            }
+                            physicMaterial.castShadow = false;
                         } else {
                             physicMaterial.blendMode = BlendMode.NONE;
                         }
                     }
 
-                    if (`alphaCutoff` in primitive.material && alphaCutoff > 0 && alphaCutoff < 1) {
+                    if (`alphaCutoff` in gltfMat && alphaCutoff > 0 && alphaCutoff < 1) {
                         physicMaterial.setUniformFloat("alphaCutoff", alphaCutoff);
                         physicMaterial.blendMode = BlendMode.NORMAL;
                         physicMaterial.transparent = true;
+                        // physicMaterial.castShadow = false;
                         // physicMaterial.depthWriteEnabled = false;
                     }
 
-                    if (primitive.material.transformUV1) {
-                        physicMaterial.setUniformVector4("uvTransform_1", primitive.material.transformUV1);
+                    if (gltfMat.baseMapOffsetSize) {
+                        physicMaterial.setUniformVector4("baseMapOffsetSize", gltfMat.baseMapOffsetSize);
                     }
-                    if (primitive.material.transformUV2) {
-                        physicMaterial.setUniformVector4("uvTransform_2", primitive.material.transformUV2);
+                    if (gltfMat.normalMapOffsetSize) {
+                        physicMaterial.setUniformVector4("normalMapOffsetSize", gltfMat.normalMapOffsetSize);
                     }
+                    if (gltfMat.emissiveMapOffsetSize) {
+                        physicMaterial.setUniformVector4("emissiveMapOffsetSize", gltfMat.emissiveMapOffsetSize);
+                    }
+                    if (gltfMat.roughnessMapOffsetSize) {
+                        physicMaterial.setUniformVector4("roughnessMapOffsetSize", gltfMat.roughnessMapOffsetSize);
+                    }
+                    if (gltfMat.metallicMapOffsetSize) {
+                        physicMaterial.setUniformVector4("metallicMapOffsetSize", gltfMat.metallicMapOffsetSize);
+                    }
+                    if (gltfMat.aoMapOffsetSize) {
+                        physicMaterial.setUniformVector4("aoMapOffsetSize", gltfMat.aoMapOffsetSize);
+                    }
+
+
                     physicMaterial.setUniformColor("baseColor", new Color(baseColorFactor[0], baseColorFactor[1], baseColorFactor[2], baseColorFactor[3]));
                     physicMaterial.setUniformFloat("roughness", roughnessFactor);
                     physicMaterial.setUniformFloat("metallic", metallicFactor);
@@ -218,7 +259,8 @@ export class GLTFSubParserConverter {
                     }
 
                     if (occlusionTexture && (metallicRoughnessTexture != occlusionTexture)) {
-                        physicMaterial.setTexture("aoMap", occlusionTexture);
+                        // physicMaterial.setTexture("aoMap", occlusionTexture);
+                        // physicMaterial.shader.getDefaultColorShader().setDefine(`USE_AOTEX`, true);
                     }
 
                     if (emissiveTexture) {
@@ -229,7 +271,15 @@ export class GLTFSubParserConverter {
                         if (!physicMaterial.shader.getTexture("emissiveMap")) {
                             physicMaterial.shader.setTexture("emissiveMap", Engine3D.res.whiteTexture);
                         }
+                        physicMaterial.shader.setDefine('USE_EMISSIVEMAP', true);
                         physicMaterial.setUniformColor("emissiveColor", new Color(emissiveFactor[0], emissiveFactor[1], emissiveFactor[2], emissiveFactor[3]));
+                        if (physicMaterial.blendMode != BlendMode.NONE) {
+                            physicMaterial.blendMode = BlendMode.ADD;
+                        }
+                        let emissiveIntensity = mat.getUniformFloat('emissiveIntensity')
+                        if (!emissiveIntensity || emissiveIntensity <= 0) {
+                            mat.setUniformFloat('emissiveIntensity', 1.0);
+                        }
                     }
                 }
             }
@@ -271,42 +321,40 @@ export class GLTFSubParserConverter {
                 let meshName = primitive.meshName();
                 if (this.gltf.resources[meshName]) {
                     geometry = this.gltf.resources[meshName];
-                } else {
-                    geometry ||= this.createGeometryBase(meshName, attribArrays, primitive);
-                    this.gltf.resources[meshName] = geometry;
                 }
 
                 const model: Object3D = new Object3D(); //new Model( primitive.attribArrays.mesh );
                 model.name = modelName + i;
 
                 if (this.gltf.animations && attribArrays[VertexAttributeName.joints0] != undefined) {
-                    geometry ||= this.createGeometryBase(modelName, attribArrays, primitive);
+                    geometry ||= this.createGeometryBase(modelName, attribArrays, primitive, nodeInfo.skin);
                     this.gltf.resources[meshName] = geometry;
 
                     let skeletonNode = this.gltf.nodes[nodeInfo.skin.skeleton];
                     if (skeletonNode.dnode && skeletonNode.dnode['nodeObj']) {
-                        let node = skeletonNode.dnode['nodeObj'];
-                        let skeletonAnimation = node.addComponent(SkeletonAnimationComponent);
-                        if (skeletonAnimation) {
-                            skeletonAnimation.skeleton = this.subParser.parseSkeleton(nodeInfo.skin.skeleton);
-                            for (let i = 0; i < this.gltf.animations.length; i++) {
-                                let animation = this.gltf.animations[i];
-                                if (!animation.name) animation.name = i.toString();
-                                let animationClip = this.subParser.parseSkeletonAnimation(skeletonAnimation.skeleton, animation);
-                                skeletonAnimation.addAnimationClip(animationClip);
-                            }
-                        }
+                        // let node = skeletonNode.dnode['nodeObj'];
+                        // let skeletonAnimation = node.addComponent(SkeletonAnimationComponent);
+                        // if (skeletonAnimation) {
+                        //     skeletonAnimation.skeleton = this.subParser.parseSkeleton(nodeInfo.skin.skeleton);
+                        //     for (let i = 0; i < this.gltf.animations.length; i++) {
+                        //         let animation = this.gltf.animations[i];
+                        //         if (!animation.name) animation.name = i.toString();
+                        //         let animationClip = this.subParser.parseSkeletonAnimation(skeletonAnimation.skeleton, animation);
+                        //         skeletonAnimation.addAnimationClip(animationClip);
+                        //     }
+                        // }
+                        this.convertSkeletonAnim(node, nodeInfo.skin);
                     } else {
                         skeletonNode.dnode['skeleton'] = nodeInfo.skin;
                     }
 
-                    let smr = model.addComponent(SkinnedMeshRenderer);
-                    smr.castShadow = true;
-                    smr.castGI = true;
+                    let smr = model.addComponent(SkinnedMeshRenderer2);
+                    // smr.castShadow = true;
+                    // smr.castGI = true;
                     smr.geometry = geometry;
                     smr.material = mat;
-                    smr.skinJointsName = this.parseSkinJoints(nodeInfo.skin);
-                    smr.skinInverseBindMatrices = nodeInfo.skin.inverseBindMatrices;
+                    // smr.skinJointsName = this.parseSkinJoints(nodeInfo.skin);
+                    // smr.skinInverseBindMatrices = nodeInfo.skin.inverseBindMatrices;
                 } else {
                     geometry ||= this.createGeometryBase(modelName, attribArrays, primitive);
                     this.gltf.resources[meshName] = geometry;
@@ -358,7 +406,16 @@ export class GLTFSubParserConverter {
         //  }
     }
 
-    private createGeometryBase(name: string, attribArrays: any, primitive: any): GeometryBase {
+    private createGeometryBase(name: string, attribArrays: any, primitive: any, skin?:any): GeometryBase {
+        if ('indices' in attribArrays) {
+            let bigIndices = attribArrays[`indices`].data.length > 65534;
+            if (bigIndices) {
+                attribArrays[`indices`].data = new Uint32Array(attribArrays[`indices`].data);
+            } else {
+                attribArrays[`indices`].data = new Uint16Array(attribArrays[`indices`].data);
+            }
+        }
+
         let geometry = new GeometryBase();
         geometry.name = name;
 
@@ -370,6 +427,37 @@ export class GLTFSubParserConverter {
             } else {
                 attribArrays[`indices`].data = new Uint16Array(attribArrays[`indices`].data);
             }
+        }
+
+        // BlendShapeData
+        if (primitive.morphTargetsRelative) {
+            let blendShapeData = new BlendShapeData();
+            let targetNames = primitive.targetNames;
+            if (targetNames && targetNames.length > 0) {
+                blendShapeData.shapeNames = [];
+                blendShapeData.shapeIndexs = [];
+                for (let i = 0; i < targetNames.length; i++) {
+                    blendShapeData.shapeNames.push(targetNames[i])
+                    blendShapeData.shapeIndexs.push(i);
+                }
+            }
+            blendShapeData.vertexCount = attribArrays['position'].data.length / 3;
+            blendShapeData.blendCount = blendShapeData.shapeNames.length;
+            blendShapeData.blendShapePropertyDatas = [];
+            blendShapeData.blendShapeMap = new Map<string, BlendShapePropertyData>();
+            for (let i = 0; i < blendShapeData.blendCount; i++) {
+                let propertyData = new BlendShapePropertyData();
+                propertyData.shapeName = blendShapeData.shapeNames[i];
+                propertyData.shapeIndex = blendShapeData.shapeIndexs[i];
+                propertyData.frameCount = 1;
+                propertyData.blendPositionList = attribArrays[GLTFType.MORPH_POSITION_PREFIX + i].data;
+                propertyData.blendNormalList = attribArrays[GLTFType.MORPH_NORMAL_PREFIX + i].data;
+    
+                blendShapeData.blendShapePropertyDatas.push(propertyData);
+                blendShapeData.blendShapeMap.set(propertyData.shapeName, propertyData);
+            }
+            
+            geometry.blendShapeData = blendShapeData;
         }
 
         // geometry.geometrySource = new SerializeGeometrySource().setGLTFGeometry(this.initUrl, name);
@@ -401,6 +489,23 @@ export class GLTFSubParserConverter {
             geometry.setAttribute(attributeName, attributeData.data);
         }
 
+        if (skin) {
+            geometry.skinNames = new Array<string>(skin.joints.length);
+            for (let i = 0; i < skin.joints.length; i++) {
+                const id = skin.joints[i];
+                const node = this.gltf.nodes[id];
+                geometry.skinNames[i] = node.name;
+            }
+
+            geometry.bindPose = new Array<Matrix4>(skin.inverseBindMatrices.length);
+            for (let i = 0; i < skin.inverseBindMatrices.length; i++) {
+                const m = skin.inverseBindMatrices[i];
+                let mat = new Matrix4();
+                mat.rawData.set(m);
+                geometry.bindPose[i] = mat;
+            }
+        }
+
         let indicesAttribute = geometry.getAttribute(VertexAttributeName.indices);
         geometry.addSubGeometry(
             {
@@ -417,9 +522,11 @@ export class GLTFSubParserConverter {
     }
 
     private applyMaterialExtensions(dmaterial: any, mat: Material): Material {
-        KHR_materials_clearcoat.apply(this.gltf, dmaterial, mat);
-        KHR_materials_unlit.apply(this.gltf, dmaterial, mat);
-        KHR_materials_emissive_strength.apply(this.gltf, dmaterial, mat);
+        if (dmaterial.extensions) {
+            KHR_materials_clearcoat.apply(this.gltf, dmaterial, mat);
+            KHR_materials_unlit.apply(this.gltf, dmaterial, mat);
+            KHR_materials_emissive_strength.apply(this.gltf, dmaterial, mat);
+        }
         return mat;
     }
 

@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, SkeletonAnimationComponent, LitMaterial, MeshRenderer, BoxGeometry, DirectLight, KelvinUtil, Time, Object3DUtil, BoundingBox, SkinnedMeshRenderer } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, SkeletonAnimationComponent, LitMaterial, MeshRenderer, BoxGeometry, DirectLight, KelvinUtil, Time, Object3DUtil, BoundingBox, SkinnedMeshRenderer, AnimatorComponent } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
 // Sample to use SkeletonAnimationComponent
@@ -49,22 +49,23 @@ class Sample_Skeleton3 {
             scene.addChild(this.character);
 
 
-            let animation = this.character.getComponentsInChild(SkeletonAnimationComponent)[0];
+            let animation = this.character.getComponentsInChild(AnimatorComponent)[0];
+            animation.playAnim(animation.clips[1].clipName);
 
-            const runClip = animation.getAnimationClip("Run");
-            runClip.addEvent("Begin", 0);
-            runClip.addEvent("Mid", runClip.totalTime / 2);
-            runClip.addEvent("End", runClip.totalTime);
+            // const runClip = animation.getAnimationClip("Run");
+            // runClip.addEvent("Begin", 0);
+            // runClip.addEvent("Mid", runClip.totalTime / 2);
+            // runClip.addEvent("End", runClip.totalTime);
 
-            animation.eventDispatcher.addEventListener("Begin", (e: any /*AnimationEvent*/) => {
-                console.log("Run-Begin", e.skeletonAnimation.getAnimationClipState('Run').time)
-            }, this);
-            animation.eventDispatcher.addEventListener("Mid", (e: any /*AnimationEvent*/) => {
-                console.log("Run-Mid", e.skeletonAnimation.getAnimationClipState('Run').time)
-            }, this);
-            animation.eventDispatcher.addEventListener("End", (e: any /*AnimationEvent*/) => {
-                console.log("Run-End:", e.skeletonAnimation.getAnimationClipState('Run').time)
-            }, this);
+            // animation.eventDispatcher.addEventListener("Begin", (e: any /*AnimationEvent*/) => {
+            //     console.log("Run-Begin", e.skeletonAnimation.getAnimationClipState('Run').time)
+            // }, this);
+            // animation.eventDispatcher.addEventListener("Mid", (e: any /*AnimationEvent*/) => {
+            //     console.log("Run-Mid", e.skeletonAnimation.getAnimationClipState('Run').time)
+            // }, this);
+            // animation.eventDispatcher.addEventListener("End", (e: any /*AnimationEvent*/) => {
+            //     console.log("Run-End:", e.skeletonAnimation.getAnimationClipState('Run').time)
+            // }, this);
 
             // change speed
             GUIHelp.addFolder("Animation-speed").open();
@@ -73,22 +74,22 @@ class Sample_Skeleton3 {
 
             // change animation weight
             GUIHelp.addFolder("Animation-weight").open();
-            animation.getAnimationClipStates().forEach((clipState, _) => {
-                GUIHelp.add(clipState, 'weight', 0, 1.0, 0.01).name(clipState.name);
+            animation.clipsState.forEach((clipState, _) => {
+                GUIHelp.add(clipState, 'weight', 0, 1.0, 0.01).name(clipState.clip.clipName);
             });
             GUIHelp.endFolder();
 
             // toggle play/stop
             GUIHelp.addFolder("Animation-play").open();
-            animation.getAnimationClipStates().forEach((clipState, _) => {
-                GUIHelp.addButton(clipState.name, () => animation.play(clipState.name));
+            animation.clipsState.forEach((clipState, _) => {
+                GUIHelp.addButton(clipState.clip.clipName, () => animation.playAnim(clipState.clip.clipName));
             });
             GUIHelp.endFolder();
 
             // cross fade animation
             GUIHelp.addFolder("Animation-crossFade").open();
-            animation.getAnimationClipStates().forEach((clipState, _) => {
-                GUIHelp.addButton('crossFade(' + clipState.name + ')', () => animation.crossFade(clipState.name, 0.3));
+            animation.clipsState.forEach((clipState, _) => {
+                GUIHelp.addButton('crossFade(' + clipState.clip.clipName + ')', () => animation.crossFade(clipState.clip.clipName, 0.3));
             });
             GUIHelp.endFolder();
         }
@@ -108,7 +109,7 @@ class Sample_Skeleton3 {
             let directLight = this.lightObj3D.addComponent(DirectLight);
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             directLight.castShadow = true;
-            directLight.intensity = 40;
+            directLight.intensity = 3;
             GUIUtil.renderDirLight(directLight);
             scene.addChild(this.lightObj3D);
         }

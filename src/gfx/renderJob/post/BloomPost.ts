@@ -120,6 +120,14 @@ export class BloomPost extends PostBase {
         Engine3D.setting.render.postProcessing.bloom.bloomIntensity = value;
     }
 
+    public get hdr(): number {
+        return Engine3D.setting.render.postProcessing.bloom.hdr;
+    }
+
+    public set hdr(value: number) {
+        Engine3D.setting.render.postProcessing.bloom.hdr = value;
+    }
+
     private createThreshouldCompute() {
         this.thresholdCompute = new ComputeShader(threshold);
 
@@ -182,8 +190,6 @@ export class BloomPost extends PostBase {
             compute.workerSizeZ = 1;
 
             this.upSampleComputes.push(compute);
-
-            // Graphics.Blit(RT_BloomDown[i - 1], RT_BloomDown[i], new Material(Shader.Find("Shaders/downSample")));
         }
     }
 
@@ -205,25 +211,22 @@ export class BloomPost extends PostBase {
 
     private createResource() {
         let setting = Engine3D.setting.render.postProcessing.bloom;
-
         this.bloomSetting = new UniformGPUBuffer(4 * 2); //vector4 * 2
 
-        let presentationSize = webGPUContext.presentationSize;
-        let screenWidth = presentationSize[0];
-        let screenHeight = presentationSize[1];
+        let [screenWidth, screenHeight] = webGPUContext.presentationSize;
+        let usage = GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC | GPUTextureUsage.TEXTURE_BINDING;
 
-        this.RT_threshold = new VirtualTexture(screenWidth, screenHeight, GPUTextureFormat.rgba16float, false, GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC | GPUTextureUsage.TEXTURE_BINDING);
+        this.RT_threshold = new VirtualTexture(screenWidth, screenHeight, GPUTextureFormat.rgba16float, false, usage);
 
         const N = setting.downSampleStep;
         {
-            let downSize = 2;
             this.RT_BloomDown = [];
-
+            let w = Math.ceil(screenWidth / 4);
+            let h = Math.ceil(screenHeight / 4);
             for (let i = 0; i < N; i++) {
-                let w = Math.ceil(screenWidth / downSize);
-                let h = Math.ceil(screenHeight / downSize);
-                this.RT_BloomDown[i] = new VirtualTexture(w, h, GPUTextureFormat.rgba16float, false, GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC | GPUTextureUsage.TEXTURE_BINDING);
-                downSize *= 2;
+                this.RT_BloomDown[i] = new VirtualTexture(w, h, GPUTextureFormat.rgba16float, false, usage);
+                w = Math.ceil(w / 2);
+                h = Math.ceil(h / 2);
             }
         }
 
@@ -232,7 +235,7 @@ export class BloomPost extends PostBase {
             for (let i = 0; i < N - 1; i++) {
                 let w = this.RT_BloomDown[N - 2 - i].width;
                 let h = this.RT_BloomDown[N - 2 - i].height;
-                this.RT_BloomUp[i] = new VirtualTexture(w, h, GPUTextureFormat.rgba16float, false, GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC | GPUTextureUsage.TEXTURE_BINDING);
+                this.RT_BloomUp[i] = new VirtualTexture(w, h, GPUTextureFormat.rgba16float, false, usage);
             }
         }
 
@@ -266,6 +269,7 @@ export class BloomPost extends PostBase {
         this.bloomSetting.setFloat('upSampleBlurSigma', cfg.upSampleBlurSigma);
         this.bloomSetting.setFloat('luminanceThreshole', cfg.luminanceThreshole);
         this.bloomSetting.setFloat('bloomIntensity', cfg.bloomIntensity);
+        this.bloomSetting.setFloat('hdr', cfg.hdr);
 
         this.bloomSetting.apply();
 
@@ -276,18 +280,16 @@ export class BloomPost extends PostBase {
     public onResize() {
         let cfg = Engine3D.setting.render.postProcessing.bloom;
 
-        let presentationSize = webGPUContext.presentationSize;
-        let screenWidth = presentationSize[0];
-        let screenHeight = presentationSize[1];
+        let [screenWidth, screenHeight] = webGPUContext.presentationSize;
         this.RT_threshold.resize(screenWidth, screenHeight);
+
         const N = cfg.downSampleStep;
-        let downSize = 2;
-        // 
+        let w = Math.ceil(screenWidth / 4);
+        let h = Math.ceil(screenHeight / 4);
         for (let i = 0; i < N; i++) {
-            let w = Math.ceil(screenWidth / downSize);
-            let h = Math.ceil(screenHeight / downSize);
             this.RT_BloomDown[i].resize(w, h);
-            downSize *= 2;
+            w = Math.ceil(w / 2);
+            h = Math.ceil(h / 2);
         }
 
         for (let i = 0; i < N - 1; i++) {

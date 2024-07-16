@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, webGPUContext, HoverCameraController, View3D, DirectLight, KelvinUtil, Vector3, MorphTargetBlender, Entity, CameraUtil } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, webGPUContext, HoverCameraController, View3D, DirectLight, KelvinUtil, Vector3, MorphTargetBlender, Entity, CameraUtil, AnimatorComponent, PostProcessingComponent, FXAAPost } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
 // Sample of how to control the morphtarget animation
@@ -10,8 +10,10 @@ export class Sample_MorphTarget {
 
     async run() {
         Engine3D.setting.shadow.shadowBound = 100;
+        Engine3D.setting.shadow.shadowBias = 0.05;
 
         await Engine3D.init();
+        GUIHelp.init();
 
         this.scene = new Scene3D();
         let sky = this.scene.addComponent(AtmosphericComponent);
@@ -20,15 +22,19 @@ export class Sample_MorphTarget {
         camera.perspective(60, webGPUContext.aspect, 1, 5000.0);
         camera.object3D.addComponent(HoverCameraController).setCamera(0, 0, 150);
 
-        this.initDirectLight();
-        sky.relativeTransform = this.lightObj3D.transform;
-        await this.initMorphModel();
-
         let view = new View3D();
         view.scene = this.scene;
         view.camera = camera;
 
+        this.initDirectLight();
+
+        sky.relativeTransform = this.lightObj3D.transform;
+        await this.initMorphModel();
+
         Engine3D.startRenderView(view);
+
+        let postCom = this.scene.addComponent(PostProcessingComponent);
+        postCom.addPost(FXAAPost);
     }
 
     /******** light *******/
@@ -41,13 +47,12 @@ export class Sample_MorphTarget {
         let directLight = this.lightObj3D.addComponent(DirectLight);
         directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
         directLight.castShadow = true;
-        directLight.intensity = 25;
-        GUIUtil.renderDirLight(directLight, false);
+        directLight.intensity = 3;
         this.scene.addChild(this.lightObj3D);
+        GUIUtil.renderDirLight(directLight, true);
     }
 
     private async initMorphModel() {
-        GUIHelp.init();
 
         // load lion model
         let model = await Engine3D.res.loadGltf('gltfs/glb/lion.glb');
@@ -55,25 +60,42 @@ export class Sample_MorphTarget {
         model.x = -30.0;
         this.scene.addChild(model);
 
+        let animator = model.addComponent(AnimatorComponent);
+
         GUIHelp.addFolder('morph controller');
-        // register MorphTargetBlender component
-        let blendShapeComponent = model.addComponent(MorphTargetBlender);
-        let targetRenderers = blendShapeComponent.cloneMorphRenderers();
+
+        let targetRenderers = animator.cloneMorphRenderers();
 
         // bind influenceData to gui
         for (let key in targetRenderers) {
             this.influenceData[key] = 0.0;
             GUIHelp.add(this.influenceData, key, 0, 1, 0.01).onChange((v) => {
-                this.influenceData[key] = v;
-                let list = blendShapeComponent.getMorphRenderersByKey(key);
-                for (let renderer of list) {
-                    renderer.setMorphInfluence(key, v);
-                }
+                animator.updateBlendShape(["blendShape", "blendShape", key], "blendShape.blendShape." + key, v);
             });
         }
 
         GUIHelp.open();
         GUIHelp.endFolder();
+
+        // GUIHelp.addFolder('morph controller');
+        // // register MorphTargetBlender component
+        // let blendShapeComponent = model.addComponent(MorphTargetBlender);
+        // let targetRenderers = blendShapeComponent.cloneMorphRenderers();
+
+        // // bind influenceData to gui
+        // for (let key in targetRenderers) {
+        //     this.influenceData[key] = 0.0;
+        //     GUIHelp.add(this.influenceData, key, 0, 1, 0.01).onChange((v) => {
+        //         this.influenceData[key] = v;
+        //         let list = blendShapeComponent.getMorphRenderersByKey(key);
+        //         for (let renderer of list) {
+        //             renderer.setMorphInfluence(key, v);
+        //         }
+        //     });
+        // }
+
+        // GUIHelp.open();
+        // GUIHelp.endFolder();
 
         // print hierarchy
         this.printHierarchy(model);

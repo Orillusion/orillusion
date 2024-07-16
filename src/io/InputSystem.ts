@@ -85,6 +85,7 @@ export class InputSystem extends CEventDispatcher {
     protected _keyEvent3d: KeyEvent;
     protected _pointerEvent3D: PointerEvent3D;
     protected _windowsEvent3d: CEvent;
+    mouseLock: boolean = false;
 
 
 
@@ -94,9 +95,18 @@ export class InputSystem extends CEventDispatcher {
      */
     public initCanvas(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
-        // canvas.style.position = 'absolute';
-        // canvas.style.zIndex = '0';
-        canvas.onpointerdown = (ev: PointerEvent) => {
+
+        // canvas.onpointerdown = (ev: PointerEvent) => {
+        //     if (ev.button == 0) {
+        //         this.mouseStart(ev);
+        //     } else if (ev.button == 1) {
+        //         this.middleDown(ev);
+        //     } else if (ev.button == 2) {
+        //         this.mouseStart(ev);
+        //     }
+        // }
+
+        canvas.onmousedown = (ev: MouseEvent) => {
             if (ev.button == 0) {
                 this.mouseStart(ev);
             } else if (ev.button == 1) {
@@ -105,6 +115,7 @@ export class InputSystem extends CEventDispatcher {
                 this.mouseStart(ev);
             }
         }
+
         canvas.onpointerup = (ev: PointerEvent) => {
             if (ev.button == 0) {
                 this.mouseEnd(ev);
@@ -146,6 +157,14 @@ export class InputSystem extends CEventDispatcher {
             true,
         );
 
+        // let input = document.createElement(`input`);
+        // input.setSelectionRange(-1000, 1000);
+        // input.style.zIndex = `9999`
+        // input.style.width = `9999px`
+        // input.style.height = `9999px`
+        // input.style.position = `absolute`
+        // input.focus();
+        // document.body.append(input);
 
         canvas.addEventListener(`wheel`, (e: WheelEvent) => this.mouseWheel(e), { passive: false });
 
@@ -171,12 +190,42 @@ export class InputSystem extends CEventDispatcher {
         this._windowsEvent3d = new CEvent();
     }
 
+    public useMouseLock() {
+        if (this.mouseLock) return;
+        this.canvas.requestPointerLock();
+        this.mouseLock = true;
+        document.addEventListener("mousemove", (e) => this.onMouseLockMove(e), false);
+    }
 
+    public releaseMouseLock() {
+        this.mouseLock = false;
+        document.exitPointerLock();
+        document.removeEventListener("mousemove", (e) => this.onMouseLockMove(e), false);
+    }
 
-    private _gp: boolean = false;
+    public onMouseLockMove(e: MouseEvent) {
+        // console.log(e.movementX, e.movementY);
+        this.mouseLastX = this.mouseX;
+        this.mouseLastY = this.mouseY;
 
+        this.mouseX = e.clientX - this.canvasX; /*- Input.canvas.x + Input.canvas.offsetX*/
+        this.mouseY = e.clientY - this.canvasY; /*- Input.canvas.y + Input.canvas.offsetY*/
 
+        this.mouseOffsetX = e.movementX;
+        this.mouseOffsetY = e.movementY;
 
+        this._pointerEvent3D.reset();
+        this._pointerEvent3D.type = PointerEvent3D.POINTER_MOVE;
+        this._pointerEvent3D.ctrlKey = e.ctrlKey;
+        this._pointerEvent3D.altKey = e.altKey;
+        this._pointerEvent3D.shiftKey = e.shiftKey;
+        this._pointerEvent3D.mouseX = this.mouseX;
+        this._pointerEvent3D.mouseY = this.mouseY;
+
+        this._pointerEvent3D.movementX = e.movementX;
+        this._pointerEvent3D.movementY = e.movementY;
+        this.dispatchEvent(this._pointerEvent3D);
+    }
 
     private onPinch(x1: number, y1: number, x2: number, y2: number) {
         this._oldPosition1 = new Vector3(x1, y1);
@@ -219,7 +268,7 @@ export class InputSystem extends CEventDispatcher {
         this.dispatchEvent(this._pointerEvent3D);
     }
 
-    private middleDown(e: PointerEvent) {
+    private middleDown(e: PointerEvent | MouseEvent) {
         this._pointerEvent3D.reset();
         this._pointerEvent3D.mouseCode = e.button;
         this._pointerEvent3D.mouseX = e.clientX - this.canvasX;
@@ -229,10 +278,10 @@ export class InputSystem extends CEventDispatcher {
         this._pointerEvent3D.ctrlKey = e.ctrlKey;
         this._pointerEvent3D.altKey = e.altKey;
         this._pointerEvent3D.shiftKey = e.shiftKey;
-        this._pointerEvent3D.pointerId = e.pointerId;
-        this._pointerEvent3D.pointerType = e.pointerType;
-        this._pointerEvent3D.isPrimary = e.isPrimary;
-        this._pointerEvent3D.pressure = e.pressure;
+        this._pointerEvent3D.pointerId = e[`pointerId`] ? e[`pointerId`] : 0;
+        this._pointerEvent3D.pointerType = e[`pointerType`] ? e[`pointerType`] : 0;
+        this._pointerEvent3D.isPrimary = e[`isPrimary`] ? e[`isPrimary`] : 0;
+        this._pointerEvent3D.pressure = e[`pressure`] ? e[`pressure`] : 0;
         this.dispatchEvent(this._pointerEvent3D);
     }
 
@@ -300,7 +349,8 @@ export class InputSystem extends CEventDispatcher {
     }
 
 
-    private mouseStart(e: PointerEvent) {
+    private mouseStart(e: PointerEvent | MouseEvent) {
+
         this.isMouseDown = true;
 
         this.mouseLastX = this.mouseX;
@@ -318,10 +368,10 @@ export class InputSystem extends CEventDispatcher {
         this._pointerEvent3D.metaKey = e.metaKey;
         this._pointerEvent3D.altKey = e.altKey;
         this._pointerEvent3D.shiftKey = e.shiftKey;
-        this._pointerEvent3D.pointerId = e.pointerId;
-        this._pointerEvent3D.pointerType = e.pointerType;
-        this._pointerEvent3D.isPrimary = e.isPrimary;
-        this._pointerEvent3D.pressure = e.pressure;
+        this._pointerEvent3D.pointerId = e[`pointerId`] ? e[`pointerId`] : 0;
+        this._pointerEvent3D.pointerType = e[`pointerType`] ? e[`pointerType`] : 0;
+        this._pointerEvent3D.isPrimary = e[`isPrimary`] ? e[`isPrimary`] : 0;
+        this._pointerEvent3D.pressure = e[`pressure`] ? e[`pressure`] : 0;
         this._pointerEvent3D.mouseX = this.mouseX;
         this._pointerEvent3D.mouseY = this.mouseY;
         // if (!this._mouseStatus[this._touchEvent3d.mouseCode]) {

@@ -52,12 +52,13 @@ class Sample_SpotLight {
         lightObj3D.transform.rotationX = 342;
         lightObj3D.transform.rotationY = 360;
         lightObj3D.transform.rotationZ = 199;
-        spotLight.lightColor.r = 255 / 255;
-        spotLight.lightColor.g = 157 / 255;
-        spotLight.lightColor.b = 5 / 255;
-        spotLight.intensity = 80;
+        spotLight.lightColor.r = 160 / 255;
+        spotLight.lightColor.g = 160 / 255;
+        spotLight.lightColor.b = 100 / 255;
+        spotLight.intensity = 4;
         spotLight.radius = 1;
         spotLight.range = 787;
+        spotLight.at = 25;
         spotLight.outerAngle = 96;
         spotLight.innerAngle = 0;
         spotLight.castShadow = true;

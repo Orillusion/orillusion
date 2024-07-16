@@ -7,7 +7,6 @@ import { RegisterShader } from "../../../../../util/SerializeDecoration";
 import { Shader } from "../../../../../gfx/graphics/webGpu/shader/Shader";
 
 
-@RegisterShader
 export class StandShader extends Shader {
 
     constructor() {
@@ -25,7 +24,7 @@ export class StandShader extends Shader {
         shaderState.acceptGI = true;
         shaderState.useLight = true;
         this.setDefine('USE_BRDF', true);
-        this.setDefine('USE_AO_R', true);
+        // this.setDefine('USE_AO_R', true);
         this.setDefine('USE_ROUGHNESS_G', true);
         this.setDefine('USE_METALLIC_B', true);
         this.setDefine('USE_ALPHA_A', true);
@@ -35,8 +34,7 @@ export class StandShader extends Shader {
 
     public setDefault() {
         this.setUniformFloat(`shadowBias`, 0.00035);
-        this.setUniformVector4(`transformUV1`, new Vector4(0, 0, 1, 1));
-        this.setUniformVector4(`transformUV2`, new Vector4(0, 0, 1, 1));
+
         this.setUniformColor(`baseColor`, new Color(0.75, 0.75, 0.75, 1.0));
         this.setUniformColor(`emissiveColor`, new Color(0, 0, 0));
         this.setUniformVector4(`materialF0`, new Vector4(0.04, 0.04, 0.04, 1));
@@ -57,6 +55,14 @@ export class StandShader extends Shader {
         this.setUniformFloat(`clearcoatRoughnessFactor`, 0.0);
         this.setUniformColor(`clearcoatColor`, new Color(1, 1, 1));
         this.setUniformFloat(`clearcoatWeight`, 0.0);
+        this.setUniformFloat(`clearcoatIor`, 1.5);
+
+        this.setUniformVector4(`baseMapOffsetSize`, new Vector4(0, 0, 1, 1));
+        this.setUniformVector4(`normalMapOffsetSize`, new Vector4(0, 0, 1, 1));
+        this.setUniformVector4(`emissiveMapOffsetSize`, new Vector4(0, 0, 1, 1));
+        this.setUniformVector4(`roughnessMapOffsetSize`, new Vector4(0, 0, 1, 1));
+        this.setUniformVector4(`metallicMapOffsetSize`, new Vector4(0, 0, 1, 1));
+        this.setUniformVector4(`aoMapOffsetSize`, new Vector4(0, 0, 1, 1));
 
         this.baseMap = Engine3D.res.whiteTexture;
         this.normalMap = Engine3D.res.normalTexture;
@@ -122,14 +128,14 @@ export class StandShader extends Shader {
     /**
      * get transformUV1
      */
-    public get uvTransform_1(): Vector4 {
+    public get transformUV1(): Vector4 {
         return this.getDefaultColorShader().uniforms[`transformUV1`].vector4;
     }
 
     /**
      * set transformUV1
      */
-    public set uvTransform_1(value: Vector4) {
+    public set transformUV1(value: Vector4) {
         // this.getDefaultColorShader().uniforms[`transformUV1`].v4 = value;
         this.getDefaultColorShader().setUniform(`transformUV1`, value);
     }

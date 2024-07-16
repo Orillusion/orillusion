@@ -1,10 +1,23 @@
-import { Engine3D, Scene3D, CameraUtil, View3D, AtmosphericComponent, ComponentBase, Time, AxisObject, Object3DUtil, KelvinUtil, DirectLight, Object3D, HoverCameraController, MeshRenderer, LitMaterial, BoxGeometry, UnLit, UnLitMaterial, Interpolator } from "@orillusion/core";
+import { Engine3D, Scene3D, CameraUtil, View3D, AtmosphericComponent, ComponentBase, Time, AxisObject, Object3DUtil, KelvinUtil, DirectLight, Object3D, HoverCameraController, MeshRenderer, LitMaterial, BoxGeometry, UnLit, UnLitMaterial, Interpolator, FXAAPost, PostProcessingComponent } from "@orillusion/core";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 
 // sample use component
 class Sample_AddRemove {
     view: View3D;
     async run() {
+        Engine3D.setting.shadow.shadowSize = 2048
+        Engine3D.setting.shadow.shadowBound = 175;
+        Engine3D.setting.shadow.shadowBias = 0.0061;
+
+        Engine3D.setting.shadow.shadowBound = 550;
+        Engine3D.setting.shadow.shadowBias = 0.018;
+        Engine3D.setting.render.useCompressGBuffer = true;
+
+        Engine3D.setting.reflectionSetting.reflectionProbeMaxCount = 8;
+        Engine3D.setting.reflectionSetting.reflectionProbeSize = 128;
+        Engine3D.setting.reflectionSetting.enable = true;
+
+        Engine3D.setting.render.hdrExposure = 1.0;
         // init engine
         await Engine3D.init();
         // create new Scene
@@ -26,7 +39,7 @@ class Sample_AddRemove {
         lightObj.rotationZ = 150;
         let dirLight = lightObj.addComponent(DirectLight);
         dirLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
-        dirLight.intensity = 10;
+        dirLight.intensity = 3;
         scene.addChild(lightObj);
         sky.relativeTransform = dirLight.transform;
 
@@ -37,24 +50,21 @@ class Sample_AddRemove {
 
         // start render
         Engine3D.startRenderView(this.view);
+
+        // let postProcessing = scene.addComponent(PostProcessingComponent);
+        // postProcessing.addPost(FXAAPost);
+
         await this.test();
     }
 
     private async test() {
-        let visibleList: Object3D[] = [];
-        let invisibleList: Object3D[] = [];
+        let list: Object3D[] = [];
         let player = await Engine3D.res.loadGltf('gltfs/anim/Minion_Lane_Super_Dawn/Minion_Lane_Super_Dawn.glb');
         // gui
         GUIHelp.init();
         GUIHelp.addButton("add", async () => {
             /******** player1 *******/
-            let clone: Object3D
-            if (invisibleList.length > 0) {
-                clone = invisibleList[invisibleList.length-1];
-                invisibleList.splice(invisibleList.length-1, 1);
-            } else {
-                clone = player.clone();
-            }
+            let clone = player.clone()
             clone.transform.x = Math.random() * 100 - 50;
             clone.transform.y = Math.random() * 100 - 50;
             clone.transform.z = Math.random() * 100 - 50;
@@ -63,17 +73,16 @@ class Sample_AddRemove {
             clone.transform.scaleZ = 20;
 
             this.view.scene.addChild(clone);
-            visibleList.push(clone);
+            list.push(clone);
         });
 
         GUIHelp.addButton("remove", () => {
-            let index = Math.floor(visibleList.length * Math.random());
-            let obj = visibleList[index];
+            let index = Math.floor(list.length * Math.random());
+            let obj = list[index];
             if (obj) {
-                visibleList.splice(index, 1)
+                list.splice(index, 1)
                 this.view.scene.removeChild(obj)
-                // obj.destroy(true);
-                invisibleList.push(obj)
+                obj.destroy(true);
             }
         });
 

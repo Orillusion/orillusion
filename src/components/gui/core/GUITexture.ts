@@ -22,6 +22,8 @@ export class GUITexture {
 
     constructor(texture: Texture) {
         texture ||= Engine3D.res.whiteTexture;
+        texture.addressModeU = 'clamp-to-edge';
+        texture.addressModeV = 'clamp-to-edge';
         this.texture = texture;
         GUITexture._maxUid++;
         this._staticId = GUITexture._maxUid;

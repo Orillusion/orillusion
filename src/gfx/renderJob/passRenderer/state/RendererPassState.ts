@@ -31,7 +31,6 @@ export class RendererPassState {
     public renderBundleEncoderDescriptor: GPURenderBundleEncoderDescriptor;
     public depthLoadOp: GPULoadOp;
 
-
     getLastRenderTexture() {
         if (this.renderTargets) {
             return this.renderTargets.length > 0 ? this.renderTargets[0] : Engine3D.res.redTexture;

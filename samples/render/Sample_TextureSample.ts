@@ -9,6 +9,7 @@ class Sample_TextureSample {
 
     async run() {
         await Engine3D.init();
+        Engine3D.setting.shadow.shadowBias = 0.01;
 
         this.scene = new Scene3D();
         let sky = this.scene.addComponent(AtmosphericComponent);
@@ -62,7 +63,9 @@ class Sample_TextureSample {
             let component = plane.addComponent(UVMoveComponent);
             GUIUtil.renderUVMove(component);
 
-            this.scene.addChild(Object3DUtil.GetSingleCube(10, 10, 10, 1, 0.5, 0.5));
+            // let box = Object3DUtil.GetSingleCube(10, 10, 10, 1, 0.5, 0.5);
+            // box.y = 5;
+            // this.scene.addChild(box);
 
             // enum GPUAddressMode
             let address = {}

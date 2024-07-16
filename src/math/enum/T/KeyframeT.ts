@@ -32,7 +32,7 @@ export class KeyframeT {
         return this.propertyKeyFrame[k];
     }
 
-    private split(type: ValueEnumType, value: CurveValueType, property: string) {
+    public split(type: ValueEnumType, value: CurveValueType, property: string) {
         switch (type) {
             case ValueEnumType.single:
                 {
@@ -74,9 +74,9 @@ export class KeyframeT {
                     let y_kf = this.getKeyFrame(1);
                     y_kf[property] = v.y;
                     let z_kf = this.getKeyFrame(2);
-                    z_kf[property] = v.y;
+                    z_kf[property] = v.z;
                     let w_kf = this.getKeyFrame(3);
-                    w_kf[property] = v.y;
+                    w_kf[property] = v.w;
                 }
                 break;
             case ValueEnumType.quaternion:

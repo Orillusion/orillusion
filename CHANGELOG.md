@@ -1,3 +1,34 @@
+## [0.8.1](https://github.com/Orillusion/orillusion/compare/v0.7.2...v0.8.1) (2024-07-10)
+
+
+### Bug Fixes
+
+* **canvas:** fix external canvas resize on dpi change ([2e54053](https://github.com/Orillusion/orillusion/commit/2e54053efbffbd1d70d2a1b7c2e2f62ca672c4e9))
+* **effect:** fix grass get uniform data ([588721f](https://github.com/Orillusion/orillusion/commit/588721f52013fb9cadbe5d8156a41d2110636ac7))
+* **effect:** update windSpeed ([538ec2d](https://github.com/Orillusion/orillusion/commit/538ec2df976e1a45d13e3deaf15ef7c15fe5b409))
+* Error when lineJoin is set to round ([#366](https://github.com/Orillusion/orillusion/issues/366)) ([1ab8718](https://github.com/Orillusion/orillusion/commit/1ab87183c6910c2fc3e61d940b0183a2d5597b08))
+* fix issue of [#387](https://github.com/Orillusion/orillusion/issues/387) ([#394](https://github.com/Orillusion/orillusion/issues/394)) ([6271c37](https://github.com/Orillusion/orillusion/commit/6271c3748a1520cd444431200f7ec35111af049e))
+* **GlobalUniformGroup:** missing property for shadow camera ([1f90393](https://github.com/Orillusion/orillusion/commit/1f903935fc50be16763067b888c0c37cae860c5c))
+* **loaderFunctions:** onUrl on loadGltf ([65bda50](https://github.com/Orillusion/orillusion/commit/65bda50eac61694bb4e8354ee2f1744c876bd7ba))
+* object is disabled after removeChild  ([#381](https://github.com/Orillusion/orillusion/issues/381)) ([51ff3ee](https://github.com/Orillusion/orillusion/commit/51ff3ee84fb8aae46819d5c7db914b3dc873062f))
+* **objparser:** loadObj crash [#372](https://github.com/Orillusion/orillusion/issues/372) ([b3e9194](https://github.com/Orillusion/orillusion/commit/b3e9194630c9d0f3ab5a1cbc92dc7b760dd58f8b))
+* **picker:** missing normal in pickFire ([4e05c04](https://github.com/Orillusion/orillusion/commit/4e05c04dd22cccfb44e63c8dd2af859d4ff01c86))
+* **pick:** fix normal in pickInfo ([5197317](https://github.com/Orillusion/orillusion/commit/519731748ba046dd28891d99899e68e61a77c409))
+* Solve the issues mentioned in Issue367 ([#368](https://github.com/Orillusion/orillusion/issues/368)) ([7ab2f48](https://github.com/Orillusion/orillusion/commit/7ab2f489dfca66b6cb2cb84111097b430bb87c34))
+* **transform:** fix wrong localRotQuat ([8c5e2b3](https://github.com/Orillusion/orillusion/commit/8c5e2b3606378009045a460edf841e5d36142de8))
+
+
+### Features
+
+* **Animator:** Unified skeleton animation and morph animation to AnimatorComponent ([#405](https://github.com/Orillusion/orillusion/issues/405)) ([4cf51f3](https://github.com/Orillusion/orillusion/commit/4cf51f34937da6800f6cde2487defe12fe87ba8f))
+* **buffer:** return promise result ([590b213](https://github.com/Orillusion/orillusion/commit/590b213d41dd26ca86e1780376a7e04ece8a5166))
+* **GBuff:** compressed GBuff data. ([#412](https://github.com/Orillusion/orillusion/issues/412)) ([4649add](https://github.com/Orillusion/orillusion/commit/4649addc066cd53a5ee286940c1e254d64bde89e))
+* **orbit:** pan at xz plane ([52383f5](https://github.com/Orillusion/orillusion/commit/52383f5c60da7f6f2e3407de6bda355946f61fed))
+* **sample:** add camera path animation sample ([#385](https://github.com/Orillusion/orillusion/issues/385)) ([d447cd1](https://github.com/Orillusion/orillusion/commit/d447cd18e6e85763706e67c12e19d6a02e5e1dc4))
+* **sample:** add EatTheBox sample,add ShootTheBox sample ([#391](https://github.com/Orillusion/orillusion/issues/391)) ([e925d1f](https://github.com/Orillusion/orillusion/commit/e925d1f743ade799dac9d33c01ad829bcef386cb))
+
+
+
 ## [0.7.2](https://github.com/Orillusion/orillusion/compare/v0.7.1...v0.7.2) (2024-01-26)
 
 

@@ -4,16 +4,18 @@ import {
 	KelvinUtil, MeshRenderer, Object3D, PlaneGeometry, Scene3D, SphereGeometry,
 	CameraUtil, webGPUContext, BoxGeometry, TAAPost, AtmosphericComponent
 } from '@orillusion/core';
+import { GUIHelp } from '@orillusion/debug/GUIHelp';
+import { GUIUtil } from '@samples/utils/GUIUtil';
 
-class Sample_TAA {
+export class Sample_TAA {
 	lightObj: Object3D;
 	scene: Scene3D;
 
 	async run() {
-		// Engine3D.setting.shadow.enable = false;
-		// Engine3D.setting.shadow.debug = true;
-		Engine3D.setting.shadow.shadowSize = 2048
-		Engine3D.setting.shadow.shadowBound = 50;
+		Engine3D.setting.shadow.enable = true;
+		Engine3D.setting.shadow.shadowSize = 2048;
+		Engine3D.setting.shadow.shadowBound = 40;
+		Engine3D.setting.shadow.shadowBias = 0.005;
 
 		await Engine3D.init();
 
@@ -35,7 +37,10 @@ class Sample_TAA {
 		Engine3D.startRenderView(view);
 
 		let postProcessing = this.scene.addComponent(PostProcessingComponent);
-		postProcessing.addPost(TAAPost);
+		let taa = postProcessing.addPost(TAAPost);
+		GUIHelp.init();
+		GUIUtil.renderTAA(taa);
+
 	}
 
 	async initScene() {
@@ -47,7 +52,7 @@ class Sample_TAA {
 			let lc = this.lightObj.addComponent(DirectLight);
 			lc.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
 			lc.castShadow = true;
-			lc.intensity = 10;
+			lc.intensity = 4;
 			this.scene.addChild(this.lightObj);
 		}
 
@@ -103,4 +108,3 @@ class Sample_TAA {
 	}
 }
 
-new Sample_TAA().run();

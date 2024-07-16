@@ -11,6 +11,8 @@ import { GLTFSubParserMaterial } from './GLTFSubParserMaterial';
 import { GLTFSubParserSkin } from './GLTFSubParserSkin';
 import { GLTFSubParserSkeleton } from './GLTFSubParserSkeleton';
 import { GLTFSubParserConverter } from './GLTFSubParserConverter';
+import { PrefabAvatarData } from '../prefab/prefabData/PrefabAvatarData';
+import { PropertyAnimationClip } from '../../../math/AnimationCurveClip';
 
 /**
  * @internal
@@ -286,18 +288,18 @@ export class GLTFSubParser {
         return this._converter.convertNodeToObject3D(nodeInfo, parentNode);
     }
 
-    public parseSkeleton(skeletonID) {
+    public parseSkeleton(skeletonID: number) {
         if (!this._skeletonParser) {
             this._skeletonParser = new GLTFSubParserSkeleton(this);
         }
         return this._skeletonParser.parse(skeletonID);
     }
 
-    public parseSkeletonAnimation(skeleton: Skeleton, animation) {
+    public parseSkeletonAnimation(avatarData: PrefabAvatarData, animation): PropertyAnimationClip {
         if (!this._skeletonParser) {
             this._skeletonParser = new GLTFSubParserSkeleton(this);
         }
-        return this._skeletonParser.parseSkeletonAnimation(skeleton, animation);
+        return this._skeletonParser.parseSkeletonAnimation(avatarData, animation);
     }
 
     private async traverse(parentNode, nodeInfos) {

@@ -10,6 +10,7 @@ export let GrassShader = /* wgsl */`
     #include "MatrixShader"
     #include "BrdfLut_frag"
     #include "LightingFunction_frag"
+    #include "ReflectionCG"
     
     struct MaterialUniform {
         baseColor: vec4<f32>,
@@ -43,6 +44,7 @@ export let GrassShader = /* wgsl */`
 
     const DEGREES_TO_RADIANS : f32 = 3.1415926 / 180.0 ;
     const PI : f32 = 3.1415926 ;
+    const LUMEN = 10.764;
 
     @vertex
     fn VertMain( vertex:VertexAttributes ) -> VertexOutput {
@@ -60,7 +62,7 @@ export let GrassShader = /* wgsl */`
         let grassPivot = localMatrix[3].xyz ;
         let bound = materialUniform.windBound ;
 
-        let time = TIME.y * 0.001 ;
+        let time = TIME_time() * 0.001 ;
         let cycleTime = sin(time) ;
 
         //sampler wind noise texture by vertex shader 
@@ -155,7 +157,7 @@ export let GrassShader = /* wgsl */`
         var irradiance = LinearToGammaSpace(globalUniform.skyExposure * textureSampleLevel(prefilterMap, prefilterMapSampler, fragData.N.xyz, 0.8 * (MAX_REFLECTION_LOD) ).rgb);
         let specular = vec3<f32>( pow(max(dot(viewDir, reflectDir), 0.0), (1.0 - roughness + 0.001) * 200.0 ) ) * mainLightColor * materialUniform.specular;
 
-        var diffuse = color.rgb / PI * grassColor.rgb * shadowStrut.directShadowVisibility[0] ;
+        var diffuse = color.rgb / PI * grassColor.rgb * directShadowVisibility[0] ;
         var finalColor = diffuse + specular + irradiance * grassColor.rgb * sunLight.quadratic;//+ backColor;
 
         ORI_ShadingInput.BaseColor = vec4<f32>(finalColor.rgb,1.0) ;

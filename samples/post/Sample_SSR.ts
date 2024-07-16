@@ -1,15 +1,18 @@
 import { DirectLight, Engine3D, View3D, LitMaterial, HoverCameraController, KelvinUtil, MeshRenderer, Object3D, PlaneGeometry, Scene3D, SphereGeometry, SSRPost, Time, CameraUtil, webGPUContext, PostProcessingComponent, BloomPost, AtmosphericComponent } from '@orillusion/core'
-import * as dat from '@orillusion/debug/dat.gui.module'
+import { GUIHelp } from '@orillusion/debug/GUIHelp'
+import { GUIUtil } from '@samples/utils/GUIUtil';
 
-class Sample_SSR {
+export class Sample_SSR {
     lightObj: Object3D
     scene: Scene3D
-    mats: any[]
-
-    constructor() { }
 
     async run() {
-        Engine3D.setting.shadow.enable = true
+        Engine3D.setting.shadow.enable = true;
+        Engine3D.setting.shadow.shadowSize = 2048
+        Engine3D.setting.shadow.shadowBound = 200;
+        Engine3D.setting.shadow.shadowBias = 0.05;
+        GUIHelp.init();
+
         await Engine3D.init({
             canvasConfig: {
                 devicePixelRatio: 1
@@ -23,7 +26,7 @@ class Sample_SSR {
         let mainCamera = CameraUtil.createCamera3DObject(this.scene, 'camera')
         mainCamera.perspective(60, webGPUContext.aspect, 1, 2000.0)
         let ctrl = mainCamera.object3D.addComponent(HoverCameraController)
-        ctrl.setCamera(180, -5, 60)
+        ctrl.setCamera(-75, -20, 40)
         await this.initScene(this.scene)
 
         let view = new View3D()
@@ -46,19 +49,31 @@ class Sample_SSR {
             let lc = this.lightObj.addComponent(DirectLight)
             lc.lightColor = KelvinUtil.color_temperature_to_rgb(5355)
             lc.castShadow = true
-            lc.intensity = 27
+            lc.intensity = 10
             scene.addChild(this.lightObj)
+            GUIUtil.renderDirLight(lc);
         }
 
         // load test model
         let minimalObj = await Engine3D.res.loadGltf('/PBR/ToyCar/ToyCar.gltf')
-        minimalObj.scaleX = minimalObj.scaleY = minimalObj.scaleZ = 1000
+        minimalObj.scaleX = minimalObj.scaleY = minimalObj.scaleZ = 1000;
+        minimalObj.y = -1.1;
         scene.addChild(minimalObj)
 
+        minimalObj.forChild((obj: Object3D) => {
+            let mr = obj.getComponent(MeshRenderer)
+            if (mr && mr.material) {
+                if (mr.material.name == 'ToyCar') {
+                    let mat = mr.material as LitMaterial;
+                    mat.metallic = 0.5;
+                    mat.clearcoatFactor = 0.25;
+                }
+            }
+        }
+        );
         await this.createPlane(scene)
         return true
     }
-
     private sphere: Object3D
 
     private async createPlane(scene: Scene3D) {
@@ -68,7 +83,7 @@ class Sample_SSR {
 
         {
             let floorMaterial = new LitMaterial()
-            floorMaterial.roughness = 0.5
+            floorMaterial.roughness = 0.12
             floorMaterial.metallic = 0.5
 
             let planeGeometry = new PlaneGeometry(200, 200)
@@ -78,8 +93,7 @@ class Sample_SSR {
             mr.geometry = planeGeometry
             scene.addChild(floor)
 
-            const GUIHelp = new dat.GUI()
-            GUIHelp.add(floorMaterial, 'roughness', 0, 1, 0.01)
+            GUIHelp.add(floorMaterial, 'roughness', 0.01, 1, 0.01)
             GUIHelp.add(floorMaterial, 'metallic', 0, 1, 0.01)
         }
 
@@ -125,4 +139,3 @@ class Sample_SSR {
     }
 }
 
-new Sample_SSR().run()

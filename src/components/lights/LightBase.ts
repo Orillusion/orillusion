@@ -9,6 +9,7 @@ import { LightData } from './LightData';
 import { ShadowLightsCollect } from '../../gfx/renderJob/collect/ShadowLightsCollect';
 import { IESProfiles } from './IESProfiles';
 import { ILight } from './ILight';
+import { Engine3D } from '../../Engine3D';
 
 /**
  * @internal
@@ -74,19 +75,26 @@ export class LightBase extends ComponentBase implements ILight {
         } else {
             ShadowLightsCollect.removeShadowLight(this);
         }
+
+        if (this.transform.view3D && Engine3D.renderJobs) {
+            let renderer = Engine3D.renderJobs.get(this.transform.view3D).reflectionRenderer;
+            if (renderer)
+                Engine3D.renderJobs.get(this.transform.view3D).reflectionRenderer.forceUpdate();
+        }
     }
 
     public start(): void {
         this.transform.onPositionChange = () => this.onPositionChange();
-        this.transform.onScaleChange = () => this.onScaleChange();
+        // this.transform.onScaleChange = () => this.onScaleChange();
         this.transform.onRotationChange = () => this.onRotChange();
         this.onPositionChange();
         this.onRotChange();
-        this.onScaleChange();
+        // this.onScaleChange();
     }
 
     protected onPositionChange() {
         this.lightData.lightPosition.copyFrom(this.transform.worldPosition);
+        this.onChange();
     }
 
     protected onRotChange() {

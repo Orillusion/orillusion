@@ -86,7 +86,7 @@ class SamplePhysics01 {
         floorMat.baseMap = Engine3D.res.grayTexture;
         floorMat.roughness = 0.85;
         floorMat.metallic = 0.01;
-        floorMat.envIntensity = 0.01;
+        // floorMat.envIntensity = 0.01;
 
         let floor = new Object3D();
         let renderer = floor.addComponent(MeshRenderer);

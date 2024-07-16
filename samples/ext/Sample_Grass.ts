@@ -12,7 +12,8 @@ export class Sample_Grass {
         Engine3D.setting.shadow.autoUpdate = true;
         Engine3D.setting.shadow.updateFrameRate = 1;
         Engine3D.setting.shadow.shadowBound = 500;
-        Engine3D.setting.shadow.shadowSize = 1024;
+        Engine3D.setting.shadow.shadowSize = 2048;
+        Engine3D.setting.shadow.shadowBias = 0.01;
         // Engine3D.setting.render.zPrePass = true;
 
         GUIHelp.init();
@@ -56,7 +57,7 @@ export class Sample_Grass {
         let sunLight = sunObj.addComponent(DirectLight);
         sunLight.lightColor = KelvinUtil.color_temperature_to_rgb(6553);
         sunLight.castShadow = true;
-        sunLight.intensity = 49;
+        sunLight.intensity = 40;
         sunObj.transform.rotationX = 50;
         sunObj.transform.rotationY = 50;
         GUIUtil.renderDirLight(sunLight);
@@ -122,32 +123,33 @@ export class Sample_Grass {
             scene.addChild(grass);
         }
 
-        // GUIHelp.addFolder("grass-wind");
-        // GUIHelp.addColor(grassCom.grassMaterial, "grassBaseColor");
-        // GUIHelp.addColor(grassCom.grassMaterial, "grassTopColor");
-        // GUIHelp.add(grassCom.grassMaterial.windDirection, "x", -1.0, 1, 0.0001).onChange((v) => {
-        //     let tv = grassCom.grassMaterial.windDirection;
-        //     tv.x = v;
-        //     grassCom.grassMaterial.windDirection = tv;
-        // });
-        // GUIHelp.add(grassCom.grassMaterial.windDirection, "y", -1.0, 1, 0.0001).onChange((v) => {
-        //     let tv = grassCom.grassMaterial.windDirection;
-        //     tv.y = v;
-        //     grassCom.grassMaterial.windDirection = tv;
-        // });
-        // GUIHelp.add(grassCom.grassMaterial, "windPower", 0.0, 20, 0.0001);
-        // GUIHelp.add(grassCom.grassMaterial, "windSpeed", 0.0, 20, 0.0001);
-        // GUIHelp.add(grassCom.grassMaterial, "curvature", 0.0, 1, 0.0001);
-        // GUIHelp.add(grassCom.grassMaterial, "grassHeight", 0.0, 100, 0.0001);
-        // GUIHelp.add(grassCom.grassMaterial, "roughness", 0.0, 1, 0.0001);
-        // GUIHelp.add(grassCom.grassMaterial, "translucent", 0.0, 1, 0.0001);
-        // GUIHelp.add(grassCom.grassMaterial, "soft", 0.0, 10, 0.0001);
-        // GUIHelp.add(grassCom.grassMaterial, "specular", 0.0, 10, 0.0001);
-        // GUIHelp.endFolder();
+        GUIHelp.addFolder("grass-wind");
+        GUIHelp.addColor(grassCom.grassMaterial, "grassBaseColor");
+        GUIHelp.addColor(grassCom.grassMaterial, "grassTopColor");
+        console.log(grassCom.grassMaterial)
+        GUIHelp.add(grassCom.grassMaterial.windDirection, "x", -1.0, 1, 0.0001).onChange(v=>{
+            let tv = grassCom.grassMaterial.windDirection;
+            tv.x = v;
+            grassCom.grassMaterial.windDirection = tv;
+        });
+        GUIHelp.add(grassCom.grassMaterial.windDirection, "y", -1.0, 1, 0.0001).onChange(v=>{
+            let tv = grassCom.grassMaterial.windDirection;
+            tv.y = v;
+            grassCom.grassMaterial.windDirection = tv;
+        });
+        GUIHelp.add(grassCom.grassMaterial, "windPower", 0.0, 5, 0.0001);
+        GUIHelp.add(grassCom.grassMaterial, "windSpeed", 0.0, 5, 0.0001);
+        GUIHelp.add(grassCom.grassMaterial, "curvature", 0.0, 1, 0.0001);
+        GUIHelp.add(grassCom.grassMaterial, "grassHeight", 0.0, 100, 0.0001);
+        GUIHelp.add(grassCom.grassMaterial, "roughness", 0.0, 1, 0.0001);
+        GUIHelp.add(grassCom.grassMaterial, "translucent", 0.0, 1, 0.0001);
+        GUIHelp.add(grassCom.grassMaterial, "soft", 0.0, 10, 0.0001);
+        GUIHelp.add(grassCom.grassMaterial, "specular", 0.0, 10, 0.0001);
+        GUIHelp.endFolder();
 
-        // GUIHelp.addFolder("shadow");
-        // GUIHelp.add(Engine3D.setting.shadow, "shadowBound", 0.0, 3000, 0.0001);
-        // GUIHelp.endFolder();
+        GUIHelp.addFolder("shadow");
+        GUIHelp.add(Engine3D.setting.shadow, "shadowBound", 100, 1000, 1);
+        GUIHelp.endFolder();
     }
 
 }

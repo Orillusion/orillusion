@@ -17,6 +17,10 @@ import { PostBase } from '../post/PostBase';
 import { RendererBase } from '../passRenderer/RendererBase';
 import { Ctor } from '../../../util/Global';
 import { DDGIProbeRenderer } from '../passRenderer/ddgi/DDGIProbeRenderer';
+import { ReflectionRenderer } from '../passRenderer/cubeRenderer/ReflectionRenderer';
+import { PassType } from '../passRenderer/state/PassType';
+import { ProfilerUtil } from '../../../util/ProfilerUtil';
+import { FXAAPost } from '../post/FXAAPost';
 
 /**
  * render jobs 
@@ -57,6 +61,11 @@ export class RendererJob {
     /**
      * @internal
      */
+    public reflectionRenderer: ReflectionRenderer;
+
+    /**
+     * @internal
+     */
     public occlusionSystem: OcclusionSystem;
 
     /**
@@ -67,7 +76,10 @@ export class RendererJob {
     /**
        * @internal
        */
-    public colorPassRenderer: ColorPassRenderer;
+    public get colorPassRenderer(): ColorPassRenderer {
+        let renderer = this.rendererMap.getRenderer(PassType.COLOR);
+        return renderer as ColorPassRenderer;
+    }
 
     /**
      * @internal
@@ -90,6 +102,8 @@ export class RendererJob {
 
         this.clusterLightingRender = this.addRenderer(ClusterLightingRender, view);
 
+        this.reflectionRenderer = this.addRenderer(ReflectionRenderer, view);
+
         if (Engine3D.setting.render.zPrePass) {
             this.depthPassRenderer = this.addRenderer(PreDepthPassRenderer);
         }
@@ -97,6 +111,8 @@ export class RendererJob {
         this.shadowMapPassRenderer = new ShadowMapPassRenderer();
 
         this.pointLightShadowRenderer = new PointLightShadowRenderer();
+
+        this.addPost(new FXAAPost());
     }
 
     public addRenderer<T extends RendererBase>(c: Ctor<T>, param?: any): T {
@@ -151,22 +167,15 @@ export class RendererJob {
         this.pauseRender = false;
     }
 
-    /** 
-     * @internal
-     */
-    public enablePost(gbufferFrame: GBufferFrame) {
-        this.postRenderer = this.addRenderer(PostRenderer);
-        this.postRenderer.setRenderStates(gbufferFrame);
-    }
-
     /**
      * Add a post processing special effects task
      * @param post
      */
     public addPost(post: PostBase): PostBase | PostBase[] {
         if (!this.postRenderer) {
-            GBufferFrame.bufferTexture = true;
-            this.enablePost(GBufferFrame.getGBufferFrame('ColorPassGBuffer'));
+            let gbufferFrame = GBufferFrame.getGBufferFrame('ColorPassGBuffer');
+            this.postRenderer = this.addRenderer(PostRenderer);
+            this.postRenderer.setRenderStates(gbufferFrame);
         }
 
         if (post instanceof PostBase) {
@@ -195,11 +204,12 @@ export class RendererJob {
     public renderFrame() {
         let view = this._view;
 
+        ProfilerUtil.startView(view);
 
         GlobalBindGroup.getLightEntries(view.scene).update(view);
+        GlobalBindGroup.getReflectionEntries(view.scene).update(view);
 
         this.occlusionSystem.update(view.camera, view.scene);
-
         this.clusterLightingRender.render(view, this.occlusionSystem);
 
         if (this.shadowMapPassRenderer) {
@@ -225,10 +235,10 @@ export class RendererJob {
         for (let i = 0; i < passList.length; i++) {
             const renderer = passList[i];
             renderer.compute(view, this.occlusionSystem);
-            renderer.render(view, this.occlusionSystem, this.clusterLightingRender.clusterLightingBuffer);
+            renderer.render(view, this.occlusionSystem, this.clusterLightingRender.clusterLightingBuffer, false);
         }
 
-        if (this.postRenderer && this.postRenderer.postList.length > 0) {
+        if (this.postRenderer && this.postRenderer.postList.size > 0) {
             this.postRenderer.render(view);
         }
 

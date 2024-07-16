@@ -8,7 +8,7 @@ class Sample_ClearCoat {
 
     async run() {
         Engine3D.setting.pick.enable = true;
-        Engine3D.setting.pick.mode = `pixel`;
+        // Engine3D.setting.pick.mode = `pixel`;
         Engine3D.setting.render.debug = true;
         GUIHelp.init();
 
@@ -53,7 +53,7 @@ class Sample_ClearCoat {
             let directLight = this.lightObj3D.addComponent(DirectLight);
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             directLight.castShadow = true;
-            directLight.intensity = 43;
+            directLight.intensity = 1;
             GUIUtil.renderDirLight(directLight);
             this.scene.addChild(this.lightObj3D);
         }
@@ -82,19 +82,23 @@ class Sample_ClearCoat {
                 let mr = obj.addComponent(MeshRenderer);
                 mr.geometry = geo;
                 let mat = new LitMaterial();
-                mat.baseColor = new Color(1.0, 0.0, 0.0);
-                mat.metallic = 0;
-                mat.roughness = 1;
-                mat.clearCoatRoughnessMap = clearCoatRoughnessTex;
+                mat.baseColor = Color.randomRGB();
+                mat.metallic = 1;
+                mat.roughness = 0.85;
+                // mat.clearCoatRoughnessMap = clearCoatRoughnessTex;
                 // mat.clearcoatFactor = i / 10;
-                mat.clearcoatColor = new Color(0.0, 0.0, 0.0);
-                mat.clearcoatWeight = 0.65;
-                mat.clearcoatFactor = 1;
-                mat.clearcoatRoughnessFactor = i / 10;
+                mat.clearcoatColor = new Color(1.0, 1.0, 1.0);
+                mat.clearcoatWeight = 1;
+                mat.clearcoatFactor = 0.5;
+                mat.ior = 1.5;
+                mat.clearcoatRoughnessFactor = 0.03;
                 mr.material = mat;
                 this.scene.addChild(obj);
 
                 obj.x = space * i - space * 10 * 0.5;
+
+                mat.name = `clearCoat_${i}`
+                GUIUtil.renderLitMaterial(mat);
             }
         }
     }

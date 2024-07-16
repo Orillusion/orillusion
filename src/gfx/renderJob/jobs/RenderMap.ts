@@ -1,7 +1,7 @@
 import { Camera3D } from "../../../core/Camera3D";
 import { Scene3D } from "../../../core/Scene3D";
 import { RendererBase } from "../passRenderer/RendererBase";
-import { PassType } from "../passRenderer/state/RendererType";
+import { PassType } from "../passRenderer/state/PassType";
 
 export class RendererMap {
 

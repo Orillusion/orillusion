@@ -1,5 +1,5 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, LitMaterial, MeshRenderer, BoxGeometry, DirectLight, KelvinUtil, Object3DUtil, SkeletonAnimationComponent } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, webGPUContext, HoverCameraController, View3D, LitMaterial, MeshRenderer, BoxGeometry, DirectLight, KelvinUtil, Object3DUtil, SkeletonAnimationComponent, AnimatorComponent } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
 class Sample_Skeleton2 {
@@ -52,7 +52,7 @@ class Sample_Skeleton2 {
             let directLight = this.lightObj3D.addComponent(DirectLight);
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             directLight.castShadow = true;
-            directLight.intensity = 40;
+            directLight.intensity = 3;
             GUIHelp.init();
             GUIUtil.renderDirLight(directLight);
             scene.addChild(this.lightObj3D);
@@ -68,7 +68,7 @@ class Sample_Skeleton2 {
             character.rotationY = 180;
 
             // enum animation names
-            var animName = ['Idel', 'Walk', 'Run', 'TPose'];
+            var animName = ['Idle', 'Walk', 'Run', 'TPose'];
             let maxCount = 100;
             let maxCol = 10;
             let maxRow = Math.floor(maxCount / maxCol);
@@ -84,13 +84,13 @@ class Sample_Skeleton2 {
                 cloneObj.rotationX = -90;
                 scene.addChild(cloneObj);
 
-                let animation = cloneObj.getComponentsInChild(SkeletonAnimationComponent)[0];
+                let animation = cloneObj.getComponentsInChild(AnimatorComponent)[0];
 
                 if (i < animName.length) {
-                    animation.play(animName[i]);
+                    animation.playAnim(animName[i]);
                 } else {
-                    let animIndex = Math.floor(Math.random() * 100 % 3);
-                    animation.play(animName[animIndex], -5 + Math.random() * 10);
+                    let animIndex = Math.floor(Math.random() * 100) % animName.length;
+                    animation.playAnim(animName[animIndex]);
                 }
                 await this.sleep(10);
             }

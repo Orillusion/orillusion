@@ -1,9 +1,8 @@
 import { Camera3D } from "../../../../../core/Camera3D";
 import { Scene3D } from "../../../../../core/Scene3D";
-import { Probe } from "../../../../renderJob/passRenderer/ddgi/Probe";
 import { GlobalUniformGroup } from "./GlobalUniformGroup";
 import { LightEntries } from "./groups/LightEntries";
-import { ProbeEntries } from "./groups/ProbeEntries";
+import { ReflectionEntries } from "./groups/ReflectionEntries";
 import { MatrixBindGroup } from "./MatrixBindGroup";
 
 /**
@@ -14,13 +13,18 @@ import { MatrixBindGroup } from "./MatrixBindGroup";
 export class GlobalBindGroup {
     private static _cameraBindGroups: Map<Camera3D, GlobalUniformGroup>;
     private static _lightEntriesMap: Map<Scene3D, LightEntries>;
-    private static _probeEntries: ProbeEntries;
+    private static _reflectionEntriesMap: Map<Scene3D, ReflectionEntries>;
     public static modelMatrixBindGroup: MatrixBindGroup;
 
     public static init() {
         this.modelMatrixBindGroup = new MatrixBindGroup();
         this._cameraBindGroups = new Map<Camera3D, GlobalUniformGroup>();
         this._lightEntriesMap = new Map<Scene3D, LightEntries>();
+        this._reflectionEntriesMap = new Map<Scene3D, ReflectionEntries>();
+    }
+
+    public static getAllCameraGroup() {
+        return this._cameraBindGroups;
     }
 
     public static getCameraGroup(camera: Camera3D) {
@@ -29,13 +33,25 @@ export class GlobalBindGroup {
             cameraBindGroup = new GlobalUniformGroup(this.modelMatrixBindGroup);
             this._cameraBindGroups.set(camera, cameraBindGroup);
         }
-
         if (camera.isShadowCamera) {
             cameraBindGroup.setShadowCamera(camera);
         } else {
             cameraBindGroup.setCamera(camera);
         }
         return cameraBindGroup;
+    }
+
+    public static updateCameraGroup(camera: Camera3D) {
+        let cameraBindGroup = this._cameraBindGroups.get(camera);
+        if (!cameraBindGroup) {
+            cameraBindGroup = new GlobalUniformGroup(this.modelMatrixBindGroup);
+            this._cameraBindGroups.set(camera, cameraBindGroup);
+        }
+        if (camera.isShadowCamera) {
+            cameraBindGroup.setShadowCamera(camera);
+        } else {
+            cameraBindGroup.setCamera(camera);
+        }
     }
 
     public static getLightEntries(scene: Scene3D): LightEntries {
@@ -51,11 +67,19 @@ export class GlobalBindGroup {
         return this._lightEntriesMap.get(scene);
     }
 
-    public static updateProbes(probes: Probe[]) {
-        if (!this._probeEntries) {
-            this._probeEntries = new ProbeEntries();
-            this._probeEntries.initDataUniform(probes);
+    public static getReflectionEntries(scene: Scene3D): ReflectionEntries {
+        if (!scene) {
+            console.log(`getLightEntries scene is null`);
         }
+
+        let reflectionEntries = this._reflectionEntriesMap.get(scene);
+        if (!reflectionEntries) {
+            reflectionEntries = new ReflectionEntries();
+            this._reflectionEntriesMap.set(scene, reflectionEntries);
+        }
+        return this._reflectionEntriesMap.get(scene);
     }
+
+
 
 }

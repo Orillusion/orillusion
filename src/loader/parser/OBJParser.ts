@@ -264,6 +264,7 @@ export class OBJParser extends ParserBase {
   }
 
   private async parser_mesh() {
+    let root = new Object3D();
     for (const key in this.geometrys) {
       const geoData = this.geometrys[key];
 
@@ -324,49 +325,45 @@ export class OBJParser extends ParserBase {
         }
       }
 
-      let root = new Object3D();
-      for (const key in this.geometrys) {
-        const geoData = this.geometrys[key];
-        let geo: GeometryBase = new GeometryBase();
-        // let att_info: GeometryAttribute = {};
-        // att_info[VertexAttributeName.position] = { name: VertexAttributeName.position, data: new Float32Array(geoData.vertex_arr) };
-        // att_info[VertexAttributeName.normal] = { name: VertexAttributeName.normal, data: new Float32Array(geoData.normal_arr) };
-        // att_info[VertexAttributeName.uv] = { name: VertexAttributeName.uv, data: new Float32Array(geoData.uv_arr) };
-        // att_info[VertexAttributeName.TEXCOORD_1] = { name: VertexAttributeName.TEXCOORD_1, data: new Float32Array(geoData.uv_arr) };
-        // att_info[VertexAttributeName.indices] = { name: VertexAttributeName.indices, data: new Uint32Array(geoData.indeice_arr) };
-        // geo.setAttributes(geo.name + UUID(), att_info);
-        // geo.geometrySource = new SerializeGeometrySource().setObjGeometry(this.initUrl, key);
+      let geo: GeometryBase = new GeometryBase();
+      // let att_info: GeometryAttribute = {};
+      // att_info[VertexAttributeName.position] = { name: VertexAttributeName.position, data: new Float32Array(geoData.vertex_arr) };
+      // att_info[VertexAttributeName.normal] = { name: VertexAttributeName.normal, data: new Float32Array(geoData.normal_arr) };
+      // att_info[VertexAttributeName.uv] = { name: VertexAttributeName.uv, data: new Float32Array(geoData.uv_arr) };
+      // att_info[VertexAttributeName.TEXCOORD_1] = { name: VertexAttributeName.TEXCOORD_1, data: new Float32Array(geoData.uv_arr) };
+      // att_info[VertexAttributeName.indices] = { name: VertexAttributeName.indices, data: new Uint32Array(geoData.indeice_arr) };
+      // geo.setAttributes(geo.name + UUID(), att_info);
+      // geo.geometrySource = new SerializeGeometrySource().setObjGeometry(this.initUrl, key);
 
-        geo.setIndices(new Uint32Array(geoData.indeice_arr));
-        geo.setAttribute(VertexAttributeName.position, new Float32Array(geoData.vertex_arr));
-        geo.setAttribute(VertexAttributeName.normal, new Float32Array(geoData.normal_arr));
-        geo.setAttribute(VertexAttributeName.uv, new Float32Array(geoData.uv_arr));
-        geo.setAttribute(VertexAttributeName.TEXCOORD_1, new Float32Array(geoData.uv_arr));
+      geo.setIndices(new Uint32Array(geoData.indeice_arr));
+      geo.setAttribute(VertexAttributeName.position, new Float32Array(geoData.vertex_arr));
+      geo.setAttribute(VertexAttributeName.normal, new Float32Array(geoData.normal_arr));
+      geo.setAttribute(VertexAttributeName.uv, new Float32Array(geoData.uv_arr));
+      geo.setAttribute(VertexAttributeName.TEXCOORD_1, new Float32Array(geoData.uv_arr));
 
-        geo.addSubGeometry({
-          indexStart: 0,
-          indexCount: geoData.indeice_arr.length,
-          vertexStart: 0,
-          vertexCount: 0,
-          firstStart: 0,
-          index: 0,
-          topology: 0,
-        });
+      geo.addSubGeometry({
+        indexStart: 0,
+        indexCount: geoData.indeice_arr.length,
+        vertexStart: 0,
+        vertexCount: 0,
+        firstStart: 0,
+        index: 0,
+        topology: 0,
+      });
 
-        let mat = new LitMaterial();
-        let matData = this.matLibs[geoData.source_mat];
-        mat.baseMap = Engine3D.res.getTexture(StringUtil.normalizePath(this.baseUrl + matData.map_Kd));
+      let mat = new LitMaterial();
+      let matData = this.matLibs[geoData.source_mat];
+      mat.baseMap = Engine3D.res.getTexture(StringUtil.normalizePath(this.baseUrl + matData.map_Kd));
 
-        let obj = new Object3D();
-        let mr = obj.addComponent(MeshRenderer);
-        mr.geometry = geo;
-        mr.material = mat;
-        root.addChild(obj);
-      }
-
-      // root.renderLayer = RenderLayer.StaticBatch;
-      this.data = root;
+      let obj = new Object3D();
+      let mr = obj.addComponent(MeshRenderer);
+      mr.geometry = geo;
+      mr.material = mat;
+      root.addChild(obj);
     }
+
+    // root.renderLayer = RenderLayer.StaticBatch;
+    this.data = root;
   }
 
   /**
