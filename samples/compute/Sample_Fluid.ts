@@ -54,7 +54,7 @@ export class Demo_Fluid {
         pickFire.addEventListener(
             PointerEvent3D.PICK_MOVE, 
             function (e: PointerEvent3D) {
-                let point = e.data.pickInfo.worldPos;
+                let point = e.data.worldPos;
                 if (point.y >= 0 && (this.mLastPoint.x != point.x && this.mLastPoint.y != point.y && this.mLastPoint.z != point.z)) {
                     point.subtract(this.mLastPoint, this.mVelocity);
                     this.mLastPoint.copy(point);

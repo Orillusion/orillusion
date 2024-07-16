@@ -97,8 +97,8 @@ class Sample_MovebleLight {
     }
     private onMove(e: PointerEvent3D) {
         //set pick position as light position
-        this.light.transform.x = e.data.pickInfo.worldPos.x;
-        this.light.transform.y = e.data.pickInfo.worldPos.y;
+        this.light.transform.x = e.data.worldPos.x;
+        this.light.transform.y = e.data.worldPos.y;
     }
 }
 //rotate component
