@@ -9,6 +9,30 @@
 ## Need to know
 Beta version,  **NOT**  recommended for any commercial application.
 
+## Contributing (ongoing)
+
+`WebGPU` is the latest technology in the web domain and will play a crucial role in terms of 3D rendering as well as `AI/LLM` scenarios. 
+
+We aim to create a dedicated technical community for the `WebGPU` field, bringing together outstanding developers. 
+
+Hope more and more `front-end` developers could stay updated with the latest Web technologies `NOT ONLY` image slicing for web design.
+
+Specifically, we will continuously update the excellent samples provided by open-source contributors, allowing everyone to see better works. 
+
+Hope it could help highlight the very talented individual developers within the community!
+
+<a href="https://www.youtube.com/@orillusion7225"><img src="https://raw.githubusercontent.com/Orillusion/assets/main/sample_src/light_city.gif" height="140"></a>
+<a href="https://github.com/ID-Emmett"><img src="https://raw.githubusercontent.com/Orillusion/assets/main/sample_src/physical_car.gif" height="140"></a>
+<a href="https://github.com/ID-Emmett"><img src="https://raw.githubusercontent.com/Orillusion/assets/main/sample_src/movie_camera.gif" height="140"></a>
+<a href="https://github.com/ID-Emmett"><img src="https://raw.githubusercontent.com/Orillusion/assets/main/sample_src/helicopter.gif" height="140"></a>
+<a href="https://www.youtube.com/@orillusion7225"><img src="https://raw.githubusercontent.com/Orillusion/assets/main/sample_src/shooting.gif" height="140"></a>
+<a href="https://github.com/OriIIusion"><img src="https://github.com/Orillusion/assets/blob/main/sample_src/beijing_subway.gif" height="140"></a>
+<a href="https://github.com/mate-h"><img src="https://github.com/Orillusion/assets/blob/main/sample_src/volumetric_clouds.gif" height="140"></a>
+<a href="https://github.com/ID-Emmett"><img src="https://raw.githubusercontent.com/Orillusion/assets/main/sample_src/track_camera.gif" height="140"></a>
+<a href="https://github.com/ID-Emmett"><img src="https://github.com/Orillusion/assets/blob/main/sample_src/pentagram.webp" height="140"></a>
+<a href="https://github.com/OriIIusion"><img src="https://raw.githubusercontent.com/Orillusion/assets/main/sample_src/light_box.gif" height="140"></a>
+<a href="https://github.com/seven1031"><img src="https://github.com/Orillusion/assets/blob/main/sample_src/rabbit_box.webp" height="140"></a>
+<a href="https://github.com/seven1031"><img src="https://github.com/Orillusion/assets/blob/main/sample_src/fluid_mouse.webp" height="140"></a>
 ## Install
 
 ### NPM
