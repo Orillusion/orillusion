@@ -167,7 +167,7 @@ export class BitmapTextureCube extends TextureCube {
     /**
      * load texture data from array of web url.
      * make sure there are six images in a group,
-     * and the order is: px, nx, py, ny, pz, nz
+     * and the order is: [+X, -X, +Y, -Y, +Z, -Z]
      * @param urls array of image url
      */
     public async load(urls: string[]) {
