@@ -357,7 +357,7 @@ export class Res {
     /**
      * load texture data from array of web url.
      * make sure there are six images in a group,
-     * and the order is: nx, px, py, ny, nz, pz
+     * and the order is: px, nx, py, ny, pz, nz
      * @param urls 
      */
     public async loadTextureCubeMaps(urls: string[]) {
