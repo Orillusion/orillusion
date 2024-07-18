@@ -55,7 +55,6 @@ export class PickFire extends CEventDispatcher {
      */
     private init(): void {
         this.ray = new Ray();
-
         this.mouseEnableMap = new Map<number, ColliderComponent>();
 
         this._pickEvent = new PointerEvent3D(PointerEvent3D.PICK_CLICK);
@@ -260,7 +259,6 @@ export class PickFire extends CEventDispatcher {
 
                 }
             }
-
         }
     }
 }

@@ -96,7 +96,6 @@ export class UIPanel extends UIImage {
     public set billboard(type: BillboardType) {
         if (this.space == GUISpace.View) {
             type = BillboardType.None;
-        } else {
             console.warn('Cannot enable billboard in view space');
         }
         if (type == BillboardType.BillboardXYZ || type == BillboardType.BillboardY) {
