@@ -74,6 +74,7 @@ export class PickFire extends CEventDispatcher {
             Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_DOWN, this.onTouchStart, this);
             Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_UP, this.onTouchEnd, this);
             Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_CLICK, this.onTouchOnce, this);
+            Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_RIGHT_CLICK, this.onTouchOnce, this);
             Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_MOVE, this.onTouchMove, this);
         }
 
@@ -91,6 +92,7 @@ export class PickFire extends CEventDispatcher {
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_DOWN, this.onTouchStart, this);
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_UP, this.onTouchEnd, this);
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_CLICK, this.onTouchOnce, this);
+        Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_RIGHT_CLICK, this.onTouchOnce, this);
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_MOVE, this.onTouchMove, this);
     }
 

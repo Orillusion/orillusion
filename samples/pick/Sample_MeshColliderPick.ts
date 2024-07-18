@@ -55,10 +55,9 @@ class Sample_MeshColliderPick {
     }
 
     private onMousePick(e: PointerEvent3D) {
-        let pick = e.data.pick;
-        if (pick && pick.object3D) {
-            let obj = pick.object3D;
-            let meshRenderer = obj.getComponent(MeshRenderer);
+        let pick = e.target;
+        if (pick) {
+            let meshRenderer = pick.getComponent(MeshRenderer);
             //modify base color
             meshRenderer.material.baseColor = new Color(Math.random(), Math.random(), Math.random())
         }

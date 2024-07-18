@@ -66,17 +66,17 @@ export class PointerEvent3D extends CEvent {
      *
      * Triggered when the right pointer clicked
      */
-    static POINTER_RIGHT_CLICK: string = 'onPointerRightClick';
+    public static POINTER_RIGHT_CLICK: string = 'onPointerRightClick';
     /**
      *
      * Triggered when the middle pointer released
      */
-    static POINTER_MID_UP: string = 'onPointerMidUp';
+    public static POINTER_MID_UP: string = 'onPointerMidUp';
     /**
      *
      * Triggered when the middle pointer pressed
      */
-    static POINTER_MID_DOWN: string = 'onPointerMidDown';
+    public static POINTER_MID_DOWN: string = 'onPointerMidDown';
 
     /**
      * Triggered when the pointer clicked  
