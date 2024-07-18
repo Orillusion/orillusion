@@ -69,6 +69,7 @@ export let FluidRenderShaderOpt = /* wgsl */ `
 
         ORI_VertexOut.varying_WPos = worldPos;
         ORI_VertexOut.varying_WPos.w = f32(particleGlobalData.instance_index);
+        ORI_VertexOut.index = f32(particleGlobalData.instance_index) ;
 
         var clipPosition = globalUniform.projMat * viewPosition ;
 

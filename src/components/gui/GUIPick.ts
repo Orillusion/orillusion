@@ -4,7 +4,6 @@ import { MouseCode } from '../../event/MouseCode';
 import { webGPUContext } from '../../gfx/graphics/webGpu/Context3D';
 import { Ray } from '../../math/Ray';
 import { Vector2 } from '../../math/Vector2';
-import { Vector3 } from '../../math/Vector3';
 import { Time } from '../../util/Time';
 import { IUIInteractive, UIInteractiveStyle } from './uiComponents/IUIInteractive';
 import { UITransform } from './uiComponents/UITransform';
@@ -68,11 +67,15 @@ export class GUIPick {
         if (target != this._lastOverTarget) {
             if (this._lastOverTarget && this._lastOverTarget.enable) {
                 this._lastOverTarget.mouseStyle = UIInteractiveStyle.NORMAL;
+                Object.assign(this._outEvent, e);
                 this._outEvent.data = this._lastOverTarget;
+                this._outEvent.type = PointerEvent3D.PICK_OUT_GUI;
                 this._lastOverTarget.object3D.dispatchEvent(this._outEvent);
             }
             if (target) {
                 target.mouseStyle = UIInteractiveStyle.OVER;
+                Object.assign(this._overEvent, e);
+                this._overEvent.type = PointerEvent3D.PICK_OVER_GUI;
                 this._overEvent.data = target;
                 target.object3D.dispatchEvent(this._overEvent);
             }
@@ -97,8 +100,10 @@ export class GUIPick {
         let target = ret ? ret.collider : null;
         if (target) {
             target.mouseStyle = UIInteractiveStyle.DOWN;
-            this._overEvent.data = target;
-            target.object3D.dispatchEvent(this._overEvent);
+            Object.assign(this._downEvent, e);
+            this._downEvent.type = PointerEvent3D.PICK_DOWN_GUI;
+            this._downEvent.data = target;
+            target.object3D.dispatchEvent(this._downEvent);
         }
         this._lastDownTarget = target;
     }
@@ -120,7 +125,9 @@ export class GUIPick {
             if (Time.time - this._lastDownTime <= this._clickTimeSpan) {
                 this._calcDistanceVec2.set(e.mouseX, e.mouseY);
                 if (this._calcDistanceVec2.distance(this._lastDownPosition) <= this._clickDistanceSpan) {
-                    this._clickEvent.data = { pick: target, pickInfo: ret, mouseCode: this._mouseCode };
+                    Object.assign(this._clickEvent, e);
+                    this._clickEvent.data = ret;
+                    this._clickEvent.type = PointerEvent3D.PICK_CLICK_GUI;
                     target.object3D.dispatchEvent(this._clickEvent);
                 }
             }
