@@ -55,7 +55,6 @@ export class PickFire extends CEventDispatcher {
      */
     private init(): void {
         this.ray = new Ray();
-
         this.mouseEnableMap = new Map<number, ColliderComponent>();
 
         this._pickEvent = new PointerEvent3D(PointerEvent3D.PICK_CLICK);
@@ -74,6 +73,7 @@ export class PickFire extends CEventDispatcher {
             Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_DOWN, this.onTouchStart, this);
             Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_UP, this.onTouchEnd, this);
             Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_CLICK, this.onTouchOnce, this);
+            Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_RIGHT_CLICK, this.onTouchOnce, this);
             Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_MOVE, this.onTouchMove, this);
         }
 
@@ -91,6 +91,7 @@ export class PickFire extends CEventDispatcher {
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_DOWN, this.onTouchStart, this);
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_UP, this.onTouchEnd, this);
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_CLICK, this.onTouchOnce, this);
+        Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_RIGHT_CLICK, this.onTouchOnce, this);
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_MOVE, this.onTouchMove, this);
     }
 
@@ -103,12 +104,10 @@ export class PickFire extends CEventDispatcher {
         let target = this.findNearestObj(this._interestList, this._view.camera);
         this._lastDownTarget = target;
         if (target) {
+            Object.assign(this._downEvent, e);
+            this._downEvent.type = PointerEvent3D.PICK_DOWN;
             this._downEvent.target = target.object3D;
-            this._downEvent.ctrlKey = e.ctrlKey;
-            this._downEvent.metaKey = e.metaKey;
-            this._downEvent.altKey = e.altKey;
-            this._downEvent.shiftKey = e.shiftKey;
-            this._downEvent.data = { pick: target, pickInfo: this.getPickInfo(), mouseCode: this._mouseCode };
+            this._downEvent.data = this.getPickInfo();
             this.dispatchEvent(this._downEvent);
 
             if (target.object3D.containEventListener(PointerEvent3D.PICK_DOWN)) {
@@ -125,13 +124,12 @@ export class PickFire extends CEventDispatcher {
         this.pick(this._view.camera);
         let target = this.findNearestObj(this._interestList, this._view.camera);
         if (target) {
+            Object.assign(this._upEvent, e);
+            this._upEvent.type = PointerEvent3D.PICK_UP;
             this._upEvent.target = target.object3D;
-            this._upEvent.ctrlKey = e.ctrlKey;
-            this._upEvent.metaKey = e.metaKey;
-            this._upEvent.altKey = e.altKey;
-            this._upEvent.shiftKey = e.shiftKey;
-            this._upEvent.data = { pick: target, pickInfo: this.getPickInfo(), mouseCode: this._mouseCode };
+            this._upEvent.data = this.getPickInfo();
             this.dispatchEvent(this._upEvent);
+
             if (target.object3D.containEventListener(PointerEvent3D.PICK_UP)) {
                 target.object3D.dispatchEvent(this._upEvent);
             }
@@ -156,13 +154,12 @@ export class PickFire extends CEventDispatcher {
         this.pick(this._view.camera);
         let target = this.findNearestObj(this._interestList, this._view.camera);
         if (target) {
+            Object.assign(this._mouseMove, e);
+            this._mouseMove.type = PointerEvent3D.PICK_MOVE;
             this._mouseMove.target = target.object3D;
-            this._mouseMove.ctrlKey = e.ctrlKey;
-            this._mouseMove.metaKey = e.metaKey;
-            this._mouseMove.altKey = e.altKey;
-            this._mouseMove.shiftKey = e.shiftKey;
-            this._mouseMove.data = { pick: target, pickInfo: this.getPickInfo(), mouseCode: this._mouseCode };
+            this._mouseMove.data = this.getPickInfo();
             this.dispatchEvent(this._mouseMove);
+
             if (target.object3D.containEventListener(PointerEvent3D.PICK_MOVE)) {
                 target.object3D.dispatchEvent(this._mouseMove);
             }
@@ -170,24 +167,21 @@ export class PickFire extends CEventDispatcher {
 
         if (target != this._lastFocus) {
             if (this._lastFocus && this._lastFocus.object3D) {
+                Object.assign(this._outEvent, e);
+                this._outEvent.type = PointerEvent3D.PICK_OUT;
                 this._outEvent.target = this._lastFocus.object3D;
-                this._outEvent.data = { pick: this._lastFocus, pickInfo: this.getPickInfo(), mouseCode: this._mouseCode };
-                this._outEvent.ctrlKey = e.ctrlKey;
-                this._outEvent.metaKey = e.metaKey;
-                this._outEvent.altKey = e.altKey;
-                this._outEvent.shiftKey = e.shiftKey;
+                this._outEvent.data = this.getPickInfo();
                 this.dispatchEvent(this._outEvent);
+
                 if (this._lastFocus.object3D.containEventListener(PointerEvent3D.PICK_OUT)) {
                     this._lastFocus.object3D.dispatchEvent(this._outEvent);
                 }
             }
             if (target) {
+                Object.assign(this._overEvent, e);
+                this._overEvent.type = PointerEvent3D.PICK_OVER;
                 this._overEvent.target = target.object3D;
-                this._overEvent.ctrlKey = e.ctrlKey;
-                this._overEvent.metaKey = e.metaKey;
-                this._overEvent.altKey = e.altKey;
-                this._overEvent.shiftKey = e.shiftKey;
-                this._overEvent.data = { pick: target, pickInfo: this.getPickInfo(), mouseCode: this._mouseCode };
+                this._overEvent.data = this.getPickInfo();
                 this.dispatchEvent(this._overEvent);
                 if (target.object3D.containEventListener(PointerEvent3D.PICK_OVER)) {
                     target.object3D.dispatchEvent(this._overEvent);
@@ -204,12 +198,10 @@ export class PickFire extends CEventDispatcher {
         let target = this.findNearestObj(this._interestList, this._view.camera);
         if (target) {
             let info = Engine3D.setting.pick.mode == `pixel` ? this.getPickInfo() : null;
+            Object.assign(this._pickEvent, e);
+            this._pickEvent.type = PointerEvent3D.PICK_CLICK;
             this._pickEvent.target = target.object3D;
-            this._pickEvent.ctrlKey = e.ctrlKey;
-            this._pickEvent.metaKey = e.metaKey;
-            this._pickEvent.altKey = e.altKey;
-            this._pickEvent.shiftKey = e.shiftKey;
-            this._pickEvent.data = { pick: target, pickInfo: info, mouseCode: this._mouseCode };
+            this._pickEvent.data = info;
             this.dispatchEvent(this._pickEvent);
 
             if (target === this._lastDownTarget && target.object3D.containEventListener(PointerEvent3D.PICK_CLICK)) {
@@ -267,7 +259,6 @@ export class PickFire extends CEventDispatcher {
 
                 }
             }
-
         }
     }
 }

@@ -173,7 +173,8 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
                     }
                   }
                 }
-                shadow = min(max(shadow / (samples * samples * samples), 0.0), 1.0);
+              }
+              shadow = min(max(shadow / (samples * samples * samples), 0.0), 1.0);
             #endif
   
           #if USE_SOFT_SHADOW

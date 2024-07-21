@@ -57,7 +57,7 @@ export let FluidRenderShader = /* wgsl */ `
         //ORI_VertexOut.fragCoord = normalize(vertex.position.xy) + vec2<f32>(0.5, 0.5);
         ORI_VertexOut.varying_Color = particleColor[vertex.index];
         ORI_VertexOut.varying_WNormal = worldNormal ; 
-
+        ORI_VertexOut.index = f32(particleGlobalData.instance_index) ;
         return ORI_VertexOut;
     }
 

@@ -51,18 +51,18 @@ export class Demo_FluidOptimize {
         obj.addComponent(ColliderComponent);
         let pickFire = scene.view.pickFire;
         pickFire.addEventListener(
-            PointerEvent3D.PICK_MOVE, 
+            PointerEvent3D.PICK_MOVE,
             function (e: PointerEvent3D) {
-                let point = e.data.pickInfo.worldPos;
+                let point = e.data.worldPos;
                 if (point.y >= 0 && (this.mLastPoint.x != point.x && this.mLastPoint.y != point.y && this.mLastPoint.z != point.z)) {
-                    try{
-                    point.subtract(this.mLastPoint, this.mVelocity);
-                    this.mLastPoint.copy(point);
-                    let r = scene.view.camera;
-                    let ray = r.screenPointToRay(Engine3D.inputSystem.mouseX, Engine3D.inputSystem.mouseY);
-                    emulation.updateInputInfo(scene.view.camera.transform.localPosition, ray.direction, this.mVelocity);
+                    try {
+                        point.subtract(this.mLastPoint, this.mVelocity);
+                        this.mLastPoint.copy(point);
+                        let r = scene.view.camera;
+                        let ray = r.screenPointToRay(Engine3D.inputSystem.mouseX, Engine3D.inputSystem.mouseY);
+                        emulation.updateInputInfo(scene.view.camera.transform.localPosition, ray.direction, this.mVelocity);
                     }
-                    catch(e){
+                    catch (e) {
                         console.error(e);
                     }
 
