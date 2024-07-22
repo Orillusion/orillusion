@@ -84,9 +84,8 @@ class Sample_ClearCoat {
                 let mat = new LitMaterial();
                 mat.baseColor = Color.randomRGB();
                 mat.metallic = 1;
-                mat.roughness = 0.85;
-                // mat.clearCoatRoughnessMap = clearCoatRoughnessTex;
-                // mat.clearcoatFactor = i / 10;
+                mat.roughness = (10 - i) / 30;
+                mat.clearCoatRoughnessMap = clearCoatRoughnessTex;
                 mat.clearcoatColor = new Color(1.0, 1.0, 1.0);
                 mat.clearcoatWeight = 1;
                 mat.clearcoatFactor = 0.5;
