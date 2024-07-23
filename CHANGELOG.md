@@ -1,3 +1,20 @@
+## [0.8.2](https://github.com/Orillusion/orillusion/compare/v0.8.1...v0.8.2) (2024-07-21)
+
+
+### Bug Fixes
+
+* **doc:** fix TextureCube order ([#388](https://github.com/Orillusion/orillusion/issues/388)) ([#421](https://github.com/Orillusion/orillusion/issues/421)) ([7e4e15d](https://github.com/Orillusion/orillusion/commit/7e4e15d1500d1e16e5a780123f78d602be9a9708))
+* **MeshRenderer:** replace geometry error ([#415](https://github.com/Orillusion/orillusion/issues/415)) ([c79e287](https://github.com/Orillusion/orillusion/commit/c79e2878c61480583ea4a73188e0e81c395d0dcb))
+* **PCF:** PCF shadow error ([#371](https://github.com/Orillusion/orillusion/issues/371)) ([c47257c](https://github.com/Orillusion/orillusion/commit/c47257c47d65c1e5c3ee4f0eae0b2bf42295561c))
+* **pick:** fix undefined values ([#416](https://github.com/Orillusion/orillusion/issues/416)) ([5548467](https://github.com/Orillusion/orillusion/commit/55484676627198c1b646c3944f4077e0b639adb0))
+* **pick:** fix gui pick events ([#422](https://github.com/Orillusion/orillusion/issues/422)) ([367f469](https://github.com/Orillusion/orillusion/commit/367f46904325e87b3f8a257d5cc3e44f96510132))
+* **pick:** fix right click ([#418](https://github.com/Orillusion/orillusion/issues/418)) ([b248c45](https://github.com/Orillusion/orillusion/commit/b248c455c428edc4b4c7233d39c6449e31322b12))
+
+
+### BREAKING CHANGES
+* **PointerEvent3D:** simplified `event.data` with `{worldPos, screenUv, meshID, worldNormal}`
+
+
 ## [0.8.1](https://github.com/Orillusion/orillusion/compare/v0.7.2...v0.8.1) (2024-07-10)
 
 
