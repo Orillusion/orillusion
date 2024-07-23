@@ -231,6 +231,7 @@ export class RendererJob {
             this.ddgiProbeRenderer.render(view, this.occlusionSystem);
         }
 
+
         let passList = this.rendererMap.getAllPassRenderer();
         for (let i = 0; i < passList.length; i++) {
             const renderer = passList[i];
@@ -238,10 +239,16 @@ export class RendererJob {
             renderer.render(view, this.occlusionSystem, this.clusterLightingRender.clusterLightingBuffer, false);
         }
 
-        if (this.postRenderer && this.postRenderer.postList.size > 0) {
-            this.postRenderer.render(view);
-        }
+        this.postRenderer.render(view);
 
+        //GUI
+        let guiRenderer = this.rendererMap.getRenderer(PassType.UI);
+        guiRenderer.compute(view, this.occlusionSystem);
+        guiRenderer.render(view, this.occlusionSystem, this.clusterLightingRender.clusterLightingBuffer, false);
+
+        //output
+        let lastTexture = GBufferFrame.getGUIBufferFrame().getColorTexture();
+        this.postRenderer.presentContent(view, lastTexture);
     }
 
     public debug() {

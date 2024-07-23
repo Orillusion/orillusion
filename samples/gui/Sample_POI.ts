@@ -1,11 +1,16 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { createExampleScene, createSceneParam } from "@samples/utils/ExampleScene";
-import { Scene3D, PropertyAnimation, Engine3D, Object3D, Object3DUtil, PropertyAnimClip, WrapMode, WorldPanel, BillboardType, TextAnchor, UIImage, UIShadow, UITextField, Vector3, Color, Time } from "@orillusion/core";
+import {
+    Scene3D, PropertyAnimation, Engine3D, Object3D, Object3DUtil, PropertyAnimClip,
+    WrapMode, WorldPanel, BillboardType, TextAnchor, UIImage, UIShadow, UITextField,
+    Vector3, Color, Time, PostProcessingComponent, BloomPost, UIPanel
+} from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
 class Sample_POI {
     scene: Scene3D;
     panel: WorldPanel;
+    panel2: UIPanel;
     position: Vector3;
 
     async run() {
@@ -18,19 +23,26 @@ class Sample_POI {
 
         await Engine3D.init({ renderLoop: () => { this.loop(); } });
         let param = createSceneParam();
+        param.light.intensity = 5;
         param.camera.distance = 30;
         let exampleScene = createExampleScene(param);
 
         GUIHelp.init();
 
         this.scene = exampleScene.scene;
-        // exampleScene.camera.enableCSM = true;
 
         Engine3D.startRenderView(exampleScene.view);
+        let postCom = this.scene.addComponent(PostProcessingComponent);
+        let bloom = postCom.addPost(BloomPost);
+
+        bloom.luminanceThreshole = 1;
+        bloom.bloomIntensity = 0.8;
 
         await this.initScene();
         this.initDuckPOI();
         this.initScenePOI();
+        this.panel2.renderer.isRecievePostEffectUI = true;
+        GUIHelp.add(this.panel2.renderer, 'isRecievePostEffectUI');
     }
 
     private modelContainer: Object3D;
@@ -73,7 +85,7 @@ class Sample_POI {
         return animation;
     }
 
-    private initDuckPOI() {
+    private initDuckPOI(): UIPanel {
         let canvas = this.scene.view.enableUICanvas();
         //panel
         this.panel = new Object3D().addComponent(WorldPanel);
@@ -99,14 +111,16 @@ class Sample_POI {
         text.fontSize = 4;
         text.color = new Color(0, 0, 0, 1);
         text.alignment = TextAnchor.MiddleCenter;
-        GUIUtil.renderUIPanel(this.panel, true);
+        GUIUtil.renderUIPanel(this.panel, false);
+        return this.panel;
     }
 
     private sceneText: UITextField;
-    private initScenePOI() {
+    private initScenePOI(): UIPanel {
         let canvas = this.scene.view.enableUICanvas();
         //panel
         let panel = new Object3D().addComponent(WorldPanel);
+        this.panel2 = panel;
         panel.cullMode = "none";
         //add to canvas
         canvas.addChild(panel.object3D);
@@ -123,11 +137,12 @@ class Sample_POI {
         text.uiTransform.resize(80, 16);
         text.text = this.title;
         text.fontSize = 10;
-        text.color = new Color(0.5, 1.0, 0.5, 1.0);
+        text.color = new Color(0.5, 1.5, 0.5, 1.0);
         text.alignment = TextAnchor.MiddleLeft;
 
         panelRoot.addComponent(UIShadow).shadowOffset.multiplyScaler(0.2);
         this.sceneText = text;
+        return panel;
     }
 
     private charCount = 0;

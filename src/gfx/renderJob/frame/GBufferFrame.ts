@@ -10,6 +10,7 @@ import { RTResourceMap } from "./RTResourceMap";
 export class GBufferFrame extends RTFrame {
     public static colorPass_GBuffer: string = "ColorPassGBuffer";
     public static reflections_GBuffer: string = "reflections_GBuffer";
+    public static gui_GBuffer: string = "gui_GBuffer";
     public static gBufferMap: Map<string, GBufferFrame> = new Map<string, GBufferFrame>();
     // public static bufferTexture: boolean = false;
 
@@ -20,7 +21,7 @@ export class GBufferFrame extends RTFrame {
         super([], []);
     }
 
-    createGBuffer(key: string, rtWidth: number, rtHeight: number, autoResize: boolean = true, outColor: boolean = true) {
+    createGBuffer(key: string, rtWidth: number, rtHeight: number, autoResize: boolean = true, outColor: boolean = true, depthTexture?: RenderTexture) {
         let attachments = this.renderTargets;
         let reDescriptors = this.rtDescriptors;
         if (outColor) {
@@ -34,11 +35,12 @@ export class GBufferFrame extends RTFrame {
         this._compressGBufferTex = new RenderTexture(rtWidth, rtHeight, GPUTextureFormat.rgba32float, false, undefined, 1, 0, true, true);
         attachments.push(this._compressGBufferTex);
 
-        this.depthTexture = new RenderTexture(rtWidth, rtHeight, GPUTextureFormat.depth24plus, false, undefined, 1, 0, true, true);
-        this.depthTexture.name = key + `_depthTexture`;
-
-        let depthDec = new RTDescriptor();
-        depthDec.loadOp = `load`;
+        if (depthTexture) {
+            this.depthTexture = depthTexture;
+        } else {
+            this.depthTexture = new RenderTexture(rtWidth, rtHeight, GPUTextureFormat.depth24plus, false, undefined, 1, 0, true, true);
+            this.depthTexture.name = key + `_depthTexture`;
+        }
 
         let compressGBufferRTDes: RTDescriptor;
         compressGBufferRTDes = new RTDescriptor();
@@ -65,7 +67,7 @@ export class GBufferFrame extends RTFrame {
     /**
      * @internal
      */
-    public static getGBufferFrame(key: string, fixedWidth: number = 0, fixedHeight: number = 0, outColor: boolean = true): GBufferFrame {
+    public static getGBufferFrame(key: string, fixedWidth: number = 0, fixedHeight: number = 0, outColor: boolean = true, depthTexture?: RenderTexture): GBufferFrame {
         let gBuffer: GBufferFrame;
         if (!GBufferFrame.gBufferMap.has(key)) {
             gBuffer = new GBufferFrame();
@@ -76,13 +78,21 @@ export class GBufferFrame extends RTFrame {
                 fixedWidth == 0 ? size[0] : fixedWidth,
                 fixedHeight == 0 ? size[1] : fixedHeight,
                 fixedWidth != 0 && fixedHeight != 0,
-                outColor
+                outColor,
+                depthTexture
             );
             GBufferFrame.gBufferMap.set(key, gBuffer);
         } else {
             gBuffer = GBufferFrame.gBufferMap.get(key);
         }
         return gBuffer;
+    }
+
+
+    public static getGUIBufferFrame() {
+        let colorRTFrame = this.getGBufferFrame(this.colorPass_GBuffer);
+        let rtFrame = GBufferFrame.getGBufferFrame(GBufferFrame.gui_GBuffer, 0, 0, true, colorRTFrame.depthTexture);
+        return rtFrame;
     }
 
     public clone() {

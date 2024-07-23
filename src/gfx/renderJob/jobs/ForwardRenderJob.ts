@@ -9,6 +9,7 @@ import { webGPUContext } from '../../graphics/webGpu/Context3D';
 import { RTResourceConfig } from '../config/RTResourceConfig';
 import { RTResourceMap } from '../frame/RTResourceMap';
 import { GPUTextureFormat } from '../../graphics/webGpu/WebGPUConst';
+import { GUIPassRenderer } from '../passRenderer/color/GUIPassRenderer';
 /**
  * Forward+
  * Every time a forward rendering is performed, 
@@ -25,10 +26,9 @@ export class ForwardRenderJob extends RendererJob {
 
     public start(): void {
         super.start();
-
-        let rtFrame = GBufferFrame.getGBufferFrame("ColorPassGBuffer");
         {
             let colorPassRenderer = new ColorPassRenderer();
+            let rtFrame = GBufferFrame.getGBufferFrame(GBufferFrame.colorPass_GBuffer);
 
             if (Engine3D.setting.render.zPrePass) {
                 rtFrame.zPreTexture = this.depthPassRenderer.rendererPassState.depthTexture;
@@ -48,6 +48,13 @@ export class ForwardRenderJob extends RendererJob {
             }
 
             this.rendererMap.addRenderer(colorPassRenderer);
+        }
+
+        {
+            let guiFrame = GBufferFrame.getGUIBufferFrame();
+            let guiPassRenderer = new GUIPassRenderer();
+            guiPassRenderer.setRenderStates(guiFrame);
+            this.rendererMap.addRenderer(guiPassRenderer);
         }
 
         if (Engine3D.setting.render.debug) {
