@@ -1,16 +1,4 @@
-import { MeshRenderer } from "../../../../../components/renderer/MeshRenderer";
-import { View3D } from "../../../../../core/View3D";
-import { Object3D } from "../../../../../core/entities/Object3D";
-import { GeometryBase } from "../../../../../core/geometry/GeometryBase";
-import { UnLitTexArrayMaterial } from "../../../../../materials/UnLitTexArrayMaterial";
-import { Color } from "../../../../../math/Color";
-import { Vector3 } from "../../../../../math/Vector3";
-import { Vector4 } from "../../../../../math/Vector4";
-import { BitmapTexture2DArray } from "../../../../../textures/BitmapTexture2DArray";
-import { GeometryUtil } from "../../../../../util/GeometryUtil";
-import { StorageGPUBuffer } from "../../../../graphics/webGpu/core/buffer/StorageGPUBuffer";
-import { ComputeShader } from "../../../../graphics/webGpu/shader/ComputeShader";
-import { GPUContext } from "../../../GPUContext";
+import { MeshRenderer, StorageGPUBuffer, GeometryBase, BitmapTexture2DArray, Object3D, ComputeShader, UnLitTexArrayMaterial, Vector3, Color, Vector4, GeometryUtil, View3D, GPUContext } from "@orillusion/core";
 
 export class Graphic3DMeshRenderer extends MeshRenderer {
     public transformBuffer: StorageGPUBuffer;

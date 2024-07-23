@@ -1,7 +1,8 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, PlaneGeometry, Vector3, Graphic3DMesh, Matrix4, Time, BlendMode, PrefabParser } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, PlaneGeometry, Vector3, Matrix4, Time, BlendMode, PrefabParser } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { Stats } from "@orillusion/stats";
+import { Graphic3D, Graphic3DMesh } from "@orillusion/graphic";
 
 export class Sample_GraphicMeshWave {
     lightObj3D: Object3D;
@@ -11,6 +12,7 @@ export class Sample_GraphicMeshWave {
     height: number;
     cafe: number = 47;
     frame: number = 16;
+    graphic3D: Graphic3D;
 
     constructor() { }
 
@@ -22,9 +24,6 @@ export class Sample_GraphicMeshWave {
         await Engine3D.init({ beforeRender: () => this.update() });
 
         Engine3D.setting.render.debug = true;
-        Engine3D.setting.shadow.shadowBound = 5;
-
-
 
         GUIHelp.init();
 
@@ -40,6 +39,9 @@ export class Sample_GraphicMeshWave {
         let view = new View3D();
         view.scene = this.scene;
         view.camera = camera;
+
+        this.graphic3D = new Graphic3D();
+        this.scene.addChild(this.graphic3D);
 
         Engine3D.startRenderView(view);
 
@@ -65,9 +67,7 @@ export class Sample_GraphicMeshWave {
         }
 
         let texts = [];
-
         texts.push(await Engine3D.res.loadTexture("textures/128/star_0031.png") as BitmapTexture2D);
-
         let bitmapTexture2DArray = new BitmapTexture2DArray(texts[0].width, texts[0].height, texts.length);
         bitmapTexture2DArray.setTextures(texts);
 
@@ -80,7 +80,6 @@ export class Sample_GraphicMeshWave {
         {
             this.width = 100;
             this.height = 100;
-            // let geometry = new BoxGeometry(1, 1, 1);
             let geometry = new PlaneGeometry(1, 1, 1, 1, Vector3.Z_AXIS);
             let mr = Graphic3DMesh.draw(this.scene, geometry, bitmapTexture2DArray, this.width * this.height);
             this.parts = mr.object3Ds;
@@ -92,11 +91,7 @@ export class Sample_GraphicMeshWave {
 
             for (let i = 0; i < this.width * this.height; i++) {
                 const element = this.parts[i];
-                // mr.setTextureID(i, i % texts.length);
-                // mr.setTextureID(i, 52);
-                // mr.setTextureID(i, 35);
                 mr.setTextureID(i, 0);
-                // mr.setTextureID(i, 18);
 
                 let size = 1.0;
                 element.transform.scaleX = size;
@@ -113,7 +108,6 @@ export class Sample_GraphicMeshWave {
                 const element = this.parts[i];
 
                 this.wave(i, pos);
-
                 element.transform.localPosition = pos;
             }
         }

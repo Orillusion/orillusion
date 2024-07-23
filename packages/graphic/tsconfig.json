@@ -25,6 +25,7 @@
         "paths": {
             "@orillusion/core": ["../../src"],
             "@orillusion/*": ["../*"]
-        }
+        },
+        "experimentalDecorators": true
     }
 }

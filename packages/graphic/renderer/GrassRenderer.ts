@@ -1,6 +1,9 @@
 
-import { ComputeShader, DynamicDrawStruct, DynamicFaceRenderer, Struct, graphicDynamicCompute } from "@orillusion/core";
+import { ComputeShader } from "@orillusion/core";
+import { graphicDynamicCompute } from "../compute/graphic3d/GraphicDynamicCompute";
 import { GrassGeometryCompute_cs } from "../compute/grass/GrassGeometryCompute_cs";
+import { DynamicDrawStruct } from "./graphic3d/DynamicDrawStruct";
+import { DynamicFaceRenderer } from "./graphic3d/DynamicFaceRenderer";
 
 export class GrassNodeStruct extends DynamicDrawStruct {
     grassCount: number = 1;

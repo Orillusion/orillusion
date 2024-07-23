@@ -1,16 +1,7 @@
-import { GeometryBase } from "../../../../core/geometry/GeometryBase";
-import { Color } from "../../../../math/Color";
-import { Vector3 } from "../../../../math/Vector3";
-import { DEGREES_TO_RADIANS } from "../../../../math/MathUtil";
-import { Transform } from "../../../../components/Transform";
-import { BoundingBox } from "../../../../core/bound/BoundingBox";
-import { Camera3D } from "../../../../core/Camera3D";
-import { CameraType } from "../../../../core/CameraType";
-import { Object3D } from "../../../../core/entities/Object3D";
+import { BoundingBox, BoundUtil, Camera3D, CameraType, Color, DEGREES_TO_RADIANS, GeometryBase, Object3D, Transform, Vector3 } from "@orillusion/core";
 import { Graphics3DShape } from "./Graphics3DShape";
 import { Graphic3DFillRenderer } from "./Graphic3DFillRenderer";
 import { Graphic3DLineRenderer } from "./Graphic3DLineBatchRenderer";
-import { BoundUtil } from "../../../../util/BoundUtil";
 
 export class Graphic3D extends Object3D {
     protected mLineRender: Graphic3DLineRenderer;
@@ -18,6 +9,7 @@ export class Graphic3D extends Object3D {
 
     constructor() {
         super();
+        this.name = 'graphic3D';
         this.mLineRender = this.addComponent(Graphic3DLineRenderer);
         this.mFillRender = this.addComponent(Graphic3DFillRenderer);
     }

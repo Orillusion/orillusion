@@ -1,4 +1,4 @@
-import { BitmapTexture2DArray, Graphic3DMesh, Scene3D, Vector2, Vector3 } from "@orillusion/core";
+import { BitmapTexture2DArray, Scene3D, Vector2 } from "@orillusion/core";
 import { Shape3DRenderer } from "./Shape3DRenderer";
 import { RoundRectShape3D } from "./shape3d/RoundRectShape3D";
 import { EllipseShape3D } from "./shape3d/EllipseShape3D";
@@ -9,6 +9,7 @@ import { QuadraticCurveShape3D } from "./shape3d/QuadraticCurveShape3D";
 import { CurveShape3D } from "./shape3d/CurveShape3D";
 import { Path2DShape3D } from "./shape3d/Path2DShape3D";
 import { Path3DShape3D } from "./shape3d/Path3DShape3D";
+import { Graphic3DMesh } from "./graphic3d/Graphic3DMesh";
 
 
 /**

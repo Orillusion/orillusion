@@ -1,6 +1,6 @@
 {
     "name": "@orillusion/graphic",
-    "version": "0.1.1",
+    "version": "0.2.0",
     "author": "Orillusion",
     "description": "Orillusion graphic Plugin",
     "main": "./dist/graphic.umd.js",
@@ -22,7 +22,7 @@
         "url": "git+https://github.com/Orillusion/orillusion.git"
     },
     "dependencies": {
-        "@orillusion/core": "^0.7.0",
+        "@orillusion/core": "^0.8.0",
         "earcut": "^2.2.4"
     }
 }

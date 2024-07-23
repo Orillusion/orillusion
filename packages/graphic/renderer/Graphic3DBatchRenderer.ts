@@ -1,12 +1,7 @@
-import { RenderNode } from "../../../../components/renderer/RenderNode";
-import { View3D } from "../../../../core/View3D";
-import { Color } from "../../../../math/Color";
-import { Vector3 } from "../../../../math/Vector3";
-import { RendererPassState } from "../state/RendererPassState";
-import { PassType } from "../state/PassType";
+
+import { ClusterLightingBuffer, Color, GeometryBase, PassType, RendererMask, RendererPassState, RenderNode, Vector3, VertexAttributeName, View3D } from "@orillusion/core";
 import { Graphics3DShape } from "./Graphics3DShape";
-import { ClusterLightingBuffer } from "../cluster/ClusterLightingBuffer";
-import { GeometryBase, Graphic3DFixedRenderMaterial, VertexAttributeName } from "../../../..";
+import { Graphic3DFixedRenderMaterial } from "./Graphic3DFixedRenderMaterial";
 
 /**
 * @internal
@@ -29,6 +24,7 @@ export class Graphic3DBatchRenderer extends RenderNode {
 
     public init() {
         super.init();
+        this.addRendererMask(RendererMask.Graphic3D);
         this.castGI = false;
         this.castShadow = false;
         this.geometry = new GeometryBase();

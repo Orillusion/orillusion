@@ -2,12 +2,14 @@ import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { Color, Engine3D, Object3D, Object3DUtil, Transform, View3D, } from '@orillusion/core';
 import { GUIUtil } from '@samples/utils/GUIUtil';
 import { createExampleScene, createSceneParam } from '@samples/utils/ExampleScene';
+import { Graphic3D } from '@orillusion/graphic';
 
 // A sample to show boundingbox
 class Sample_BoundingBox {
     view: View3D;
     box: Object3D;
     container: Object3D;
+    graphic3D: Graphic3D
     async run() {
         // init engine
         await Engine3D.init({ renderLoop: () => { this.loop() } });
@@ -25,6 +27,9 @@ class Sample_BoundingBox {
 
         this.box = box;
         this.view = exampleScene.view;
+        // add a graphic3D to draw lines
+        this.graphic3D = new Graphic3D();
+        exampleScene.scene.addChild(this.graphic3D);
 
         let parent = this.container = new Object3D();
         parent.addChild(box);
@@ -46,8 +51,8 @@ class Sample_BoundingBox {
     red = new Color(1, 0, 0, 1);
     green = new Color(0, 1, 0, 1);
     loop() {
-        this.view.graphic3D.drawBoundingBox(this.box.instanceID, this.box.bound as any, this.green);
-        this.view.graphic3D.drawBoundingBox(this.container.instanceID, this.container.bound as any, this.red);
+        this.graphic3D.drawBoundingBox(this.box.instanceID, this.box.bound as any, this.green);
+        this.graphic3D.drawBoundingBox(this.container.instanceID, this.container.bound as any, this.red);
     }
 }
 

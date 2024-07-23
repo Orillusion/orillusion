@@ -1,6 +1,7 @@
-import { Vector2, deg2Rad, Vector3, Matrix4, rad2Deg, LineJoin } from "@orillusion/core";
+import { Vector2, deg2Rad, Vector3, Matrix4, rad2Deg } from "@orillusion/core";
 import { Point3D, Shape3DStruct, ShapeTypeEnum } from "./Shape3D";
 import { LineShape3D } from "./LineShape3D";
+import { LineJoin } from "../graphic3d/Graphic3DFaceRenderer";
 
 /**
  * Define class for drawing path in 3D space.

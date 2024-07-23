@@ -1,12 +1,12 @@
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
-import { BoundingBox, BoxGeometry, Color, Engine3D, LitMaterial, MeshRenderer, Object3D, Object3DUtil, PointerEvent3D, Time, Vector3, View3D, } from '@orillusion/core';
+import { BoundingBox, BoxGeometry, Color, Engine3D, LitMaterial, MeshRenderer, Object3D, Object3DUtil, Octree, OctreeEntity, PointerEvent3D, Time, Vector3, View3D, } from '@orillusion/core';
 import { createExampleScene, createSceneParam } from '@samples/utils/ExampleScene';
-import { OctreeEntity } from '../../src/core/tree/octree/OctreeEntity';
-import { Octree } from '../../src/core/tree/octree/Octree';
+import { Graphic3D } from '@orillusion/graphic';
 
 // A sample to use octTree
 export class Sample_OctTreeRay {
     view: View3D;
+    graphic3D: Graphic3D;
     entities: OctreeEntity[] = [];
     tree: Octree;
     red = new Color(1, 0, 0, 1);
@@ -31,6 +31,8 @@ export class Sample_OctTreeRay {
         Engine3D.getRenderJob(exampleScene.view);
 
         this.view = exampleScene.view;
+        this.graphic3D = new Graphic3D();
+        this.view.scene.addChild(this.graphic3D);
 
         let box: BoundingBox = new BoundingBox();
         box.setFromCenterAndSize(new Vector3(), new Vector3(400, 400, 400));
@@ -79,7 +81,7 @@ export class Sample_OctTreeRay {
         this.tree.rayCasts(ray, this.queryResult);
         let time: number = Date.now() - now;
         console.log('time: ' + time + ' count: ', this.queryResult.length);
-        this.view.graphic3D.ClearAll();
+        this.graphic3D.ClearAll();
 
         let retBoolean = {};
         let boundList = {};
@@ -96,7 +98,7 @@ export class Sample_OctTreeRay {
         //show box
         for (let key in boundList) {
             let tree = boundList[key];
-            this.view.graphic3D.drawBoundingBox(key, tree.box, this.green);
+            this.graphic3D.drawBoundingBox(key, tree.box, this.green);
         }
     }
 
