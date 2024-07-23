@@ -150,14 +150,18 @@ export class GUIShader {
             }else if(texId == 6){            
                 ${this.sampleTexture(6)}
             }
-            color *= vColor4;
-            color.a *= scissorAlpha;
+            var rgb = color.rgb;
+            var alpha = color.a;
+
+            rgb *= vColor4.rgb;
+            alpha *= vColor4.a;
+            alpha *= scissorAlpha;
             if(color.a < EPSILON)
             { 
                 discard;
             }
 
-            fragmentOutput.color = color;
+            fragmentOutput.color = vec4<f32>(rgb, alpha);
             return fragmentOutput ;
         }`;
 
