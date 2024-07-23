@@ -1,7 +1,8 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer, BoxGeometry, SphereGeometry, VirtualTexture, GPUTextureFormat, UnLitMaterial, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, PlaneGeometry, Vector3, Graphic3DMesh, Matrix4, Time, BlendMode, Color, PostProcessingComponent, BloomPost } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, PlaneGeometry, Vector3, Matrix4, BlendMode, Color, PostProcessingComponent, BloomPost } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { Stats } from "@orillusion/stats";
+import { Graphic3D, Graphic3DMesh } from "@orillusion/graphic";
 
 export class Sample_GraphicMesh_7 {
     lightObj3D: Object3D;
@@ -12,7 +13,7 @@ export class Sample_GraphicMesh_7 {
     cafe: number = 47;
     frame: number = 16;
     view: View3D;
-
+    graphic3D: Graphic3D
     colors: Color[];
 
     constructor() { }
@@ -22,7 +23,7 @@ export class Sample_GraphicMesh_7 {
         Matrix4.maxCount = 500000;
         Matrix4.allocCount = 500000;
 
-        await Engine3D.init({ beforeRender: () => this.update() });
+        await Engine3D.init();
 
         Engine3D.setting.render.debug = true;
         Engine3D.setting.shadow.shadowBound = 5;
@@ -44,6 +45,9 @@ export class Sample_GraphicMesh_7 {
         this.view.scene = this.scene;
         this.view.camera = camera;
 
+        this.graphic3D = new Graphic3D();
+        this.scene.addChild(this.graphic3D);
+
         Engine3D.startRenderView(this.view);
 
         GUIUtil.renderDebug();
@@ -54,25 +58,9 @@ export class Sample_GraphicMesh_7 {
         GUIUtil.renderBloom(bloom);
 
         await this.initScene();
-
-        sky.relativeTransform = this.lightObj3D.transform;
     }
 
     async initScene() {
-        /******** light *******/
-        {
-            this.lightObj3D = new Object3D();
-            this.lightObj3D.rotationX = 21;
-            this.lightObj3D.rotationY = 108;
-            this.lightObj3D.rotationZ = 10;
-            let directLight = this.lightObj3D.addComponent(DirectLight);
-            directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
-            directLight.castShadow = false;
-            directLight.intensity = 10;
-            GUIUtil.renderDirLight(directLight);
-            this.scene.addChild(this.lightObj3D);
-        }
-
         let texts = [];
 
         texts.push(await Engine3D.res.loadTexture("textures/128/star_0008.png") as BitmapTexture2D);
@@ -116,14 +104,11 @@ export class Sample_GraphicMesh_7 {
             this.colors.push(c2);
         }
 
-        this.updateOnce(1000);
+        this.updateOnce();
     }
 
     private tmpArray: any[] = [];
-    update() {
-    }
-
-    updateOnce(engineFrame: number) {
+    updateOnce() {
         if (this.parts) {
             let pos = new Vector3();
             this.tmpArray.length = 0;
@@ -136,8 +121,8 @@ export class Sample_GraphicMesh_7 {
             }
 
             for (let i = 0; i < this.tmpArray.length / 3; i++) {
-                this.view.graphic3D.Clear(i.toString());
-                this.view.graphic3D.drawLines(i.toString(), 
+                this.graphic3D.Clear(i.toString());
+                this.graphic3D.drawLines(i.toString(), 
                 [
                     this.tmpArray[i * 3 + 0].transform.worldPosition,
                     this.tmpArray[i * 3 + 1].transform.worldPosition,

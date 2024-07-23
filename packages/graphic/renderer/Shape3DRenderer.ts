@@ -1,9 +1,12 @@
 
-import { BitmapTexture2DArray, ComputeShader, Ctor, DynamicDrawStruct, DynamicFaceRenderer, Matrix4, Object3D, OrderMap, StorageGPUBuffer, UniformGPUBuffer, Vector2, Vector3, Vector4, View3D, graphicDynamicCompute } from "@orillusion/core";
+import { BitmapTexture2DArray, ComputeShader, Ctor, Object3D, OrderMap, StorageGPUBuffer, UniformGPUBuffer, Vector3, Vector4, View3D } from "@orillusion/core";
 import { Shape3DVertexCompute_cs } from "../compute/shape3d/Shape3DVertexCompute_cs";
 import { Shape3DKeyPointCompute_cs } from "../compute/shape3d/Shape3DKeyPointCompute_cs";
 import { Shape3D } from "./shape3d/Shape3D";
 import { Shape3DVertexFillZero_cs } from "../compute/shape3d/Shape3DVertexFillZero_cs";
+import { DynamicFaceRenderer } from "./graphic3d/DynamicFaceRenderer";
+import { DynamicDrawStruct } from "./graphic3d/DynamicDrawStruct";
+import { graphicDynamicCompute } from "../compute/graphic3d/GraphicDynamicCompute";
 
 export class Shape3DRenderer extends DynamicFaceRenderer {
     private _destPathBuffer: StorageGPUBuffer;

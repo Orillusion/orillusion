@@ -13,6 +13,7 @@ export enum RendererMask {
     UI = 1 << 7,
     Reflection = 1 << 8,
     ReflectionDebug = 1 << 9,
+    Graphic3D = 1 << 10
 }
 
 /**

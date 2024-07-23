@@ -1,6 +1,4 @@
-import { Color } from "../../../../math/Color";
-import { DEGREES_TO_RADIANS } from "../../../../math/MathUtil";
-import { Vector3 } from "../../../../math/Vector3";
+import { Color, DEGREES_TO_RADIANS, Vector3 } from "@orillusion/core";
 
 /**
  * @internal

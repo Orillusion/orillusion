@@ -1,4 +1,4 @@
-import { Vector3, LineJoin } from "@orillusion/core";
+import { LineJoin } from "../graphic3d/Graphic3DFaceRenderer";
 import { Point3D, Shape3D, ShapeTypeEnum } from "./Shape3D";
 import earcut from 'earcut';
 

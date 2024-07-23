@@ -1,7 +1,7 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, Graphic3DMesh, Matrix4, BlendMode, Color, Vector4, GeoJsonStruct, GeoJsonUtil, ShapeInfo, DynamicDrawStruct, Object3DUtil, PostProcessingComponent, GTAOPost } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, Matrix4, Color } from "@orillusion/core";
 import { Stats } from "@orillusion/stats";
-import { GrassNodeStruct, GrassRenderer } from "@orillusion/graphic";
+import { GrassNodeStruct, GrassRenderer, Graphic3DMesh, Graphic3D } from "@orillusion/graphic";
 
 
 
@@ -10,6 +10,7 @@ export class Sample_GraphicGrass {
     scene: Scene3D;
     view: View3D;
     colors: Color[];
+    graphic3D: Graphic3D
     constructor() { }
 
     async run() {
@@ -39,14 +40,11 @@ export class Sample_GraphicGrass {
         this.view.scene = this.scene;
         this.view.camera = camera;
 
+        // add graphic3D to scene
+        this.graphic3D = new Graphic3D();
+        this.scene.addChild(this.graphic3D);
+
         Engine3D.startRenderView(this.view);
-
-        // GUIUtil.renderDebug();
-
-        // let post = this.scene.addComponent(PostProcessingComponent);
-        // let bloom = post.addPost(GTAOPost);
-        // bloom.bloomIntensity = 1.0
-        // GUIUtil.renderBloom(bloom);
 
         await this.initScene();
 
@@ -64,47 +62,19 @@ export class Sample_GraphicGrass {
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             directLight.castShadow = false;
             directLight.intensity = 3;
-            // GUIUtil.renderDirLight(directLight);
             this.scene.addChild(this.lightObj3D);
         }
 
-        // let floor = Object3DUtil.GetSingleCube(3000, 1, 3000, 0.5, 0.5, 0.5);
-        // floor.y = -1;
-        // this.scene.addChild(floor);
-
-        // let c1 = Object3DUtil.GetSingleCube(20, 20, 20, 0.85, 0.85, 0.85);
-        // this.scene.addChild(c1);
-
         await this.addGrass(0);
-        // await this.addGrass(1);
-        // await this.addGrass(2);
-        // await this.addGrass(3);
-        // await this.addGrass(4);
     }
 
     private async addGrass(grassGroup: number) {
         let texts = [];
-        // texts.push(await Engine3D.res.loadTexture("terrain/grass/GrassRealistic.png") as BitmapTexture2D);
-        // texts.push(await Engine3D.res.loadTexture('terrain/test01/bitmap.png') as BitmapTexture2D);
-
         texts.push(await Engine3D.res.loadTexture("textures/line3.png") as BitmapTexture2D);
-
-        // texts.push(await Engine3D.res.loadTexture("terrain/grass/single.png") as BitmapTexture2D);
-        // texts.push(await Engine3D.res.loadTexture("terrain/grass/single2.png") as BitmapTexture2D);
-        // texts.push(await Engine3D.res.loadTexture("terrain/grass/single3.png") as BitmapTexture2D);
-        // texts.push(await Engine3D.res.loadTexture("terrain/grass/GrassThick.png") as BitmapTexture2D);
-        // texts.push(await Engine3D.res.loadTexture("terrain/grass/GrassRealistic.png") as BitmapTexture2D);
-        // texts.push(await Engine3D.res.loadTexture("textures/line4.png") as BitmapTexture2D);
-        // texts.push(await Engine3D.res.loadTexture("textures/grid.jpg") as BitmapTexture2D);
-        // texts.push(await Engine3D.res.loadTexture("textures/frame64.png") as BitmapTexture2D);
-        // texts.push(await Engine3D.res.loadTexture("textures/line_001064.png") as BitmapTexture2D);
         let bitmapTexture2DArray = new BitmapTexture2DArray(texts[0].width, texts[0].height, texts.length);
         bitmapTexture2DArray.setTextures(texts);
 
         {
-            // Unable to fix error related to missing GrassRenderer
-            // Leaving code as-is
-
             let mr = Graphic3DMesh.drawNode<GrassRenderer>(
                 `path_geojson` + grassGroup,
                 GrassRenderer,
@@ -133,11 +103,10 @@ export class Sample_GraphicGrass {
                 node.grassZ = Math.cos(angle) * radiu;
             }
             mr.updateShape();
-            // Engine3D.views[0].graphic3D.drawFillCircle(`zero`, Vector3.ZERO, 0.5);
         }
     }
 
     update() {
-        Engine3D.views[0].graphic3D.drawCameraFrustum(Engine3D.views[0].camera);
+        this.graphic3D.drawCameraFrustum(Engine3D.views[0].camera);
     }
 }

@@ -1,12 +1,12 @@
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
-import { BoundingBox, BoxGeometry, Color, Engine3D, LitMaterial, MeshRenderer, Object3D, Object3DUtil, PointerEvent3D, Time, Vector3, View3D, } from '@orillusion/core';
+import { BoundingBox, BoxGeometry, Color, Engine3D, LitMaterial, MeshRenderer, Object3D, Octree, OctreeEntity, Vector3, View3D, } from '@orillusion/core';
 import { createExampleScene, createSceneParam } from '@samples/utils/ExampleScene';
-import { OctreeEntity } from '../../src/core/tree/octree/OctreeEntity';
-import { Octree } from '../../src/core/tree/octree/Octree';
+import { Graphic3D } from '@orillusion/graphic';
 
 // A sample to use octTree
 export class Sample_OctTreeBox {
     view: View3D;
+    graphic3D: Graphic3D;
     entities: OctreeEntity[] = [];
     tree: Octree;
     red = new Color(1, 0, 0, 1);
@@ -30,6 +30,9 @@ export class Sample_OctTreeBox {
         Engine3D.getRenderJob(exampleScene.view);
 
         this.view = exampleScene.view;
+
+        this.graphic3D = new Graphic3D();
+        exampleScene.scene.addChild(this.graphic3D);
 
         let box: BoundingBox = new BoundingBox();
         box.setFromMinMax(new Vector3(-100, -100, -100), new Vector3(100, 100, 100));
@@ -105,7 +108,7 @@ export class Sample_OctTreeBox {
         for (let item of this.entities) {
             item.renderer.enable = retBoolean[item.uuid];
         }
-        this.view.graphic3D.drawBoundingBox('pick', this.movingBox, this.green);
+        this.graphic3D.drawBoundingBox('pick', this.movingBox, this.green);
     }
 
     loop() {

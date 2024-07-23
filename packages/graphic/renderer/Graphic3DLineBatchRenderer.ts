@@ -1,4 +1,4 @@
-import { GPUPrimitiveTopology } from "../../../graphics/webGpu/WebGPUConst";
+import { GPUPrimitiveTopology } from "@orillusion/core";
 import { Graphic3DBatchRenderer } from "./Graphic3DBatchRenderer";
 
 /**

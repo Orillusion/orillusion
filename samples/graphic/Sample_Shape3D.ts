@@ -1,7 +1,7 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, Graphic3DMesh, Matrix4, Color, Time, sin, MeshRenderer, Vector2, LineJoin, Vector4, Object3DUtil, AxisObject } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, BitmapTexture2DArray, BitmapTexture2D, Matrix4, Color, Time, Vector2, Vector4, Object3DUtil, AxisObject } from "@orillusion/core";
 import { Stats } from "@orillusion/stats";
-import { CircleShape3D, EllipseShape3D, Shape3DMaker, Shape3D } from "@orillusion/graphic";
+import { Graphic3D, CircleShape3D, EllipseShape3D, Shape3DMaker, Shape3D, LineJoin } from "@orillusion/graphic";
 import { GUIShape3D } from "@samples/utils/GUIShape3D";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 
@@ -16,6 +16,7 @@ export class Sample_Shape3D {
     lightObj3D: Object3D;
     scene: Scene3D;
     view: View3D;
+    graphic3D: Graphic3D;
 
     async run() {
 
@@ -40,6 +41,9 @@ export class Sample_Shape3D {
         this.view = new View3D();
         this.view.scene = this.scene;
         this.view.camera = camera;
+
+        this.graphic3D = new Graphic3D();
+        this.scene.addChild(this.graphic3D);
 
         Engine3D.startRenderView(this.view);
 

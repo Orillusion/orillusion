@@ -3,7 +3,7 @@ import { GUIPick } from "../components/gui/GUIPick";
 import { GUICanvas } from "../components/gui/core/GUICanvas";
 import { CEventListener } from "../event/CEventListener";
 import { ShadowLightsCollect } from "../gfx/renderJob/collect/ShadowLightsCollect";
-import { Graphic3D } from "../gfx/renderJob/passRenderer/graphic/Graphic3DRender";
+// import { Graphic3D } from "../gfx/renderJob/passRenderer/graphic/Graphic3DRender";
 import { PickFire } from "../io/PickFire";
 import { Vector4 } from "../math/Vector4";
 import { Camera3D } from "./Camera3D";
@@ -22,13 +22,13 @@ export class View3D extends CEventListener {
     /**
     * Graphics renderers (lines, rectangles, etc.)
     */
-    public graphic3D: Graphic3D;
+    // public graphic3D: Graphic3D;
 
     constructor(x: number = 0, y: number = 0, width: number = 0, height: number = 0) {
         super();
         this.canvasList = [];
         this._viewPort = new Vector4(x, y, width, height);
-        this.graphic3D = new Graphic3D();
+        // this.graphic3D = new Graphic3D();
     }
 
     public get enable(): boolean {
@@ -61,8 +61,8 @@ export class View3D extends CEventListener {
 
         ShadowLightsCollect.createBuffer(this);
 
-        if (this.graphic3D)
-            value.addChild(this.graphic3D);
+        // if (this.graphic3D)
+        //     value.addChild(this.graphic3D);
 
         if (value) {
             this.canvasList.forEach(canvas => {

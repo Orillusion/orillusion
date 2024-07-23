@@ -1,6 +1,4 @@
 import { Engine3D, Scene3D, CameraUtil, View3D, AtmosphericComponent, ComponentBase, Time, AxisObject, Object3DUtil, KelvinUtil, DirectLight, Object3D, HoverCameraController } from "@orillusion/core";
-import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { GUIUtil } from "@samples/utils/GUIUtil";
 
 // sample use component
 class Sample_ComponentLife {
