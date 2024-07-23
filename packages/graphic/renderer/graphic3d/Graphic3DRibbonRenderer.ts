@@ -1,4 +1,4 @@
-import { BitmapTexture2DArray, Color, ComputeShader, GeometryBase, GeometryUtil, GlobalBindGroup, GPUContext, MeshRenderer, NonSerialize, Object3D, StorageGPUBuffer, Struct, StructStorageGPUBuffer, TrailGeometry, UnLitTexArrayMaterial, Vector2, Vector4, View3D } from "@orillusion/core";
+import { BitmapTexture2DArray, Color, ComputeShader, GeometryBase, GeometryUtil, GlobalBindGroup, GPUContext, MeshRenderer, Object3D, StorageGPUBuffer, Struct, StructStorageGPUBuffer, TrailGeometry, UnLitTexArrayMaterial, Vector2, Vector4, View3D } from "@orillusion/core";
 import { graphicTrailCompute } from '../../compute/graphic3d/GraphicTrailCompute'
 
 export enum FaceMode {
@@ -18,8 +18,6 @@ export class RibbonStruct extends Struct {
     public faceMode: number = FaceMode.FaceToCamera;
     public up: Vector4 = new Vector4(0, 1, 0);
     public ids: Float32Array = new Float32Array(Graphic3DRibbonRenderer.maxRibbonSegment);
-
-    @NonSerialize
     public ribbonPoint: Object3D[] = [];
 }
 
