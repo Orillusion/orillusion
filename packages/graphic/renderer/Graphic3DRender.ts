@@ -9,6 +9,7 @@ export class Graphic3D extends Object3D {
 
     constructor() {
         super();
+        this.name = 'graphic3D';
         this.mLineRender = this.addComponent(Graphic3DLineRenderer);
         this.mFillRender = this.addComponent(Graphic3DFillRenderer);
     }

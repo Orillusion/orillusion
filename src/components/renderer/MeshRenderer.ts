@@ -159,7 +159,10 @@ export class MeshRenderer extends RenderNode {
     }
 
     // public onGraphic(view?: View3D) {
+    //     let graphic3D = view.scene.getChildByName('graphic3D')
+    //     if(!graphic3D)
+    //         return
     //     if (this._geometry)
-    //         view.graphic3D.drawMeshWireframe(this._geometry.instanceID, this._geometry, this.transform, Color.COLOR_RED);
+    //         graphic3D.drawMeshWireframe(this._geometry.instanceID, this._geometry, this.transform, Color.COLOR_RED);
     // }
 }
