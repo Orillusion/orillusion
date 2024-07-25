@@ -277,6 +277,18 @@ export class Vector2 {
     }
 
     /**
+     * Add scaling vector
+     * @param v Source vector
+     * @param size Scale size
+     * @returns 
+     */
+    public addScaledVector(v: Vector2, size: number): Vector2 {
+        this.x += v.x * size;
+        this.y += v.y * size;
+        return this;
+    }
+
+    /**
      * Take the dot product of two vectors.
      * @param value Target vector
      * @returns 

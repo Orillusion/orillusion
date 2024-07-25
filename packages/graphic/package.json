@@ -22,7 +22,6 @@
         "url": "git+https://github.com/Orillusion/orillusion.git"
     },
     "dependencies": {
-        "@orillusion/core": "^0.8.0",
-        "earcut": "^2.2.4"
+        "@orillusion/core": "^0.8.0"
     }
 }
