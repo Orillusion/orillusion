@@ -29,31 +29,37 @@ export class GUIMaterial extends Material {
 
         let newShader = new Shader();
 
-        let shaderKey: string = space == GUISpace.View ? 'GUI_shader_view' : 'GUI_shader_world';
-        let colorPass = new RenderShaderPass(shaderKey, shaderKey);
-        colorPass.passType = PassType.COLOR;
-        colorPass.setShaderEntry(`VertMain`, `FragMain`);
-
-        colorPass.setUniformVector4('scissorRect', new Vector4());
-        colorPass.setUniformVector2('screenSize', this._screenSize);
-        colorPass.setUniformFloat('scissorCornerRadius', 0.0);
-        colorPass.setUniformFloat('scissorFadeOutSize', 0.0);
-
-        colorPass.setUniformFloat('pixelRatio', 1);
-        colorPass.setUniformVector3('v3', Vector3.ZERO);
-
-        let shaderState = colorPass.shaderState;
-        // shaderState.useZ = false;
-        shaderState.depthWriteEnabled = false;
-        colorPass.blendMode = BlendMode.ALPHA;
-        colorPass.depthCompare = space == GUISpace.View ? GPUCompareFunction.always : GPUCompareFunction.less_equal;
-        colorPass.cullMode = GPUCullMode.back;
-        newShader.addRenderPass(colorPass);
         // colorPass.transparent = true;
         // colorPass.receiveEnv = false;
 
+        this.addColorPass(newShader, PassType.COLOR, space);
+        this.addColorPass(newShader, PassType.UI, space);
         this.shader = newShader;
     }
+
+    private addColorPass(shader: Shader, passType: PassType, space: GUISpace) {
+        let shaderKey: string = space == GUISpace.View ? 'GUI_shader_view' : 'GUI_shader_world';
+        let shaderPass = new RenderShaderPass(shaderKey, shaderKey);
+        shaderPass.passType = passType;
+        shaderPass.setShaderEntry(`VertMain`, `FragMain`);
+
+        shaderPass.setUniformVector4('scissorRect', new Vector4());
+        shaderPass.setUniformVector2('screenSize', this._screenSize);
+        shaderPass.setUniformFloat('scissorCornerRadius', 0.0);
+        shaderPass.setUniformFloat('scissorFadeOutSize', 0.0);
+
+        shaderPass.setUniformFloat('pixelRatio', 1);
+        shaderPass.setUniformVector3('v3', Vector3.ZERO);
+
+        let shaderState = shaderPass.shaderState;
+        // shaderState.useZ = false;
+        shaderState.depthWriteEnabled = false;
+        shaderPass.blendMode = BlendMode.NORMAL;
+        shaderPass.depthCompare = space == GUISpace.View ? GPUCompareFunction.always : GPUCompareFunction.less_equal;
+        shaderPass.cullMode = GPUCullMode.back;
+        shader.addRenderPass(shaderPass);
+    }
+
 
     public setPanelRatio(pixelRatio: number) {
         this.shader.setUniformFloat('pixelRatio', pixelRatio);

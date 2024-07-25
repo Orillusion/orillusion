@@ -1,4 +1,4 @@
-﻿import { CEventDispatcher } from "../../../event/CEventDispatcher";
+﻿import { Object3D } from "../../../core/entities/Object3D";
 import { Ray } from "../../../math/Ray";
 import { Vector2 } from "../../../math/Vector2";
 
@@ -13,7 +13,7 @@ export interface IUIInteractive {
     interactive: boolean;
     enable: boolean;
     visible: boolean;
-    object3D?: CEventDispatcher;
+    object3D?: Object3D;
 
     get interactiveVisible(): boolean;
 

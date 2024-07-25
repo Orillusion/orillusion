@@ -1,4 +1,4 @@
-import { Vector4 } from "../../../../..";
+import { Vector4 } from "@orillusion/core";
 
 export class Float32ArrayUtil {
 

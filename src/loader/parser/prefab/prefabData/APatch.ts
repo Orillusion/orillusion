@@ -16,19 +16,19 @@ export class APatch extends ComponentBase {
     public aPaths: number[];
 
     public onGraphic(view?: View3D) {
-        return;
-        
-        // for (let i = this.size.x ; i > 0 ; i--) {
-            for (let i = 0; i < this.size.x; i++) {
-            for (let j = 0; j < this.size.y; j++) {
-                let index = j * this.size.x + (i); 
-                let data = this.aPaths[index];
-                let color = this.colors[data] ;
+        // let graphic3D = view.scene.getChildByName('graphic3D')
+        // if(!graphic3D)
+        //     return
+        // // for (let i = this.size.x ; i > 0 ; i--) {
+        // for (let i = 0; i < this.size.x; i++) {
+        //     for (let j = 0; j < this.size.y; j++) {
+        //         let index = j * this.size.x + (i); 
+        //         let data = this.aPaths[index];
+        //         let color = this.colors[data] ;
 
-                let pos = new Vector3(-i * this.blockSize + this.object3D.x , 0 + this.object3D.y , j * this.blockSize+ this.object3D.z);
-                view.graphic3D.drawFillRect(`${i}-${j}` , pos , this.blockSize , this.blockSize, color );
-            }
-        }
-      
+        //         let pos = new Vector3(-i * this.blockSize + this.object3D.x , 0 + this.object3D.y , j * this.blockSize+ this.object3D.z);
+        //         graphic3D.drawFillRect(`${i}-${j}` , pos , this.blockSize , this.blockSize, color );
+        //     }
+        // }
     }
 } 

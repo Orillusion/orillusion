@@ -54,6 +54,7 @@ export class RenderNode extends ComponentBase {
     protected _passInit: Map<PassType, boolean> = new Map<PassType, boolean>();
     public isRenderOrderChange?: boolean;
     public needSortOnCameraZ?: boolean;
+    public isRecievePostEffectUI?: boolean;
     protected _octreeBinder: { octree: Octree, entity: OctreeEntity };
 
     /**
@@ -102,6 +103,7 @@ export class RenderNode extends ComponentBase {
         this.castShadow = from.castShadow;
         this.castGI = from.castGI;
         this.rendererMask = from.rendererMask;
+        this.isRecievePostEffectUI = from.isRecievePostEffectUI;
         return this;
     }
 

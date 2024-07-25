@@ -1,7 +1,7 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, Graphic3DMesh, Matrix4, Color, Time, sin, MeshRenderer, Vector2, LineJoin, Vector4, Object3DUtil, AxisObject } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, BitmapTexture2DArray, BitmapTexture2D, Matrix4, Color, Vector4, Object3DUtil, AxisObject } from "@orillusion/core";
 import { Stats } from "@orillusion/stats";
-import { Shape3DMaker, Shape3D } from "@orillusion/graphic";
+import { Shape3DMaker, Shape3D, LineJoin, Graphic3D } from "@orillusion/graphic";
 import { GUIShape3D } from "@samples/utils/GUIShape3D";
 
 
@@ -39,7 +39,7 @@ export class Sample_Shape3DPath2D {
         this.view = new View3D();
         this.view.scene = this.scene;
         this.view.camera = camera;
-
+        
         Engine3D.startRenderView(this.view);
 
         await this.initScene();

@@ -1,7 +1,8 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer, BoxGeometry, SphereGeometry, VirtualTexture, GPUTextureFormat, UnLitMaterial, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, PlaneGeometry, Vector3, Graphic3DMesh, Matrix4, Time, BlendMode, Color, PostProcessingComponent, BloomPost, TrailGeometry, AnimationCurve, Keyframe, AnimationCurveT, KeyframeT, DepthOfFieldPost, Quaternion } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, Vector3, Matrix4, BlendMode, Color, PostProcessingComponent, BloomPost } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { Stats } from "@orillusion/stats";
+import { Graphic3D } from "@orillusion/graphic";
 
 export class Sample_GraphicTrailing3 {
     lightObj3D: Object3D;
@@ -12,6 +13,7 @@ export class Sample_GraphicTrailing3 {
     cafe: number = 47;
     frame: number = 16;
     view: View3D;
+    graphic3D: Graphic3D;
 
     colors: Color[];
     trail3ds: Object3D[];
@@ -45,24 +47,19 @@ export class Sample_GraphicTrailing3 {
         this.view.scene = this.scene;
         this.view.camera = camera;
 
+        this.graphic3D = new Graphic3D();
+        this.scene.addChild(this.graphic3D);
+
         Engine3D.startRenderView(this.view);
 
         GUIUtil.renderDebug();
 
         let post = this.scene.addComponent(PostProcessingComponent);
-        // let DOFPost = post.addPost(DepthOfFieldPost)
-        // DOFPost.near = 0
-        // DOFPost.far = 150
-        // DOFPost.pixelOffset = 2
-        // GUIUtil.renderDepthOfField(DOFPost);
-
         let bloom = post.addPost(BloomPost);
         bloom.bloomIntensity = 10.0
         GUIUtil.renderBloom(bloom);
 
         await this.initScene();
-
-        // sky.relativeTransform = this.lightObj3D.transform;
     }
 
     async initScene() {

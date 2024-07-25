@@ -1,4 +1,4 @@
-import { Struct } from "../../../../../util/struct/Struct";
+import { Struct } from "@orillusion/core";
 
 export class DynamicDrawStruct extends Struct {
     // @NonSerialize

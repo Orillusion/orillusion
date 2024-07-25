@@ -1,6 +1,6 @@
 /**
  * PostEffects Plugins
  * @group Plugin
- * @notExported
+ * @internal
  */
 export {}

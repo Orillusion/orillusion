@@ -93,10 +93,13 @@ export class UIPanel extends UIImage {
         return this._maxCount;
     }
 
+    public get renderer() {
+        return this._uiRenderer;
+    }
+
     public set billboard(type: BillboardType) {
         if (this.space == GUISpace.View) {
             type = BillboardType.None;
-        } else {
             console.warn('Cannot enable billboard in view space');
         }
         if (type == BillboardType.BillboardXYZ || type == BillboardType.BillboardY) {

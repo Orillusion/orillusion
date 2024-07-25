@@ -5,7 +5,6 @@ import { Rigidbody } from './Rigidbody';
 /**
  * Physics Engine
  * @group Plugin
- * @notExported
  */
 class _Physics {
     private _world: Ammo.btDiscreteDynamicsWorld | Ammo.btSoftRigidDynamicsWorld;

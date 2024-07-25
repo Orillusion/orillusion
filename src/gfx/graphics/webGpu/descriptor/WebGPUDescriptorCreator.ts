@@ -4,6 +4,7 @@ import { GPUTextureFormat } from '../WebGPUConst';
 import { webGPUContext } from '../Context3D';
 import { RendererPassState } from '../../../renderJob/passRenderer/state/RendererPassState';
 import { CResizeEvent } from '../../../../event/CResizeEvent';
+import { GBufferFrame } from '../../../renderJob/frame/GBufferFrame';
 /**
  * @internal
  * @author sirxu
@@ -30,8 +31,14 @@ export class WebGPUDescriptorCreator {
         if (rtFrame && rtFrame.renderTargets.length > 0) {
             rps.renderTargets = rtFrame.renderTargets;
             rps.rtTextureDescriptors = rtFrame.rtDescriptors;
-
             rps.renderPassDescriptor = WebGPUDescriptorCreator.getRenderPassDescriptor(rps);
+            if (rps.renderPassDescriptor.depthStencilAttachment) {
+                rps.renderPassDescriptor.depthStencilAttachment.depthLoadOp = rtFrame.depthLoadOp;
+            }
+            if (loadOp == 'load' && rtFrame?.renderTargets[0] && rtFrame.renderTargets[0].name.startsWith(GBufferFrame.gui_GBuffer)) {
+                rps.renderPassDescriptor.colorAttachments[0].loadOp = 'load'
+            }
+            rps.depthLoadOp = rtFrame.depthLoadOp;
             rps.renderBundleEncoderDescriptor = WebGPUDescriptorCreator.getRenderBundleDescriptor(rps);
             rps.renderTargetTextures = [];
             for (let i = 0; i < rtFrame.renderTargets.length; i++) {

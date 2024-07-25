@@ -1,12 +1,8 @@
-import { Scene3D } from "../../../../../core/Scene3D";
-import { Object3D } from "../../../../../core/entities/Object3D";
-import { GeometryBase } from "../../../../../core/geometry/GeometryBase";
-import { BitmapTexture2DArray } from "../../../../../textures/BitmapTexture2DArray";
+import { GeometryBase, Scene3D, BitmapTexture2DArray, Object3D, Ctor } from "@orillusion/core";
 import { Graphic3DMeshRenderer } from "./Graphic3DMeshRenderer";
 import { Graphic3DRibbonRenderer } from "./Graphic3DRibbonRenderer";
 import { Graphic3DFaceRenderer } from "./Graphic3DFaceRenderer";
 import { DynamicFaceRenderer } from "./DynamicFaceRenderer";
-import { Ctor } from "../../../../..";
 import { DynamicDrawStruct } from "./DynamicDrawStruct";
 
 export class Graphic3DMesh {

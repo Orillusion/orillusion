@@ -1,10 +1,11 @@
 import { Engine3D } from "../../../../Engine3D";
 import { RenderNode } from "../../../../components/renderer/RenderNode";
 import { View3D } from "../../../../core/View3D";
-import { ProfilerUtil } from "../../../../util/ProfilerUtil";
 import { GlobalBindGroup } from "../../../graphics/webGpu/core/bindGroups/GlobalBindGroup";
 import { GPUContext } from "../../GPUContext";
 import { EntityCollect } from "../../collect/EntityCollect";
+import { GBufferFrame } from "../../frame/GBufferFrame";
+import { RTFrame } from "../../frame/RTFrame";
 import { OcclusionSystem } from "../../occlusion/OcclusionSystem";
 import { RenderContext } from "../RenderContext";
 import { RendererBase } from "../RendererBase";
@@ -18,10 +19,18 @@ import { RendererMask } from "../state/RendererMask";
  * @author sirxu
  * @group Post
  */
-export class ColorPassRenderer extends RendererBase {
+export class GUIPassRenderer extends RendererBase {
     constructor() {
         super();
-        this.passType = PassType.COLOR;
+        this.passType = PassType.UI;
+    }
+
+    public compute(view: View3D, occlusionSystem: OcclusionSystem): void {
+        let command = GPUContext.beginCommandEncoder();
+        let src = GPUContext.lastRenderPassState.getLastRenderTexture();
+        let dest = GBufferFrame.getGUIBufferFrame().getColorTexture();
+        GPUContext.copyTexture(command, src, dest);
+        GPUContext.endCommandEncoder(command);
     }
 
     public render(view: View3D, occlusionSystem: OcclusionSystem, clusterLightingBuffer?: ClusterLightingBuffer, maskTr: boolean = false) {
@@ -37,77 +46,30 @@ export class ColorPassRenderer extends RendererBase {
 
         let collectInfo = EntityCollect.instance.getRenderNodes(scene, camera);
 
-        let op_bundleList = this.renderBundleOp(view, collectInfo, occlusionSystem, clusterLightingBuffer);
-        let tr_bundleList = maskTr ? [] : this.renderBundleTr(view, collectInfo, occlusionSystem, clusterLightingBuffer);
-
         {
-            this.renderContext.beginOpaqueRenderPass();
+            this.renderContext.specialtRenderPass();
+
             let renderPassEncoder = this.renderContext.encoder;
 
-            //     // renderPassEncoder.setViewport(camera.viewPort.x, camera.viewPort.y, camera.viewPort.width, camera.viewPort.height, 0.0, 1.0);
-            //     // renderPassEncoder.setScissorRect(camera.viewPort.x, camera.viewPort.y, camera.viewPort.width, camera.viewPort.height);
-
-            //     // renderPassEncoder.setViewport(view.viewPort.x, view.viewPort.y, view.viewPort.width, view.viewPort.height, 0.0, 1.0);
-            //     // renderPassEncoder.setScissorRect(view.viewPort.x, view.viewPort.y, view.viewPort.width, view.viewPort.height);
-
-            if (op_bundleList.length > 0) {
-                //  GPUContext.bindCamera(renderPassEncoder,camera);
-                let entityBatchCollect = EntityCollect.instance.getOpRenderGroup(scene);
-                // entityBatchCollect.renderGroup.forEach((group) => {
-                //     for (let i = 0; i < group.renderNodes.length; i++) {
-                //         const node = group.renderNodes[i];
-                //         node.transform.updateWorldMatrix();
-                //     }
-                // });
-
-                renderPassEncoder.executeBundles(op_bundleList);
-            }
-
-            if (!maskTr && EntityCollect.instance.sky) {
-                GPUContext.bindCamera(renderPassEncoder, camera);
-                if (!EntityCollect.instance.sky.preInit(this._rendererType)) {
-                    EntityCollect.instance.sky.nodeUpdate(view, this._rendererType, this.rendererPassState, clusterLightingBuffer);
-                }
-                EntityCollect.instance.sky.renderPass2(view, this._rendererType, this.rendererPassState, clusterLightingBuffer, renderPassEncoder);
-            }
 
             if (collectInfo.opaqueList) {
                 GPUContext.bindCamera(renderPassEncoder, camera);
                 this.drawNodes(view, this.renderContext, collectInfo.opaqueList, occlusionSystem, clusterLightingBuffer);
             }
-            // this.renderContext.endRenderPass();
-
         }
 
         {
-            // this.renderContext.beginTransparentRenderPass();
 
             let renderPassEncoder = this.renderContext.encoder;
 
-            if (tr_bundleList.length > 0) {
-                renderPassEncoder.executeBundles(tr_bundleList);
-            }
 
             if (!maskTr && collectInfo.transparentList) {
                 GPUContext.bindCamera(renderPassEncoder, camera);
                 this.drawNodes(view, this.renderContext, collectInfo.transparentList, occlusionSystem, clusterLightingBuffer);
             }
-
-            let graphicsList = EntityCollect.instance.getGraphicList();
-            for (let i = 0; i < graphicsList.length; i++) {
-                const graphic3DRenderNode = graphicsList[i];
-                graphic3DRenderNode.nodeUpdate(view, this._rendererType, this.splitRendererPassState, clusterLightingBuffer);
-                graphic3DRenderNode.renderPass2(view, this._rendererType, this.splitRendererPassState, clusterLightingBuffer, renderPassEncoder);
-            }
-
-
             this.renderContext.endRenderPass();
-
-
-            ProfilerUtil.end("ColorPass Draw Transparent");
         }
 
-        // ProfilerUtil.end("colorPass Renderer");
     }
 
     public drawNodes(view: View3D, renderContext: RenderContext, nodes: RenderNode[], occlusionSystem: OcclusionSystem, clusterLightingBuffer: ClusterLightingBuffer) {
@@ -126,13 +88,11 @@ export class ColorPassRenderer extends RendererBase {
 
             for (let i = Engine3D.setting.render.drawOpMin; i < Math.min(nodes.length, Engine3D.setting.render.drawOpMax); ++i) {
                 let renderNode = nodes[i];
-                // if (!occlusionSystem.renderCommitTesting(view.camera, renderNode))
-                //     continue;
                 if (!renderNode.transform.enable)
                     continue;
                 if (!renderNode.enable)
                     continue;
-                if (renderNode.hasMask(RendererMask.UI) && !renderNode.isRecievePostEffectUI)
+                if (!renderNode.hasMask(RendererMask.UI) || renderNode.isRecievePostEffectUI)
                     continue;
                 if (!renderNode.preInit(this._rendererType)) {
                     renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState, clusterLightingBuffer);

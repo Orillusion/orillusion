@@ -1,6 +1,5 @@
-import { Engine3D, GPUPrimitiveTopology, RenderShaderPass, Shader, ShaderLib, Texture } from "../../../..";
-import { Graphic3DShader } from "../../../../assets/shader/graphic/Graphic3DShader";
-import { Material } from "../../../../materials/Material";
+import { GPUPrimitiveTopology, RenderShaderPass, Shader, ShaderLib, Material } from "@orillusion/core";
+import { Graphic3DShader } from "../compute/graphic3d/Graphic3DShader";
 
 /**
  * @internal

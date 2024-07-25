@@ -60,8 +60,8 @@ export class ClothSimulator extends MeshRenderer {
         var mat = new LitMaterial();
         mat.roughness = 0.8;
         mat.baseMap = Engine3D.res.redTexture;
+        mat.cullMode = 'none'
         this.material = mat;
-        this.material.doubleSide = true;    
     }
 
     public start() {

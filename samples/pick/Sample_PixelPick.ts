@@ -84,8 +84,7 @@ class Sample_PixelPick {
     }
 
     private getPickObject(e: PointerEvent3D): Object3D {
-        let pick = e.data.pick;
-        return pick ? pick.object3D : null;
+        return e.target || null;
     }
 
     private onMouseUp(e: PointerEvent3D) {

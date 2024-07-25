@@ -1,22 +1,5 @@
-import { graphicTrailCompute } from "../../../../../assets/shader/graphic/GraphicTrailCompute";
-import { MeshRenderer } from "../../../../../components/renderer/MeshRenderer";
-import { View3D } from "../../../../../core/View3D";
-import { Object3D } from "../../../../../core/entities/Object3D";
-import { GeometryBase } from "../../../../../core/geometry/GeometryBase";
-import { UnLitTexArrayMaterial } from "../../../../../materials/UnLitTexArrayMaterial";
-import { Color } from "../../../../../math/Color";
-import { Vector2 } from "../../../../../math/Vector2";
-import { Vector4 } from "../../../../../math/Vector4";
-import { TrailGeometry } from "../../../../../shape/TrailGeometry";
-import { BitmapTexture2DArray } from "../../../../../textures/BitmapTexture2DArray";
-import { GeometryUtil } from "../../../../../util/GeometryUtil";
-import { NonSerialize } from "../../../../../util/SerializeDecoration";
-import { Struct } from "../../../../../util/struct/Struct";
-import { GlobalBindGroup } from "../../../../graphics/webGpu/core/bindGroups/GlobalBindGroup";
-import { StorageGPUBuffer } from "../../../../graphics/webGpu/core/buffer/StorageGPUBuffer";
-import { StructStorageGPUBuffer } from "../../../../graphics/webGpu/core/buffer/StructStorageGPUBuffer";
-import { ComputeShader } from "../../../../graphics/webGpu/shader/ComputeShader";
-import { GPUContext } from "../../../GPUContext";
+import { BitmapTexture2DArray, Color, ComputeShader, GeometryBase, GeometryUtil, GlobalBindGroup, GPUContext, MeshRenderer, Object3D, StorageGPUBuffer, Struct, StructStorageGPUBuffer, TrailGeometry, UnLitTexArrayMaterial, Vector2, Vector4, View3D } from "@orillusion/core";
+import { graphicTrailCompute } from '../../compute/graphic3d/GraphicTrailCompute'
 
 export enum FaceMode {
     FaceToCamera,
@@ -35,8 +18,6 @@ export class RibbonStruct extends Struct {
     public faceMode: number = FaceMode.FaceToCamera;
     public up: Vector4 = new Vector4(0, 1, 0);
     public ids: Float32Array = new Float32Array(Graphic3DRibbonRenderer.maxRibbonSegment);
-
-    @NonSerialize
     public ribbonPoint: Object3D[] = [];
 }
 

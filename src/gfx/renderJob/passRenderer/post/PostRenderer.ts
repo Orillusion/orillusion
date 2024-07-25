@@ -3,7 +3,9 @@ import { ShaderLib } from "../../../../assets/shader/ShaderLib";
 import { FullQuad_vert_wgsl } from "../../../../assets/shader/quad/Quad_shader";
 import { View3D } from "../../../../core/View3D";
 import { ViewQuad } from "../../../../core/ViewQuad";
+import { Texture } from "../../../graphics/webGpu/core/texture/Texture";
 import { GPUContext } from "../../GPUContext";
+import { GBufferFrame } from "../../frame/GBufferFrame";
 import { RTFrame } from "../../frame/RTFrame";
 import { PostBase } from "../../post/PostBase";
 import { RendererBase } from "../RendererBase";
@@ -67,15 +69,13 @@ export class PostRenderer extends RendererBase {
                 v.render(view, command);
             }
         });
-
-        let lastTexture = GPUContext.lastRenderPassState.getLastRenderTexture();
-        this.finalQuadView.renderToViewQuad(view, this.finalQuadView, command, lastTexture);
-        {
-            if (this.debugViewQuads.length) {
-                let debugIndex = Engine3D.setting.render.debugQuad;
-                if (debugIndex >= 0) this.debugViewQuads[debugIndex].renderToViewQuad(view, this.debugViewQuads[debugIndex], command, this.debugTextures[debugIndex]);
-            }
-        }
         GPUContext.endCommandEncoder(command);
     }
+
+    public presentContent(view: View3D, texture: Texture) {
+        let command = GPUContext.beginCommandEncoder();
+        this.finalQuadView.renderToViewQuad(view, this.finalQuadView, command, texture);
+        GPUContext.endCommandEncoder(command);
+    }
+
 }

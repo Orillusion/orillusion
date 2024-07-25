@@ -1,22 +1,7 @@
-import { GraphicLineCompute } from "../../../../../assets/shader/graphic/GraphicLineCompute";
-import { MeshRenderer } from "../../../../../components/renderer/MeshRenderer";
-import { View3D } from "../../../../../core/View3D";
-import { Object3D } from "../../../../../core/entities/Object3D";
-import { UnLitTexArrayMaterial } from "../../../../../materials/UnLitTexArrayMaterial";
-import { Color } from "../../../../../math/Color";
-import { Vector3 } from "../../../../../math/Vector3";
-import { Vector4 } from "../../../../../math/Vector4";
-import { TriGeometry } from "../../../../../shape/TriGeometry";
-import { BitmapTexture2DArray } from "../../../../../textures/BitmapTexture2DArray";
-import { GeometryUtil } from "../../../../../util/GeometryUtil";
-import { Struct } from "../../../../../util/struct/Struct";
-import { GlobalBindGroup } from "../../../../graphics/webGpu/core/bindGroups/GlobalBindGroup";
-import { StorageGPUBuffer } from "../../../../graphics/webGpu/core/buffer/StorageGPUBuffer";
-import { StructStorageGPUBuffer } from "../../../../graphics/webGpu/core/buffer/StructStorageGPUBuffer";
-import { ComputeShader } from "../../../../graphics/webGpu/shader/ComputeShader";
-import { GPUContext } from "../../../GPUContext";
-import { Float32ArrayUtil } from "./Float32ArrayUtil";
+import { Struct, MeshRenderer, BitmapTexture2DArray, StorageGPUBuffer, ComputeShader, StructStorageGPUBuffer, TriGeometry, UnLitTexArrayMaterial, Object3D, Color, Vector4, GlobalBindGroup, View3D, GPUContext } from "@orillusion/core";
 import { ShapeInfo } from "./ShapeInfo";
+import { GraphicLineCompute } from "../../compute/graphic3d/GraphicLineCompute";
+
 
 export enum LineJoin {
     bevel = 0,

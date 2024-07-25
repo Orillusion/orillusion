@@ -4,7 +4,6 @@ import { MouseCode } from '../../event/MouseCode';
 import { webGPUContext } from '../../gfx/graphics/webGpu/Context3D';
 import { Ray } from '../../math/Ray';
 import { Vector2 } from '../../math/Vector2';
-import { Vector3 } from '../../math/Vector3';
 import { Time } from '../../util/Time';
 import { IUIInteractive, UIInteractiveStyle } from './uiComponents/IUIInteractive';
 import { UITransform } from './uiComponents/UITransform';
@@ -63,20 +62,37 @@ export class GUIPick {
         this._mouseCode = e.mouseCode;
         this.collectEntities();
         let ret = this.pick(this._colliderOut);
-        ret && e.stopImmediatePropagation();
-        let target = ret ? ret.collider : null;
-        if (target != this._lastOverTarget) {
-            if (this._lastOverTarget && this._lastOverTarget.enable) {
+        if(ret){
+            e.stopImmediatePropagation();
+            let _target = ret.collider;
+            if(_target != this._lastOverTarget){
+                _target.mouseStyle = UIInteractiveStyle.OVER;
+                Object.assign(this._overEvent, e);
+                this._overEvent.type = PointerEvent3D.PICK_OVER_GUI;
+                this._overEvent.target = _target.object3D;
+                this._overEvent.data = ret;
+                _target.object3D.dispatchEvent(this._overEvent);
+
+                if (this._lastOverTarget) {
+                    this._lastOverTarget.mouseStyle = UIInteractiveStyle.NORMAL;
+                    Object.assign(this._outEvent, e);
+                    this._outEvent.type = PointerEvent3D.PICK_OUT_GUI;
+                    this._outEvent.target = _target.object3D;
+                    this._outEvent.data = ret;
+                    this._lastOverTarget.object3D.dispatchEvent(this._outEvent);
+                }
+            }  
+            this._lastOverTarget = _target;
+        }else{
+            if (this._lastOverTarget) {
                 this._lastOverTarget.mouseStyle = UIInteractiveStyle.NORMAL;
-                this._outEvent.data = this._lastOverTarget;
+                Object.assign(this._outEvent, e);
+                this._outEvent.type = PointerEvent3D.PICK_OUT_GUI;
+                this._outEvent.target = this._lastOverTarget.object3D;
+                this._outEvent.data = ret;
                 this._lastOverTarget.object3D.dispatchEvent(this._outEvent);
+                this._lastOverTarget = null
             }
-            if (target) {
-                target.mouseStyle = UIInteractiveStyle.OVER;
-                this._overEvent.data = target;
-                target.object3D.dispatchEvent(this._overEvent);
-            }
-            this._lastOverTarget = target;
         }
     }
 
@@ -94,13 +110,16 @@ export class GUIPick {
         this.collectEntities();
         let ret = this.pick(this._colliderOut);
         ret && e.stopImmediatePropagation();
-        let target = ret ? ret.collider : null;
-        if (target) {
-            target.mouseStyle = UIInteractiveStyle.DOWN;
-            this._overEvent.data = target;
-            target.object3D.dispatchEvent(this._overEvent);
+        let collider = ret ? ret.collider : null;
+        if (collider) {
+            collider.mouseStyle = UIInteractiveStyle.DOWN;
+            Object.assign(this._downEvent, e);
+            this._downEvent.type = PointerEvent3D.PICK_DOWN_GUI;
+            this._downEvent.target = collider.object3D;
+            this._downEvent.data = ret;
+            collider.object3D.dispatchEvent(this._downEvent);
         }
-        this._lastDownTarget = target;
+        this._lastDownTarget = collider;
     }
 
     private onTouchUp(e: PointerEvent3D) {
@@ -111,17 +130,20 @@ export class GUIPick {
         let ret = this.pick(this._colliderOut);
         ret && e.stopImmediatePropagation();
 
-        let target = ret ? ret.collider : null;
+        let collider = ret ? ret.collider : null;
         if (this._lastDownTarget && this._lastDownTarget.enable) {
             this._lastDownTarget.mouseStyle = UIInteractiveStyle.NORMAL;
         }
 
-        if (target && target == this._lastDownTarget) {
+        if (collider && collider == this._lastDownTarget) {
             if (Time.time - this._lastDownTime <= this._clickTimeSpan) {
                 this._calcDistanceVec2.set(e.mouseX, e.mouseY);
                 if (this._calcDistanceVec2.distance(this._lastDownPosition) <= this._clickDistanceSpan) {
-                    this._clickEvent.data = { pick: target, pickInfo: ret, mouseCode: this._mouseCode };
-                    target.object3D.dispatchEvent(this._clickEvent);
+                    Object.assign(this._clickEvent, e);
+                    this._clickEvent.type = PointerEvent3D.PICK_CLICK_GUI;
+                    this._clickEvent.target = collider.object3D;
+                    this._clickEvent.data = ret;
+                    collider.object3D.dispatchEvent(this._clickEvent);
                 }
             }
         }

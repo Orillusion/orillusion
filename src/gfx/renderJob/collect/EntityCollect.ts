@@ -13,7 +13,7 @@ import { Vector3 } from '../../../math/Vector3';
 import { zSorterUtil } from '../../../util/ZSorterUtil';
 import { RenderLayerUtil, RenderLayer } from '../config/RenderLayer';
 import { Probe } from '../passRenderer/ddgi/Probe';
-import { Graphic3DBatchRenderer } from '../passRenderer/graphic/Graphic3DBatchRenderer';
+// import { Graphic3DBatchRenderer } from '../passRenderer/graphic/Graphic3DBatchRenderer';
 import { RendererMask } from '../passRenderer/state/RendererMask';
 import { CollectInfo } from './CollectInfo';
 import { EntityBatchCollect } from './EntityBatchCollect';
@@ -35,7 +35,7 @@ export class EntityCollect {
     private _octreeRenderNodes: Map<Scene3D, Octree>;
     private _reflections: Map<Scene3D, Reflection[]>;
 
-    private _graphics: Graphic3DBatchRenderer[];
+    private _graphics: RenderNode[];
 
     private _op_renderGroup: Map<Scene3D, EntityBatchCollect>;
     private _tr_renderGroup: Map<Scene3D, EntityBatchCollect>;
@@ -117,7 +117,7 @@ export class EntityCollect {
             if (!maps.includes(renderNode as Reflection)) {
                 maps.push(renderNode as Reflection);
             }
-        } else if (renderNode instanceof Graphic3DBatchRenderer) {
+        } else if (renderNode.hasMask(RendererMask.Graphic3D)) {
             if (this._graphics.indexOf(renderNode) == -1) {
                 this._graphics.push(renderNode);
             }
@@ -315,7 +315,7 @@ export class EntityCollect {
         return this._tr_renderGroup.get(scene);
     }
 
-    public getGraphicList(): Graphic3DBatchRenderer[] {
+    public getGraphicList(): RenderNode[] {
         return this._graphics;
     }
 
