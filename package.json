@@ -37,7 +37,7 @@
         "test": "electron test/ci/main.js",
         "test:ci": "xvfb-maybe -- electron --enable-unsafe-webgpu --enable-features=Vulkan --use-vulkan=swiftshader --use-webgpu-adapter=swiftshader --no-sandbox test/ci/main.js",
         "docs": "npm run docs:core && npm run docs:physics && npm run docs:media && npm run docs:stats && npm run docs:particle && npm run docs:graphic",
-        "docs:typedoc": "npx typedoc --plugin typedoc-plugin-markdown --plugin ./script/typedoc-plugin-not-exported.cjs --tsconfig tsconfig.build.json --gitRevision main --hideBreadcrumbs true --allReflectionsHaveOwnDocument true --readme none --excludeInternal --excludePrivate --excludeProtected --sort source-order --out",
+        "docs:typedoc": "npx typedoc --plugin typedoc-plugin-markdown --tsconfig tsconfig.build.json --gitRevision main --hideBreadcrumbs true --allReflectionsHaveOwnDocument true --readme none --excludeInternal --excludePrivate --excludeProtected --sort source-order --out",
         "docs:core": "npm run docs:typedoc docs/api src/index.ts",
         "docs:physics": "cd packages/physics && npm run docs",
         "docs:media": "cd packages/media-extention && npm run docs",
