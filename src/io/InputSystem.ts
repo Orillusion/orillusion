@@ -87,8 +87,6 @@ export class InputSystem extends CEventDispatcher {
     protected _windowsEvent3d: CEvent;
     mouseLock: boolean = false;
 
-
-
     /**
      * init the input system
      * @param canvas the reference of canvas
@@ -111,6 +109,7 @@ export class InputSystem extends CEventDispatcher {
                 this.isRightMouseDown = true
                 this.mouseStart(ev);
             }
+            canvas.setPointerCapture(ev.pointerId)
         }
         canvas.onpointerup = (ev: PointerEvent) => {
             if (ev.button == 0) {
@@ -124,6 +123,7 @@ export class InputSystem extends CEventDispatcher {
             if(ev.button === _button && performance.now() - _t < 300 && Math.abs(_x - ev.clientX) < 20 && Math.abs(_y - ev.clientY) < 20){
                 ev.button === 0 ? this.mouseClick(ev) : this.rightClick(ev);
             }
+            canvas.releasePointerCapture(ev.pointerId)
         }
         canvas.onpointerenter = (ev: PointerEvent) => {
             this.mouseOver(ev);
@@ -132,14 +132,18 @@ export class InputSystem extends CEventDispatcher {
             this.mouseMove(ev);
         }
         canvas.onpointercancel = (ev: PointerEvent) => {
-            this.mouseEnd(ev);
+            canvas.releasePointerCapture(ev.pointerId)
+            if (ev.button == 1) 
+                this.middleUp(ev);
+            else 
+                this.mouseEnd(ev);
         }
-        canvas.onpointerleave = (ev: PointerEvent) => {
-            this.mouseEnd(ev);
-        }
-        canvas.onpointerout = (ev: PointerEvent) => {
-            this.mouseEnd(ev);
-        }
+        // canvas.onpointerleave = (ev: PointerEvent) => {
+        //     this.mouseEnd(ev);
+        // }
+        // canvas.onpointerout = (ev: PointerEvent) => {
+        //     this.mouseEnd(ev);
+        // }
 
         // let input = document.createElement(`input`);
         // input.setSelectionRange(-1000, 1000);
@@ -331,7 +335,6 @@ export class InputSystem extends CEventDispatcher {
 
         this.dispatchEvent(this._pointerEvent3D);
     }
-
 
     private mouseStart(e: PointerEvent | MouseEvent) {
 
