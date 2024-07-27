@@ -1,4 +1,6 @@
-
+/**
+ * @internal
+ */
 export let Picker_cs: string = /*wgsl*/ `
 
     #include "GlobalUniform"

@@ -1,4 +1,6 @@
-
+/**
+ * @internal
+ */
 export let MultiBouncePass_cs: string = /*wgsl*/ `
   #include "MathShader"
   #include "IrradianceVolumeData_frag"

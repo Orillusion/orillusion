@@ -11,7 +11,6 @@ export type MaterialClassName =
     | 'GUIMaterial'
     | 'ChromaKeyMaterial'
     | 'LambertMaterial'
-    | 'PhysicMaterial'
     | 'SkyMaterial'
     | 'UnLitMaterial'
     | 'VideoMaterial'

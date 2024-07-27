@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let VideoShader = /*wgsl*/`
     #include "Common_vert"
     #include "Common_frag"

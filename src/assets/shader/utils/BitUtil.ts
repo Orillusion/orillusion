@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let BitUtil = /* wgsl */`
 
     const inv256:f32 = 1.0/256.0;

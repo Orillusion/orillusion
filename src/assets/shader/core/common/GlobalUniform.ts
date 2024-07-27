@@ -1,5 +1,8 @@
 import { CSM } from "../../../../core/csm/CSM";
 
+/**
+ * @internal
+ */
 export let GlobalUniform: string = /*wgsl*/ `
 
   #include "MathShader"

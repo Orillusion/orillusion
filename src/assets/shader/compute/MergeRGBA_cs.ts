@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let MergeRGBA_cs: string = /*wgsl*/ `
     @group(0) @binding(0) var textureR : texture_2d<f32>;
     @group(0) @binding(1) var textureG : texture_2d<f32>;

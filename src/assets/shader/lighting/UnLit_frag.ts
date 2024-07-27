@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let UnLit_frag: string = /*wgsl*/ `
     #include "Common_frag"
     #include "GlobalUniform"

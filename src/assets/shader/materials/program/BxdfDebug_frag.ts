@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let BxdfDebug_frag: string = /*wgsl*/ `
 #include "ClusterDebug_frag" 
 

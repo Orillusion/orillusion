@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let Combine_cs = /* wgsl */`
     #include "GlobalUniform"
     #include "BitUtil"

@@ -1,4 +1,7 @@
 
+/**
+ * @internal
+ */
 export let GrassVertexAttributeShader: string = /*wgsl*/ `
     #include "WorldMatrixUniform"
     struct VertexAttributes{

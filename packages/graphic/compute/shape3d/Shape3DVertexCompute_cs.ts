@@ -1,5 +1,8 @@
 import { Shape3DCommonCode_cs } from "./Shape3DCommonCode_cs";
 
+/**
+ * @internal
+ */
 export let Shape3DVertexCompute_cs = /*wgsl*/`
    ${Shape3DCommonCode_cs}
 

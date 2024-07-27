@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let EllipseShape3DCode_cs = /*wgsl*/`
 
 struct EllipseShape3D {

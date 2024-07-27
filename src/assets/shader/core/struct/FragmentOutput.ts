@@ -1,5 +1,6 @@
-
-
+/**
+ * @internal
+ */
 export let FragmentOutput: string = /*wgsl*/ `
     #if USE_CASTREFLECTION
         struct FragmentOutput {

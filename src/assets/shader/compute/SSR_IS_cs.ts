@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let SSR_IS_cs: string = /*wgsl*/ `
 #include 'BitUtil'
 

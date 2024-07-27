@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let FXAAShader: string = /*wgsl*/ `
     #include 'BitUtil'
     struct FragmentOutput {

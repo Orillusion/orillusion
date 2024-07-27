@@ -1,5 +1,8 @@
 import { CSM } from "../../../../core/csm/CSM";
 
+/**
+ * @internal
+ */
 export let ShadowMapping_frag: string = /*wgsl*/ `
     @group(1) @binding(auto) var shadowMapSampler: sampler;
     @group(1) @binding(auto) var shadowMap: texture_depth_2d_array;

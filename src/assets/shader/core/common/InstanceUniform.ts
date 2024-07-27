@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let InstanceUniform: string = /*wgsl*/ `
     #if USE_INSTANCEDRAW
         struct InstanceUniform {

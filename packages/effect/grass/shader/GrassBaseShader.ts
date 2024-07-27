@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let GrassBaseShader = /*wgsl*/ `
     #include "GlobalUniform"
     #include "FragmentOutput"

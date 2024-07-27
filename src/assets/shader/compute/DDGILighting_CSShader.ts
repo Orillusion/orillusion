@@ -1,5 +1,8 @@
 import { CSM } from "../../../core/csm/CSM";
 
+/**
+ * @internal
+ */
 export let DDGILighting_shader = /*wgsl*/`
 var<private> PI: f32 = 3.14159265359;
 

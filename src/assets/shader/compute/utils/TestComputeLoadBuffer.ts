@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let TestComputeLoadBuffer = /* wgsl */`
     #include "GlobalUniform"
     #include "MathShader"

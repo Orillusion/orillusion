@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let Common_vert: string = /*wgsl*/ `
     #include "WorldMatrixUniform"
     #include "VertexAttributes_vert"

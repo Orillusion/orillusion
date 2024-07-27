@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let CircleShape3DCode_cs = /*wgsl*/`
 
 struct CircleShape3D {

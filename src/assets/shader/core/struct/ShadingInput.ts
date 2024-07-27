@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let ShadingInput: string = /*wgsl*/ `
     struct ShadingInput{
         BaseColor:vec4<f32>,

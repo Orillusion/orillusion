@@ -1,4 +1,7 @@
-﻿export let IrradianceVolumeData_frag: string = /*wgsl*/ `
+﻿/**
+ * @internal
+ */
+export let IrradianceVolumeData_frag: string = /*wgsl*/ `
     struct IrradianceVolumeData {
         //0
         orientationIndex:f32,

@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let FrustumCulling_cs: string = /*wgsl*/ `
 #include "GlobalUniform"
 

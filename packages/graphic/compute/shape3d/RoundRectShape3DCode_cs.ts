@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let RoundRectShape3DCode_cs = /*wgsl*/`
 
 struct RoundRectShape3D {

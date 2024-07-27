@@ -1,4 +1,6 @@
-
+/**
+ * @internal
+ */
 export let OutlineCalcOutline_cs: string = /*wgsl*/ `
 #include "GlobalUniform"
 #include "GBufferStand"

@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let GlobalFog_shader = /* wgsl */ `
     var<private> PI: f32 = 3.14159265359;
     #include "GlobalUniform"

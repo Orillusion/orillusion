@@ -1,11 +1,7 @@
-import { Vector4 } from "..";
-import { Engine3D } from "../Engine3D";
 import { Texture } from "../gfx/graphics/webGpu/core/texture/Texture";
-import { RenderShaderPass } from "../gfx/graphics/webGpu/shader/RenderShaderPass";
 import { StandShader } from "../loader/parser/prefab/mats/shader/StandShader";
 import { Color } from "../math/Color";
 import { Material } from "./Material";
-import { PhysicMaterial } from "./PhysicMaterial";
 
 export class LitMaterial extends Material {
 

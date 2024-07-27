@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let IESProfiles_frag: string = /*wgsl*/ `
     #if USE_IES_PROFILE 
         @group(1) @binding(auto)

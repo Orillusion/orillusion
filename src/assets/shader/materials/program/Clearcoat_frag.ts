@@ -1,7 +1,6 @@
-
-
-
-
+/**
+ * @internal
+ */
 export let Clearcoat_frag: string = /*wgsl*/ `
     #if USE_CLEARCOAT_ROUGHNESS
     @group(1) @binding(auto)

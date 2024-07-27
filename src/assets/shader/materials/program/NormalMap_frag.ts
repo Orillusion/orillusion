@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let NormalMap_frag: string = /*wgsl*/ `
 
     fn perturbNormal(  worldPos:vec3<f32>,  surf_norm:vec3<f32>,  mapN:vec3<f32> , normalScale:f32 , face:f32 ) -> vec3<f32> {

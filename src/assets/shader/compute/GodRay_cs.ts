@@ -1,5 +1,8 @@
 import { CSM } from "../../../core/csm/CSM";
 
+/**
+ * @internal
+ */
 export let GodRay_cs: string = /*wgsl*/ `
 
     #include "GlobalUniform"

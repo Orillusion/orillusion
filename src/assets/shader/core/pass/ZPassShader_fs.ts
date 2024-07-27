@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let ZPassShader_fs: string = /*wgsl*/ `
     #include "GlobalUniform"
     #include "MathShader"

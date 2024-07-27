@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let graphicFaceCompute = (segmentCode: number) => {
     let code = /*wgsl*/`
     #include "GlobalUniform"

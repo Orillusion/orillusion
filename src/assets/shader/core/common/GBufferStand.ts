@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let GBufferStand = /* wgsl */ `
     #include "MathShader"
     #include "FastMathShader"
