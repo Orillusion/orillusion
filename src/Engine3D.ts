@@ -376,6 +376,21 @@ export class Engine3D {
         return;
     }
 
+    private static startRenderJob(view: View3D){
+        let renderJob = new ForwardRenderJob(view);
+        this.renderJobs.set(view, renderJob);
+
+        if (this.setting.pick.mode == `pixel`) {
+            let postProcessing = view.scene.getOrAddComponent(PostProcessingComponent);
+            postProcessing.addPost(FXAAPost);
+        }
+
+        if (this.setting.pick.mode == `pixel` || this.setting.pick.mode == `bound`) {
+            view.enablePick = true;
+        }
+        return renderJob;
+    }
+
     /**
      * set render view and start renderer
      * @param view 
@@ -384,22 +399,7 @@ export class Engine3D {
     public static startRenderView(view: View3D) {
         this.renderJobs ||= new Map<View3D, RendererJob>();
         this.views = [view];
-        let renderJob = new ForwardRenderJob(view);
-        this.renderJobs.set(view, renderJob);
-        let presentationSize = webGPUContext.presentationSize;
-        // RTResourceMap.createRTTexture(RTResourceConfig.colorBufferTex_NAME, presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float, false);
-
-        if (this.setting.pick.mode == `pixel`) {
-            let postProcessing = view.scene.getOrAddComponent(PostProcessingComponent);
-            postProcessing.addPost(FXAAPost);
-
-        } else {
-        }
-
-        if (this.setting.pick.mode == `pixel` || this.setting.pick.mode == `bound`) {
-            view.enablePick = true;
-        }
-
+        let renderJob = this.startRenderJob(view);
         this.resume();
         return renderJob;
     }
@@ -414,21 +414,7 @@ export class Engine3D {
         this.renderJobs ||= new Map<View3D, RendererJob>();
         this.views = views;
         for (let i = 0; i < views.length; i++) {
-            const view = views[i];
-            let renderJob = new ForwardRenderJob(view);
-            this.renderJobs.set(view, renderJob);
-            let presentationSize = webGPUContext.presentationSize;
-
-            if (this.setting.pick.mode == `pixel`) {
-                let postProcessing = view.scene.addComponent(PostProcessingComponent);
-                postProcessing.addPost(FXAAPost);
-            } else {
-                RTResourceMap.createRTTexture(RTResourceConfig.colorBufferTex_NAME, presentationSize[0], presentationSize[1], GPUTextureFormat.rgba16float, false);
-            }
-
-            if (this.setting.pick.mode == `pixel` || this.setting.pick.mode == `bound`) {
-                view.enablePick = true;
-            }
+            this.startRenderJob(views[i])
         }
         this.resume();
     }
@@ -466,7 +452,6 @@ export class Engine3D {
     private static render(time) {
         this._deltaTime = time - this._time;
         this._time = time;
-
         if (this._frameRateValue > 0) {
             this._frameTimeCount += this._deltaTime * 0.001;
             if (this._frameTimeCount >= this._frameRateValue * 0.95) {
@@ -493,7 +478,6 @@ export class Engine3D {
             view.scene.waitUpdate();
             let [w, h] = webGPUContext.presentationSize;
             view.camera.viewPort.setTo(0, 0, w, h);
-            view.camera.resetPerspective(webGPUContext.aspect);
         }
 
         if (this._beforeRender) this._beforeRender();
@@ -589,6 +573,4 @@ export class Engine3D {
 
         if (this._lateRender) this._lateRender();
     }
-
-
 }
