@@ -1,6 +1,5 @@
 import { UnLitMaterial, Color, MeshRenderer, BlendMode, GeometryBase, Vector3, VertexAttributeName } from "..";
 import { Object3D } from "../core/entities/Object3D";
-import { BoundingBox } from "../core/bound/BoundingBox";
 
 /**
  * An object contains grids - two dimensional arrrys of lines
@@ -100,90 +99,4 @@ export class GridObject extends Object3D {
             this.addChild(z)
         }
     }
-}
-
-/**
- * Geometry to define grids - two dimensional arrrys of lines
- * @group Util
- */
-class GridGeometry extends GeometryBase {
-    /**
-     * Width of the grid
-     */
-    public width: number;
-    /**
-     * Height of the grid
-     */
-    public height: number;
-    /**
-     * Number of width segments of a grid
-     */
-    public segmentW: number;
-    /**
-     * Number of height segments of a grid
-     */
-    public segmentH: number;
-    /**
-     * Define the normal vector of a grid
-     */
-    public up: Vector3;
-
-    /**
-     *
-     * @constructor
-     * @param width Width of the grid
-     * @param height Height of the grid
-     * @param segmentW Number of width segments of a grid
-     * @param segmentH Number of height segments of a grid
-     * @param up Define the normal vector of a grid
-     */
-    constructor(width: number, height: number, segmentW: number = 1, segmentH: number = 1, up: Vector3 = Vector3.Y_AXIS) {
-        super();
-        this.width = width;
-        this.height = height;
-        this.segmentW = segmentW;
-        this.segmentH = segmentH;
-        this.up = up;
-        this.buildGeometry(this.up);
-    }
-
-    private buildGeometry(axis: Vector3): void {
-        this.bounds = new BoundingBox(Vector3.ZERO.clone(), new Vector3(this.width, 1.0, this.height));
-        
-        const vertices = []
-        const center = this.divisions / 2;
-		const step = this.size / this.divisions;
-		const halfSize = size / 2;
-
-        for ( let i = 0, j = 0, k = - halfSize; i <= divisions; i ++, k += step ) {
-
-			vertices.push( - halfSize, 0, k, halfSize, 0, k );
-			vertices.push( k, 0, - halfSize, k, 0, halfSize );
-
-			const color = i === center ? color1 : color2;
-
-			color.toArray( colors, j ); j += 3;
-			color.toArray( colors, j ); j += 3;
-			color.toArray( colors, j ); j += 3;
-			color.toArray( colors, j ); j += 3;
-
-		}
-
-        this.setIndices(indices_arr);
-        this.setAttribute(VertexAttributeName.position, position_arr);
-        this.setAttribute(VertexAttributeName.normal, normal_arr);
-        this.setAttribute(VertexAttributeName.uv, uv_arr);
-        this.setAttribute(VertexAttributeName.TEXCOORD_1, uv_arr);
-
-        this.addSubGeometry({
-            indexStart: 0,
-            indexCount: indices_arr.length,
-            vertexStart: 0,
-            vertexCount: 0,
-            firstStart: 0,
-            index: 0,
-            topology: 0
-        });
-    }
-
 }
