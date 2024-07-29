@@ -1,11 +1,8 @@
 import { Engine3D } from '../Engine3D';
 import { Texture } from '../gfx/graphics/webGpu/core/texture/Texture';
-import { RenderShaderPass } from '../gfx/graphics/webGpu/shader/RenderShaderPass';
 import { Color } from '../math/Color';
-import { Vector4 } from '../math/Vector4';
 import { Material } from './Material';
-import { PassType } from '../gfx/renderJob/passRenderer/state/PassType';
-import { Shader, UnLitShader } from '..';
+import { UnLitShader } from '..';
 
 /**
  * Unlit Mateiral

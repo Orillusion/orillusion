@@ -1,6 +1,6 @@
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { Stats } from '@orillusion/stats'
-import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D, Matrix4 } from '@orillusion/core';
+import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D, Matrix4, GridObject } from '@orillusion/core';
 import { GUIUtil } from '@samples/utils/GUIUtil';
 
 class Sample_MatrixAllocation {
@@ -29,6 +29,8 @@ class Sample_MatrixAllocation {
         mr.material = mat;
         scene.addChild(cubeObj);
 
+        scene.addChild(new GridObject(1000, 100))
+
         let view = new View3D();
         view.scene = scene;
         view.camera = mainCamera;
@@ -38,8 +40,8 @@ class Sample_MatrixAllocation {
         GUIHelp.init();
         GUIHelp.addButton('add', () => {
             let obj = new Object3D();
-            obj.x = -5 + Math.random() * 10;
-            obj.z = -5 + Math.random() * 10;
+            obj.x = -10 + Math.random() * 20;
+            obj.z = -10 + Math.random() * 20;
             let mr = obj.addComponent(MeshRenderer);
             mr.geometry = new BoxGeometry();
             mr.material = new LitMaterial();
