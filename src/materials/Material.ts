@@ -137,6 +137,14 @@ export class Material {
         this._defaultSubShader.setDefine("USE_BILLBOARD", value);
     }
 
+    public get topology(){
+        return this._defaultSubShader.topology;
+    }
+
+    public set topology(value: GPUPrimitiveTopology) {
+        this._defaultSubShader.topology = value;
+    }
+
     /**
      * get render pass by renderType
      * @param passType 

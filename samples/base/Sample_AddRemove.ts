@@ -1,4 +1,4 @@
-import { Engine3D, Scene3D, CameraUtil, View3D, AtmosphericComponent, ComponentBase, Time, AxisObject, Object3DUtil, KelvinUtil, DirectLight, Object3D, HoverCameraController, MeshRenderer, LitMaterial, BoxGeometry, UnLit, UnLitMaterial, Interpolator, FXAAPost, PostProcessingComponent } from "@orillusion/core";
+import { Engine3D, Scene3D, CameraUtil, View3D, AtmosphericComponent, ComponentBase, Time, AxisObject, Object3DUtil, KelvinUtil, DirectLight, Object3D, HoverCameraController, MeshRenderer, LitMaterial, BoxGeometry, UnLit, UnLitMaterial, Interpolator, FXAAPost, PostProcessingComponent, GridObject } from "@orillusion/core";
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 
 // sample use component
@@ -42,6 +42,10 @@ class Sample_AddRemove {
         dirLight.intensity = 3;
         scene.addChild(lightObj);
         sky.relativeTransform = dirLight.transform;
+
+        // add a grid
+        let grid = new GridObject(10000, 100);
+        scene.addChild(grid)
 
         // create a view with target scene and camera
         this.view = new View3D();

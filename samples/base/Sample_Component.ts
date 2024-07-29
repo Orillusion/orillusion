@@ -33,7 +33,6 @@ class Sample_UseComponent {
 
         // register a component
         let component = cube.addComponent(RotateComponent);
-
         // gui
         GUIHelp.init();
         GUIHelp.add(component, 'enable');
@@ -52,33 +51,33 @@ class Sample_UseComponent {
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             directLight.castShadow = true;
             directLight.intensity = 3;
-            GUIUtil.renderDirLight(directLight);
             scene.addChild(lightObj3D);
         }
     }
 }
 
-
+/*
+ * simple component of lifecyle
+ */
 class RotateComponent extends ComponentBase {
     public init(param?: any): void {
-        console.log('RotateComponent init, name : ', this.object3D.name);
+        console.log('RotateComponent init');
 
     }
     public start(): void {
-        console.log('RotateComponent start, name :', this.object3D.name);
+        console.log('RotateComponent start');
     }
 
     public onUpdate(): void {
+        console.log('RotateComponent update')
         this.transform.rotationY = Math.sin(Time.time * 0.01) * 90;
     }
 
     public onEnable(view?: View3D) {
-        console.log('RotateComponent init, name : ', this.object3D.name);
-        this._enable = true;
+        console.log('RotateComponent enable');
     }
     public onDisable(view?: View3D) {
-        console.log('RotateComponent init, name : ', this.object3D.name);
-        this._enable = false;
+        console.log('RotateComponent disable');
     }
 }
 

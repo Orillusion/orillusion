@@ -42,7 +42,7 @@ class Sample_TextureSample {
             let directLight = this.lightObj3D.addComponent(DirectLight);
             directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
             directLight.castShadow = true;
-            directLight.intensity = 6;
+            directLight.intensity = 3;
             GUIHelp.init();
             GUIUtil.renderDirLight(directLight, false);
             this.scene.addChild(this.lightObj3D);
@@ -63,9 +63,9 @@ class Sample_TextureSample {
             let component = plane.addComponent(UVMoveComponent);
             GUIUtil.renderUVMove(component);
 
-            // let box = Object3DUtil.GetSingleCube(10, 10, 10, 1, 0.5, 0.5);
-            // box.y = 5;
-            // this.scene.addChild(box);
+            let box = Object3DUtil.GetSingleCube(10, 10, 10, 1, 0.5, 0.5);
+            box.y = 5;
+            this.scene.addChild(box);
 
             // enum GPUAddressMode
             let address = {}

@@ -1,4 +1,4 @@
-import { Engine3D, Scene3D, AtmosphericComponent, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, View3D, Camera3D } from "@orillusion/core";
+import { Engine3D, Scene3D, AtmosphericComponent, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, View3D, Camera3D, GridObject } from "@orillusion/core";
 import { Stats } from "@orillusion/stats";
 import * as dat from "dat.gui"
 
@@ -43,13 +43,18 @@ const box: Object3D = new Object3D();
 // add MeshRenderer
 let mr: MeshRenderer = box.addComponent(MeshRenderer);
 // set geometry
-mr.geometry = new BoxGeometry(5, 5, 5);
+mr.geometry = new BoxGeometry(1, 1, 1);
 // set material
 mr.material = new LitMaterial();
 // set rotation
-box.rotationY = 45;
+box.rotationY = 0;
+box.y = 0.5
 // add object
 scene3D.addChild(box);
+
+// add a grid
+let grid = new GridObject(1000, 100);
+scene3D.addChild(grid)
 
 // create a view with target scene and camera
 let view = new View3D();

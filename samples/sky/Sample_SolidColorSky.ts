@@ -1,6 +1,6 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { createExampleScene } from "@samples/utils/ExampleScene";
-import { SolidColorSky, Engine3D, SkyRenderer, Color, Object3DUtil } from "@orillusion/core";
+import { SolidColorSky, Engine3D, SkyRenderer, Color, Object3DUtil, GridObject } from "@orillusion/core";
 
 // sample to display solid color sky
 class HDRSkyMap {
@@ -19,7 +19,8 @@ class HDRSkyMap {
         GUIHelp.endFolder();
         // create a basic cube
         scene.addChild(Object3DUtil.GetSingleCube(10, 10, 10, 0.6, 0.6, 0.6));
-
+        // add a grid
+        scene.addChild(new GridObject(1000, 100));
         // start renderer
         Engine3D.startRenderView(scene.view);
     }

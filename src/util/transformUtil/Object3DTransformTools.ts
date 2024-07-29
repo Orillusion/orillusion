@@ -12,11 +12,6 @@ import { Engine3D } from "../../Engine3D";
 import { KeyCode } from "../../event/KeyCode";
 
 
-
-
-
-
-
 /**
  * Object3D transform controller
  * @group Controller 
