@@ -236,34 +236,33 @@ export class Camera3D extends ComponentBase {
     }
 
     /**
-     * set an orthographic camera with a default frustumSize
-     * this will calculate orthoOffCenter based on the aspect ratio
+     * set an orthographic camera with a frustumSize
      * @param frustumSize the frustum size 
-     * @param znear camera near plane
-     * @param zfar camera far plane
+     * @param near camera near plane
+     * @param far camera far plane
      */
-    public ortho(frustumSize: number, znear: number, zfar: number) {
+    public ortho(frustumSize: number, near: number, far: number) {
         this.frustumSize = frustumSize;
-        let left = - this.frustumSize * this.aspect / 2,
-            right = this.frustumSize * this.aspect / 2,
-            top = this.frustumSize / 2,
-            bottom = - this.frustumSize / 2;
-        this.orthoOffCenter(left, right, bottom, top, znear, zfar);
+        this.near = Math.max(near, 0.01);
+        this.far = far;
+        this.type = CameraType.ortho;
+        let w = frustumSize * 0.5 * this.aspect;
+        let h = frustumSize * 0.5;
+        this._projectionMatrix.ortho(w, h, this.near, this.far);
     }
 
     /**
-     * update orthographic camera matrix
+     * set an orthographic camera with specified frustum space
      * @param left camera left plane
      * @param right camera right plane
      * @param bottom camera bottom plane
      * @param top camera top plane
-     * @param znear camera near plane
-     * @param zfar camera far plane
+     * @param near camera near plane
+     * @param far camera far plane
      */
-    public orthoOffCenter(left: number, right: number, bottom: number, top: number, znear: number, zfar: number){
-        this.near = Math.max(znear, 0.01);
-        console.log(left, right , bottom, top, znear, zfar)
-        this.far = zfar;
+    public orthoOffCenter(left: number, right: number, bottom: number, top: number, near: number, far: number){
+        this.near = Math.max(near, 0.01);
+        this.far = far;
         this.left = left;
         this.right = right;
         this.top = top;
