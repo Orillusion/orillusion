@@ -243,7 +243,7 @@ export class Camera3D extends ComponentBase {
      */
     public ortho(frustumSize: number, near: number, far: number) {
         this.frustumSize = frustumSize;
-        this.near = Math.max(near, 0.01);
+        this.near = near;
         this.far = far;
         this.type = CameraType.ortho;
         let w = frustumSize * 0.5 * this.aspect;
@@ -261,7 +261,7 @@ export class Camera3D extends ComponentBase {
      * @param far camera far plane
      */
     public orthoOffCenter(left: number, right: number, bottom: number, top: number, near: number, far: number){
-        this.near = Math.max(near, 0.01);
+        this.near = near;
         this.far = far;
         this.left = left;
         this.right = right;
