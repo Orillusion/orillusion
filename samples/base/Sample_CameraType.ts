@@ -1,4 +1,4 @@
-import { Engine3D, Scene3D, AtmosphericComponent, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, View3D, Camera3D, GridObject, Frustum } from "@orillusion/core";
+import { Engine3D, Scene3D, AtmosphericComponent, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, View3D, Camera3D, GridObject, Frustum, OrbitController, Vector3 } from "@orillusion/core";
 import { Stats } from "@orillusion/stats";
 import * as dat from "dat.gui"
 
@@ -19,11 +19,10 @@ sky.sunY = 0.6;
 let cameraObj: Object3D = new Object3D();
 let camera = cameraObj.addComponent(Camera3D);
 // adjust camera view
-camera.perspective(45, Engine3D.aspect, 1, 5000.0);
-
+camera.perspective(45, Engine3D.aspect, 0.1, 1000.0);
+camera.lookAt(new Vector3(0, 10, 10), Vector3.ZERO, Vector3.UP)
 // set camera controller
-let controller = cameraObj.addComponent(HoverCameraController);
-controller.setCamera(0, 0, 30);
+let controller = cameraObj.addComponent(OrbitController);
 // add camera node
 scene3D.addChild(cameraObj);
 
@@ -66,25 +65,14 @@ Engine3D.startRenderView(view);
 // add debug GUI
 let gui = new dat.GUI();
 let f = gui.addFolder('Camera')
-let options = {
-    frustumSize: 100,
-    near: 0, 
-    far: 100,
-    fov: 45
-}
 let buttons = {
-    'ortho': () => {
-        camera.ortho(options.frustumSize, options.near, options.far)
-    },
-    'perspective': () => {
-        camera.perspective(options.fov, Engine3D.aspect, 1, 5000.0)
-    }
+    'ortho': () => camera.ortho(camera.frustumSize, camera.near, camera.far),
+    'perspective': () => camera.perspective(camera.fov, camera.aspect, camera.near, camera.far)
 }
+f.add(camera, 'near', -100, 100).onChange(()=> camera.type === 1 ? buttons.perspective() : buttons.ortho())
+f.add(camera, 'far', 0, 1000).onChange(()=> camera.type === 1 ? buttons.perspective() : buttons.ortho())
 f.add(buttons, 'perspective')
-f.add(options, 'fov', 1, 179).onChange(buttons.perspective)
+f.add(camera, 'fov', 1, 179).onChange(buttons.perspective)
 f.add(buttons, 'ortho')
-f.add(options, 'frustumSize', 1, 1000).onChange(buttons.ortho)
-f.add(options, 'near', -1000, 0).onChange(buttons.ortho)
-f.add(options, 'far', 0, 1000).onChange(buttons.ortho)
-
+f.add(camera, 'frustumSize', 1, 1000).listen().onChange(buttons.ortho)
 f.open()

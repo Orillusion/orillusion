@@ -229,9 +229,9 @@ export class Camera3D extends ComponentBase {
     public perspective(fov: number, aspect: number, near: number, far: number) {
         this.fov = fov;
         this.aspect = aspect;
-        this.near = near;
+        this.near = Math.max(0.001, near);
         this.far = far;
-        this._projectionMatrix.perspective(fov, aspect, near, far);
+        this._projectionMatrix.perspective(this.fov, this.aspect, this.near, this.far);
         this.type = CameraType.perspective;
     }
 
@@ -243,12 +243,13 @@ export class Camera3D extends ComponentBase {
      */
     public ortho(frustumSize: number, near: number, far: number) {
         this.frustumSize = frustumSize;
-        this.near = near;
-        this.far = far;
-        this.type = CameraType.ortho;
         let w = frustumSize * 0.5 * this.aspect;
         let h = frustumSize * 0.5;
-        this._projectionMatrix.ortho(w, h, this.near, this.far);
+        let left = -w / 2;
+        let right = w / 2;
+        let top = h / 2;
+        let bottom = -h / 2;
+        this.orthoOffCenter(left, right, bottom, top, near, far);
     }
 
     /**
