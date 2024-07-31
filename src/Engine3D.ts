@@ -432,7 +432,7 @@ export class Engine3D {
      * Pause the engine render
      */
     public static pause() {
-        if (this._requestAnimationFrameID != 0) {
+        if (this._requestAnimationFrameID !== 0) {
             cancelAnimationFrame(this._requestAnimationFrameID);
             this._requestAnimationFrameID = 0;
         }
@@ -449,22 +449,22 @@ export class Engine3D {
      * start engine render
      * @internal
      */
-    private static render(time) {
+    private static async render(time: number) {
         this._deltaTime = time - this._time;
         this._time = time;
         if (this._frameRateValue > 0) {
             this._frameTimeCount += this._deltaTime * 0.001;
             if (this._frameTimeCount >= this._frameRateValue * 0.95) {
                 this._frameTimeCount = 0;
-                this.updateFrame(time);
+                await this.updateFrame(time);
             }
         } else {
-            this.updateFrame(time);
+            await this.updateFrame(time);
         }
         this.resume();
     }
 
-    private static updateFrame(time: number) {
+    private static async updateFrame(time: number) {
         Time.delta = time - Time.time;
         Time.time = time;
         Time.frame += 1;
@@ -480,7 +480,8 @@ export class Engine3D {
             view.camera.viewPort.setTo(0, 0, w, h);
         }
 
-        if (this._beforeRender) this._beforeRender();
+        if (this._beforeRender) 
+            await this._beforeRender();
 
         /****** auto start with component list *****/
         // ComponentCollect.startComponents();
@@ -539,14 +540,10 @@ export class Engine3D {
         }
 
         if (this._renderLoop) {
-            this._renderLoop();
+            await this._renderLoop();
         }
 
-        // console.log("useCount", Matrix4.useCount);
-        // let t = performance.now();
         WasmMatrix.updateAllContinueTransform(0, Matrix4.useCount, 16);
-        // this.divB.innerText = "wasm:" + (performance.now() - t).toFixed(2);
-
         /****** auto update global matrix share buffer write to gpu *****/
         let globalMatrixBindGroup = GlobalBindGroup.modelMatrixBindGroup;
         globalMatrixBindGroup.writeBuffer(Matrix4.useCount * 16);
@@ -571,6 +568,7 @@ export class Engine3D {
             }
         }
 
-        if (this._lateRender) this._lateRender();
+        if (this._lateRender) 
+            await this._lateRender();
     }
 }
