@@ -11,6 +11,8 @@ import { Rigidbody } from '../rigidbody/Rigidbody';
 export type CornerType = 'leftTop' | 'rightTop' | 'leftBottom' | 'rightBottom' | 'left' | 'right' | 'top' | 'bottom' | 'center';
 
 export class ClothSoftbody extends ComponentBase {
+    private _initResolve!: () => void;
+    private _initializationPromise: Promise<void> = new Promise<void>(r => this._initResolve = r);
     private _btBodyInited: boolean = false;
     private _btSoftbody: Ammo.btSoftBody; // 创建的 Ammo 软体实例
     private _btRigidbody: Ammo.btRigidBody; // 通过锚点附加的 Ammo 刚体实例
@@ -18,7 +20,6 @@ export class ClothSoftbody extends ComponentBase {
     private _segmentW: number;
     private _segmentH: number;
     private _geometry: PlaneGeometry;
-    private _initedFunctions: { fun: Function; thisObj: Object }[] = [];
     private _diff: Vector3 = new Vector3();
 
     /**
@@ -99,34 +100,18 @@ export class ClothSoftbody extends ComponentBase {
     }
 
     /**
-     * Ammo 软体实例
+     * return the soft body instance
      */
     public get btSoftbody(): Ammo.btSoftBody {
         return this._btSoftbody;
     }
 
     /**
-     * Add init callback
-     * @param fun callback function
-     * @param thisObj this
+     * Asynchronously retrieves the fully initialized soft body instance.
      */
-    public addInitedFunction(fun: Function, thisObj: Object) {
-        this._initedFunctions.push({ fun: fun, thisObj: thisObj });
-    }
-
-    /**
-     * Remove init callback
-     * @param fun callback function
-     * @param thisObj this
-     */
-    public removeInitedFunction(fun: Function, thisObj: Object) {
-        for (let i = 0; i < this._initedFunctions.length; i++) {
-            let item = this._initedFunctions[i];
-            if (item.fun === fun && item.thisObj === thisObj) {
-                this._initedFunctions.splice(i, 1);
-                break;
-            }
-        }
+    public async wait(): Promise<Ammo.btSoftBody> {
+        await this._initializationPromise;
+        return this._btSoftbody;
     }
 
     /**
@@ -156,23 +141,14 @@ export class ClothSoftbody extends ComponentBase {
 
     async start(): Promise<void> {
 
-        // if (this._anchorRigidbody && !this._anchorRigidbody.btBodyInited) {
-        //     await new Promise<void>((resolve) => this._anchorRigidbody.addInitedFunction(resolve, this));
-        // }
-
-        // this._btRigidbody = this._anchorRigidbody.btRigidbody
-
         if (this._anchorRigidbody) {
-            this._btRigidbody = await this._anchorRigidbody.waitBtRigidbody();
+            this._btRigidbody = await this._anchorRigidbody.wait();
         }
 
         this.initSoftBody();
 
-        for (let { fun, thisObj } of this._initedFunctions) {
-            fun.call(thisObj);
-        }
-
         this._btBodyInited = true;
+        this._initResolve();
     }
 
     private initSoftBody(): void {
@@ -416,7 +392,6 @@ export class ClothSoftbody extends ComponentBase {
         this._btBodyInited = false;
         this._btRigidbody = null;
         this._anchorRigidbody = null;
-        this._initedFunctions = null;
         super.destroy(force);
     }
 }

@@ -116,21 +116,12 @@ class Sample_EatTheBox {
         rigidbody.rollingFriction = 10;
         rigidbody1.restitution = rigidbody2.restitution = rigidbody3.restitution = rigidbody4.restitution = 0.3;
         //set their index to -1
-        rigidbody.addInitedFunction(() => {
-            rigidbody.btRigidbody.setUserIndex(-1);
-        }, this);
-        rigidbody1.addInitedFunction(() => {
-            rigidbody1.btRigidbody.setUserIndex(-1);
-        }, this);
-        rigidbody2.addInitedFunction(() => {
-            rigidbody2.btRigidbody.setUserIndex(-1);
-        }, this);
-        rigidbody3.addInitedFunction(() => {
-            rigidbody3.btRigidbody.setUserIndex(-1);
-        }, this);
-        rigidbody4.addInitedFunction(() => {
-            rigidbody4.btRigidbody.setUserIndex(-1);
-        }, this);
+        rigidbody.wait().then(btRigidbody => btRigidbody.setUserIndex(-1));
+        rigidbody1.wait().then(btRigidbody => btRigidbody.setUserIndex(-1));
+        rigidbody2.wait().then(btRigidbody => btRigidbody.setUserIndex(-1));
+        rigidbody3.wait().then(btRigidbody => btRigidbody.setUserIndex(-1));
+        rigidbody4.wait().then(btRigidbody => btRigidbody.setUserIndex(-1));
+
         this.view.scene.addChild(floor);
         this.view.scene.addChild(border1);
         this.view.scene.addChild(border2);
@@ -156,15 +147,13 @@ class Sample_EatTheBox {
             rig.mass = 0;
             let col = boxObj.addComponent(ColliderComponent);
             col.shape = boxColliderShape;
-            rig.addInitedFunction(() => {
-                //get original rigidbody to get/set more property
-                let btrig = rig.btRigidbody;
+            rig.wait().then(btRigidbody => {
                 //set this colider as trigger,trigger will not respond to collision
-                btrig.setCollisionFlags(4);
+                btRigidbody.setCollisionFlags(4);
                 //set index to 0~9
-                btrig.setUserIndex(index);
+                btRigidbody.setUserIndex(index);
                 this.foods[index] = boxObj;
-            }, this);
+            });
             boxObj.addComponent(RotateScript);
             this.view.scene.addChild(boxObj);
         }
@@ -181,9 +170,7 @@ class Sample_EatTheBox {
         //add movescript
         this.moveScript = sphereObj.addComponent(MoveScript);
         this.moveScript.rigidbody = sphereObj.addComponent(Rigidbody);
-        this.moveScript.rigidbody.addInitedFunction(() => {
-            this.moveScript.rigidbody.btRigidbody.setUserIndex(-1);
-        }, this);
+        this.moveScript.rigidbody.wait().then(btRigidbody => btRigidbody.setUserIndex(-1));
         this.moveScript.rigidbody.mass = 10;
         let collider = sphereObj.addComponent(ColliderComponent);
         collider.shape = new SphereColliderShape(1);

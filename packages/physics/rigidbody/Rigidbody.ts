@@ -15,7 +15,6 @@ import { RigidBodyUtil } from '../utils/RigidBodyUtil';
 export class Rigidbody extends ComponentBase {
     private _initResolve!: () => void;
     private _initializationPromise: Promise<void> = new Promise<void>(r => this._initResolve = r);
-    private _initedFunctions: { fun: Function; thisObj: Object }[] = [];
     private _btBodyInited: boolean = false;
     private _btRigidbody: Ammo.btRigidBody;
     private _shape: Ammo.btCollisionShape;
@@ -53,11 +52,6 @@ export class Rigidbody extends ComponentBase {
         this.collisionEventHandler.configure(this._btRigidbody.kB);
 
         this._isSilent && ContactProcessedUtil.addIgnoredPointer(this._btRigidbody.kB);
-
-        for (let i = 0; i < this._initedFunctions.length; i++) {
-            let fun = this._initedFunctions[i];
-            fun.fun.call(fun.thisObj);
-        }
 
         this._btBodyInited = true;
         this._initResolve();
@@ -173,30 +167,6 @@ export class Rigidbody extends ComponentBase {
     }
 
     /**
-     * Add init callback
-     * @param fun callback function
-     * @param thisObj this
-     */
-    public addInitedFunction(fun: Function, thisObj: Object) {
-        this._initedFunctions.push({ fun: fun, thisObj: thisObj });
-    }
-
-    /**
-     * Remove init callback
-     * @param fun callback function
-     * @param thisObj this
-     */
-    public removeInitedFunction(fun: Function, thisObj: Object) {
-        for (let i = 0; i < this._initedFunctions.length; i++) {
-            let item = this._initedFunctions[i];
-            if (item.fun === fun && item.thisObj === thisObj) {
-                this._initedFunctions.splice(i, 1);
-                break;
-            }
-        }
-    }
-
-    /**
      * 更新刚体的位置和旋转，并同步三维对象
      * @param position 可选，默认为三维对象的位置
      * @param rotation 可选，默认为三维对象的欧拉角旋转
@@ -235,7 +205,7 @@ export class Rigidbody extends ComponentBase {
     /**
      * Asynchronously retrieves the fully initialized rigid body instance.
      */
-    public async waitBtRigidbody(): Promise<Ammo.btRigidBody> {
+    public async wait(): Promise<Ammo.btRigidBody> {
         await this._initializationPromise;
         return this._btRigidbody!;
     }
@@ -625,7 +595,6 @@ export class Rigidbody extends ComponentBase {
         }
         this._btRigidbody = null;
         this._btBodyInited = false;
-        this._initedFunctions = null;
         this._shape = null;
 
         this.physicsTransformSync.destroy()

@@ -301,13 +301,13 @@ class Sample_MultipleConstraints {
         softBody.applyRotation = new Vector3(0, 90, 0); // Relative rotation to anchor
 
         // Configure softbody parameters
-        softBody.addInitedFunction(() => {
-            let sbConfig = softBody.btSoftbody.get_m_cfg();
+        softBody.wait().then(btSoftbody => {
+            let sbConfig = btSoftbody.get_m_cfg();
             sbConfig.set_kDF(0.2);
             sbConfig.set_kDP(0.01);
             sbConfig.set_kLF(0.02);
             sbConfig.set_kDG(0.001);
-        }, this);
+        });
     }
 
     private addBoxShapeRigidBody(obj: Object3D, mass: number, disableHibernation?: boolean, damping?: [number, number]) {

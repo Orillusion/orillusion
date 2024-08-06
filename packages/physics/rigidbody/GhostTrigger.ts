@@ -133,7 +133,7 @@ export class GhostTrigger extends ComponentBase {
     /**
      * 异步获取完成初始化的幽灵对象
      */
-    public async waitGhostObject() {
+    public async wait() {
         await this._initializationPromise;
         return this._ghostObject!;
     }

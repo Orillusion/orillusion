@@ -55,13 +55,11 @@ export class ConstraintBase<T extends Ammo.btTypedConstraint> extends ComponentB
 
         // 确保刚体初始化完成
         if (!selfRb.btBodyInited) {
-            // await new Promise<void>((resolve) => selfRb.addInitedFunction(resolve, this));
-            await selfRb.waitBtRigidbody()
+            await selfRb.wait()
         }
 
         if (this._targetRigidbody && !this._targetRigidbody.btBodyInited) {
-            // await new Promise<void>((resolve) => this._targetRigidbody.addInitedFunction(resolve, this));
-            await this._targetRigidbody.waitBtRigidbody()
+            await this._targetRigidbody.wait()
         }
 
         // 创建约束
@@ -88,7 +86,7 @@ export class ConstraintBase<T extends Ammo.btTypedConstraint> extends ComponentB
      */
     public get constraint(): T {
         if (!this._constraint) {
-            console.warn('Constraint has not been initialized. Please use waitConstraint() to get the constraint instance asynchronously.');
+            console.warn('Constraint has not been initialized. Please use wait() to get the constraint instance asynchronously.');
         }
         return this._constraint;
     }
@@ -96,7 +94,7 @@ export class ConstraintBase<T extends Ammo.btTypedConstraint> extends ComponentB
     /**
      * 异步获取完成初始化的约束实例
      */
-    public async waitConstraint(): Promise<T> {
+    public async wait(): Promise<T> {
         await this._initializationPromise;
         return this._constraint!;
     }

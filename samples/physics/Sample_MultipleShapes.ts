@@ -164,7 +164,7 @@ class Sample_MultipleShapes {
         };
 
         let f = this.gui.addFolder("terrain");
-        f.add(terrainData, 'terrainMaxHeight', -100, 100, 1).onChange(v => setTerrainSize(v, 'terrainMaxHeight')).onFinishChange(v => updateShape());
+        f.add(terrainData, 'terrainMaxHeight', -100, 100, 1).name('terrainScale').onChange(v => setTerrainSize(v, 'terrainMaxHeight')).onFinishChange(v => updateShape());
         f.add(terrainData, 'width', 100, 200, 1).onChange(v => setTerrainSize(v, 'width')).onFinishChange(v => updateShape());
         f.add(terrainData, 'height', 100, 200, 1).onChange(v => setTerrainSize(v, 'height')).onFinishChange(v => updateShape());
         f.open();

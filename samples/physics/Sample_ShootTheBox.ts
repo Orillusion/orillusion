@@ -43,7 +43,7 @@ class Sample_ShootTheBox {
         //add DirectLight
         let lightObj = new Object3D();
         let light = lightObj.addComponent(DirectLight);
-        light.intensity = 8;
+        light.intensity = 4;
         light.castShadow = true;
         lightObj.rotationX = 60;
         lightObj.rotationY = 140;
@@ -129,19 +129,9 @@ class Sample_ShootTheBox {
             let rigidBody = ball.addComponent(Rigidbody);
             rigidBody.mass = 10;
             //set velocity after rigidbody inited
-            rigidBody.addInitedFunction(() => {
-                // 之前的实现是使用 applyForce 方法来施加一个瞬时的力：
-                // rigidBody.velocity = ray.direction.multiplyScalar(10000 * this.ballSpeed);
-
-                // 由于之前 timeStep 的值非常大，导致物理帧与图形帧同步，物理模拟速度不一致，
-                // 这可能导致 applyForce 应用的力未能在某些帧中正确生效，从而出现遗漏的问题。
-
-                // 为了解决这个问题，改用 setLinearVelocity 方法。
-                // 通过设置初速度为射线方向的 20 倍球速，可以保证子弹瞬时获得预期的速度。
-                // 这样可以避免由于 timeStep 大小变化导致的物理模拟速度不一致的问题。
-                // 使用 setLinearVelocity 可以确保子弹的发射行为稳定且可预测。
+            rigidBody.wait().then(() => {
                 rigidBody.linearVelocity = ray.direction.multiplyScalar(20 * this.ballSpeed);
-            }, this);
+            });
             ball.transform.localPosition = ray.origin;
             this.view.scene.addChild(ball);
         }
