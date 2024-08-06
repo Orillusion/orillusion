@@ -96,11 +96,11 @@ class _Physics {
     /**
      * 物理模拟更新
      * @param timeStep - 时间步长
-     * @default Time.delta / 1000
+     * @default Time.delta * 0.001
      */
-    public update(timeStep?: number) {
+    public update(timeStep: number = Time.delta * 0.001) {
         if (!this._isInited || this.isStop) return;
-        this.world.stepSimulation(timeStep || (Time.delta / 1000), this.maxSubSteps, this.fixedTimeStep);
+        this.world.stepSimulation(timeStep, this.maxSubSteps, this.fixedTimeStep);
         // this.world.stepSimulation(Time.delta, 1, this.fixedTimeStep);
 
         this._debugDrawer?.update();
