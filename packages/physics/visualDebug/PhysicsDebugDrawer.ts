@@ -1,5 +1,4 @@
-import { Engine3D, Object3D, Vector3, Color, GetCountInstanceID } from "@orillusion/core";
-// import { Graphic3D } from '@orillusion/graphic'
+import { Object3D, Vector3, Color, GetCountInstanceID } from "@orillusion/core";
 import { Ammo } from '../Physics';
 import { TempPhyMath } from '../utils/TempPhyMath';
 import { DebugDrawMode, DebugDrawerOptions } from "./DebugDrawModeEnum";

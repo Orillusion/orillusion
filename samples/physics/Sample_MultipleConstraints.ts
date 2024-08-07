@@ -36,7 +36,9 @@ class Sample_MultipleConstraints {
         // create directional light
         let light = new Object3D();
         light.localRotation = new Vector3(36, -130, 60);
-        light.addComponent(DirectLight).castShadow = true;
+        let dl = light.addComponent(DirectLight)
+        dl.castShadow = true;
+        dl.intensity = 3;
         this.scene.addChild(light);
 
         // init sky
@@ -279,11 +281,8 @@ class Sample_MultipleConstraints {
         const cloth = new Object3D();
         let meshRenderer = cloth.addComponent(MeshRenderer);
         meshRenderer.geometry = new PlaneGeometry(3, 3, 10, 10);
-
-        let texture = new BitmapTexture2D();
-        await texture.load('https://cdn.orillusion.com/gltfs/cube/material_02.png');
-        let material = new UnLitMaterial();
-        material.baseMap = texture;
+        let material = new LitMaterial();
+        material.baseMap = Engine3D.res.redTexture;
         material.cullMode = GPUCullMode.none;
         meshRenderer.material = material;
 
