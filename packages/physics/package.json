@@ -1,6 +1,6 @@
 {
     "name": "@orillusion/physics",
-    "version": "0.2.2",
+    "version": "0.3.0",
     "author": "Orillusion",
     "description": "Orillusion Physics Plugin, Powerd by Ammo.js",
     "main": "./dist/physics.umd.js",
@@ -11,7 +11,7 @@
     "scripts": {
         "build": "vite build && npm run build:types && npm run build:clean",
         "build:types": "tsc --emitDeclarationOnly -p tsconfig.json",
-        "build:clean": "mv dist/packages/physics/* dist && rm -rf dist/src & rm -rf dist/packages",
+        "build:clean": "mv dist/packages/physics/* dist && rm -rf dist/src && rm -rf dist/packages",
         "docs": "npm run docs:typedoc ../../docs/physics index.ts",
         "docs:typedoc": "npx typedoc --plugin typedoc-plugin-markdown --tsconfig tsconfig.json --gitRevision main --hideBreadcrumbs true --allReflectionsHaveOwnDocument true --readme none --excludeInternal --excludePrivate --excludeProtected --sort source-order --out"
     },
@@ -21,7 +21,7 @@
         "url": "git+https://github.com/Orillusion/orillusion.git"
     },
     "dependencies": {
-        "@orillusion/ammo": "^0.2.0",
-        "@orillusion/core": "^0.7.0"
+        "@orillusion/ammo": "^0.2.1",
+        "@orillusion/core": "^0.8.0"
     }
 }

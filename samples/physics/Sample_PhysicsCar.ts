@@ -131,7 +131,7 @@ class VehicleKeyboardController extends ComponentBase {
     protected mEngineForce = 0;
     protected mBreakingForce = 0;
     protected mVehicleSteering = 0;
-    protected mAmmoVehicle;
+    protected mAmmoVehicle: Ammo.btRaycastVehicle;
     protected mVehicleArgs = {
         bodyMass: 800,
         friction: 1000,
@@ -235,7 +235,8 @@ class VehicleKeyboardController extends ComponentBase {
         Engine3D.inputSystem.addEventListener(KeyEvent.KEY_UP, this.onKeyUp, this);
         Engine3D.inputSystem.addEventListener(KeyEvent.KEY_DOWN, this.onKeyDown, this);
     }
-    onUpdate() {
+    // onUpdate() {
+    onLateUpdate() {
         if (!this.mAmmoVehicle) return;
         const vehicle = this.mAmmoVehicle;
         const speed = vehicle.getCurrentSpeedKmHour();
@@ -299,7 +300,12 @@ class VehicleKeyboardController extends ComponentBase {
         }
         // update body position
         let tm, p, q, qua = Quaternion.HELP_0;
-        tm = vehicle.getChassisWorldTransform();
+        // tm = vehicle.getChassisWorldTransform();
+
+        // Use an interpolation transform
+        vehicle.getRigidBody().getMotionState().getWorldTransform(Physics.TEMP_TRANSFORM);
+        tm = Physics.TEMP_TRANSFORM;
+        
         p = tm.getOrigin();
         this.mBody.x = p.x()
         this.mBody.y = p.y()
@@ -367,7 +373,7 @@ class fixedCameraController extends ComponentBase {
     set target(obj) {
         this._target = obj;
     }
-    onUpdate() {
+    onBeforeUpdate() {
         if (!this._target) return;
         this._tempDir.set(0, 0, -1);
         const q = Quaternion.HELP_0;

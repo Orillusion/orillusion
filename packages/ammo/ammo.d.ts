@@ -7,6 +7,11 @@ declare function Ammo<T>(target?: T): Promise<T & typeof Ammo>;
  * Ammo.js by Bullet2
  */
 declare module Ammo {
+    function wrapPointer<T>(ptr: number, type: new (...args: any[]) => T): T;
+    function addFunction(func: Function): number;
+    function getPointer(object: any): number;
+    function UTF8ToString(warningString: number): string;
+    function castObject<T, C extends new (...args: any[]) => T>(object: any, type: C): InstanceType<C>;
     function destroy(obj: any): void;
     function _malloc(size: number): number;
     function _free(ptr: number): void;
@@ -120,6 +125,7 @@ declare module Ammo {
         set_m_graphicsWorldTrans(m_graphicsWorldTrans: btTransform): void;
     }
     class btCollisionObject {
+        kB: number;
         setAnisotropicFriction(anisotropicFriction: btVector3, frictionMode: number): void;
         getCollisionShape(): btCollisionShape;
         setContactProcessingThreshold(contactProcessingThreshold: number): void;
@@ -410,6 +416,10 @@ declare module Ammo {
     class btBvhTriangleMeshShape extends btTriangleMeshShape {
         constructor(meshInterface: btStridingMeshInterface, useQuantizedAabbCompression: boolean, buildBvh?: boolean);
     }
+    class btGImpactMeshShape extends btTriangleMeshShape {
+        constructor(meshInterface: btStridingMeshInterface);
+        updateBound(): void;
+    }
     class btHeightfieldTerrainShape extends btConcaveShape {
         constructor(heightStickWidth: number, heightStickLength: number, heightfieldData: unknown, heightScale: number, minHeight: number, maxHeight: number, upAxis: number, hdt: PHY_ScalarType, flipQuadEdges: boolean);
         setMargin(margin: number): void;
@@ -598,6 +608,11 @@ declare module Ammo {
         setUpperLinLimit(upperLimit: number): void;
         setLowerAngLimit(lowerAngLimit: number): void;
         setUpperAngLimit(upperAngLimit: number): void;
+        getLinearPos(): number;
+        getAngularPos(): number;
+        setTargetLinMotorVelocity(velocity: number): void;
+        setPoweredLinMotor(onOff: boolean): void;
+        setMaxLinMotorForce(force: number): void;
     }
     class btFixedConstraint extends btTypedConstraint {
         constructor(rbA: btRigidBody, rbB: btRigidBody, frameInA: btTransform, frameInB: btTransform);

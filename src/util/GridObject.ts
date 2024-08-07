@@ -91,7 +91,6 @@ export class GridObject extends Object3D {
             let mr = z.addComponent(MeshRenderer);
             mr.geometry = line;
             let mat = mr.material = new UnLitMaterial();
-            console.log(mat)
             mat.baseColor = new Color(0, 1, 0, 0.5);
             mat.blendMode = BlendMode.ADD;
             mat.castReflection = false;
