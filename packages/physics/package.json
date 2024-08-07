@@ -22,6 +22,6 @@
     },
     "dependencies": {
         "@orillusion/ammo": "^0.2.1",
-        "@orillusion/core": "^0.7.0"
+        "@orillusion/core": "^0.8.0"
     }
 }
