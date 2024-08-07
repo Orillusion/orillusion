@@ -1,4 +1,4 @@
-import { Vector3, BoxColliderShape, CapsuleColliderShape, ColliderComponent, ComponentBase, Quaternion, SphereColliderShape, ComponentCollect } from '@orillusion/core'
+import { Vector3, BoxColliderShape, CapsuleColliderShape, ColliderComponent, ComponentBase, Quaternion, SphereColliderShape } from '@orillusion/core'
 import { Ammo, Physics } from '../Physics';
 import { TempPhyMath } from '../utils/TempPhyMath';
 import { ActivationState, CollisionFlags } from './RigidbodyEnum';
@@ -121,10 +121,8 @@ export class Rigidbody extends ComponentBase {
     }
 
     public onUpdate(): void {
-
         // Check if the rigid body is active in the physics simulation.
         if (this._btRigidbody?.isActive()) {
-
             // Retrieve the current interpolated world transform of the rigid body from its motion state.
             // The motion state provides an interpolated transformation, which is smoother and more suitable
             this._btRigidbody.getMotionState().getWorldTransform(Physics.TEMP_TRANSFORM);
@@ -304,22 +302,18 @@ export class Rigidbody extends ComponentBase {
         if (value === this.isKinematic) return;
         let flag = CollisionFlags.KINEMATIC_OBJECT;
         value ? this.addCollisionFlag(flag) : this.removeCollisionFlag(flag);
-
         if (!this._btRigidbody) return;
-
         this.enablePhysicsTransformSync = value;
 
         if (value) {
+            // pause onUpdate
+            this.enable = false
             this._btRigidbody.setActivationState(ActivationState.DISABLE_DEACTIVATION)
-            // 解绑 onUpdate 事件，停止自动更新图形变换，运动学刚体的变换将由三维对象直接控制。
-            // 通常运动学刚体其状态应设为不休眠状态，当修改三维对象变换时，会同步至刚体，在每一帧执行的onUpdate中又会将刚体的变换同步给三维对象，
-            // 但可能是刚体内部处理延迟或是其他错误，测试发现有时刚体的Y轴旋转数据会出现错乱导致刚体和三维对象的旋转值错误。
-            // 此举主要用于解决这个问题，但对于非运动学且激活状态的动态刚体，在开启物理变换同步功能后修改Y轴旋转也会出现此问题。
-            ComponentCollect.unBindUpdate(this.transform.view3D, this);
+            // sync transfrom
             this.updateTransform();
         } else {
-            // 恢复 onUpdate 事件，允许根据刚体状态自动更新图形变换
-            ComponentCollect.bindUpdate(this.transform.view3D, this, this.onUpdate.bind(this));
+            // resume onUpdate
+            this.enable = true
             const state = this._activationState ?? ((this._btRigidbody.isStaticObject()
                 ? ActivationState.ISLAND_SLEEPING
                 : ActivationState.ACTIVE_TAG));
