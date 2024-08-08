@@ -644,11 +644,11 @@ export class Matrix4 {
      * set matrix orthogonal projection
      * @param w screen width
      * @param h screen height
-     * @param zn camera near plane
-     * @param zf camera far plane
+     * @param n camera near plane
+     * @param f camera far plane
      * @returns this matrix
      */
-    public ortho(w: number, h: number, zn: number, zf: number) {
+    public ortho(w: number, h: number, n: number, f: number) {
         let data = this.rawData;
 
         data[0] = 2 / w;
@@ -663,12 +663,12 @@ export class Matrix4 {
 
         data[8] = 0;
         data[9] = 0;
-        data[10] = 1 / (zf - zn);
+        data[10] = 1 / (f - n);
         data[11] = 0;
 
         data[12] = 0;
         data[13] = 0;
-        data[14] = zn / (zn - zf);
+        data[14] = n / (n - f);
         data[15] = 1;
 
         return this
@@ -711,27 +711,27 @@ export class Matrix4 {
     /**
      * set matrix orthogonal projection by view center
      */
-    public orthoOffCenter(l: number, r: number, b: number, t: number, zn: number, zf: number) {
+    public orthoOffCenter(left: number, right: number, bottom: number, top: number, near: number, far: number) {
         let data = this.rawData;
 
-        data[0] = 2 / (r - l);
+        data[0] = 2 / (right - left);
         data[1] = 0;
         data[2] = 0;
         data[3] = 0;
 
         data[4] = 0;
-        data[5] = 2 / (t - b);
+        data[5] = 2 / (top - bottom);
         data[6] = 0;
         data[7] = 0;
 
         data[8] = 0;
         data[9] = 0;
-        data[10] = 1.0 / (zf - zn);
+        data[10] = 1.0 / (far - near);
         data[11] = 0;
 
-        data[12] = (l + r) / (l - r);
-        data[13] = (t + b) / (b - t);
-        data[14] = zn / (zn - zf);
+        data[12] = (left + right) / (left - right);
+        data[13] = (top + bottom) / (bottom - top);
+        data[14] = near / (near - far);
         data[15] = 1;
     }
 

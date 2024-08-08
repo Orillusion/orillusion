@@ -284,7 +284,6 @@ export class HoverCameraController extends ComponentBase {
         this._tempPos.add(this._currentPos.transform.localPosition, this._tempPos);
 
         this.transform.lookAt(this._tempPos, this._currentPos.transform.localPosition, Vector3.UP);
-        this.camera.lookTarget.copy(this._currentPos.transform.localPosition);
     }
 
     /**
