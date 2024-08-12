@@ -1,4 +1,4 @@
-import { Engine3D, View3D, Scene3D, CameraUtil, AtmosphericComponent, webGPUContext, HoverCameraController, Object3D, DirectLight, KelvinUtil, PlaneGeometry, VertexAttributeName, LitMaterial, MeshRenderer, BoxGeometry, SphereGeometry, CylinderGeometry, TorusGeometry, Vector2, Color, GeometryBase, Vector3 } from "@orillusion/core";
+import { Engine3D, View3D, Scene3D, CameraUtil, AtmosphericComponent, webGPUContext, HoverCameraController, Object3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer, Color, GridObject } from "@orillusion/core";
 import { Shape2D, ExtrudeGeometry } from "@orillusion/geometry";
 
 class Sample_ExtrudeGeometry {
@@ -12,7 +12,7 @@ class Sample_ExtrudeGeometry {
         view.camera = CameraUtil.createCamera3DObject(view.scene);
         view.camera.perspective(60, webGPUContext.aspect, 1, 5000.0);
         view.camera.object3D.z = -15;
-        view.camera.object3D.addComponent(HoverCameraController).setCamera(35, -20, 150);
+        view.camera.object3D.addComponent(HoverCameraController).setCamera(35, -20, 200);
 
         Engine3D.startRenderView(view);
 
@@ -31,6 +31,7 @@ class Sample_ExtrudeGeometry {
         lightObj3D.rotationZ = 5.58;
         scene.addChild(lightObj3D);
 
+        scene.addChild(new GridObject(1000, 100))
         {
             let shape = new Shape2D();
             shape.moveTo(0, 20);

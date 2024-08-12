@@ -1,4 +1,4 @@
-import { GeometryBase, Vector2, Vector3, VertexAttributeName } from "@orillusion/core";
+import { GeometryBase, Vector2, VertexAttributeName } from "@orillusion/core";
 import { Shape2D } from "./Shape2D";
 import { ShapeUtils } from "./ShapeUtils";
 

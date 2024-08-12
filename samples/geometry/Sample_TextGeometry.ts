@@ -25,7 +25,7 @@ class Sample_TextGeometry {
         {
             scene.addChild(new Graphic3D());
 
-            let font = await Engine3D.res.load("ttf/微软雅黑.ttf", FontParser);
+            let font = await Engine3D.res.load("/fonts/Roboto.ttf", FontParser);
 
             let obj = new Object3D();
             let mr = obj.addComponent(MeshRenderer);
