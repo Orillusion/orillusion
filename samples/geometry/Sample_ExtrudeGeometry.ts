@@ -41,9 +41,6 @@ class Sample_ExtrudeGeometry {
             shape.bezierCurveTo(55, 35, 55, 0, 25, 0);
             shape.bezierCurveTo(18, 0, 0, 10, 0, 20);
 
-            let mat = new LitMaterial();
-            mat.baseColor = new Color(0.2, 0.5, 1.0);
-
             let obj = new Object3D();
             let mr = obj.addComponent(MeshRenderer);
             mr.geometry = new ExtrudeGeometry([shape], {
@@ -52,6 +49,8 @@ class Sample_ExtrudeGeometry {
                 steps: 1
             });
             let mats = [];
+            let mat = new LitMaterial();
+            mat.baseColor = new Color(0.2, 0.5, 1.0);
             for (let i = 0; i < mr.geometry.subGeometries.length; i++) {
                 mats.push(mat);
             }

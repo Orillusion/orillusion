@@ -1,34 +1,24 @@
-import { Color, Engine3D, Vector3 } from "@orillusion/core";
 import { Shape2D } from "./ExtrudeGeometry/Shape2D";
 import { ExtrudeGeometry, ExtrudeGeometryArgs } from "./ExtrudeGeometry/ExtrudeGeometry";
 import { ShapeUtils } from "./ExtrudeGeometry/ShapeUtils";
+import { Font } from "./lib/opentype";
 
-export type TextGeometryArgs = {
-    curveSegments?: number;
-    steps?: number;
-    depth?: number;
-    bevelEnabled?: boolean;
-    bevelThickness?: number;
-    bevelSize?: number;
-    bevelOffset?: number;
-    bevelSegments?: number;
-    font?:any;
-    fontSize?:number;
+export type TextGeometryArgs = ExtrudeGeometryArgs & {
+    font: Font;
+    fontSize: number;
 }
 
 export class TextGeometry extends ExtrudeGeometry {
     private _text: string;
-
-    constructor(text?: string, options?: TextGeometryArgs) {
+    declare public options: TextGeometryArgs;
+    constructor(text: string, options: TextGeometryArgs) {
         super([], options);
         this.options = options;
-        if (text) {
-            this.text = text;
-        }
+        this.text = text;
     }
 
-    public get font(): any {
-        return (this.options as TextGeometryArgs).font;
+    public get font(): Font {
+        return this.options.font;
     }
 
     public get text(): string {
@@ -36,11 +26,11 @@ export class TextGeometry extends ExtrudeGeometry {
     }
 
     public get fontSize(): number {
-        return (this.options as TextGeometryArgs).fontSize;
+        return this.options.fontSize;
     }
 
     public set fontSize(v: number) {
-        (this.options as TextGeometryArgs).fontSize = v;
+        this.options.fontSize = v;
     }
 
     public set text(v: string) {

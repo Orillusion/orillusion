@@ -1,5 +1,5 @@
 import { Engine3D, View3D, Scene3D, CameraUtil, AtmosphericComponent, webGPUContext, HoverCameraController, Object3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer } from "@orillusion/core";
-import { TextGeometry, TTFParser } from "@orillusion/geometry";
+import { TextGeometry, FontParser } from "@orillusion/geometry";
 import { Graphic3D } from "@orillusion/graphic";
 
 class Sample_TextGeometry {
@@ -25,16 +25,16 @@ class Sample_TextGeometry {
         {
             scene.addChild(new Graphic3D());
 
-            let font = await Engine3D.res.load("ttf/微软雅黑.ttf", TTFParser);
+            let font = await Engine3D.res.load("ttf/微软雅黑.ttf", FontParser);
 
             let obj = new Object3D();
             let mr = obj.addComponent(MeshRenderer);
             mr.geometry = new TextGeometry("Hello, Orillusion!", {
-                font: font,
-                fontSize: 16,
+                font: font, // required
+                fontSize: 16, // required
                 depth: 2.5,
                 steps: 1,
-                bevelEnabled: false,
+                bevelEnabled: false
             });
 
             let mats = [];

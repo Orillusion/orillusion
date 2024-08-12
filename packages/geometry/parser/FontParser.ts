@@ -1,10 +1,9 @@
 import { ParserBase } from "@orillusion/core";
-import * as opentype from "../opentype.module.js";
+import { parse } from "../lib/opentype";
 
-export class TTFParser extends ParserBase {
+export class FontParser extends ParserBase {
     public async parseBuffer(buffer: ArrayBuffer) {
-        console.log(opentype);
-        const font = opentype.parse(buffer);
+        const font = parse(buffer);
         this.data = font;
     }
 
