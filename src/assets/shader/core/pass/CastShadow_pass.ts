@@ -1,5 +1,9 @@
 import { SkeletonAnimation_shader } from "../../anim/SkeletonAnimation_shader";
 import { MorphTarget_shader } from "../../../../components/anim/morphAnim/MorphTarget_shader";
+
+/**
+ * @internal
+ */
 export let shadowCastMap_vert: string = /*wgsl*/ `
 #include "WorldMatrixUniform"
 #include "GlobalUniform"
@@ -109,6 +113,9 @@ fn main(vertex:VertexAttributes) -> VertexOutput {
 }
 `
 
+/**
+ * @internal
+ */
 export let castPointShadowMap_vert: string = /*wgsl*/ `
 #include "WorldMatrixUniform"
 #include "GlobalUniform"
@@ -219,6 +226,9 @@ fn main(vertex:VertexAttributes) -> VertexOutput {
 }
 `
 
+/**
+ * @internal
+ */
 export let shadowCastMap_frag: string = /*wgsl*/ `
     #if USE_ALPHACUT
       @group(1) @binding(0)
@@ -259,6 +269,9 @@ export let shadowCastMap_frag: string = /*wgsl*/ `
     }
 `
 
+/**
+ * @internal
+ */
 export let directionShadowCastMap_frag: string = /*wgsl*/ `
     #if USE_ALPHACUT
       @group(1) @binding(0)

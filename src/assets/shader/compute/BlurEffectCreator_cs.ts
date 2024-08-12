@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let BlurEffectCreatorSample_cs: string = /*wgsl*/ `
     struct ImageSize {
         srcWidth: i32,
@@ -20,6 +23,9 @@ export let BlurEffectCreatorSample_cs: string = /*wgsl*/ `
     }
 `
 
+/**
+ * @internal
+ */
 export let BlurEffectCreatorBlur_cs: string = /*wgsl*/ `
     struct ImageSize {
         srcWidth: i32,

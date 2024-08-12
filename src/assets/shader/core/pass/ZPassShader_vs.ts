@@ -1,6 +1,9 @@
 import { MorphTarget_shader } from "../../../../components/anim/morphAnim/MorphTarget_shader";
 import { SkeletonAnimation_shader } from "../../anim/SkeletonAnimation_shader";
 
+/**
+ * @internal
+ */
 export let ZPassShader_vs: string = /*wgsl*/ `
     #include "GlobalUniform"
     #include "MathShader"

@@ -4,7 +4,7 @@ import { Vector3 } from '../math/Vector3';
 
 
 /**
- * @internal
+ * An object group contains xyz axis objects
  * @group Util
  */
 export class AxisObject extends Object3D {

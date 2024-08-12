@@ -1,4 +1,7 @@
 
+/**
+ * @internal
+ */
 export let PointShadowDebug:string = /*wgsl*/`
         #include "Common_vert"
         #include "Common_frag"

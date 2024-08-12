@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let BRDF_frag: string = /*wgsl*/ `
 #include "Clearcoat_frag"
     #include "EnvMap_frag"

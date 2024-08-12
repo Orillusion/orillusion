@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let Graphic3DShader: string = /*wgsl*/ `
     #include "WorldMatrixUniform"
     #include "GlobalUniform"

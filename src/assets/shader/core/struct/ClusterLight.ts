@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let ClusterLight: string = /*wgsl*/ `
     struct LightData {
         index:f32,

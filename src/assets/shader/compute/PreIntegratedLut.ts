@@ -1,4 +1,6 @@
-
+/**
+ * @internal
+ */
 export let PreIntegratedLut: string = /*wgsl*/ `
 var<private>PI: f32 = 3.141592653589793;
 

@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export class CubeSky_Shader {
   public static sky_vs_frag_wgsl: string = /* wgsl */ `
     #include "WorldMatrixUniform"

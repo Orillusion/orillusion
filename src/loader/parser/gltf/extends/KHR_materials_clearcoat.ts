@@ -1,7 +1,7 @@
 // https://github.com/KhronosGroup/glTF/tree/main/extensions/2.0/Khronos/KHR_materials_clearcoat
 
-import { Material } from '../../../..';
-import { PhysicMaterial } from '../../../../materials/PhysicMaterial';
+import { LitMaterial } from '../../../../materials/LitMaterial';
+import { Material } from '../../../../materials/Material';
 
 /**
  * @internal
@@ -16,12 +16,12 @@ export class KHR_materials_clearcoat {
             let KHR_materials_clearcoat = extensions[`KHR_materials_clearcoat`];
             if (`clearcoatFactor` in KHR_materials_clearcoat) {
                 dmaterial.clearcoatFactor = KHR_materials_clearcoat[`clearcoatFactor`];
-                (tMaterial as PhysicMaterial).clearcoatFactor = dmaterial.clearcoatFactor;
+                (tMaterial as LitMaterial).clearcoatFactor = dmaterial.clearcoatFactor;
             }
 
             if (`clearcoatRoughnessFactor` in KHR_materials_clearcoat) {
                 dmaterial.clearcoatRoughnessFactor = KHR_materials_clearcoat[`clearcoatRoughnessFactor`];
-                (tMaterial as PhysicMaterial).clearcoatRoughnessFactor = dmaterial.clearcoatRoughnessFactor;
+                (tMaterial as LitMaterial).clearcoatRoughnessFactor = dmaterial.clearcoatRoughnessFactor;
             }
         }
     }

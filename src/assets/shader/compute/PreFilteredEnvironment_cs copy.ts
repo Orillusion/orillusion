@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let PreFilteredEnvironment_cs2: string = /*wgsl*/ `
     // input reflection buffer texture
     // sample prefiltered cube uv texture 

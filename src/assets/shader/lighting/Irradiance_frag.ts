@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let Irradiance_frag: string = /*wgsl*/ `
 #include "IrradianceVolumeData_frag"
     struct IrradianceField {

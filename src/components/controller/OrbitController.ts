@@ -265,10 +265,10 @@ export class OrbitController extends ComponentBase {
             this._isPanning = false;
         }
     }
-    private onPointerLeave() {
-        this._isMouseDown = false;
-        this._isPanning = false;
-    }
+    // private onPointerLeave() {
+    //     this._isMouseDown = false;
+    //     this._isPanning = false;
+    // }
     /**
      * @internal
      */
@@ -285,7 +285,6 @@ export class OrbitController extends ComponentBase {
         Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_DOWN, this.onPointerDown, this);
         Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_MOVE, this.onPointerMove, this);
         Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_UP, this.onPointerUp, this);
-        Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_OUT, this.onPointerLeave, this);
     }
     /**
      * @internal
@@ -295,7 +294,6 @@ export class OrbitController extends ComponentBase {
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_DOWN, this.onPointerDown, this);
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_MOVE, this.onPointerMove, this);
         Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_UP, this.onPointerUp, this);
-        Engine3D.inputSystem.removeEventListener(PointerEvent3D.POINTER_OUT, this.onPointerLeave, this);
     }
 }
 

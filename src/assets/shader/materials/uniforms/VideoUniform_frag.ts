@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let VideoUniform_frag = /* wgsl */`
 struct MaterialUniform {
   transformUV1:vec4<f32>,

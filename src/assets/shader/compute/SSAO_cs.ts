@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let SSAO_cs: string = /*wgsl*/ `
 #include "GlobalUniform"
   struct UniformData {

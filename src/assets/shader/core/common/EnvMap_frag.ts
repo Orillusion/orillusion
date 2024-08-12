@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let EnvMap_frag: string = /*wgsl*/ `
     @group(1) @binding(auto)
     var prefilterMapSampler: sampler;

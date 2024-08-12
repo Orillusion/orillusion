@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let Outline_cs: string = /*wgsl*/ `
     struct OutlineSettingData{
         strength: f32,

@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let PhysicMaterialUniform_frag = /* wgsl */`
           #if USE_CUSTOMUNIFORM
           #else

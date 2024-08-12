@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let Denoising_cs = /* wgsl */`
     // #include "GlobalUniform"
 

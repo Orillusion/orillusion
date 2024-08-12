@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let graphicDynamicCompute = (subCode: string) => {
     let code = /*wgsl*/`
     #include "GlobalUniform"

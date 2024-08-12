@@ -1,5 +1,6 @@
-
-
+/**
+ * @internal
+ */
 export let GenerayRandomDir: string = /*wgsl*/ `
     fn madfrac(A:f32, B:f32)-> f32 {
         return A*B-floor(A*B) ;

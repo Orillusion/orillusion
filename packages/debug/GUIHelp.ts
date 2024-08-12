@@ -181,6 +181,7 @@ class _GUIHelp {
         }
     }
 }
+
 /**
  * @internal
  */

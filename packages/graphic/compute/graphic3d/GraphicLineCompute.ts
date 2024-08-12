@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let GraphicLineCompute = () => {
     let code = /*wgsl*/`
     #include "GlobalUniform"

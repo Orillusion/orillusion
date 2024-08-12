@@ -4,6 +4,10 @@ import { Object3D } from '../core/entities/Object3D';
 import { MeshRenderer } from '../components/renderer/MeshRenderer';
 import { Matrix4 } from '../math/Matrix4';
 
+/**
+ * Utils for calculating bounding boxes
+ * @group Util
+ */
 export class BoundUtil {
     private static readonly maxVector = new Vector3(Number.MAX_VALUE * 0.1, Number.MAX_VALUE * 0.1, Number.MAX_VALUE * 0.1);
     private static readonly minVector = this.maxVector.clone().multiplyScalar(-1);

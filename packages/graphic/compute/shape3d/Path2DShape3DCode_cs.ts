@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let Path2DShape3DCode_cs = /*wgsl*/`
 
 struct Path2DShape3D {

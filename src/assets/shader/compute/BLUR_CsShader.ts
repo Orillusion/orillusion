@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let BLUR_CsShader: string = /* wgsl */`
 #include "GlobalUniform"
 

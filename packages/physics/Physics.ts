@@ -169,5 +169,8 @@ class _Physics {
  * ```
  * @group Plugin
  */
+/**
+ * @internal
+ */
 export let Physics = new _Physics();
 export {Ammo}

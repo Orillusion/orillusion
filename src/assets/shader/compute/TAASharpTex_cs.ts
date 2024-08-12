@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let TAASharpTex_cs: string = /*wgsl*/ `
     struct TAAData{
       preProjMatrix: mat4x4<f32>,

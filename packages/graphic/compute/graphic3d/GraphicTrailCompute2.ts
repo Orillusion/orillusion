@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let GraphicTrailCompute2 = (segmentCode: number) => {
     let code = /*wgsl*/`
     #include "GlobalUniform"

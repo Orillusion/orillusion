@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let GrassShader = /* wgsl */`
     #include "WorldMatrixUniform"
     #include "GrassVertexAttributeShader"

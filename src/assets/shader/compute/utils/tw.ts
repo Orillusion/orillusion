@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let tw = /* wgsl */`
 
     @group(0) @binding(1) var inputTexture : texture_2d<f32>;

@@ -1,4 +1,7 @@
 import { SHCommon_frag } from './../core/common/SHCommon_frag';
+/**
+ * @internal
+ */
 export let BxDF_frag: string = /*wgsl*/ `
   #include "Clearcoat_frag"
   #include "BRDF_frag"

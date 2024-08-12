@@ -1,4 +1,6 @@
-
+/**
+ * @internal
+ */
 export let SHCommon_frag: string = /*wgsl*/ `
 
 fn Y0(v : vec3f ) -> f32 {

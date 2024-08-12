@@ -362,7 +362,7 @@ export class Matrix4 {
             if (Math.abs(up.z) > 0.9999) {
                 zAxis.x += 0.0001;
             } else {
-                zAxis.z += 0.0001;
+                zAxis.z -= 0.0001;
             }
             zAxis.normalize();
         }

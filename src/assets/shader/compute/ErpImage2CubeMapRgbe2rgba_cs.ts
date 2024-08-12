@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let ErpImage2CubeMapRgbe2rgba_cs: string = /*wgsl*/ `
   struct ImageSize {
     srcWidth : i32,

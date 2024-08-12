@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let FullQuad_vert_wgsl: string = /*wgsl*/ `
     #include "WorldMatrixUniform"
     #include "GlobalUniform"
@@ -31,7 +34,9 @@ export let FullQuad_vert_wgsl: string = /*wgsl*/ `
         return output ;
     }
 `
-
+/**
+ * @internal
+ */
 export let Quad_vert_wgsl: string = /*wgsl*/ `
 #include "WorldMatrixUniform"
       #include "GlobalUniform"
@@ -59,7 +64,9 @@ export let Quad_vert_wgsl: string = /*wgsl*/ `
           return VertexOutput(TEXCOORD_1, vec4<f32>(uv, 0.0, 1.0));
       }
 `
-
+/**
+ * @internal
+ */
 export let Quad_frag_wgsl: string = /*wgsl*/ `
     struct FragmentOutput {
         @location(auto) o_Target: vec4<f32>
@@ -81,7 +88,9 @@ export let Quad_frag_wgsl: string = /*wgsl*/ `
         return FragmentOutput(color);
     }
 `
-
+/**
+ * @internal
+ */
 export let Quad_depth2d_frag_wgsl: string = /*wgsl*/ `
     struct FragmentOutput {
         @location(auto) o_Target: vec4<f32>
@@ -108,7 +117,9 @@ export let Quad_depth2d_frag_wgsl: string = /*wgsl*/ `
         return FragmentOutput(vec4<f32>(depth,0.0,0.0,1.0));
     }
 `
-
+/**
+ * @internal
+ */
 export let Quad_depthCube_frag_wgsl: string = /*wgsl*/ `
     struct FragmentOutput {
         @location(auto) o_Target: vec4<f32>
@@ -172,6 +183,9 @@ export let Quad_depthCube_frag_wgsl: string = /*wgsl*/ `
     }
 `
 
+/**
+ * @internal
+ */
 export let Quad_depth2dArray_frag_wgsl: string = /*wgsl*/ `
     struct FragmentOutput {
         @location(auto) o_Target: vec4<f32>

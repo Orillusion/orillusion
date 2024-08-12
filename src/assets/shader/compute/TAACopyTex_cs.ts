@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let TAACopyTex_cs: string = /*wgsl*/ `
     @group(0) @binding(0) var<storage, read_write> preColor : array<vec4<f32>>;
     @group(0) @binding(1) var preColorTex : texture_storage_2d<rgba16float, write>;

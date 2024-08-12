@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let SSGI2_cs: string = /*wgsl*/ `
     #include "GlobalUniform"
     #include "MathShader"

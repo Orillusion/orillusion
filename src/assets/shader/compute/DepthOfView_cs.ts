@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let DepthOfView_cs: string = /*wgsl*/ `
 #include "GlobalUniform"
 #include "GBufferStand"

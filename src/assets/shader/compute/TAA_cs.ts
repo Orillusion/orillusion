@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let TAA_cs: string = /*wgsl*/ `
 #include "GlobalUniform"
 #include "GBufferStand"

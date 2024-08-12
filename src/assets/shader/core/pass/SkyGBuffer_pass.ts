@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let SkyGBuffer_pass: string = /*wgsl*/ `
 #include "GlobalUniform"
 #include "ColorUtil_frag"

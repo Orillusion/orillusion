@@ -4,6 +4,9 @@ import { Path2DShape3DCode_cs } from "./Path2DShape3DCode_cs";
 import { Path3DShape3DCode_cs } from "./Path3DShape3DCode_cs";
 import { RoundRectShape3DCode_cs } from "./RoundRectShape3DCode_cs";
 
+/**
+ * @internal
+ */
 export let Shape3DCommonCode_cs = /*wgsl*/`
 
 ${CircleShape3DCode_cs}
