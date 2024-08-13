@@ -165,7 +165,7 @@ export class Res {
     public async load<T extends ParserBase>(url: string, c: Parser<T>, loaderFunctions?: LoaderFunctions) {
         let loader = new FileLoader();
         let parser = await loader.load(url, c, loaderFunctions);
-        let ret = parser.data;
+        let ret = parser.data as T["data"];
         return ret;
     }
 
