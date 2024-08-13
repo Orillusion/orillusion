@@ -1,7 +1,8 @@
 import { ParserBase } from "@orillusion/core";
-import { parse } from "../lib/opentype";
+import { parse, Font } from "../lib/opentype";
 
 export class FontParser extends ParserBase {
+    declare public data: Font;
     public async parseBuffer(buffer: ArrayBuffer) {
         const font = parse(buffer);
         this.data = font;
