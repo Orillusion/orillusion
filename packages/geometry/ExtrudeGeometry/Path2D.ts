@@ -49,7 +49,7 @@ export class Path2D {
         return points;
     }
 
-    public setFromPoints(points: Vector2[]): Path2D {
+    public setFromPoints(points: Vector2[]) {
         this.moveTo(points[0].x, points[0].y);
         for (let i = 1; i < points.length; i++) {
             this.lineTo(points[i].x, points[i].y);
@@ -57,24 +57,24 @@ export class Path2D {
         return this;
     }
 
-    public moveTo(x: number, y: number): Path2D {
+    public moveTo(x: number, y: number) {
         this.currentPoint.set(x, y);
         return this;
     }
 
-    public lineTo(x: number, y: number): Path2D {
+    public lineTo(x: number, y: number) {
         this.curves.push(new LineCurve2D(this.currentPoint.clone(), new Vector2(x, y)));
         this.currentPoint.set(x, y);
         return this;
     }
 
-    public quadraticCurveTo(cpX: number, cpY: number, x: number, y: number): Path2D {
+    public quadraticCurveTo(cpX: number, cpY: number, x: number, y: number) {
         this.curves.push(new QuadraticBezierCurve2D(this.currentPoint.clone(), new Vector2(cpX, cpY), new Vector2(x, y)));
         this.currentPoint.set(x, y);
         return this;
     }
 
-    public bezierCurveTo(cp1X: number, cp1Y: number, cp2X: number, cp2Y: number, x: number, y: number): Path2D {
+    public bezierCurveTo(cp1X: number, cp1Y: number, cp2X: number, cp2Y: number, x: number, y: number) {
         this.curves.push(new CubicBezierCurve2D(this.currentPoint.clone(), new Vector2(cp1X, cp1Y), new Vector2(cp2X, cp2Y), new Vector2(x, y)));
         this.currentPoint.set(x, y);
         return this;
