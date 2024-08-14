@@ -7,7 +7,7 @@ npm install @orillusion/geometry --save
 ```
 ```ts
 import { Scene3D } from "@orillusion/core"
-import { TextGeometry } from "@orillusion/geometry"
+import { TextGeometry, ExtrudeGeometry, TerrainGeometry } from "@orillusion/geometry"
 ```
 
 Or access Global build from CDN
