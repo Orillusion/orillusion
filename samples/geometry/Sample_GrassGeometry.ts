@@ -1,7 +1,7 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { Engine3D, View3D, Scene3D, CameraUtil, AtmosphericComponent, webGPUContext, HoverCameraController, Object3D, DirectLight, KelvinUtil, PlaneGeometry, VertexAttributeName, LitMaterial, MeshRenderer, Vector4, Vector3, Matrix3, PostProcessingComponent, TAAPost, BitmapTexture2D, GlobalFog, Color, FXAAPost } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
-import { GrassComponent, TerrainGeometry } from "@orillusion/effect";
+import { GrassComponent, TerrainGeometry } from "@orillusion/geometry";
 import { Stats } from "@orillusion/stats";
 
 // An sample of custom vertex attribute of geometry

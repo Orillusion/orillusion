@@ -1,7 +1,6 @@
-import { BoundingBox, Color, ComponentBase, GPUPrimitiveTopology, LightingFunction_frag, MeshRenderer, Texture, UnLitMaterial, Vector3, VertexAttributeName } from "@orillusion/core";
+import { BoundingBox, Color, ComponentBase, GPUPrimitiveTopology, LightingFunction_frag, MeshRenderer, Texture, Transform, UnLitMaterial, Vector3, VertexAttributeName } from "@orillusion/core";
 import { GrassMaterial } from "../material/GrassMaterial";
-import { GrassGeometry } from "../geometry/GrassGeometry";
-import { GrassNode } from "../GrassNode";
+import { GrassGeometry } from "../GrassGeometry";
 
 export class GrassComponent extends MeshRenderer {
 
@@ -40,7 +39,7 @@ export class GrassComponent extends MeshRenderer {
         this.grassMaterial.baseMap = grassTexture;
     }
 
-    public get nodes(): GrassNode[] {
+    public get nodes(): Transform[] {
         return this.grassGeometry.nodes;
     }
 }

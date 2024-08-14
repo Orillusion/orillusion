@@ -1,4 +1,4 @@
-import { BitmapTexture2D, Plane, PlaneGeometry, Texture, Vector3, VertexAttributeName, lerp } from "@orillusion/core"
+import { BitmapTexture2D, PlaneGeometry, Vector3, VertexAttributeName, lerp } from "@orillusion/core"
 
 export class TerrainGeometry extends PlaneGeometry {
 
