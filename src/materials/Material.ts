@@ -96,6 +96,11 @@ export class Material {
 
     public set depthCompare(value: GPUCompareFunction) {
         this._defaultSubShader.depthCompare = value;
+        for (let item of this._shader.passShader.values()) {
+            for (let s of item) {
+                s.depthCompare = value;
+            }
+        }
     }
 
 
@@ -137,7 +142,7 @@ export class Material {
         this._defaultSubShader.setDefine("USE_BILLBOARD", value);
     }
 
-    public get topology(){
+    public get topology() {
         return this._defaultSubShader.topology;
     }
 
