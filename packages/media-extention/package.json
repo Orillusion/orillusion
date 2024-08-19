@@ -1,6 +1,6 @@
 {
     "name": "@orillusion/media-extention",
-    "version": "0.3.4",
+    "version": "0.3.6",
     "author": "Orillusion",
     "description": "Orillusion Media Material Extention",
     "main": "./dist/media.umd.js",
@@ -20,7 +20,7 @@
         "type": "git",
         "url": "git+https://github.com/Orillusion/orillusion.git"
     },
-    "dependencies": {
-        "@orillusion/core": "^0.7.0"
+    "peerDependencies": {
+        "@orillusion/core": ">=0.8.0"
     }
 }
