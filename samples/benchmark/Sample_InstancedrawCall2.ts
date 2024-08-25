@@ -1,7 +1,6 @@
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { Stats } from '@orillusion/stats'
 import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D, Vector3, Vector3Ex, UnLitMaterial, InstanceDrawComponent, LambertMaterial, Time, BoundingBox, Color } from '@orillusion/core';
-import { GUIUtil } from '@samples/utils/GUIUtil';
 
 // simple base demo
 class Sample_SphereDraw {
@@ -28,7 +27,7 @@ class Sample_SphereDraw {
 
         // add a basic camera controller
         let hoverCameraController = mainCamera.object3D.addComponent(HoverCameraController);
-        hoverCameraController.setCamera(15, -15, 100);
+        hoverCameraController.setCamera(15, -15, 200);
 
         // add a basic direct light
         let lightObj = new Object3D();
@@ -51,11 +50,10 @@ class Sample_SphereDraw {
         Engine3D.startRenderView(view);
 
         GUIHelp.init();
-
+        GUIHelp.open();
         GUIHelp.add(this, "anim").onChange = () => {
             this.anim != this.anim;
         };
-
         this.initScene();
     }
 
@@ -63,28 +61,27 @@ class Sample_SphereDraw {
     private _list: Object3D[] = [];
     initScene() {
         let shareGeometry = new BoxGeometry();
-        let materials = [
-            new LambertMaterial()
-        ];
-
-        for (let i = 0; i < materials.length; i++) {
-            const element = materials[i];
-            element.baseColor = Color.random();
+        let materials = [];
+        for (let i = 0; i < 1000; i++) {
+            let mat = new UnLitMaterial()
+            mat.baseColor = Color.random();
+            materials.push(mat)
         }
-
-        // let material = new LitMaterial();
 
         let group = new Object3D();
         this.scene.addChild(group);
-        // let count = 150000;
-        let count = 10000;
+        let count = 100000;
+
+        GUIHelp.addLabel(`instance draw with multi materials`);
+        GUIHelp.addInfo(`object count `, count);
+        GUIHelp.addInfo(`material count`, materials.length)
+
         for (let i = 0; i < count; i++) {
             let pos = Vector3Ex.sphere(100);
-            // let pos = Vector3Ex.getRandomXYZ(-2, 2);
             let obj = new Object3D();
             let mr = obj.addComponent(MeshRenderer);
             mr.geometry = shareGeometry;
-            mr.material = materials[Math.floor(Math.random() * materials.length)];
+            mr.material = materials[i % materials.length];
             obj.localPosition = pos;
             group.addChild(obj);
             this._list.push(obj);
@@ -98,20 +95,26 @@ class Sample_SphereDraw {
             obj.transform.scaleZ = Math.random() * 5 + 1;
 
             obj.transform.forward = d;
-            obj["rot"] = (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 20;
+
+            obj.transform.localDetailRot = new Vector3(
+                (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 50 * 0.001,
+                (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 50 * 0.001,
+                (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 50 * 0.001);
         }
         group.addComponent(InstanceDrawComponent);
-        group["rot"] = 1.0;
+        // use localDetailRot to update rotation by time
+        group.transform.localDetailRot = new Vector3(0, 0.01, 0);
         group.bound = new BoundingBox(Vector3.SAFE_MIN, Vector3.SAFE_MAX);
         this._list.push(group);
     }
 
     renderLoop() {
         if (this.anim) {
-            this._list[this._list.length - 1].rotationY += Time.delta * 0.01;
-            this._list.forEach((v) => {
-                // v.transform.rotationY += Time.delta * 0.01 * v["rot"];
-            })
+            for (let i = 0; i < this._list.length; i++) {
+                let element = this._list[i];
+                element.transform.localChange = true;
+            }
+            // this._list[this._list.length - 1].transform.rotationY += 0.1
         }
     }
 }

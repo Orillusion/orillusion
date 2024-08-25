@@ -57,12 +57,8 @@ export class GeometryBase {
 
     constructor() {
         this.instanceID = UUID();
-
         this._attributeMap = new Map<string, VertexAttributeData>();
         this._attributes = [];
-
-
-
         this._vertexBuffer = new GeometryVertexBuffer();
     }
 

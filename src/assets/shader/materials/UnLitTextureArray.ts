@@ -89,7 +89,7 @@ export let UnLitTextureArray: string = /*wgsl*/ `
         // irradiance = LinearToGammaSpace(irradiance.rgb) * color.rgb ;//* att ;
 
         color += graphicNode.emissiveColor ;
-        if(color.w < 0.5){
+        if(color.w < materialUniform.alphaCutoff){
             discard ;
         }
 

@@ -9,6 +9,7 @@ import { Vector2 } from "../math/Vector2";
 import { Vector3 } from "../math/Vector3";
 import { Vector4 } from "../math/Vector4";
 import { BlendMode } from "./BlendMode";
+import { UUID } from "../util/Global";
 
 export class Material {
 
@@ -31,6 +32,7 @@ export class Material {
     protected _shader: Shader;
 
     constructor() {
+        this.instanceID = UUID();
     }
 
     public set shader(shader: Shader) {
@@ -179,6 +181,8 @@ export class Material {
 
 
     destroy(force: boolean) {
+        this.name = null;
+        this.instanceID = null;
         this._shader.destroy();
         this._shader = null;
     }
