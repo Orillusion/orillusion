@@ -5,6 +5,7 @@ import { Vector3 } from '../../math/Vector3';
 import { Vector3Ex } from '../../util/Vector3Ex';
 import { clamp } from '../../math/MathUtil';
 import { PointerEvent3D } from '../../event/eventConst/PointerEvent3D';
+import { CameraType } from '../../core/CameraType';
 
 /**
  * Orbit Camera Controller
@@ -211,6 +212,12 @@ export class OrbitController extends ComponentBase {
         this._spherical.radius += e.deltaY * this.zoomFactor;
         this._spherical.radius = clamp(this._spherical.radius, this.minDistance, this.maxDistance);
         this.updateCamera();
+
+        // zoom ortho frustumSize
+        if(this._camera.type === CameraType.ortho){
+            this._camera.frustumSize += e.deltaY * this.zoomFactor
+            this._camera.updateProjection()
+        }
     }
     /**
      * @internal
