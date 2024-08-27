@@ -9,6 +9,7 @@ export * from './rigidbody/RigidbodyEnum';
 export * from './rigidbody/Rigidbody';
 export * from './rigidbody/GhostTrigger';
 export * from './softbody/ClothSoftbody';
+export * from './softbody/RopeSoftbody';
 export * from './constraint/ConeTwistConstraint';
 export * from './constraint/FixedConstraint';
 export * from './constraint/Generic6DofConstraint';

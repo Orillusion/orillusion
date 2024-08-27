@@ -1,19 +1,16 @@
-import { Engine3D, Object3D, Scene3D, View3D, Object3DUtil, Vector3, AtmosphericComponent, DirectLight, CameraUtil, HoverCameraController, Quaternion, GridObject } from "@orillusion/core";
+import { Engine3D, Object3D, Scene3D, View3D, Object3DUtil, Vector3, AtmosphericComponent, DirectLight, CameraUtil, HoverCameraController, Quaternion } from "@orillusion/core";
 import { Stats } from "@orillusion/stats";
 import { ActivationState, CollisionShapeUtil, DebugDrawMode, Generic6DofSpringConstraint, Physics, Rigidbody } from "@orillusion/physics";
 import dat from "dat.gui";
 import { Graphic3D } from "@orillusion/graphic";
 
-/**
- * Sample class demonstrating the use of multiple constraints in a physics simulation.
- */
-class Sample_MultipleConstraints {
+class Sample_dofSpringConstraint {
     scene: Scene3D;
     gui: dat.GUI;
 
     async run() {
         // Initialize physics and engine
-        await Physics.init();
+        await Physics.init({ useDrag: true });
         await Engine3D.init({ renderLoop: () => Physics.update() });
 
         let scene = this.scene = new Scene3D();
@@ -222,4 +219,4 @@ class Sample_MultipleConstraints {
     }
 }
 
-new Sample_MultipleConstraints().run();
+new Sample_dofSpringConstraint().run();

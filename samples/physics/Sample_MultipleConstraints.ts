@@ -1,6 +1,6 @@
-import { Engine3D, LitMaterial, MeshRenderer, Object3D, Scene3D, View3D, Object3DUtil, Vector3, AtmosphericComponent, DirectLight, CameraUtil, HoverCameraController, BitmapTexture2D, UnLitMaterial, PlaneGeometry, GPUCullMode, Quaternion, Color } from "@orillusion/core";
+import { Engine3D, LitMaterial, MeshRenderer, Object3D, Scene3D, View3D, Object3DUtil, Vector3, AtmosphericComponent, DirectLight, CameraUtil, HoverCameraController, PlaneGeometry, GPUCullMode, Color } from "@orillusion/core";
 import { Stats } from "@orillusion/stats";
-import { ActivationState, ClothSoftbody, CollisionShapeUtil, DebugDrawMode, FixedConstraint, Generic6DofSpringConstraint, HingeConstraint, Physics, PointToPointConstraint, Rigidbody, SliderConstraint } from "@orillusion/physics";
+import { ActivationState, CollisionShapeUtil, DebugDrawMode, FixedConstraint, HingeConstraint, Physics, PointToPointConstraint, Rigidbody, SliderConstraint, ClothSoftbody, RopeSoftbody } from "@orillusion/physics";
 import dat from "dat.gui";
 import { Graphic3D } from "@orillusion/graphic";
 
@@ -13,7 +13,7 @@ class Sample_MultipleConstraints {
 
     async run() {
         // init physics and engine
-        await Physics.init({ useSoftBody: true });
+        await Physics.init({ useSoftBody: true, useDrag: true });
         await Engine3D.init({ renderLoop: () => Physics.update() });
 
         this.gui = new dat.GUI();
@@ -21,7 +21,7 @@ class Sample_MultipleConstraints {
         this.scene = new Scene3D();
         this.scene.addComponent(Stats);
 
-        // 在引擎启动后初始化物理调试功能，需要为绘制器传入 graphic3D 对象
+        // 在引擎启动后初始化物理调试功能，需要为调试器传入 graphic3D 对象
         const graphic3D = new Graphic3D();
         this.scene.addChild(graphic3D);
         Physics.initDebugDrawer(graphic3D, {
@@ -36,7 +36,7 @@ class Sample_MultipleConstraints {
         // create directional light
         let light = new Object3D();
         light.localRotation = new Vector3(36, -130, 60);
-        let dl = light.addComponent(DirectLight)
+        let dl = light.addComponent(DirectLight);
         dl.castShadow = true;
         dl.intensity = 3;
         this.scene.addChild(light);
@@ -48,16 +48,19 @@ class Sample_MultipleConstraints {
         view.camera = camera;
         view.scene = this.scene;
 
-        this.physicsDebug()
+        this.physicsDebug();
 
         Engine3D.startRenderView(view);
 
-        // Create ground, impactor, turntable, and chains
+        // Create ground, turntable, and chains
         this.createGround();
-        await this.createImpactor();
-        await this.createTurntable();
-        await this.createChains();
+        this.createTurntable();
+        this.createChains();
 
+        // Create impactor and softBody
+        let impactorRb = this.createImpactor();
+        this.createClothSoftbody(impactorRb);
+        this.createRopeSoftbody(impactorRb);
     }
 
     private physicsDebug() {
@@ -65,22 +68,23 @@ class Sample_MultipleConstraints {
         physicsFolder.add(Physics.debugDrawer, 'enable');
         physicsFolder.add(Physics.debugDrawer, 'debugMode', Physics.debugDrawer.debugModeList);
         physicsFolder.add(Physics, 'isStop');
+        physicsFolder.add({ hint: "Drag dynamic rigid bodies with the mouse." }, "hint");
         physicsFolder.open();
     }
 
     private async createGround() {
         // Create ground
-        let ground = Object3DUtil.GetSingleCube(61, 2, 20, 1, 1, 1);
+        let ground = Object3DUtil.GetSingleCube(80, 2, 20, 1, 1, 1);
         ground.y = -1; // Set ground half-height
         this.scene.addChild(ground);
 
         // Add rigidbody to ground
         let groundRb = ground.addComponent(Rigidbody);
-        groundRb.shape = CollisionShapeUtil.createStaticPlaneShape(Vector3.UP, 1);
+        groundRb.shape = CollisionShapeUtil.createBoxShape(ground);
         groundRb.mass = 0;
     }
 
-    private async createImpactor() {
+    private createImpactor(): Rigidbody {
         // Create shelves
         const shelfSize = 0.5;
         const shelfHeight = 5;
@@ -112,19 +116,17 @@ class Sample_MultipleConstraints {
         // Add rigidbody to slider
         let sliderRb = this.addBoxShapeRigidBody(slider, 500, true, [0.2, 0]);
 
-        // Create fulcrum
-        let fulcrum = Object3DUtil.GetCube();
-        fulcrum.localScale = new Vector3(1, 1, 5);
-        fulcrum.localPosition = new Vector3(0, shelfHeight - shelfSize / 2, 3);
-        this.scene.addChild(fulcrum);
+        // Create Impactor
+        let impactor = Object3DUtil.GetCube();
+        impactor.localScale = new Vector3(1, 1, 5);
+        impactor.localPosition = new Vector3(0, shelfHeight - shelfSize / 2, 3);
+        this.scene.addChild(impactor);
 
-        // Add rigidbody to fulcrum and initialize cloth softbody
-        let fulcrumRb = this.addBoxShapeRigidBody(fulcrum, 200, true);
-        this.initClothSoftBody(fulcrumRb);
+        let impactorRb = this.addBoxShapeRigidBody(impactor, 200, true);
 
-        // Create fixed constraint to attach slider to fulcrum
+        // Create fixed constraint to attach slider to impactor
         let fixedConstraint = slider.addComponent(FixedConstraint);
-        fixedConstraint.targetRigidbody = fulcrumRb;
+        fixedConstraint.targetRigidbody = impactorRb;
         fixedConstraint.pivotTarget = new Vector3(0, 0, -3);
 
         // Create slider constraint
@@ -140,6 +142,8 @@ class Sample_MultipleConstraints {
 
         // Setup slider motor event controller
         this.sliderMotorEventController(shelfLeftRb, shelfRightRb, sliderConstraint);
+
+        return impactorRb;
     }
 
     private sliderMotorEventController(leftRb: Rigidbody, rightRb: Rigidbody, slider: SliderConstraint) {
@@ -175,7 +179,7 @@ class Sample_MultipleConstraints {
         folder.add(timer, 'pauseDuration', 0, 3000, 1000);
     }
 
-    private async createTurntable() {
+    private createTurntable() {
         // Create turntable components
         const columnWidth = 0.5;
         const columnHeight = 4.75 - columnWidth / 2;
@@ -184,38 +188,38 @@ class Sample_MultipleConstraints {
         let column = Object3DUtil.GetCube();
         column.localScale = new Vector3(columnWidth, columnHeight, columnDepth);
         column.localPosition = new Vector3(0, columnHeight / 2, 8);
-
-        let arm1 = Object3DUtil.GetCube();
-        arm1.localScale = new Vector3(10, 0.5, 0.5);
-        arm1.localPosition = new Vector3(0, columnHeight + columnWidth / 2, 8);
-
-        let arm2 = arm1.clone();
-        arm2.y += 10; // Ensure no overlap before adding constraints
-        arm2.rotationY = 45;
-
         this.scene.addChild(column);
-        this.scene.addChild(arm1);
-        this.scene.addChild(arm2);
+        this.addBoxShapeRigidBody(column, 0); // Add rigidbodies to turntable components
 
-        // Add rigidbodies to turntable components
-        this.addBoxShapeRigidBody(column, 0);
-        let arm1Rb = this.addBoxShapeRigidBody(arm1, 500, true);
-        let arm2Rb = this.addBoxShapeRigidBody(arm2, 500, true);
+
+        // Create arm compound shape
+        let armParent = new Object3D();
+        armParent.localPosition = new Vector3(0, columnHeight + columnWidth / 2, 8);
+
+        let armChild1 = Object3DUtil.GetCube();
+        armChild1.rotationY = 45;
+        armChild1.localScale = new Vector3(10, 0.5, 0.5);
+
+        let armChild2 = armChild1.clone();
+        armChild2.rotationY = 135;
+
+        armParent.addChild(armChild1);
+        armParent.addChild(armChild2);
+        this.scene.addChild(armParent);
+
+        let armRigidbody = armParent.addComponent(Rigidbody);
+        armRigidbody.shape = CollisionShapeUtil.createCompoundShapeFromObject(armParent);
+        armRigidbody.mass = 500;
+        armRigidbody.activationState = ActivationState.DISABLE_DEACTIVATION;
 
         // Create hinge constraint to attach arm1 to column
         let hinge = column.addComponent(HingeConstraint);
-        hinge.targetRigidbody = arm1Rb;
+        hinge.targetRigidbody = armRigidbody;
         hinge.pivotSelf.set(0, columnHeight / 2 + columnWidth / 2, 0);
         hinge.enableAngularMotor(true, 5, 50);
-
-        // Create fixed constraint to attach arm2 to arm1
-        let fixedConstraint = arm2.addComponent(FixedConstraint);
-        fixedConstraint.targetRigidbody = arm1Rb;
-        fixedConstraint.rotationTarget.fromEulerAngles(0, 90, 0);
-        fixedConstraint.pivotTarget.set(0, 0, 0);
     }
 
-    private async createChains() {
+    private createChains() {
         const chainHeight = 1;
 
         let chainLink = Object3DUtil.GetCube();
@@ -277,15 +281,14 @@ class Sample_MultipleConstraints {
         p2p.pivotSelf.y = sphereRadius;
     }
 
-    private async initClothSoftBody(anchorRb: Rigidbody) {
+    private createClothSoftbody(anchorRb: Rigidbody) {
         const cloth = new Object3D();
         let meshRenderer = cloth.addComponent(MeshRenderer);
-        meshRenderer.geometry = new PlaneGeometry(3, 3, 10, 10);
+        meshRenderer.geometry = new PlaneGeometry(3, 3, 10, 10, Vector3.X_AXIS); // Set the plane direction to determine the four corners
         let material = new LitMaterial();
         material.baseMap = Engine3D.res.redTexture;
         material.cullMode = GPUCullMode.none;
         meshRenderer.material = material;
-
         this.scene.addChild(cloth);
 
         // Add cloth softbody component
@@ -295,18 +298,46 @@ class Sample_MultipleConstraints {
         softBody.anchorRigidbody = anchorRb; // Anchor rigidbody
         softBody.anchorIndices = ['leftTop', 'top', 'rightTop']; // Anchor points
         softBody.influence = 1; // Attachment influence
-        softBody.disableCollision = false; // Enable collision with anchor
-        softBody.applyPosition = new Vector3(0, -2.1, 0); // Relative position to anchor
-        softBody.applyRotation = new Vector3(0, 90, 0); // Relative rotation to anchor
+        softBody.disableCollision = false; // Enable collision with rigidbody
+        softBody.anchorPosition = new Vector3(0, -2.1, 0); // Relative position to anchor
 
-        // Configure softbody parameters
         softBody.wait().then(btSoftbody => {
-            let sbConfig = btSoftbody.get_m_cfg();
+            // native softbody API
+            let sbConfig = btSoftbody.get_m_cfg(); // configure softbody parameters 
             sbConfig.set_kDF(0.2);
             sbConfig.set_kDP(0.01);
             sbConfig.set_kLF(0.02);
             sbConfig.set_kDG(0.001);
         });
+
+    }
+
+    private createRopeSoftbody(headRb: Rigidbody) {
+
+        const box = Object3DUtil.GetSingleCube(1, 1, 1, 1, 1, 1);
+        box.localPosition = new Vector3(0, 10, 0);
+        this.scene.addChild(box);
+        let tailRb = this.addBoxShapeRigidBody(box, 1, true, [0.2, 0.2]);
+
+        const rope = new Object3D();
+        let mr = rope.addComponent(MeshRenderer);
+        let startPos = new Vector3(0, 4.75, 3);
+        let endPos = new Vector3(0, 10, 0);
+        mr.geometry = RopeSoftbody.buildRopeGeometry(10, startPos, endPos);
+
+        mr.material = new LitMaterial();
+        mr.material.topology = 'line-list';
+        this.scene.addChild(rope);
+
+        // Add rope softbody component
+        let softBody = rope.addComponent(RopeSoftbody);
+        softBody.mass = 1;
+        softBody.elasticity = 0.1;
+        softBody.anchorRigidbodyHead = headRb;
+        softBody.anchorOffsetHead = new Vector3(0, -0.5, 2.1);
+        softBody.anchorRigidbodyTail = tailRb;
+        softBody.anchorOffsetTail = new Vector3(0, 0.5, 0);
+
     }
 
     private addBoxShapeRigidBody(obj: Object3D, mass: number, disableHibernation?: boolean, damping?: [number, number]) {

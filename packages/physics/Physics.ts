@@ -6,6 +6,7 @@ import { TempPhyMath } from './utils/TempPhyMath';
 import { Rigidbody } from './rigidbody/Rigidbody';
 import { PhysicsDebugDrawer } from './visualDebug/PhysicsDebugDrawer';
 import { DebugDrawerOptions } from './visualDebug/DebugDrawModeEnum';
+import { PhysicsDragger } from './utils/PhysicsDragger'
 
 class _Physics {
     private _world: Ammo.btDiscreteDynamicsWorld | Ammo.btSoftRigidDynamicsWorld;
@@ -14,6 +15,7 @@ class _Physics {
     private _gravity: Vector3 = new Vector3(0, -9.8, 0);
     private _worldInfo: Ammo.btSoftBodyWorldInfo | null = null;
     private _debugDrawer: PhysicsDebugDrawer;
+    private _physicsDragger: PhysicsDragger;
     private _physicBound: BoundingBox;
     private _destroyObjectBeyondBounds: boolean;
 
@@ -33,23 +35,36 @@ class _Physics {
         return this._debugDrawer;
     }
 
+    /**
+     * 物理拖拽器
+     */
+    public get physicsDragger() {
+        if (!this._physicsDragger) {
+            console.warn('To enable the dragger, set useDrag: true in Physics.init() during initialization.');
+        }
+        return this._physicsDragger;
+    }
+
     public TEMP_TRANSFORM: Ammo.btTransform; // Temp cache, save results from body.getWorldTransform()
 
     /**
      * 初始化物理引擎和相关配置。
      *
      * @param options - 初始化选项参数对象。
-     * @param options.useSoftBody - 是否启用软体模拟，目前仅支持布料软体类型。
+     * @param options.useSoftBody - 是否启用软体模拟。
+     * @param options.useDrag - 是否启用刚体拖拽功能。
      * @param options.physicBound - 物理边界，默认范围：2000 2000 2000，超出边界时将会销毁该刚体。
      * @param options.destroyObjectBeyondBounds - 是否在超出边界时销毁3D对象。默认 `false` 仅销毁刚体。
      */
-    public async init(options: { useSoftBody?: boolean, physicBound?: Vector3, destroyObjectBeyondBounds?: boolean } = {}) {
+    public async init(options: { useSoftBody?: boolean, useDrag?: boolean, physicBound?: Vector3, destroyObjectBeyondBounds?: boolean } = {}) {
         await Ammo.bind(window)(Ammo);
 
         TempPhyMath.init();
 
         this.TEMP_TRANSFORM = new Ammo.btTransform();
         this.initWorld(options.useSoftBody);
+
+        if (options.useDrag) this._physicsDragger = new PhysicsDragger();
 
         this._isInited = true;
         this._destroyObjectBeyondBounds = options.destroyObjectBeyondBounds;
