@@ -20,8 +20,10 @@
         "type": "git",
         "url": "git+https://github.com/Orillusion/orillusion.git"
     },
+    "dependencies": {
+        "@orillusion/ammo": ">=0.2.1"
+    },
     "peerDependencies": {
-        "@orillusion/ammo": ">=0.2.1",
         "@orillusion/core": ">=0.8.0"
     }
 }
