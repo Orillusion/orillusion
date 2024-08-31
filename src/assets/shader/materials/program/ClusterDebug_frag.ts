@@ -1,4 +1,7 @@
 
+/**
+ * @internal
+ */
 export let ClusterDebug_frag: string = /*wgsl*/`
         var<private> colorSet : array<vec3<f32>, 9> = array<vec3<f32>, 9>(
             vec3<f32>(1.0, 0.0, 0.0),

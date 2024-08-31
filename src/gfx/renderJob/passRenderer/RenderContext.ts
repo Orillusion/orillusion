@@ -58,6 +58,12 @@ export class RenderContext {
         this.beginNewEncoder();
     }
 
+    public specialtRenderPass() {
+        this.beginContinueRendererPassState('load', 'load');
+        this.begineNewCommand();
+        this.beginNewEncoder();
+    }
+
     public endRenderPass() {
         this.endEncoder();
         this.endCommand();

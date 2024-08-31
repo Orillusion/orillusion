@@ -1,5 +1,6 @@
-
-
+/**
+ * @internal
+ */
 export let ColorPassFragmentOutput: string = /*wgsl*/ `
     struct FragmentOutput {
         @location(auto) color: vec4<f32>,

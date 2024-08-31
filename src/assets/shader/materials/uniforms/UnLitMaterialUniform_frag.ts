@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let UnLitMaterialUniform_frag = /* wgsl */`
 
 

@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let BrdfLut_frag: string = /*wgsl*/ `
     @group(1) @binding(auto)
     var brdflutMapSampler: sampler;

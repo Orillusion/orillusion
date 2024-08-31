@@ -1,6 +1,6 @@
-import { Vector3, LineJoin } from "@orillusion/core";
+import { LineJoin } from "../graphic3d/Graphic3DFaceRenderer";
 import { Point3D, Shape3D, ShapeTypeEnum } from "./Shape3D";
-import earcut from 'earcut';
+import { Earcut } from "./Earcut";
 
 type vec3 = { x: number, y: number, h?: number };
 
@@ -45,7 +45,7 @@ export class LineShape3D extends Shape3D {
             for (let point of this._points3D) {
                 coords.push(point.x, point.y);
             }
-            this._indecies = earcut(coords);
+            this._indecies = Earcut.triangulate(coords); // earcut(coords);
             this._srcIndexCount = this._indecies?.length || 0;
         } else {
             this._indecies = null;

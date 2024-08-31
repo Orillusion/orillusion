@@ -1,16 +1,13 @@
 import { AnimatorComponent, BlendShapeData, BlendShapePropertyData, GLTFMaterial, LitMaterial, Material, Matrix4, PropertyAnimationClip, SkinnedMeshRenderer2 } from "../../..";
 import { Engine3D } from "../../../Engine3D";
-import { SkeletonAnimationComponent } from "../../../components/SkeletonAnimationComponent";
 import { DirectLight } from "../../../components/lights/DirectLight";
 import { PointLight } from "../../../components/lights/PointLight";
 import { SpotLight } from "../../../components/lights/SpotLight";
 import { MeshRenderer } from "../../../components/renderer/MeshRenderer";
-import { SkinnedMeshRenderer } from "../../../components/renderer/SkinnedMeshRenderer";
 import { Object3D } from "../../../core/entities/Object3D";
 import { GeometryBase } from "../../../core/geometry/GeometryBase";
 import { VertexAttributeName } from "../../../core/geometry/VertexAttributeName";
 import { BlendMode } from "../../../materials/BlendMode";
-import { PhysicMaterial } from "../../../materials/PhysicMaterial";
 import { Color } from "../../../math/Color";
 import { RADIANS_TO_DEGREES } from "../../../math/MathUtil";
 import { Quaternion } from "../../../math/Quaternion";

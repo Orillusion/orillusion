@@ -1,5 +1,8 @@
 import { Shape3DCommonCode_cs } from "./Shape3DCommonCode_cs";
 
+/**
+ * @internal
+ */
 export let Shape3DKeyPointCompute_cs = /*wgsl*/`
    ${Shape3DCommonCode_cs}
    

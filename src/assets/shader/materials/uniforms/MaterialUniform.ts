@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let MaterialUniform : string = /*wgsl*/ `
     struct MaterialUniform{
        #if USE_BRDF

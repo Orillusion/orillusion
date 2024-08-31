@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let WorldMatrixUniform: string = /*wgsl*/ `
     struct Uniforms {
         matrix : array<mat4x4<f32>>

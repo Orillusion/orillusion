@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let ColorUtil: string = /*wgsl*/ `
     fn getHDRColor(color: vec3<f32>, exposure: f32) -> vec3 < f32 > {
         return color * pow(2.4, exposure) ;

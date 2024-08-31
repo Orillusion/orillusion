@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let DDGIIrradiance_shader = /*wgsl*/`
 #include "GenerayRandomDir"
 #include "MathShader"

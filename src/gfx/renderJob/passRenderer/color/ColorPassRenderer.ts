@@ -1,17 +1,16 @@
-import { GlobalBindGroup } from "../../../..";
 import { Engine3D } from "../../../../Engine3D";
 import { RenderNode } from "../../../../components/renderer/RenderNode";
 import { View3D } from "../../../../core/View3D";
 import { ProfilerUtil } from "../../../../util/ProfilerUtil";
+import { GlobalBindGroup } from "../../../graphics/webGpu/core/bindGroups/GlobalBindGroup";
 import { GPUContext } from "../../GPUContext";
 import { EntityCollect } from "../../collect/EntityCollect";
-import { RTResourceConfig } from "../../config/RTResourceConfig";
-import { RTResourceMap } from "../../frame/RTResourceMap";
 import { OcclusionSystem } from "../../occlusion/OcclusionSystem";
 import { RenderContext } from "../RenderContext";
 import { RendererBase } from "../RendererBase";
 import { ClusterLightingBuffer } from "../cluster/ClusterLightingBuffer";
 import { PassType } from "../state/PassType";
+import { RendererMask } from "../state/RendererMask";
 
 /**
  *  @internal
@@ -133,7 +132,8 @@ export class ColorPassRenderer extends RendererBase {
                     continue;
                 if (!renderNode.enable)
                     continue;
-
+                if (renderNode.hasMask(RendererMask.UI) && !renderNode.isRecievePostEffectUI)
+                    continue;
                 if (!renderNode.preInit(this._rendererType)) {
                     renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState, clusterLightingBuffer);
                 }

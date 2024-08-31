@@ -1,9 +1,8 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, BitmapTexture2DArray, BitmapTexture2D, Matrix4, Color, LineJoin, Vector4, Object3DUtil, AxisObject } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, BitmapTexture2DArray, BitmapTexture2D, Matrix4, Color, Vector4, Object3DUtil, AxisObject } from "@orillusion/core";
 import { Stats } from "@orillusion/stats";
-import { Shape3DMaker, Shape3D } from "@orillusion/graphic";
+import { Shape3DMaker, Shape3D, LineJoin } from "@orillusion/graphic";
 import { GUIShape3D } from "@samples/utils/GUIShape3D";
-
 
 /**
  * This example shows how to use Shape3D to draw various different paths in 3D space.

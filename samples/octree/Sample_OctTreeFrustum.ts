@@ -1,14 +1,14 @@
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
-import { BoundingBox, BoxGeometry, Camera3D, Color, Engine3D, LitMaterial, MeshRenderer, Object3D, Object3DUtil, PointerEvent3D, Time, Vector3, View3D, } from '@orillusion/core';
+import { BoundingBox, BoxGeometry, Camera3D, Color, Engine3D, LitMaterial, MeshRenderer, Object3D, Object3DUtil, Octree, OctreeEntity, PointerEvent3D, Time, Vector3, View3D, } from '@orillusion/core';
 import { createExampleScene, createSceneParam } from '@samples/utils/ExampleScene';
-import { OctreeEntity } from '../../src/core/tree/octree/OctreeEntity';
-import { Octree } from '../../src/core/tree/octree/Octree';
 import { GUIUtil } from '@samples/utils/GUIUtil';
 import { Stats } from '@orillusion/stats';
+import { Graphic3D } from '@orillusion/graphic';
 
 // A sample to use octTree
 export class Sample_OctTreeFrustum {
     view: View3D;
+    graphic3D: Graphic3D;
     entities: OctreeEntity[] = [];
     tree: Octree;
     red = new Color(1, 0, 0, 1);
@@ -35,6 +35,9 @@ export class Sample_OctTreeFrustum {
 
         this.view = exampleScene.view;
         this.view.scene.addComponent(Stats);
+
+        this.graphic3D = new Graphic3D();
+        this.view.scene.addChild(this.graphic3D);
 
         let box: BoundingBox = new BoundingBox();
         box.setFromCenterAndSize(new Vector3(), new Vector3(1000, 1000, 1000));
@@ -82,8 +85,8 @@ export class Sample_OctTreeFrustum {
 
     private queryResult: OctreeEntity[] = [];
     private octreeTest() {
-        this.view.graphic3D.ClearAll();
-        this.view.graphic3D.drawCameraFrustum(this.camera, this.green);
+        this.graphic3D.ClearAll();
+        this.graphic3D.drawCameraFrustum(this.camera, this.green);
         // this.view.graphic3D.drawBoundingBox('box', this.camera.frustum.boudingBox, this.red);
         // this.camera.frustum.csm.name = 'sdfdf';
         // for (let block of this.camera.frustum.csm.children) {

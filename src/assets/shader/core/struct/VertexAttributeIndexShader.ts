@@ -1,4 +1,6 @@
-
+/**
+ * @internal
+ */
 export let VertexAttributeIndexShader: string = /*wgsl*/ `
     #include "WorldMatrixUniform"
     struct VertexAttributes{

@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let SSR_BlendColor_cs: string = /*wgsl*/ `
   #include 'GlobalUniform'
 

@@ -1,7 +1,8 @@
 import { GUIHelp } from "@orillusion/debug/GUIHelp";
-import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer, BoxGeometry, SphereGeometry, VirtualTexture, GPUTextureFormat, UnLitMaterial, UnLitTexArrayMaterial, BitmapTexture2DArray, BitmapTexture2D, PlaneGeometry, Vector3, Graphic3DMesh, Matrix4, Time, BlendMode, PrefabParser } from "@orillusion/core";
+import { Object3D, Scene3D, Engine3D, AtmosphericComponent, CameraUtil, HoverCameraController, View3D, DirectLight, KelvinUtil, BitmapTexture2DArray, BitmapTexture2D, PlaneGeometry, Vector3, Matrix4, Time, BlendMode } from "@orillusion/core";
 import { GUIUtil } from "@samples/utils/GUIUtil";
 import { Stats } from "@orillusion/stats";
+import { Graphic3D, Graphic3DMesh } from "@orillusion/graphic";
 
 export class Sample_GraphicMesh_4 {
     lightObj3D: Object3D;
@@ -11,6 +12,7 @@ export class Sample_GraphicMesh_4 {
     height: number;
     cafe: number = 47;
     frame: number = 16;
+    graphic3D: Graphic3D;
 
     constructor() { }
 
@@ -22,9 +24,6 @@ export class Sample_GraphicMesh_4 {
         await Engine3D.init({ beforeRender: () => this.update() });
 
         Engine3D.setting.render.debug = true;
-        Engine3D.setting.shadow.shadowBound = 5;
-
-
 
         GUIHelp.init();
 
@@ -41,34 +40,19 @@ export class Sample_GraphicMesh_4 {
         view.scene = this.scene;
         view.camera = camera;
 
+        this.graphic3D = new Graphic3D();
+        this.scene.addChild(this.graphic3D);
+
         Engine3D.startRenderView(view);
 
         GUIUtil.renderDebug();
 
         await this.initScene();
-        sky.relativeTransform = this.lightObj3D.transform;
     }
 
     async initScene() {
-        /******** light *******/
-        {
-            this.lightObj3D = new Object3D();
-            this.lightObj3D.rotationX = 21;
-            this.lightObj3D.rotationY = 108;
-            this.lightObj3D.rotationZ = 10;
-            let directLight = this.lightObj3D.addComponent(DirectLight);
-            directLight.lightColor = KelvinUtil.color_temperature_to_rgb(5355);
-            directLight.castShadow = false;
-            directLight.intensity = 10;
-            GUIUtil.renderDirLight(directLight);
-            this.scene.addChild(this.lightObj3D);
-        }
-
         let texts = [];
-
         texts.push(await Engine3D.res.loadTexture("textures/128/star_0031.png") as BitmapTexture2D);
-        // texts.push(Engine3D.res.yellowTexture);
-
         let bitmapTexture2DArray = new BitmapTexture2DArray(texts[0].width, texts[0].height, texts.length);
         bitmapTexture2DArray.setTextures(texts);
 

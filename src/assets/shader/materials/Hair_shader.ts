@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let Hair_shader_op: string = /*wgsl*/ `
     #include "Common_vert"
     #include "Common_frag"
@@ -121,6 +124,9 @@ export let Hair_shader_op: string = /*wgsl*/ `
     }
 `
 
+/**
+ * @internal
+ */
 export let Hair_shader_tr: string = /*wgsl*/ `
 #include "Common_vert"
 #include "Common_frag"

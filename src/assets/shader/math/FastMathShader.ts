@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let FastMathShader: string = /*wgsl*/ `
   fn pow2(  x : f32 ) -> f32
   {

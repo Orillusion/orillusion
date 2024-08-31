@@ -555,7 +555,7 @@ export class GUIUtil {
         });
 
         GUIHelp.add(mat, 'castShadow');
-
+        GUIHelp.add(mat, 'acceptShadow');
         open && GUIHelp.open();
 
         GUIHelp.endFolder();

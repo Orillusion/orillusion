@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let ParticleRenderShader = /* wgsl */ `
     #include "Common_vert"
     #include "Common_frag"

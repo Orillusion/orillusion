@@ -1,6 +1,6 @@
 {
     "name": "@orillusion/particle",
-    "version": "0.1.0",
+    "version": "0.1.6",
     "author": "Orillusion",
     "description": "Orillusion Particle Plugin",
     "main": "./dist/particle.umd.js",
@@ -13,14 +13,14 @@
         "build:types": "tsc --emitDeclarationOnly -p tsconfig.json",
         "build:clean": "mv dist/packages/particle dist/types && rm -rf dist/src && rm -rf dist/packages",
         "docs": "npm run docs:typedoc ../../docs/particle index.ts",
-        "docs:typedoc": "npx typedoc --plugin typedoc-plugin-markdown --plugin ../../script/typedoc-plugin-not-exported.js --tsconfig tsconfig.json --gitRevision main --hideBreadcrumbs true --allReflectionsHaveOwnDocument true --readme none --excludeInternal --excludePrivate --excludeProtected --sort source-order --out"
+        "docs:typedoc": "npx typedoc --plugin typedoc-plugin-markdown --tsconfig tsconfig.json --gitRevision main --hideBreadcrumbs true --allReflectionsHaveOwnDocument true --readme none --excludeInternal --excludePrivate --excludeProtected --sort source-order --out"
     },
     "license": "MIT",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/Orillusion/orillusion.git"
     },
-    "dependencies": {
-        "@orillusion/core": "^0.7.0"
+    "peerDependencies": {
+        "@orillusion/core": ">=0.8.0"
     }
 }

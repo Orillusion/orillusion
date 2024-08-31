@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let Common_frag: string = /*wgsl*/ `
   #include "GlobalUniform"
   #include "FragmentVarying"

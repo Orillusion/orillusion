@@ -75,7 +75,7 @@ class Sample_PhysicsBox {
 
         let collider = sphere.addComponent(ColliderComponent);
         collider.shape = new SphereColliderShape(sphereGeo.radius);
-        sphere.addComponent(Rigidbody);
+        sphere.addComponent(Rigidbody).mass = 0.5;
 
         this.scene.addChild(sphere);
     }

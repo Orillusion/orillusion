@@ -1,5 +1,8 @@
 import { ClusterConfig } from "../../../gfx/renderJob/passRenderer/cluster/ClusterConfig";
 
+/**
+ * @internal
+ */
 export let ClusterBoundsSource_cs: string = /* wgsl */`
   #include "GlobalUniform"
 

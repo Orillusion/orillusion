@@ -65,8 +65,9 @@ export class Sample_SSR {
             if (mr && mr.material) {
                 if (mr.material.name == 'ToyCar') {
                     let mat = mr.material as LitMaterial;
-                    mat.metallic = 0.5;
-                    mat.clearcoatFactor = 0.25;
+                    mat.metallic = 0.9;
+                    mat.roughness = 0.1;
+                    mat.clearcoatFactor = 0.5;
                 }
             }
         }
@@ -77,14 +78,10 @@ export class Sample_SSR {
     private sphere: Object3D
 
     private async createPlane(scene: Scene3D) {
-        let mat = new LitMaterial()
-        mat.roughness = 0.2
-        mat.metallic = 0.5
-
         {
             let floorMaterial = new LitMaterial()
-            floorMaterial.roughness = 0.12
-            floorMaterial.metallic = 0.5
+            floorMaterial.roughness = 0.1
+            floorMaterial.metallic = 1.0
 
             let planeGeometry = new PlaneGeometry(200, 200)
             let floor: Object3D = new Object3D()
@@ -93,11 +90,16 @@ export class Sample_SSR {
             mr.geometry = planeGeometry
             scene.addChild(floor)
 
+            GUIHelp.addFolder('floor')
             GUIHelp.add(floorMaterial, 'roughness', 0.01, 1, 0.01)
             GUIHelp.add(floorMaterial, 'metallic', 0, 1, 0.01)
+            GUIHelp.endFolder()
         }
 
         {
+            let mat = new LitMaterial()
+            mat.roughness = 0.1
+            mat.metallic = 0.9
             let sphereGeometry = new SphereGeometry(10, 50, 50)
             let obj: Object3D = new Object3D()
             let mr = obj.addComponent(MeshRenderer)
@@ -107,6 +109,11 @@ export class Sample_SSR {
             obj.y = 10
             scene.addChild(obj)
             this.sphere = obj
+
+            GUIHelp.addFolder('sphere')
+            GUIHelp.add(mat, 'roughness', 0.01, 1, 0.01)
+            GUIHelp.add(mat, 'metallic', 0, 1, 0.01)
+            GUIHelp.endFolder()
         }
 
         {

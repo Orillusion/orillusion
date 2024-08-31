@@ -1,5 +1,7 @@
 import { ColorUtil } from "../utils/ColorUtil";
-
+/**
+ * @internal
+ */
 let BloomCfg =  /*wgsl*/ `
 struct BloomCfg{
   downSampleStep: f32,
@@ -25,7 +27,9 @@ let CalcUV_01 = /*wgsl*/ `
 `
 
 //_______________calc weight
-
+/**
+ * @internal
+ */
 let GaussWeight2D: string =  /*wgsl*/ `
 fn GaussWeight2D(x:f32, y:f32, sigma:f32) -> f32
   {
@@ -37,11 +41,12 @@ fn GaussWeight2D(x:f32, y:f32, sigma:f32) -> f32
       return pow(E, a) / (2.0 * PI * sigma_2);
   }
 `
-
+/**
+ * @internal
+ */
 let GaussBlur = function (GaussNxN: string, inTex: string, inTexSampler: string) {
   var code: string = /*wgsl*/ `
-  
-  
+
   fn ${GaussNxN}(uv:vec2<f32>, n:i32, stride:vec2<f32>, sigma:f32) -> vec3<f32>
   {
       var color = vec3<f32>(0.0);
@@ -69,7 +74,9 @@ let GaussBlur = function (GaussNxN: string, inTex: string, inTexSampler: string)
 
 
 //________________________pixel filter
-
+/**
+ * @internal
+ */
 export let threshold: string = /*wgsl*/ `
 ${ColorUtil}
 ${BloomCfg}
@@ -105,7 +112,9 @@ fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_inv
 `
 
 //________________________down sample
-
+/**
+ * @internal
+ */
 export let downSample: string = /*wgsl*/ `
 ${BloomCfg}
 
@@ -139,6 +148,9 @@ fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_inv
 
 
 //__________________________up sample
+/**
+ * @internal
+ */
 export let upSample = /*wgsl*/ `
 ${BloomCfg}
 
@@ -180,6 +192,9 @@ fn CsMain( @builtin(workgroup_id) workgroup_id : vec3<u32> , @builtin(global_inv
 
 
 //__________________________blend
+/**
+ * @internal
+ */
 export let post = /*wgsl*/ `
 ${ColorUtil}
 ${BloomCfg}

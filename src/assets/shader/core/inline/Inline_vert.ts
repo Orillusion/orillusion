@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let Inline_vert: string = /*wgsl*/ `
     #include "MathShader"
     #include "FastMathShader"

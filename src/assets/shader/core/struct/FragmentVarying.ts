@@ -1,4 +1,6 @@
-
+/**
+ * @internal
+ */
 export let FragmentVarying: string = /*wgsl*/ `
     struct FragmentVarying {
         @location(auto) index: f32,

@@ -1,4 +1,5 @@
-import { DynamicDrawStruct, Matrix3, LineJoin, Vector2, Color, Vector4, Vector3 } from "@orillusion/core";
+import { Color, Vector4 } from "@orillusion/core";
+import { DynamicDrawStruct } from "../graphic3d/DynamicDrawStruct";
 
 export class Shape3DStruct extends DynamicDrawStruct {
     public shapeType: number = 0;

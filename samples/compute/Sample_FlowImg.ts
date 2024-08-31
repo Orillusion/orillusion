@@ -38,12 +38,12 @@ export class Demo_FlowImg {
         input.accept = '.png,.webp'
         input.style.position = 'fixed'
         document.body.appendChild(input)
-        /*input.onchange= async (e)=>{
+        input.onchange= async (e)=>{
             let url = URL.createObjectURL(e.target.files[0])
             let image = await this.imageloader(url)
             simulator.setImageData(image);
             simulator.reset()
-        }*/
+        }
         GUIHelp.addButton('Change Image (PNG with transparent)', ()=>{
             input.click()
         })

@@ -1,5 +1,6 @@
-
-
+/**
+ * @internal
+ */
 export let QuadGlsl_vs = /* wgsl */ `
     #include "WorldMatrixUniform"
     #include "GlobalUniform"

@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let GTAO_cs: string = /*wgsl*/ `
     #include "GlobalUniform"
     #include "GBufferStand"

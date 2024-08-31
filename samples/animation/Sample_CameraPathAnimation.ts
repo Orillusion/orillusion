@@ -1,5 +1,6 @@
 import { Engine3D, Scene3D, View3D, Object3D, Color, Vector3, AtmosphericComponent, CameraUtil, HoverCameraController, DirectLight, KelvinUtil, Time, Object3DUtil, lerpVector3, Camera3D, AxisObject, ColliderComponent, PointerEvent3D, ComponentBase, Plane } from '@orillusion/core';
 import { Stats } from '@orillusion/stats';
+import { Graphic3D } from '@orillusion/graphic';
 import * as dat from 'dat.gui';
 
 interface PathInfo {
@@ -19,6 +20,7 @@ enum CameraModes {
 class Sample_CameraPathAnimation {
     view: View3D;
     camera: Camera3D;
+    graphic3D: Graphic3D;
 
     cameraMode = CameraModes.DualOrbit;
     guiControl: dat.GUIController<object>;
@@ -88,6 +90,10 @@ class Sample_CameraPathAnimation {
         let view = this.view = new View3D();
         view.camera = this.camera = camera;
         view.scene = scene;
+
+        // init Graphic3D to draw lines
+        this.graphic3D = new Graphic3D()
+        scene.addChild(this.graphic3D)
 
         Engine3D.startRenderView(view);
 
@@ -211,8 +217,8 @@ class Sample_CameraPathAnimation {
             pathInfo.curvePoints.splice(dataStartIndex, curveSegmentPoints.length, ...curveSegmentPoints);
         }
 
-        this.view.graphic3D.Clear(pathInfo.name);
-        this.view.graphic3D.drawLines(pathInfo.name, pathInfo.curvePoints, pathInfo.color);
+        this.graphic3D.Clear(pathInfo.name);
+        this.graphic3D.drawLines(pathInfo.name, pathInfo.curvePoints, pathInfo.color);
     }
 
     public generateOrUpdateCurve(points: Vector3[], samples: number = 20, tension: number = 0.5, indicesToUpdate?: number[]): Vector3[] {
@@ -310,13 +316,13 @@ class Sample_CameraPathAnimation {
 
         const changeLine = (show: boolean) => {
             if (show) {
-                this.view.graphic3D.drawLines(this.cameraPathInfo.name, this.cameraPathInfo.curvePoints, this.cameraPathInfo.color);
-                this.view.graphic3D.drawLines(this.targetPathInfo.name, this.targetPathInfo.curvePoints, this.targetPathInfo.color);
+                this.graphic3D.drawLines(this.cameraPathInfo.name, this.cameraPathInfo.curvePoints, this.cameraPathInfo.color);
+                this.graphic3D.drawLines(this.targetPathInfo.name, this.targetPathInfo.curvePoints, this.targetPathInfo.color);
                 console.log('camerabasePoints', this.cameraPathInfo.basePoints);
                 console.log('targetbasePoints', this.targetPathInfo.basePoints);
             } else {
-                this.view.graphic3D.Clear(this.cameraPathInfo.name);
-                this.view.graphic3D.Clear(this.targetPathInfo.name);
+                this.graphic3D.Clear(this.cameraPathInfo.name);
+                this.graphic3D.Clear(this.targetPathInfo.name);
             }
         }
     }

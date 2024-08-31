@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export class SkeletonAnimation_shader {
     public static groupBindingAndFunctions(beginGroup: number, beginBinding: number) {
         return /* wgsl */ `

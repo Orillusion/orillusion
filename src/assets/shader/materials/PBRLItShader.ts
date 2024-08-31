@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let PBRLItShader: string = /*wgsl*/ `
     #include "Common_vert"
     #include "Common_frag"

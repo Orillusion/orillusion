@@ -124,7 +124,10 @@ export class SpotLight extends LightBase {
     }
 
     public onGraphic(view: View3D) {
-        // let custom = view.graphic3D.createCustomShape(
+        // let graphic3D = view.scene.getChildByName('graphic3D')
+        // if(!graphic3D)
+        //     return
+        // let custom = graphic3D.createCustomShape(
         //     `SpotLight_${this.object3D.instanceID}`,
         //     this.transform,
         // );

@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let GBuffer_pass: string = /*wgsl*/ `
 #include "Common_vert"
 #include "FragmentVarying"

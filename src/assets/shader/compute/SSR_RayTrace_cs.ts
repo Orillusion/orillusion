@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let SSR_RayTrace_cs: string = /*wgsl*/ `
   #include "GlobalUniform"
   #include "MathShader"

@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let ZPassShader_cs: string = /*wgsl*/ `
     @group(0) @binding(0) var<storage,read_write> visibleBuffer: array<f32>;
     @group(0) @binding(1) var zBufferTexture : texture_2d<f32>;

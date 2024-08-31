@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export let GrassGeometryCompute_cs = /*wgsl*/`
    struct GrassNode {
       grassCount: f32,
