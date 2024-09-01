@@ -1,7 +1,7 @@
-import { Shape2D } from "./ExtrudeGeometry/Shape2D";
-import { ExtrudeGeometry, ExtrudeGeometryArgs } from "./ExtrudeGeometry/ExtrudeGeometry";
-import { ShapeUtils } from "./ExtrudeGeometry/ShapeUtils";
-import { Font } from "./lib/opentype";
+import { Shape2D } from "../ExtrudeGeometry/Shape2D";
+import { ExtrudeGeometry, ExtrudeGeometryArgs } from "../ExtrudeGeometry/ExtrudeGeometry";
+import { ShapeUtils } from "../ExtrudeGeometry/ShapeUtils";
+import { Font } from "../lib/opentype";
 
 export type TextGeometryArgs = ExtrudeGeometryArgs & {
     font: Font;

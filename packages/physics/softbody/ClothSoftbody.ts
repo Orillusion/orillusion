@@ -1,6 +1,5 @@
-// ClothSoftbody.ts
-
-import { Vector3, MeshRenderer, PlaneGeometry, ComponentBase, VertexAttributeName, Quaternion } from '@orillusion/core';
+import { Vector3, PlaneGeometry, VertexAttributeName, Quaternion } from '@orillusion/core';
+import { SoftbodyBase } from './SoftbodyBase';
 import { Ammo, Physics } from '../Physics';
 import { TempPhyMath } from '../utils/TempPhyMath';
 import { Rigidbody } from '../rigidbody/Rigidbody';
@@ -10,149 +9,60 @@ import { Rigidbody } from '../rigidbody/Rigidbody';
  */
 export type CornerType = 'leftTop' | 'rightTop' | 'leftBottom' | 'rightBottom' | 'left' | 'right' | 'top' | 'bottom' | 'center';
 
-export class ClothSoftbody extends ComponentBase {
-    private _initResolve!: () => void;
-    private _initializationPromise: Promise<void> = new Promise<void>(r => this._initResolve = r);
-    private _btBodyInited: boolean = false;
-    private _btSoftbody: Ammo.btSoftBody; // 创建的 Ammo 软体实例
-    private _btRigidbody: Ammo.btRigidBody; // 通过锚点附加的 Ammo 刚体实例
-    private _anchorRigidbody: Rigidbody;
+export class ClothSoftbody extends SoftbodyBase {
+    protected declare _geometry: PlaneGeometry;
     private _segmentW: number;
     private _segmentH: number;
-    private _geometry: PlaneGeometry;
-    private _diff: Vector3 = new Vector3();
+    private _offset: Vector3 = new Vector3();
+    private _btRigidbody: Ammo.btRigidBody; // 通过锚点附加的 Ammo 刚体实例
 
     /**
-     * 布料四个角的位置 (00,01,10,11)
+     * 布料的四个角，默认以平面法向量计算各角。
      */
     public clothCorners: [Vector3, Vector3, Vector3, Vector3];
 
     /**
-     * 软体的总质量
-     * @default 1
-     */
-    public mass: number = 1;
-
-    /**
-     * 软体的碰撞边距
-     * @default 0.05
-     */
-    public margin: number = 0.05;
-
-    /**
-     * 固定布料的节点
+     * 固定节点索引。
      */
     public fixNodeIndices: CornerType[] | number[] = [];
 
     /**
-     * 布料的锚点
+     * 添加锚点时需要的刚体。
+     */
+    public anchorRigidbody: Rigidbody;
+
+    /**
+     * 布料的锚点。
      */
     public anchorIndices: CornerType[] | number[] = [];
 
     /**
-     * 锚定的影响力。影响力值越大，软体节点越紧密地跟随刚体的运动。通常，这个值在0到1之间
-     * @default 0.5
+     * 仅在设置 `anchorRigidbody` 后有效，表示布料软体相对刚体的位置。
      */
-    public influence: number | number[] = 0.5;
+    public anchorPosition: Vector3 = new Vector3();
 
     /**
-     * 是否禁用锚定节点与刚体之间的碰撞，将其设置为true可以防止锚定节点和刚体之间发生物理碰撞
-     * @default false
+     * 仅在设置 `anchorRigidbody` 后有效，表示布料软体相对刚体的旋转。
      */
-    public disableCollision: boolean | boolean[] = false;
-
-    /**
-     * 当没有附加（锚定）到刚体时，应用绝对位置，否则是基于刚体的相对位置
-     */
-    public applyPosition: Vector3 = new Vector3();
-
-    /**
-     * 当没有附加（锚定）到刚体时，应用绝对旋转，否则是基于刚体的相对旋转
-     */
-    public applyRotation: Vector3 = new Vector3();
-
-    /**
-     * 碰撞组
-     * @default 1
-     */
-    public group: number = 1;
-
-    /**
-     * 碰撞掩码
-     * @default -1
-     */
-    public mask: number = -1;
-
-    /**
-     * 添加锚点时需要的刚体
-     */
-    public get anchorRigidbody(): Rigidbody {
-        return this._anchorRigidbody;
-    }
-
-    public set anchorRigidbody(value: Rigidbody) {
-        this._anchorRigidbody = value;
-        this._diff.set(0, 0, 0);
-    }
-
-    public get btBodyInited(): boolean {
-        return this._btBodyInited;
-    }
-
-    /**
-     * return the soft body instance
-     */
-    public get btSoftbody(): Ammo.btSoftBody {
-        return this._btSoftbody;
-    }
-
-    /**
-     * Asynchronously retrieves the fully initialized soft body instance.
-     */
-    public async wait(): Promise<Ammo.btSoftBody> {
-        await this._initializationPromise;
-        return this._btSoftbody;
-    }
-
-    /**
-     * 停止软体运动
-     */
-    public stopSoftBodyMovement(): void {
-        const nodes = this._btSoftbody.get_m_nodes();
-        for (let i = 0; i < nodes.size(); i++) {
-            const node = nodes.at(i);
-            node.get_m_v().setValue(0, 0, 0);
-            node.get_m_f().setValue(0, 0, 0);
-        }
-    }
-
-    init(): void {
-
-        if (!Physics.isSoftBodyWord) {
-            throw new Error('Enable soft body simulation by setting Physics.init({useSoftBody: true}) during initialization.');
-        }
-
-        let geometry = this.object3D.getComponent(MeshRenderer).geometry;
-        if (!(geometry instanceof PlaneGeometry)) throw new Error('The cloth softbody requires plane geometry');
-        this._geometry = geometry;
-        this._segmentW = geometry.segmentW;
-        this._segmentH = geometry.segmentH;
-    }
+    public anchorRotation: Vector3 = new Vector3();
 
     async start(): Promise<void> {
 
-        if (this._anchorRigidbody) {
-            this._btRigidbody = await this._anchorRigidbody.wait();
+        if (!(this._geometry instanceof PlaneGeometry)) {
+            throw new Error('The cloth softbody requires plane geometry.');
         }
 
-        this.initSoftBody();
+        if (this.anchorRigidbody) {
+            this._btRigidbody = await this.anchorRigidbody.wait();
+        }
+        this._segmentW = this._geometry.segmentW;
+        this._segmentH = this._geometry.segmentH;
 
-        this._btBodyInited = true;
-        this._initResolve();
+        super.start()
     }
 
-    private initSoftBody(): void {
-        
+    protected initSoftBody(): Ammo.btSoftBody {
+
         // Defines the four corners of the cloth
         let clothCorner00: Ammo.btVector3,
             clothCorner01: Ammo.btVector3,
@@ -160,12 +70,25 @@ export class ClothSoftbody extends ComponentBase {
             clothCorner11: Ammo.btVector3;
 
         if (!this.clothCorners) {
+            const up = this._geometry.up;
+            let right = up.equals(Vector3.X_AXIS) ? Vector3.BACK : Vector3.X_AXIS;
+
+            right = up.crossProduct(right).normalize();
+            const forward = right.crossProduct(up).normalize();
+
             const halfWidth = this._geometry.width / 2;
             const halfHeight = this._geometry.height / 2;
-            clothCorner00 = TempPhyMath.setBtVec(-halfWidth, halfHeight, 0, TempPhyMath.tmpVecA);
-            clothCorner01 = TempPhyMath.setBtVec(halfWidth, halfHeight, 0, TempPhyMath.tmpVecB);
-            clothCorner10 = TempPhyMath.setBtVec(-halfWidth, -halfHeight, 0, TempPhyMath.tmpVecC);
-            clothCorner11 = TempPhyMath.setBtVec(halfWidth, -halfHeight, 0, TempPhyMath.tmpVecD);
+
+            const corner00 = right.mul(halfWidth).add(forward.mul(-halfHeight)); // leftTop
+            const corner01 = right.mul(halfWidth).add(forward.mul(halfHeight)); // rightTop
+            const corner10 = right.mul(-halfWidth).add(forward.mul(-halfHeight)); // leftBottom
+            const corner11 = right.mul(-halfWidth).add(forward.mul(halfHeight)); // rightBottom
+
+            clothCorner00 = TempPhyMath.toBtVec(corner00, TempPhyMath.tmpVecA);
+            clothCorner01 = TempPhyMath.toBtVec(corner01, TempPhyMath.tmpVecB);
+            clothCorner10 = TempPhyMath.toBtVec(corner10, TempPhyMath.tmpVecC);
+            clothCorner11 = TempPhyMath.toBtVec(corner11, TempPhyMath.tmpVecD);
+
         } else {
             clothCorner00 = TempPhyMath.toBtVec(this.clothCorners[0], TempPhyMath.tmpVecA)
             clothCorner01 = TempPhyMath.toBtVec(this.clothCorners[1], TempPhyMath.tmpVecB);
@@ -173,7 +96,7 @@ export class ClothSoftbody extends ComponentBase {
             clothCorner11 = TempPhyMath.toBtVec(this.clothCorners[3], TempPhyMath.tmpVecD);
         }
 
-        this._btSoftbody = new Ammo.btSoftBodyHelpers().CreatePatch(
+        const clothSoftbody = new Ammo.btSoftBodyHelpers().CreatePatch(
             Physics.worldInfo,
             clothCorner00,
             clothCorner01,
@@ -185,69 +108,102 @@ export class ClothSoftbody extends ComponentBase {
             true
         );
 
-        this.configureSoftBody(this._btSoftbody);
+        return clothSoftbody;
+    }
 
-        this._btSoftbody.setTotalMass(this.mass, false);
-        Ammo.castObject(this._btSoftbody, Ammo.btCollisionObject).getCollisionShape().setMargin(this.margin);
-        this._btSoftbody.generateBendingConstraints(2, this._btSoftbody.get_m_materials().at(0));
+    protected configureSoftBody(clothSoftbody: Ammo.btSoftBody): void {
+
+        // 软体配置
+        const sbConfig = clothSoftbody.get_m_cfg();
+        sbConfig.set_viterations(10); // 位置迭代次数
+        sbConfig.set_piterations(10); // 位置求解器迭代次数
+
+        clothSoftbody.generateBendingConstraints(2, clothSoftbody.get_m_materials().at(0));
 
         // 固定节点
-        if (this.fixNodeIndices.length > 0) {
-            this.applyFixedNodes(this.fixNodeIndices);
-        }
+        if (this.fixNodeIndices.length > 0) this.applyFixedNodes(this.fixNodeIndices);
 
         // 添加锚点
         if (this.anchorIndices.length > 0) {
             if (!this._btRigidbody) throw new Error('Needs a rigid body');
-            this.setAnchor();
+            this.applyAnchor(clothSoftbody);
         } else {
-            // 先旋转再平移，矩阵变换不满足交换律
-            this._btSoftbody.rotate(TempPhyMath.eulerToBtQua(this.applyRotation));
-            this._btSoftbody.translate(TempPhyMath.toBtVec(this.applyPosition));
+            clothSoftbody.rotate(TempPhyMath.eulerToBtQua(this.transform.localRotation));
+            clothSoftbody.translate(TempPhyMath.toBtVec(this.transform.localPosition));
         }
 
-        // 布料变换将由顶点更新表示，避免影响需要重置三维对象变换
-        this.transform.localPosition = Vector3.ZERO;
-        this.transform.localRotation = Vector3.ZERO;
-
-        (Physics.world as Ammo.btSoftRigidDynamicsWorld).addSoftBody(this._btSoftbody, this.group, this.mask);
     }
 
-    private configureSoftBody(softBody: Ammo.btSoftBody): void {
-        // 设置配置参数
-        let sbConfig = softBody.get_m_cfg();
-        sbConfig.set_viterations(10); // 位置迭代次数
-        sbConfig.set_piterations(10); // 位置求解器迭代次数
-        // sbConfig.set_diterations(10); // 动力学迭代次数
-        // sbConfig.set_citerations(10); // 碰撞迭代次数
-        // sbConfig.set_kVCF(1.0); // 速度收敛系数
-        // sbConfig.set_kDP(0.1); // 阻尼系数
-        // sbConfig.set_kDG(0.0); // 阻力系数
-        // sbConfig.set_kLF(0.05); // 升力系数
-        // sbConfig.set_kPR(0.0); // 压力系数
-        // sbConfig.set_kVC(0.0); // 体积保护系数
-        // sbConfig.set_kDF(0.0); // 动力学系数
-        // sbConfig.set_kMT(0.0); // 电磁系数
-        // sbConfig.set_kCHR(1.0); // 刚性系数
-        // sbConfig.set_kKHR(0.5); // 刚性恢复系数
-        // sbConfig.set_kSHR(1.0); // 剪切刚性系数
-        // sbConfig.set_kAHR(0.1); // 角度恢复系数
-        // sbConfig.set_kSRHR_CL(1.0); // 拉伸刚性恢复系数
-        // sbConfig.set_kSKHR_CL(0.5); // 刚性恢复系数
-        // sbConfig.set_kSSHR_CL(0.1); // 剪切刚性恢复系数
-        // sbConfig.set_kSR_SPLT_CL(0.5); // 拉伸分割系数
-        // sbConfig.set_kSK_SPLT_CL(0.5); // 剪切分割系数
-        // sbConfig.set_kSS_SPLT_CL(0.5); // 剪切分割系数
-        // sbConfig.set_maxvolume(1.0); // 最大体积
-        // sbConfig.set_timescale(1.0); // 时间缩放系数
-        // sbConfig.set_collisions(0); // 碰撞设置
+    private applyAnchor(clothSoftbody: Ammo.btSoftBody): void {
 
-        // 获取材质并设置参数
-        const material = softBody.get_m_materials().at(0);
-        material.set_m_kLST(0.4); // 设置线性弹性系数
-        material.set_m_kAST(0.4); // 设置角度弹性系数
-        // material.set_m_kVST(0.2); // 设置体积弹性系数
-        // material.set_m_flags(0); // 设置材质标志
+        let tm = this._btRigidbody.getWorldTransform();
+        TempPhyMath.fromBtVec(tm.getOrigin(), Vector3.HELP_0);
+        Vector3.HELP_0.add(this.anchorPosition, Vector3.HELP_1);
+
+        TempPhyMath.fromBtQua(tm.getRotation(), Quaternion.HELP_0);
+        Quaternion.HELP_1.fromEulerAngles(this.anchorRotation.x, this.anchorRotation.y, this.anchorRotation.z);
+        Quaternion.HELP_1.multiply(Quaternion.HELP_0, Quaternion.HELP_1);
+
+        clothSoftbody.rotate(TempPhyMath.toBtQua(Quaternion.HELP_1));
+        clothSoftbody.translate(TempPhyMath.toBtVec(Vector3.HELP_1));
+
+        const anchorIndices = this.getCornerIndices(this.anchorIndices);
+        anchorIndices.forEach((nodeIndex) => {
+            clothSoftbody.appendAnchor(nodeIndex, this._btRigidbody, this.disableCollision, this.influence);
+        });
+    }
+
+    /**
+     * 将 CornerType 数组转换成节点索引数组。
+     * @param cornerList 需要转换的 CornerType 数组。
+     * @returns 节点索引数组
+     */
+    private getCornerIndices(cornerList: CornerType[] | number[]): number[] {
+
+        if (typeof cornerList[0] === 'number') return cornerList as number[];
+
+        const W = this._segmentW;
+        const H = this._segmentH;
+        return (cornerList as CornerType[]).map(corner => {
+            switch (corner) {
+                case 'left': return this.getVertexIndex(0, Math.floor(H / 2));
+                case 'right': return this.getVertexIndex(W, Math.floor(H / 2));
+                case 'top': return this.getVertexIndex(Math.floor(W / 2), 0);
+                case 'bottom': return this.getVertexIndex(Math.floor(W / 2), H);
+                case 'center': return this.getVertexIndex(Math.floor(W / 2), Math.floor(H / 2));
+                case 'leftTop': return 0;
+                case 'rightTop': return W;
+                case 'leftBottom': return this.getVertexIndex(0, H);
+                case 'rightBottom': return this.getVertexIndex(W, H);
+                default: throw new Error('Invalid corner');
+            }
+        });
+
+    }
+
+    private getVertexIndex(x: number, y: number): number {
+        return y * (this._segmentW + 1) + x;
+    }
+
+    /**
+     * 固定软体节点。
+     * @param fixedNodeIndices 表示需要固定的节点索引或 CornerType 数组。
+     */
+    public applyFixedNodes(fixedNodeIndices: CornerType[] | number[]): void {
+        this.wait().then(() => {
+            const indexArray = this.getCornerIndices(fixedNodeIndices);
+            super.applyFixedNodes(indexArray);
+        })
+    }
+
+    /**
+     * 清除锚点，软体将会从附加的刚体上脱落
+     */
+    public clearAnchors(): void {
+        this._btSoftbody.get_m_anchors().clear();
+        this._offset.set(0, 0, 0);
+        this._btRigidbody = null;
+        this.anchorRigidbody = null;
     }
 
     onUpdate(): void {
@@ -260,7 +216,7 @@ export class ClothSoftbody extends ComponentBase {
 
             TempPhyMath.fromBtVec(Physics.TEMP_TRANSFORM.getOrigin(), Vector3.HELP_0);
             TempPhyMath.fromBtVec(nowPos, Vector3.HELP_1);
-            Vector3.sub(Vector3.HELP_0, Vector3.HELP_1, this._diff);
+            Vector3.sub(Vector3.HELP_0, Vector3.HELP_1, this._offset);
         }
 
         const vertices = this._geometry.getAttribute(VertexAttributeName.position);
@@ -270,128 +226,23 @@ export class ClothSoftbody extends ComponentBase {
         for (let i = 0; i < nodes.size(); i++) {
             const node = nodes.at(i);
             const pos = node.get_m_x();
-            vertices.data[3 * i] = pos.x() + this._diff.x;
-            vertices.data[3 * i + 1] = pos.y() + this._diff.y;
-            vertices.data[3 * i + 2] = pos.z() + this._diff.z;
+            vertices.data[3 * i] = pos.x() + this._offset.x;
+            vertices.data[3 * i + 1] = pos.y() + this._offset.y;
+            vertices.data[3 * i + 2] = pos.z() + this._offset.z;
 
             const normal = node.get_m_n();
-            normals.data[3 * i] = normal.x();
-            normals.data[3 * i + 1] = normal.y();
-            normals.data[3 * i + 2] = normal.z();
+            normals.data[3 * i] = -normal.x();
+            normals.data[3 * i + 1] = -normal.y();
+            normals.data[3 * i + 2] = -normal.z();
         }
 
         this._geometry.vertexBuffer.upload(VertexAttributeName.position, vertices);
         this._geometry.vertexBuffer.upload(VertexAttributeName.normal, normals);
     }
 
-    private setAnchor() {
-        const anchorIndices = typeof this.anchorIndices[0] === 'number'
-            ? this.anchorIndices as number[]
-            : this.getCornerIndices(this.anchorIndices as CornerType[]);
-
-        const nodesSize = this._btSoftbody.get_m_nodes().size();
-        anchorIndices.forEach(nodeIndex => {
-            if (nodeIndex < 0 || nodeIndex >= nodesSize) {
-                console.error(`Invalid node index ${nodeIndex} for soft body`);
-                return;
-            }
-        });
-
-        let tm = this._btRigidbody.getWorldTransform();
-        TempPhyMath.fromBtVec(tm.getOrigin(), Vector3.HELP_0);
-        Vector3.HELP_0.add(this.applyPosition, Vector3.HELP_1);
-
-        TempPhyMath.fromBtQua(tm.getRotation(), Quaternion.HELP_0)
-        Quaternion.HELP_1.fromEulerAngles(this.applyRotation.x, this.applyRotation.y, this.applyRotation.z);
-        Quaternion.HELP_1.multiply(Quaternion.HELP_0, Quaternion.HELP_1);
-
-        this._btSoftbody.rotate(TempPhyMath.toBtQua(Quaternion.HELP_1));
-        this._btSoftbody.translate(TempPhyMath.toBtVec(Vector3.HELP_1));
-
-        anchorIndices.forEach((nodeIndex, idx) => {
-            const influence = Array.isArray(this.influence) ? (this.influence[idx] ?? 0.5) : this.influence;
-            const disableCollision = Array.isArray(this.disableCollision) ? (this.disableCollision[idx] ?? false) : this.disableCollision;
-            this._btSoftbody.appendAnchor(nodeIndex, this._btRigidbody, disableCollision, influence);
-        });
-    }
-
-    private getVertexIndex(x: number, y: number): number {
-        return y * (this._segmentW + 1) + x;
-    }
-
-    /**
-     * 将 CornerType 数组转换成节点索引数组。
-     * @param cornerList 需要转换的 CornerType 数组。
-     * @returns 节点索引数组
-     */
-    private getCornerIndices(cornerList: CornerType[]): number[] {
-        const W = this._segmentW;
-        const H = this._segmentH;
-        return cornerList.map(corner => {
-            switch (corner) {
-                case 'left':
-                    return this.getVertexIndex(0, Math.floor(H / 2));
-                case 'right':
-                    return this.getVertexIndex(W, Math.floor(H / 2));
-                case 'top':
-                    return this.getVertexIndex(Math.floor(W / 2), 0);
-                case 'bottom':
-                    return this.getVertexIndex(Math.floor(W / 2), H);
-                case 'center':
-                    return this.getVertexIndex(Math.floor(W / 2), Math.floor(H / 2));
-                case 'leftTop':
-                    return 0;
-                case 'rightTop':
-                    return W;
-                case 'leftBottom':
-                    return this.getVertexIndex(0, H);
-                case 'rightBottom':
-                    return this.getVertexIndex(W, H);
-                default:
-                    throw new Error('Invalid corner');
-            }
-        });
-    }
-
-    /**
-     * 固定软体节点。
-     * @param fixedNodeIndices 表示需要固定的节点索引或 CornerType 数组。
-     */
-    public applyFixedNodes(fixedNodeIndices: CornerType[] | number[]) {
-        // 确定索引数组
-        const indexArray: number[] = typeof fixedNodeIndices[0] === 'number'
-            ? fixedNodeIndices as number[]
-            : this.getCornerIndices(fixedNodeIndices as CornerType[]);
-
-        const nodes = this._btSoftbody.get_m_nodes();
-        indexArray.forEach(i => {
-            if (i >= 0 && i < nodes.size()) {
-                nodes.at(i).get_m_v().setValue(0, 0, 0);
-                nodes.at(i).get_m_f().setValue(0, 0, 0);
-                nodes.at(i).set_m_im(0);
-            } else {
-                console.warn(`Index ${i} is out of bounds for nodes array.`);
-            }
-        });
-    }
-
-    /**
-     * 清除所有锚点，软体将会从附加的刚体上脱落
-     */
-    public clearAnchors() {
-        this._btSoftbody.get_m_anchors().clear();
-        this._btRigidbody = null;
-    }
-
     public destroy(force?: boolean): void {
-        if (this._btBodyInited) {
-            (Physics.world as Ammo.btSoftRigidDynamicsWorld).removeSoftBody(this._btSoftbody);
-            Ammo.destroy(this._btSoftbody);
-            this._btSoftbody = null;
-        }
-        this._btBodyInited = false;
         this._btRigidbody = null;
-        this._anchorRigidbody = null;
+        this.anchorRigidbody = null;
         super.destroy(force);
     }
 }

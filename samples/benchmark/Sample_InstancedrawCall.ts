@@ -1,7 +1,6 @@
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { Stats } from '@orillusion/stats'
 import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D, Vector3, Vector3Ex, UnLitMaterial, InstanceDrawComponent, LambertMaterial, Time, BoundingBox, Color, OcclusionSystem, PostProcessingComponent, GlobalFog, SphereGeometry } from '@orillusion/core';
-import { GUIUtil } from '@samples/utils/GUIUtil';
 
 // simple base demo
 class Sample_drawCallInstance {
@@ -54,17 +53,13 @@ class Sample_drawCallInstance {
         // start render
         Engine3D.startRenderView(view);
         GUIHelp.init();
-
-        GUIHelp.add(this, "anim").onChange = () => {
-            this.anim != this.anim;
-        };
-
+        GUIHelp.open();
+        GUIHelp.add(this, "anim").onChange = () => this.anim != this.anim;
         this.initScene();
     }
 
 
     private _list: Object3D[] = [];
-    private _rotList: number[] = [];
     initScene() {
         {
             this.lightObj3D = new Object3D();
@@ -79,8 +74,6 @@ class Sample_drawCallInstance {
             directLight.castShadow = true;
             directLight.intensity = 30;
             directLight.indirect = 1;
-            GUIHelp.init();
-            GUIUtil.renderDirLight(directLight);
             this.scene.addChild(this.lightObj3D);
         }
 
@@ -95,10 +88,7 @@ class Sample_drawCallInstance {
 
         let group = new Object3D();
         let count = 10 * 10000;
-        // let count = 200;
 
-        GUIHelp.addFolder('info');
-        GUIHelp.open();
         GUIHelp.addLabel(`use instance draw box`);
         GUIHelp.addInfo(`count `, count);
 
@@ -123,9 +113,8 @@ class Sample_drawCallInstance {
             obj.transform.rotationX = Math.random() * 360;
             obj.transform.rotationY = Math.random() * 360;
             obj.transform.rotationZ = Math.random() * 360;
-
-            this._rotList.push((Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 100);
-
+            
+            // use localDetailRot to update rotation by time
             obj.transform.localDetailRot = new Vector3(
                 (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 50 * 0.001,
                 (Math.random() * 1 - 1 * 0.5) * 2.0 * Math.random() * 50 * 0.001,
@@ -136,9 +125,8 @@ class Sample_drawCallInstance {
         }
 
         group.addComponent(InstanceDrawComponent);
-        group.transform.localDetailRot = new Vector3(0, 1.0 * 0.001, 0);
-        this._rotList.push(1.0);
-
+        // use localDetailRot to update rotation by time
+        group.transform.localDetailRot = new Vector3(0, 0.01, 0);
         group.bound = new BoundingBox(Vector3.SAFE_MIN, Vector3.SAFE_MAX);
         this._list.push(group);
         this.scene.addChild(group);
@@ -147,10 +135,8 @@ class Sample_drawCallInstance {
 
     renderLoop() {
         if (this.anim) {
-            let i = 0;
-            for (i = 0; i < this._list.length; i++) {
+            for (let i = 0; i < this._list.length; i++) {
                 let element = this._list[i];
-                // element.transform.rotationY += 1;
                 element.transform.localChange = true;
             }
         }

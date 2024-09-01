@@ -1,4 +1,4 @@
-import { Object3D, BoundUtil, Vector3, MeshRenderer, VertexAttributeName, PlaneGeometry, Quaternion, Matrix4, BoundingBox } from '@orillusion/core';
+import { Object3D, BoundUtil, Vector3, MeshRenderer, VertexAttributeName, PlaneGeometry, Quaternion, Matrix4, BoundingBox, BoxGeometry, SphereGeometry, CylinderGeometry } from '@orillusion/core';
 import { Physics, Ammo } from '../Physics';
 import { TempPhyMath } from './TempPhyMath';
 
@@ -113,31 +113,6 @@ export class CollisionShapeUtil {
         return shape;
     }
 
-    // 通过测试发现当前版本Ammo.btMultiSphereShape参数出现问题，
-    // 当前仅支持传入单个坐标，且球体们的位置会出现混乱，
-    // 传入坐标数组则完全无效。
-    // 如果需要类似功能，可以使用复合或是网格形状。
-    /**
-    * 创建多球体碰撞形状，适用于通过多个球体组合来近似复杂形状的情况。
-    * 可以通过球体组合来创建近似椭球形状。
-    * @param positions - 球体的位置数组。
-    * @param radii - 球体的半径数组。
-    * @returns Ammo.btMultiSphereShape - 多球体碰撞形状实例。
-    */
-    // public static createMultiSphereShape(positions: Vector3[], radii: number[]): Ammo.btMultiSphereShape {
-    //     if (positions.length !== radii.length) {
-    //         throw new Error("Positions and radii arrays must have the same length.");
-    //     }
-
-    //     const btPositions = positions.map(pos => new Ammo.btVector3(pos.x, pos.y, pos.z));
-
-    //     const shape = new Ammo.btMultiSphereShape((btPositions as any), radii, btPositions.length);
-
-    //     btPositions.forEach(pos => Ammo.destroy(pos));
-
-    //     return shape;
-    // }
-
     /**
      * 创建复合形状，将多个子形状组合成一个形状。
      * @param childShapes - 包含子形状实例与位置、旋转属性的数组。
@@ -156,6 +131,107 @@ export class CollisionShapeUtil {
         });
 
         return compoundShape;
+    }
+
+    /**
+     * 根据 Object3D 对象及其子对象创建复合碰撞形状。
+     * @param object3D - 三维对象，包含多个子对象。
+     * @param includeParent - 是否包含父对象的几何体，默认值为 `true`。
+     * @returns 复合碰撞形状。
+     */
+    public static createCompoundShapeFromObject(object3D: Object3D, includeParent: boolean = true) {
+
+        const childShapes: ChildShape[] = [];
+
+        // 处理父对象几何体
+        if (includeParent) {
+            const shape = this.createShapeFromObject(object3D);
+            if (shape) {
+                const position = new Vector3();
+                const rotation = new Quaternion();
+                childShapes.push({ shape, position, rotation });
+            }
+        }
+
+        // 计算父对象的逆矩阵
+        const parentMatrixInverse = object3D.transform.worldMatrix.clone();
+        parentMatrixInverse.invert();
+
+        // 遍历并处理子对象
+        object3D.forChild((child: Object3D) => {
+            const shape = this.createShapeFromObject(child);
+            if (shape) {
+                // 矩阵相乘并分解
+                const childMatrix = child.transform.worldMatrix;
+                const localMatrix = Matrix4.help_matrix_0;
+                localMatrix.multiplyMatrices(parentMatrixInverse, childMatrix);
+
+                const position = new Vector3();
+                const rotation = new Quaternion();
+                localMatrix.decompose('quaternion', [position, rotation as any, Vector3.HELP_0]);
+                childShapes.push({ shape, position, rotation });
+            }
+        });
+
+        // 创建复合碰撞形状
+        const compoundShape = this.createCompoundShape(childShapes);
+        return compoundShape;
+    }
+
+    /**
+     * 根据 Object3D 对象的几何体类型创建相应的碰撞形状。
+     * 
+     * 仅支持Box、Sphere、Plane、Cylinder类型的几何体。对于不匹配的几何体类型，返回 btConvexHullShape 凸包形状。
+     * @param object3D
+     * @returns Ammo.btCollisionShape 
+     */
+    public static createShapeFromObject(object3D: Object3D): Ammo.btCollisionShape | null {
+
+        const geometry = object3D.getComponent(MeshRenderer)?.geometry;
+        if (!geometry) return null;
+
+        let shape: Ammo.btCollisionShape;
+        let scale = Vector3.HELP_0.copyFrom(object3D.localScale);
+
+        // 根据几何类型创建相应的碰撞形状
+        switch (true) {
+            case geometry instanceof BoxGeometry: {
+                const { width, height, depth } = geometry;
+                const size = new Vector3(width, height, depth).scale(scale);
+                shape = this.createBoxShape(object3D, size);
+                break;
+            }
+            case geometry instanceof SphereGeometry: {
+                const radius = geometry.radius * scale.x;
+                shape = this.createSphereShape(object3D, radius);
+                break;
+            }
+            case geometry instanceof PlaneGeometry: {
+                const { width, height } = geometry;
+                const size = new Vector3(width, 0, height).scale(scale);
+                shape = this.createBoxShape(object3D, size);
+                break;
+            }
+            case geometry instanceof CylinderGeometry: {
+                const radiusBottom = geometry.radiusBottom * scale.x
+                const height = geometry.height * scale.y
+
+                if (geometry.radiusTop === geometry.radiusBottom) {
+                    shape = this.createCylinderShape(object3D, radiusBottom, height);
+                } else if (geometry.radiusTop <= 0.1) {
+                    shape = this.createConeShape(object3D, radiusBottom, height);
+                } else {
+                    shape = this.createConvexHullShape(object3D);
+                }
+                break;
+            }
+            default: {
+                shape = this.createConvexHullShape(object3D);
+                break;
+            }
+        }
+
+        return shape;
     }
 
     /**
@@ -251,7 +327,7 @@ export class CollisionShapeUtil {
 
         const { vertices, indices } = (modelVertices && modelIndices)
             ? { vertices: modelVertices, indices: modelIndices }
-            : this.getAllMeshVerticesAndIndices(object3D);
+            : this.getAllMeshVerticesAndIndices(object3D, false);
 
         const triangleMesh = this.buildTriangleMesh(vertices, indices);
         const shape = new Ammo.btConvexTriangleMeshShape(triangleMesh, true);
@@ -278,7 +354,7 @@ export class CollisionShapeUtil {
 
         const { vertices, indices } = (modelVertices && modelIndices)
             ? { vertices: modelVertices, indices: modelIndices }
-            : this.getAllMeshVerticesAndIndices(object3D);
+            : this.getAllMeshVerticesAndIndices(object3D, false);
 
         const triangleMesh = this.buildTriangleMesh(vertices, indices);
         const shape = new Ammo.btBvhTriangleMeshShape(triangleMesh, true, true);
@@ -305,7 +381,7 @@ export class CollisionShapeUtil {
 
         const { vertices, indices } = (modelVertices && modelIndices)
             ? { vertices: modelVertices, indices: modelIndices }
-            : this.getAllMeshVerticesAndIndices(object3D);
+            : this.getAllMeshVerticesAndIndices(object3D, false);
 
         const triangleMesh = this.buildTriangleMesh(vertices, indices);
         const shape = new Ammo.btGImpactMeshShape(triangleMesh);
@@ -343,26 +419,26 @@ export class CollisionShapeUtil {
 
     /**
      * 获取3D对象所有网格的顶点与索引。
-     * @param object3D - 三维对象，通常是模型对象。
+     * @param object3D - 三维对象。
+     * @param isTransformChildren - 是否将子对象的顶点转换到父对象的局部坐标系。默认值为 `true`。
      * @returns 顶点数据和索引数据。
      */
-    public static getAllMeshVerticesAndIndices(object3D: Object3D) {
-        let mr = object3D.getComponents(MeshRenderer);
+    public static getAllMeshVerticesAndIndices(object3D: Object3D, isTransformChildren: boolean = true) {
+        let meshRenderers = object3D.getComponents(MeshRenderer);
 
-        if (mr.length === 1) {
+        if (meshRenderers.length === 1 && !isTransformChildren) {
             return {
-                vertices: mr[0].geometry.getAttribute(VertexAttributeName.position).data as Float32Array,
-                indices: mr[0].geometry.getAttribute(VertexAttributeName.indices).data as Uint16Array
+                vertices: meshRenderers[0].geometry.getAttribute(VertexAttributeName.position).data as Float32Array,
+                indices: meshRenderers[0].geometry.getAttribute(VertexAttributeName.indices).data as Uint16Array
             };
         }
 
         let totalVertexLength = 0;
         let totalIndexLength = 0;
 
-        // 计算总顶点数和总索引数
-        mr.forEach(e => {
-            totalVertexLength += e.geometry.getAttribute(VertexAttributeName.position).data.length;
-            totalIndexLength += e.geometry.getAttribute(VertexAttributeName.indices).data.length;
+        meshRenderers.forEach(renderer => {
+            totalVertexLength += renderer.geometry.getAttribute(VertexAttributeName.position).data.length;
+            totalIndexLength += renderer.geometry.getAttribute(VertexAttributeName.indices).data.length;
         });
 
         let vertices = new Float32Array(totalVertexLength);
@@ -372,13 +448,45 @@ export class CollisionShapeUtil {
         let indexOffset = 0;
         let currentIndexOffset = 0;
 
-        // 合并顶点和索引数据
-        mr.forEach(e => {
-            let vertexArray = e.geometry.getAttribute(VertexAttributeName.position).data;
+        let parentMatrixInverse: Matrix4;
+        if (isTransformChildren) {
+            // 计算父对象的逆矩阵
+            parentMatrixInverse = object3D.transform.worldMatrix.clone();
+            parentMatrixInverse.invert();
+        }
+
+        meshRenderers.forEach(renderer => {
+            let vertexArray = renderer.geometry.getAttribute(VertexAttributeName.position).data;
+
+            if (isTransformChildren) {
+                const childWorldMatrix = renderer.object3D.transform.worldMatrix;
+
+                // 计算子对象相对父对象的局部变换矩阵
+                let localMatrix = Matrix4.help_matrix_1;
+                localMatrix.multiplyMatrices(parentMatrixInverse, childWorldMatrix);
+
+                let transformedVertexArray = new Float32Array(vertexArray.length);
+
+                for (let index = 0; index < vertexArray.length / 3; index++) {
+                    Vector3.HELP_0.set(
+                        vertexArray[index * 3],
+                        vertexArray[index * 3 + 1],
+                        vertexArray[index * 3 + 2]
+                    );
+
+                    Vector3.HELP_0.applyMatrix4(localMatrix);
+
+                    transformedVertexArray[index * 3] = Vector3.HELP_0.x;
+                    transformedVertexArray[index * 3 + 1] = Vector3.HELP_0.y;
+                    transformedVertexArray[index * 3 + 2] = Vector3.HELP_0.z;
+                }
+                vertexArray = transformedVertexArray;
+            }
+
             vertices.set(vertexArray, vertexOffset);
             vertexOffset += vertexArray.length;
 
-            let indexArray = e.geometry.getAttribute(VertexAttributeName.indices).data;
+            let indexArray = renderer.geometry.getAttribute(VertexAttributeName.indices).data;
             for (let i = 0; i < indexArray.length; i++) {
                 indices[indexOffset + i] = indexArray[i] + currentIndexOffset;
             }
@@ -395,17 +503,20 @@ export class CollisionShapeUtil {
      * @returns 局部包围盒
      */
     private static calculateLocalBoundingBox(object3D: Object3D): BoundingBox {
-        // 如果对象存在渲染节点（已添加至场景）并且没有子对象，直接返回其几何包围盒
         if (object3D.renderNode && !object3D.numChildren) {
             return object3D.renderNode.geometry.bounds;
         }
 
-        // 通过旋转重置，计算对象及其子对象的包围盒，此时包围盒结果与局部包围盒相同
         let originalRotation = object3D.localRotation.clone();
         object3D.localRotation = Vector3.ZERO;
         let bounds = BoundUtil.genMeshBounds(object3D);
         object3D.localRotation = originalRotation;
         return bounds;
+        // const { x, y, z } = object3D.localRotation;
+        // object3D.localRotation.set(0, 0, 0);
+        // let bounds = BoundUtil.genMeshBounds(object3D);
+        // object3D.localRotation.set(x, y, z);
+        // return bounds;
     }
 
 }

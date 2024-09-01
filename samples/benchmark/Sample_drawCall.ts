@@ -1,7 +1,6 @@
 import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { Stats } from '@orillusion/stats'
 import { Engine3D, Scene3D, AtmosphericComponent, CameraUtil, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, KelvinUtil, View3D, Vector3, Vector3Ex, UnLitMaterial, InstanceDrawComponent, LambertMaterial, Time, BoundingBox, Color, OcclusionSystem, PostProcessingComponent, GlobalFog, SphereGeometry, RendererMask, RenderLayer } from '@orillusion/core';
-import { GUIUtil } from '@samples/utils/GUIUtil';
 
 // simple base demo
 export class Sample_drawCallShareGeometry {
@@ -66,23 +65,14 @@ export class Sample_drawCallShareGeometry {
     private _rotList: number[] = [];
     initScene() {
         let shareGeometry = new BoxGeometry();
-
-        let mats = [];
-        for (let i = 0; i < 1; i++) {
-            const mat = new LambertMaterial();
-            mat.baseColor = new Color(
-                Math.random() * 0.85,
-                Math.random() * 0.85,
-                Math.random() * 0.85,
-            )
-
-            // mat.baseColor = new Color().hexToRGB(0xcccccc)
-            mats.push(mat);
-        }
-
-
+        const mat = new LambertMaterial();
+        mat.baseColor = new Color(
+            Math.random() * 0.85,
+            Math.random() * 0.85,
+            Math.random() * 0.85,
+        )
         let group = new Object3D();
-        let count = 5 * 10000;
+        let count = 10 * 10000;
 
         GUIHelp.addFolder('info');
         GUIHelp.open();
@@ -90,15 +80,12 @@ export class Sample_drawCallShareGeometry {
         GUIHelp.addInfo(`count `, count);
 
         let ii = 0;
-        // let count = 70000;
         for (let i = 0; i < count; i++) {
             let pos = Vector3Ex.sphereXYZ(ii * 60 + 20, ii * 60 + 100, 100, i * 0.001 + 10, 100);
-            // let pos = Vector3Ex.getRandomXYZ(-2, 2);
             let obj = new Object3D();
             let mr = obj.addComponent(MeshRenderer);
-            // mr.renderLayer = RenderLayer.DynamicBatch;
             mr.geometry = shareGeometry;
-            mr.material = mats[Math.floor(Math.random() * mats.length)];
+            mr.material = mat;
             obj.localPosition = pos;
             group.addChild(obj);
             this._list.push(obj);
@@ -122,8 +109,7 @@ export class Sample_drawCallShareGeometry {
             }
         }
 
-        // group.addComponent(InstanceDrawComponent);
-        group.transform.localDetailRot = new Vector3(0, 1.0 * 0.001 * 0.15, 0);
+        group.transform.localDetailRot = new Vector3(0, 0.01, 0);
         this._rotList.push(1.0 * 0.35);
 
         group.bound = new BoundingBox(Vector3.SAFE_MIN, Vector3.SAFE_MAX);
@@ -136,8 +122,6 @@ export class Sample_drawCallShareGeometry {
             let i = 0;
             for (let i = 0; i < this._list.length; i++) {
                 const element = this._list[i];
-                // element.transform.rotationY += Time.delta * 0.01 * this._rotList[i];
-                // element.transform._localRot.y += Time.delta * 0.01 * this._rotList[i];
                 element.transform.localChange = true;
             }
         }

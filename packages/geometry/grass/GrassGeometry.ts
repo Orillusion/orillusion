@@ -1,15 +1,11 @@
-import { BoundingBox, GeometryBase, Vector3, VertexAttributeName } from "@orillusion/core";
-import { GrassNode } from "../GrassNode";
-
-
-
+import { BoundingBox, GeometryBase, Transform, Vector3, VertexAttributeName } from "@orillusion/core";
 
 export class GrassGeometry extends GeometryBase {
     public width: number;
     public height: number;
     public segmentW: number;
     public segmentH: number;
-    public nodes: GrassNode[];
+    public nodes: Transform[];
 
     constructor(width: number, height: number, segmentW: number = 1, segmentH: number = 1, count: number) {
         super();
@@ -43,7 +39,7 @@ export class GrassGeometry extends GeometryBase {
 
         let pi = 3.1415926 * 0.5;
         for (let gi = 0; gi < count; gi++) {
-            let node = new GrassNode();
+            let node = new Transform();
             this.nodes.push(node);
 
             let dir = new Vector3(1 * Math.random() - 0.5, 0.0, 1 * Math.random() - 0.5);

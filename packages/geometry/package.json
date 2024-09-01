@@ -1,8 +1,8 @@
 {
     "name": "@orillusion/geometry",
-    "version": "0.2.1",
+    "version": "0.2.4",
     "author": "Orillusion",
-    "description": "Orillusion geometry Plugin",
+    "description": "Orillusion Geometry Plugin",
     "main": "./dist/geometry.umd.js",
     "module": "./dist/geometry.es.js",
     "module:dev": "./index.ts",
@@ -21,7 +21,7 @@
         "type": "git",
         "url": "git+https://github.com/Orillusion/orillusion.git"
     },
-    "dependencies": {
-        "@orillusion/core": "^0.8.0"
+    "peerDependencies": {
+        "@orillusion/core": ">=0.8.0"
     }
 }

@@ -1,6 +1,6 @@
 {
     "name": "@orillusion/physics",
-    "version": "0.3.0",
+    "version": "0.3.3",
     "author": "Orillusion",
     "description": "Orillusion Physics Plugin, Powerd by Ammo.js",
     "main": "./dist/physics.umd.js",
@@ -21,7 +21,9 @@
         "url": "git+https://github.com/Orillusion/orillusion.git"
     },
     "dependencies": {
-        "@orillusion/ammo": "^0.2.1",
-        "@orillusion/core": "^0.8.0"
+        "@orillusion/ammo": ">=0.2.1"
+    },
+    "peerDependencies": {
+        "@orillusion/core": ">=0.8.0"
     }
 }

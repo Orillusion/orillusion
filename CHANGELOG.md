@@ -1,3 +1,26 @@
+## [0.8.3](https://github.com/Orillusion/orillusion/compare/v0.8.2...v0.8.3) (2024-08-28)
+
+
+### Bug Fixes
+
+* fix frameRate and camera resize ([c4b8626](https://github.com/Orillusion/orillusion/commit/c4b8626c91937d50fba1a2d94101e84053a83d4c))
+* fix InstanceDraw destroy error ([4529594](https://github.com/Orillusion/orillusion/commit/4529594491e111e2d98ca4319189215614d97654))
+* **GUI:** add option to receive post effects ([#426](https://github.com/Orillusion/orillusion/issues/426)) ([af74bb1](https://github.com/Orillusion/orillusion/commit/af74bb1c14a1ee42af749868271f9b45a65c2384))
+* **inputsystem:** capture pointer on pointerdown ([#432](https://github.com/Orillusion/orillusion/issues/432)) ([cc90b82](https://github.com/Orillusion/orillusion/commit/cc90b82d4d9ab8250553263e3c0499a84e3e503c))
+* **shadow:** fix acceptShadow ([4d6a838](https://github.com/Orillusion/orillusion/commit/4d6a8387310381d158fc13bc168cc7482cc656b3))
+* **transform:** fix lookAt at vertical angle ([#431](https://github.com/Orillusion/orillusion/issues/431)) ([1922f18](https://github.com/Orillusion/orillusion/commit/1922f185f67b450dcbb04216ee30dfba8cc0e0a2))
+
+
+### Features
+
+* add GridObject ([#436](https://github.com/Orillusion/orillusion/issues/436)) ([a939ce6](https://github.com/Orillusion/orillusion/commit/a939ce62ccbe3e6db6e964ebcf2921d975b23a1c))
+* **geometry:** add extra geometry package, extrude geometry and text geometry ([#442](https://github.com/Orillusion/orillusion/issues/442)) ([069e6d4](https://github.com/Orillusion/orillusion/commit/069e6d40d4510be09dfe3c7af9ac1b97bb855ccd))
+* **graphic:** move graphic3D to @orillusion/graphic ([#427](https://github.com/Orillusion/orillusion/issues/427)) ([a1d1b2a](https://github.com/Orillusion/orillusion/commit/a1d1b2aa9fc0b6abc55ad7894312f1100f6b466e))
+* **physics:** add RopeSoftBody, rigidbody dragger, and enhance collisionShapeUtil ([#448](https://github.com/Orillusion/orillusion/issues/448)) ([452d730](https://github.com/Orillusion/orillusion/commit/452d730ef3377867cd81fe6d78e3a1b744c4e2b5))
+* **physics:** Refactor physics plugin with extensive enhancements and new features ([#440](https://github.com/Orillusion/orillusion/issues/440)) ([7c18db5](https://github.com/Orillusion/orillusion/commit/7c18db5157a0001c9f056e6c7a158e62ff5f0e2b))
+
+
+
 ## [0.8.2](https://github.com/Orillusion/orillusion/compare/v0.8.1...v0.8.2) (2024-07-21)
 
 
