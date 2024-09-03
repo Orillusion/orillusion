@@ -3,6 +3,7 @@ export * from './utils/ContactProcessedUtil';
 export * from './utils/RigidBodyUtil';
 export * from './utils/RigidBodyMapping';
 export * from './utils/TempPhyMath';
+export * from './utils/PhysicsDragger';
 export * from './Physics';
 export * from './visualDebug/DebugDrawModeEnum';
 export * from './rigidbody/RigidbodyEnum';
