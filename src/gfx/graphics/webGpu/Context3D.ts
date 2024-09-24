@@ -116,7 +116,7 @@ export class Context3D extends CEventDispatcher {
             format: this.presentationFormat,
             usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
             alphaMode: 'premultiplied',
-            colorSpace: `srgb`,
+            colorSpace: `srgb`
         });
 
         this._resizeEvent = new CResizeEvent(CResizeEvent.RESIZE, { width: this.windowWidth, height: this.windowHeight })

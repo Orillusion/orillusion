@@ -48,11 +48,6 @@ export class Engine3D {
     public static inputSystem: InputSystem;
 
     /**
-    * input system in engine3d
-    */
-    public static divB: HTMLDivElement;
-
-    /**
      * more view in engine3d
      */
     public static views: View3D[];
@@ -324,15 +319,8 @@ export class Engine3D {
      */
     public static async init(descriptor: { canvasConfig?: CanvasConfig; beforeRender?: Function; renderLoop?: Function; lateRender?: Function, engineSetting?: EngineSetting } = {}) {
         console.log('Engine Version', version);
-
-        // for dev debug
-        if (import.meta.env.DEV) {
-            this.divB = document.createElement("div");
-            this.divB.style.position = 'absolute'
-            this.divB.style.zIndex = '999'
-            this.divB.style.color = '#FFFFFF'
-            this.divB.style.top = '150px'
-            document.body.appendChild(this.divB);
+        if (!window.isSecureContext){
+            console.warn('WebGPU is only supported in secure contexts (HTTPS or localhost)')
         }
 
         this.setting = { ...this.setting, ...descriptor.engineSetting }
