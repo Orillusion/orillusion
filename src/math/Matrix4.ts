@@ -1,4 +1,4 @@
-import { WasmMatrix } from '@orillusion/wasm-matrix/WasmMatrix';
+import { CreateFloatArray, FloatArray, WasmMatrix } from '@orillusion/wasm-matrix/WasmMatrix';
 import { DEGREES_TO_RADIANS, clamp, RADIANS_TO_DEGREES } from './MathUtil';
 import { Orientation3D } from './Orientation3D';
 import { Quaternion } from './Quaternion';
@@ -55,7 +55,7 @@ export class Matrix4 {
     /**
      * matrix do use share bytesArray
      */
-    public static dynamicMatrixBytes: Float32Array;
+    public static dynamicMatrixBytes: FloatArray;
 
     /**
      * cache all use do matrix 
@@ -109,11 +109,11 @@ export class Matrix4 {
     public offset: number = 0;
 
     /**
-     * matrix raw data format Float32Array
-     * @see {@link Float32Array}
+     * matrix raw data format FloatArray
+     * @see {@link FloatArray}
      * @version Orillusion3D  0.5.1
      */
-    public rawData: Float32Array;
+    public rawData: FloatArray;
 
     private _position: Vector3;
 
@@ -133,7 +133,7 @@ export class Matrix4 {
         this.dynamicGlobalMatrixRef ||= [];
         this.dynamicGlobalMatrixRef.forEach((m) => {
             m.offset = Matrix4.wasmMatrixPtr + m.index * Matrix4.blockBytes;
-            m.rawData = new Float32Array(Matrix4.dynamicMatrixBytes.buffer, m.offset, 16);
+            m.rawData = CreateFloatArray(Matrix4.dynamicMatrixBytes.buffer, m.offset, 16);
         });
 
         Matrix4.help_matrix_0 ||= new Matrix4();
@@ -332,7 +332,7 @@ export class Matrix4 {
         // if (Matrix4.dynamicGlobalMatrixRef) {
         Matrix4.dynamicGlobalMatrixRef[this.index] = this;
         Matrix4.useCount++;
-        this.rawData = new Float32Array(Matrix4.dynamicMatrixBytes.buffer, this.offset, 16);
+        this.rawData = CreateFloatArray(Matrix4.dynamicMatrixBytes.buffer, this.offset, 16);
         // } else {
         //     this.rawData = new Float32Array(16);
         // }
@@ -393,7 +393,7 @@ export class Matrix4 {
         data[15] = 1;
     }
 
-    private static float32Array = new Float32Array(16).fill(0);
+    private static floatArray: FloatArray = new Float64Array(16).fill(0);
 
     /**
      * matrix multiply
@@ -403,7 +403,7 @@ export class Matrix4 {
     public multiply(mat4: Matrix4): void {
         let a = this.rawData;
         let b = mat4.rawData;
-        let r = Matrix4.float32Array;
+        let r = Matrix4.floatArray;
 
         r[0] = a[0] * b[0] + a[1] * b[4] + a[2] * b[8] + a[3] * b[12];
         r[1] = a[0] * b[1] + a[1] * b[5] + a[2] * b[9] + a[3] * b[13];
@@ -529,7 +529,7 @@ export class Matrix4 {
      * @version Orillusion3D  0.5.1
      */
     public transformVector4(v: Vector3, target?: Vector3): Vector3 {
-        let data: Float32Array = this.rawData;
+        let data: FloatArray = this.rawData;
 
         target ||= new Vector3();
 
@@ -1312,7 +1312,7 @@ export class Matrix4 {
      * @version Orillusion3D  0.5.1
      */
     public copyFrom(sourceMatrix3D: Matrix4): Matrix4 {
-        let data: Float32Array = this.rawData;
+        let data: FloatArray = this.rawData;
         data[0] = sourceMatrix3D.rawData[0];
         data[1] = sourceMatrix3D.rawData[1];
         data[2] = sourceMatrix3D.rawData[2];
@@ -1339,8 +1339,8 @@ export class Matrix4 {
      * @param transpose Whether to transpose the current matrix.
      * @version Orillusion3D  0.5.1
      */
-    public copyRawDataTo(vector: Float32Array, index: number = 0, transpose: boolean = false) {
-        let data: Float32Array = this.rawData;
+    public copyRawDataTo(vector: FloatArray, index: number = 0, transpose: boolean = false) {
+        let data: FloatArray = this.rawData;
         vector[0 + index] = data[0];
         vector[1 + index] = data[1];
         vector[2 + index] = data[2];
@@ -1366,7 +1366,7 @@ export class Matrix4 {
      * @version Orillusion3D  0.5.1
      */
     public copyColFrom(col: number, Vector3: Vector3) {
-        let data: Float32Array = this.rawData;
+        let data: FloatArray = this.rawData;
         switch (col) {
             case 0:
                 data[0] = Vector3.x;
@@ -1404,7 +1404,7 @@ export class Matrix4 {
      * @version Orillusion3D  0.5.1
      */
     public copyColTo(col: number, Vector3: Vector3) {
-        let data: Float32Array = this.rawData;
+        let data: FloatArray = this.rawData;
         switch (col) {
             case 0:
                 Vector3.x = data[0];
@@ -1454,7 +1454,7 @@ export class Matrix4 {
         return this;
     }
 
-    private static decomposeRawData = new Float32Array(16).fill(0)
+    private static decomposeRawData = new Float64Array(16).fill(0)
     /**
      * Decompose the current matrix
      * @param orientationStyle The default decomposition type is Orientation3D.EULER_ANGLES
@@ -1662,7 +1662,7 @@ export class Matrix4 {
     public deltaTransformVector(v: Vector3, target?: Vector3): Vector3 {
         target ||= new Vector3();
 
-        let data: Float32Array = this.rawData;
+        let data: FloatArray = this.rawData;
         let x: number = v.x;
         let y: number = v.y;
         let z: number = v.z;
@@ -1679,7 +1679,7 @@ export class Matrix4 {
      * @version Orillusion3D  0.5.1
      */
     public identity() {
-        let data: Float32Array = this.rawData;
+        let data: FloatArray = this.rawData;
         //1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
         data[0] = 1;
         data[1] = 0;
@@ -1706,7 +1706,7 @@ export class Matrix4 {
      * @version Orillusion3D  0.5.1
      */
     public fill(value: number) {
-        let data: Float32Array = this.rawData;
+        let data: FloatArray = this.rawData;
         data[1] = value;
         data[2] = value;
         data[3] = value;
@@ -1732,7 +1732,7 @@ export class Matrix4 {
     public invers33() {
         /// Invert a 3x3 using cofactors.  This is about 8 times faster than
         /// the Numerical Recipes code which uses Gaussian elimination.
-        let data: Float32Array = this.rawData;
+        let data: FloatArray = this.rawData;
 
         let rkInverse_00 = data[5] * data[10] - data[9] * data[6];
         let rkInverse_01 = data[8] * data[6] - data[4] * data[10];
@@ -1769,7 +1769,7 @@ export class Matrix4 {
     public invert(): boolean {
         let d = this.determinant;
         let invertable = Math.abs(d) > 0.00000000001;
-        let data: Float32Array = this.rawData;
+        let data: FloatArray = this.rawData;
 
         if (invertable) {
             d = 1 / d;
@@ -1817,7 +1817,7 @@ export class Matrix4 {
      * @returns world coordinate
      */
     public transformPoint(v: Vector3, target?: Vector3): Vector3 {
-        let data: Float32Array = this.rawData;
+        let data: FloatArray = this.rawData;
         target ||= new Vector3();
 
         let x: number = v.x;
@@ -1839,7 +1839,7 @@ export class Matrix4 {
      * @version Orillusion3D  0.5.1
      */
     public transformVector(v: Vector3, target?: Vector3): Vector3 {
-        let data: Float32Array = this.rawData;
+        let data: FloatArray = this.rawData;
 
         target ||= new Vector3();
 
@@ -1859,7 +1859,7 @@ export class Matrix4 {
      * @version Orillusion3D  0.5.1
      */
     public transpose() {
-        let data: Float32Array = this.rawData;
+        let data: FloatArray = this.rawData;
 
         for (let i: number = 0; i < Matrix4.helpMatrix.rawData.length; i++) {
             Matrix4.helpMatrix.rawData[i] = data[i];
@@ -1885,7 +1885,7 @@ export class Matrix4 {
      * @version Orillusion3D  0.5.1
      */
     public get determinant(): number {
-        let data: Float32Array = this.rawData;
+        let data: FloatArray = this.rawData;
         return (
             (data[0] * data[5] - data[4] * data[1]) * (data[10] * data[15] - data[14] * data[11]) -
             (data[0] * data[9] - data[8] * data[1]) * (data[6] * data[15] - data[14] * data[7]) +
@@ -1903,7 +1903,7 @@ export class Matrix4 {
      */
     public getPosition(out?: Vector3): Vector3 {
         out ||= new Vector3();
-        let data: Float32Array = this.rawData;
+        let data: FloatArray = this.rawData;
         out.x = data[12];
         out.y = data[13];
         out.z = data[14];
@@ -1926,7 +1926,7 @@ export class Matrix4 {
      * @version Orillusion3D  0.5.1
      */
     public set position(value: Vector3) {
-        let data: Float32Array = this.rawData;
+        let data: FloatArray = this.rawData;
         data[12] = value.x;
         data[13] = value.y;
         data[14] = value.z;
@@ -1939,7 +1939,7 @@ export class Matrix4 {
      * @version Orillusion3D  0.5.1
      */
     public get scale(): Vector3 {
-        let data: Float32Array = this.rawData;
+        let data: FloatArray = this.rawData;
         return new Vector3(data[0], data[5], data[10]);
     }
 
@@ -1947,7 +1947,7 @@ export class Matrix4 {
      * Set component of scale
      */
     public set scale(value: Vector3) {
-        let data: Float32Array = this.rawData;
+        let data: FloatArray = this.rawData;
         data[0] = value.x;
         data[5] = value.y;
         data[10] = value.z;
@@ -2458,7 +2458,7 @@ export function rotMatrix(mat: Matrix4, q: Quaternion) {
     let z: number = q.z;
     let w: number = q.w;
 
-    let rawData: Float32Array = mat.rawData;
+    let rawData: FloatArray = mat.rawData;
     let xy2: number = 2.0 * x * y;
     let xz2: number = 2.0 * x * z;
     let xw2: number = 2.0 * x * w;

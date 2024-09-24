@@ -6,9 +6,7 @@ import { InputSystem } from './io/InputSystem';
 import { View3D } from './core/View3D';
 import { version } from '../package.json';
 
-import { GPUTextureFormat } from './gfx/graphics/webGpu/WebGPUConst';
 import { webGPUContext } from './gfx/graphics/webGpu/Context3D';
-import { RTResourceConfig } from './gfx/renderJob/config/RTResourceConfig';
 import { RTResourceMap } from './gfx/renderJob/frame/RTResourceMap';
 
 import { ForwardRenderJob } from './gfx/renderJob/jobs/ForwardRenderJob';
@@ -20,7 +18,6 @@ import { ShaderLib } from './assets/shader/ShaderLib';
 import { ShaderUtil } from './gfx/graphics/webGpu/shader/util/ShaderUtil';
 import { ComponentCollect } from './gfx/renderJob/collect/ComponentCollect';
 import { ShadowLightsCollect } from './gfx/renderJob/collect/ShadowLightsCollect';
-import { GUIConfig } from './components/gui/GUIConfig';
 import { WasmMatrix } from '@orillusion/wasm-matrix/WasmMatrix';
 import { Matrix4 } from './math/Matrix4';
 import { FXAAPost } from './gfx/renderJob/post/FXAAPost';
@@ -109,6 +106,8 @@ export class Engine3D {
      * engine setting
      */
     public static setting: EngineSetting = {
+        doublePrecision: false,
+        
         occlusionQuery: {
             enable: true,
             debug: false,
@@ -325,7 +324,7 @@ export class Engine3D {
 
         this.setting = { ...this.setting, ...descriptor.engineSetting }
 
-        await WasmMatrix.init(Matrix4.allocCount);
+        await WasmMatrix.init(Matrix4.allocCount, this.setting.doublePrecision);
 
         await webGPUContext.init(descriptor.canvasConfig);
 

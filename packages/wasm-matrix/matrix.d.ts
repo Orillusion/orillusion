@@ -13,14 +13,15 @@ declare module Module {
     const HEAPF32: Float32Array;
     const HEAPF64: Float64Array;
 
-    function _initialize(count: number);
+    function _initialize(count: number, useDoublePrecision: boolean, threadCount: number);
 
+    function _allocMatrix(count: number);
+    
     function _updateAllMatrixTransform(start: number, end: number);
 
-    function _updateAllMatrixContinueTransform(start: number, end: number);
+    function _updateAllMatrixContinueTransform(start: number, end: number, dt: number);
 
     function _printMatrix(index: number);
-
 
     function _getSRTPtr(): number;
 

@@ -258,7 +258,7 @@ export class MathUtil {
      */
     public static transformVector(matrix: Matrix4, vector: Vector3, result: Vector3 = null): Vector3 {
         result ||= new Vector3();
-        let raw: Float32Array = matrix.rawData;
+        let raw = matrix.rawData;
         let a: number = raw[0];
         let e: number = raw[1];
         let i: number = raw[2];

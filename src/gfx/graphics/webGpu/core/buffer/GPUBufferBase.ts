@@ -11,6 +11,7 @@ import { Struct } from "../../../../../util/struct/Struct";
 import { webGPUContext } from "../../Context3D";
 import { MemoryDO } from "../../../../../core/pool/memory/MemoryDO";
 import { MemoryInfo } from "../../../../../core/pool/memory/MemoryInfo";
+import { FloatArray } from "@orillusion/wasm-matrix/WasmMatrix";
 
 /**
  * @internal
@@ -279,7 +280,8 @@ export class GPUBufferBase {
             node = this.memory.allocation_node(16 * 4);
             this.memoryNodes.set(name, node);
         }
-        node.setFloat32Array(0, mat.rawData);
+
+        node.setFloatArray(0, mat.rawData);
     }
 
     public setMatrixArray(name: string, mats: Matrix4[]) {
@@ -290,7 +292,7 @@ export class GPUBufferBase {
         }
         for (let i = 0; i < mats.length; i++) {
             const mat = mats[i];
-            node.setFloat32Array(i * 16, mat.rawData);
+            node.setFloatArray(i * 16, mat.rawData);
         }
     }
 
@@ -365,6 +367,10 @@ export class GPUBufferBase {
                 node.writeFloat32Array(value);
                 break;
 
+            case `Float64Array`:
+                node.writeFloat32Array(new Float32Array(value));
+                break;
+
             case `Vector2`:
                 node.writeVector2(value);
                 break;
@@ -410,7 +416,13 @@ export class GPUBufferBase {
         // this.applyMapAsync();
     }
 
-    public mapAsyncWrite(mapAsyncArray: Float32Array, len: number) {
+    public mapAsyncWrite(floatArray: FloatArray, len: number) {
+        let mapAsyncArray: Float32Array;
+        if (floatArray instanceof Float64Array) {
+            mapAsyncArray = new Float32Array(floatArray);
+        } else {
+            mapAsyncArray = floatArray as Float32Array;
+        }
         // Upload data using mapAsync and a queue of staging buffers.
         let bytesLen = len;
         let device = webGPUContext.device;
