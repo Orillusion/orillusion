@@ -66,7 +66,6 @@ export class CameraControllerBase {
      *
      * Get moving speed
      * @returns number
-     * @version FlyEngine
      */
     public get speed(): number {
         return this._speed;
@@ -76,7 +75,6 @@ export class CameraControllerBase {
      *
      * Set moving speed
      * @returns number
-     * @version FlyEngine
      */
     public set speed(val: number) {
         this._speed = val;
