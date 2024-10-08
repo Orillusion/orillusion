@@ -1,3 +1,4 @@
+import { FloatArray } from "@orillusion/wasm-matrix/WasmMatrix";
 import { Engine3D, Matrix4, MeshRenderer, Object3D, PrefabAvatarData, Quaternion, RenderNode, RendererMask, RendererMaskUtil, SkinnedMeshRenderer2, StorageGPUBuffer, Time, Vector3, Vector4, View3D } from "../..";
 import { PropertyAnimationClip } from "../../math/AnimationCurveClip";
 import { RegisterComponent } from "../../util/SerializeDecoration";
@@ -8,7 +9,7 @@ export class AnimatorComponent extends ComponentBase {
     public timeScale: number = 1.0;
     public jointMatrixIndexTableBuffer: StorageGPUBuffer;
     public playBlendShapeLoop: boolean = false;
-    protected inverseBindMatrices: Float32Array[];
+    protected inverseBindMatrices: FloatArray[];
     protected _avatar: PrefabAvatarData;
     protected _rendererList: SkinnedMeshRenderer2[];
     protected propertyCache: Map<RenderNode, { [name: string]: any }>

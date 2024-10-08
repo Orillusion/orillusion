@@ -14,6 +14,7 @@ import { CubeCamera } from './CubeCamera';
 import { webGPUContext } from '../gfx/graphics/webGpu/Context3D';
 import { FrustumCSM } from './csm/FrustumCSM';
 import { CSM } from './csm/CSM';
+import { CResizeEvent } from '../event/CResizeEvent';
 
 /**
  * Camera components
@@ -24,7 +25,7 @@ export class Camera3D extends ComponentBase {
     /**
      * camera Perspective
      */
-    public fov: number = 1;
+    public fov: number = 60;
 
     /**
      * camera use name
@@ -47,6 +48,31 @@ export class Camera3D extends ComponentBase {
     public far: number = 5000;
 
     /**
+     * orth camera right plane
+     */
+    public left: number = -100;
+
+    /**
+     * orth camera left plane
+     */
+    public right: number = 100;
+
+    /**
+     * orth camera top plane
+     */
+    public top: number = 100;
+
+    /**
+     * orth camera bottom plane
+     */
+    public bottom: number = -100;
+
+    /**
+     * orth view size
+     */
+    public frustumSize: number = 100;
+
+    /**
      * camera view port size
      */
     public viewPort: Rect = new Rect();
@@ -56,17 +82,17 @@ export class Camera3D extends ComponentBase {
      */
     public frustum: Frustum;
 
-    public sh_bak: Float32Array = new Float32Array([
-        2.485296, 2.52417, 2.683965, 3.544894,
-        0.2323964, 0.1813751, 0.08516902, -4.860471E-05,
-        -0.2744142, -0.04131086, 0.2248164, -0.005996059,
-        0.1551732, 0.137717, 0.1002693, -0.0006728604,
-        0.2209381, 0.2109673, 0.1770538, -1.395991E-05,
-        0.3529238, 0.2824739, 0.1817433, -0.0005164869,
-        -0.1344275, -0.1289607, -0.1347626, 7.825881E-06,
-        0.2125785, 0.1779549, 0.124602, 0.000503074,
-        -0.1039777, -0.09676537, -0.07681116, -0.0004372867,
-    ]);
+    // public sh_bak: Float32Array = new Float32Array([
+    //     2.485296, 2.52417, 2.683965, 3.544894,
+    //     0.2323964, 0.1813751, 0.08516902, -4.860471E-05,
+    //     -0.2744142, -0.04131086, 0.2248164, -0.005996059,
+    //     0.1551732, 0.137717, 0.1002693, -0.0006728604,
+    //     0.2209381, 0.2109673, 0.1770538, -1.395991E-05,
+    //     0.3529238, 0.2824739, 0.1817433, -0.0005164869,
+    //     -0.1344275, -0.1289607, -0.1347626, 7.825881E-06,
+    //     0.2125785, 0.1779549, 0.124602, 0.000503074,
+    //     -0.1039777, -0.09676537, -0.07681116, -0.0004372867,
+    // ]);
 
     public sh: Float32Array = new Float32Array(36);
 
@@ -126,21 +152,35 @@ export class Camera3D extends ComponentBase {
         this._enableCSM = value;
     }
     constructor() {
-        super();
+        super();        
     }
 
     public init() {
         super.init();
         this._ray = new Ray();
         this.frustum = new Frustum();
+        this.lookTarget = new Vector3(0, 0, 0);
 
+        // TODO: set viewport based on View3D size
         this.viewPort.x = 0;
         this.viewPort.y = 0;
         this.viewPort.w = webGPUContext.presentationSize[0];
         this.viewPort.h = webGPUContext.presentationSize[1];
-        this.lookTarget = new Vector3(0, 0, 0);
 
-        this.perspective(60, webGPUContext.aspect, 1, 1000.0);
+        this.updateProjection();        
+        webGPUContext.addEventListener(CResizeEvent.RESIZE, this.updateProjection, this)
+    }
+
+    public updateProjection() {
+        this.aspect = webGPUContext.aspect;
+        if (this.type == CameraType.perspective) {
+            this.perspective(this.fov, this.aspect, this.near, this.far);
+        }else if(this.type == CameraType.ortho) {
+            if(this.frustumSize)
+                this.ortho(this.frustumSize, this.near, this.far);
+            else
+                this.orthoOffCenter(this.left, this.right, this.bottom, this.top, this.near, this.far);
+        }  
     }
 
     public getShadowBias(depthTexSize: number): number {
@@ -189,54 +229,47 @@ export class Camera3D extends ComponentBase {
     public perspective(fov: number, aspect: number, near: number, far: number) {
         this.fov = fov;
         this.aspect = aspect;
-        this.near = near;
+        this.near = Math.max(0.001, near);
         this.far = far;
-        this._projectionMatrix.perspective(fov, aspect, near, far);
+        this._projectionMatrix.perspective(this.fov, this.aspect, this.near, this.far);
         this.type = CameraType.perspective;
     }
 
-    public resetPerspective(aspect: number) {
-        if (this.type == CameraType.perspective) {
-            this._projectionMatrix.perspective(this.fov, aspect, this.near, this.far);
-        }
+    /**
+     * set an orthographic camera with a frustumSize
+     * @param frustumSize the frustum size 
+     * @param near camera near plane
+     * @param far camera far plane
+     */
+    public ortho(frustumSize: number, near: number, far: number) {
+        this.frustumSize = frustumSize;
+        let w = frustumSize * 0.5 * this.aspect;
+        let h = frustumSize * 0.5;
+        let left = -w / 2;
+        let right = w / 2;
+        let top = h / 2;
+        let bottom = -h / 2;
+        this.orthoOffCenter(left, right, bottom, top, near, far);
     }
 
     /**
-     * Create an orthographic camera
-     * @param width screen width
-     * @param height screen height
-     * @param znear camera near plane
-     * @param zfar camera far plane
+     * set an orthographic camera with specified frustum space
+     * @param left camera left plane
+     * @param right camera right plane
+     * @param bottom camera bottom plane
+     * @param top camera top plane
+     * @param near camera near plane
+     * @param far camera far plane
      */
-    public ortho(width: number, height: number, znear: number, zfar: number) {
-        this.near = Math.max(znear, 0.1);
-        this.far = zfar;
-        this._projectionMatrix.ortho(width, height, znear, zfar);
+    public orthoOffCenter(left: number, right: number, bottom: number, top: number, near: number, far: number){
+        this.near = near;
+        this.far = far;
+        this.left = left;
+        this.right = right;
+        this.top = top;
+        this.bottom = bottom;
         this.type = CameraType.ortho;
-    }
-
-    /**
-     *
-     * Create an orthographic camera
-     * @param l 
-     * @param r 
-     * @param b 
-     * @param t 
-     * @param zn camera near plane
-     * @param zf camera far plane
-     */
-    public orthoOffCenter(l: number, r: number, b: number, t: number, zn: number, zf: number) {
-        this.near = Math.max(zn, 0.01);
-        this.far = zf;
-        this._projectionMatrix.orthoOffCenter(l, r, b, t, zn, zf);
-        this.type = CameraType.ortho;
-    }
-
-    public orthoZo(l: number, r: number, b: number, t: number, zn: number, zf: number) {
-        this.near = Math.max(zn, 0.01);
-        this.far = zf;
-        this._projectionMatrix.orthoZO(l, r, b, t, zn, zf);
-        this.type = CameraType.ortho;
+        this._projectionMatrix.orthoOffCenter(this.left, this.right, this.bottom, this.top, this.near, this.far);
     }
 
     /**
@@ -454,18 +487,7 @@ export class Camera3D extends ComponentBase {
     /**
      * @internal
      */
-    public resetProjectMatrix() {
-        this.perspective(this.fov, this.aspect, this.near, this.far);
-    }
-
-    /**
-     * @internal
-     */
     public onUpdate() {
-        if (this.type == CameraType.perspective) {
-            this.aspect = webGPUContext.aspect;
-            this.resetProjectMatrix();
-        }
         if (this._useJitterProjection) {
             this.getJitteredProjectionMatrix();
         }

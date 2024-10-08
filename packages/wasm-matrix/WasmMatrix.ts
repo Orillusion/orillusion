@@ -1,38 +1,32 @@
-import { Matrix4 } from '../../src';
-import matrixjs from './matrix?raw'
+import { Engine3D, Matrix4 } from '../../src';
+import matrix from './matrix';
+
+export type FloatArray = Float32Array | Float64Array;
+
+export function CreateFloatArray(buffer: ArrayBufferLike, byteOffset?: number, length?: number) {
+    if (Engine3D.setting.doublePrecision) 
+        return new Float64Array(buffer, byteOffset, length);
+    return new Float32Array(buffer, byteOffset, length);
+}
 
 export class WasmMatrix {
 
-    public static matrixBuffer: Float32Array;
-    public static matrixSRTBuffer: Float32Array;
-    public static matrixContinuedSRTBuffer: Float32Array;
+    public static matrixBuffer: FloatArray;
+    public static matrixSRTBuffer: FloatArray;
+    public static matrixContinuedSRTBuffer: FloatArray;
     public static matrixStateBuffer: Int32Array;
     static matrixBufferPtr: number;
     static matrixSRTBufferPtr: number;
     static matrixContinuedSRTBufferPtr: number;
     static matrixStateBufferPtr: number;
-    static wasm: any;
+    static wasm: typeof matrix;
     static stateStruct: number = 4;
+    static useDoublePrecision: boolean = false;
 
-    public static async init(count: number) {
-        await new Promise((resolve)=>{
-            const script = document.createElement('script');
-            script.async = true;
-            script.type = "text/javascript";
-            script.src = URL.createObjectURL(new Blob([matrixjs]));
-            document.head.appendChild(script)
-            script.onload = () => {
-                let check = ()=>{
-                    this.wasm = window['wasmMatrix'];
-                    if (this.wasm && this.wasm['calledRun'])
-                        resolve(true)
-                    else
-                        setTimeout(check, 20)
-                }
-                check()
-            }
-        })
-        // this.wasm = window['wasmMatrix'];
+    public static async init(count: number, useDoublePrecision: boolean = false) {
+        this.wasm = await matrix();
+        this.useDoublePrecision = useDoublePrecision;
+        this.wasm._initialize(count, useDoublePrecision, 0);
         this.allocMatrix(count);
     }
 
@@ -41,16 +35,25 @@ export class WasmMatrix {
             console.error(`The maximum allocation size is exceeded! current:${count}, limit:${Matrix4.maxCount}`);
         }
 
-        this.wasm._allocation(count);
+        this.wasm._allocMatrix(count);
 
         this.matrixBufferPtr = this.wasm._getMatrixBufferPtr();
         this.matrixSRTBufferPtr = this.wasm._getSRTPtr();
         this.matrixStateBufferPtr = this.wasm._getInfoPtr();
         this.matrixContinuedSRTBufferPtr = this.wasm._getContinuedSRTPtr();
 
-        this.matrixBuffer = new Float32Array(this.wasm.HEAPF32.buffer, this.matrixBufferPtr, 16 * count);
-        this.matrixSRTBuffer = new Float32Array(this.wasm.HEAPF32.buffer, this.matrixSRTBufferPtr, (3 * 3) * count);
-        this.matrixContinuedSRTBuffer = new Float32Array(this.wasm.HEAPF32.buffer, this.matrixContinuedSRTBufferPtr, (3 * 3) * count);
+        if (this.useDoublePrecision) {
+            this.matrixBuffer = CreateFloatArray(this.wasm.HEAPF64.buffer, this.matrixBufferPtr, 16 * count);
+            this.matrixSRTBuffer = CreateFloatArray(this.wasm.HEAPF64.buffer, this.matrixSRTBufferPtr, (3 * 3) * count);
+            this.matrixContinuedSRTBuffer = CreateFloatArray(this.wasm.HEAPF64.buffer, this.matrixContinuedSRTBufferPtr, (3 * 3) * count);
+            Matrix4.blockBytes = Matrix4.block * 8;
+        } else {
+            this.matrixBuffer = CreateFloatArray(this.wasm.HEAPF32.buffer, this.matrixBufferPtr, 16 * count);
+            this.matrixSRTBuffer = CreateFloatArray(this.wasm.HEAPF32.buffer, this.matrixSRTBufferPtr, (3 * 3) * count);
+            this.matrixContinuedSRTBuffer = CreateFloatArray(this.wasm.HEAPF32.buffer, this.matrixContinuedSRTBufferPtr, (3 * 3) * count);
+            Matrix4.blockBytes = Matrix4.block * 4;
+        }
+
         this.matrixStateBuffer = new Int32Array(this.wasm.HEAP32.buffer, this.matrixStateBufferPtr, (WasmMatrix.stateStruct) * count);
 
         Matrix4.allocMatrix(count);

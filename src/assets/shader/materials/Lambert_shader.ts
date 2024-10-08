@@ -24,7 +24,7 @@ export let Lambert_shader: string = /*wgsl*/ `
 
         var uv = transformUV1.zw * ORI_VertexVarying.fragUV0 + transformUV1.xy; 
         let baseColor = textureSample(baseMap,baseMapSampler,uv) ;
-        if(baseColor.w < 0.5){
+        if(baseColor.w < materialUniform.alphaCutoff){
             discard ;
         }
 

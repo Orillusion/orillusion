@@ -227,7 +227,6 @@ export class MathUtil {
      * @param toDirection The transformed direction
      * @param target The calculated quaternion is null by default and the result is returned
      * @returns Quaternion The calculated quaternion returns a new instance created if target is null
-     * @version Orillusion3D  0.5.1
      */
     public static fromToRotation(fromDirection: Vector3, toDirection: Vector3, target: Quaternion = null): Quaternion {
         target ||= new Quaternion();
@@ -258,7 +257,7 @@ export class MathUtil {
      */
     public static transformVector(matrix: Matrix4, vector: Vector3, result: Vector3 = null): Vector3 {
         result ||= new Vector3();
-        let raw: Float32Array = matrix.rawData;
+        let raw = matrix.rawData;
         let a: number = raw[0];
         let e: number = raw[1];
         let i: number = raw[2];

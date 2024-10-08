@@ -7,4 +7,8 @@ export * from "./ExtrudeGeometry/Path2D"
 export * from "./ExtrudeGeometry/Shape2D"
 export * from "./ExtrudeGeometry/ShapeUtils"
 export * from "./parser/FontParser"
-export * from "./TextGeometry"
+export * from "./text/TextGeometry"
+export * from "./terrain/TerrainGeometry"
+export * from "./grass/GrassGeometry"
+export * from "./grass/component/GrassComponent";
+export * from "./grass/material/GrassMaterial";

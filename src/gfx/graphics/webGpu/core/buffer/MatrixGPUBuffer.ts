@@ -1,3 +1,4 @@
+import { FloatArray } from '@orillusion/wasm-matrix/WasmMatrix';
 import { webGPUContext } from '../../Context3D';
 import { ArrayBufferData } from './ArrayBufferData';
 import { GPUBufferBase } from './GPUBufferBase';
@@ -20,7 +21,13 @@ export class MatrixGPUBuffer extends GPUBufferBase {
         this.createBuffer(GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST | usage, size, data, "MatrixGPUBuffer");
     }
 
-    public writeBufferByHeap(mapAsyncArray: Float32Array, len: number) {
+    public writeBufferByHeap(floatArray: FloatArray, len: number) {
+        let mapAsyncArray: Float32Array;
+        if (floatArray instanceof Float64Array) {
+            mapAsyncArray = new Float32Array(floatArray);
+        } else {
+            mapAsyncArray = floatArray as Float32Array;
+        }
         // Upload data using mapAsync and a queue of staging buffers.
         let bytesLen = len;
         let device = webGPUContext.device;
