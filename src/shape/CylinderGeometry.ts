@@ -136,11 +136,10 @@ export class CylinderGeometry extends GeometryBase {
 
                 for (let x = 0; x <= that.radialSegments; x++) {
                     const u = x / that.radialSegments;
-
                     let theta = u * that.thetaLength + that.thetaStart;
-
+                    
                     if (x == that.radialSegments && Math.abs(that.thetaLength - that.thetaStart) == Math.PI * 2) {
-                        theta = 0 * that.thetaLength + that.thetaStart;
+                        theta = 0;
                     }
 
                     const sinTheta = Math.sin(theta);
@@ -158,7 +157,6 @@ export class CylinderGeometry extends GeometryBase {
 
                     // uv
                     uvs.push(u, 1 - v);
-
                     indexRow.push(index++);
                 }
 
