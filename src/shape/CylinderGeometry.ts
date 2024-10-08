@@ -74,7 +74,7 @@ export class CylinderGeometry extends GeometryBase {
      * @param count 
      * @param index 
      */
-    private addGroup(start, count, index) {
+    private addGroup(start: number, count: number, index: number) {
         this.addSubGeometry({
             indexStart: start,
             indexCount: count,
@@ -92,13 +92,13 @@ export class CylinderGeometry extends GeometryBase {
         this.radialSegments = Math.floor(this.radialSegments);
         this.heightSegments = Math.floor(this.heightSegments);
 
-        const vertices = [];
-        const normals = [];
-        const uvs = [];
-        const indices = [];
+        const vertices: number[] = [];
+        const normals: number[] = [];
+        const uvs: number[] = [];
+        const indices: number[] = [];
 
         let index = 0;
-        const indexArray = [];
+        const indexArray: number[][] = [];
         const halfHeight = this.height / 2;
         let groupStart = 0;
 
@@ -136,8 +136,11 @@ export class CylinderGeometry extends GeometryBase {
 
                 for (let x = 0; x <= that.radialSegments; x++) {
                     const u = x / that.radialSegments;
-
-                    const theta = u * that.thetaLength + that.thetaStart;
+                    let theta = u * that.thetaLength + that.thetaStart;
+                    
+                    if (x == that.radialSegments && Math.abs(that.thetaLength - that.thetaStart) == Math.PI * 2) {
+                        theta = 0;
+                    }
 
                     const sinTheta = Math.sin(theta);
                     const cosTheta = Math.cos(theta);
@@ -154,7 +157,6 @@ export class CylinderGeometry extends GeometryBase {
 
                     // uv
                     uvs.push(u, 1 - v);
-
                     indexRow.push(index++);
                 }
 
@@ -179,7 +181,7 @@ export class CylinderGeometry extends GeometryBase {
             groupStart += groupCount;
         }
 
-        function generateCap(top) {
+        function generateCap(top: boolean) {
             const centerIndexStart = index;
 
             const uv = new Vector2();
