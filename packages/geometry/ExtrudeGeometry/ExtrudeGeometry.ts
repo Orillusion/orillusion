@@ -20,7 +20,7 @@ export class ExtrudeGeometry extends GeometryBase {
     protected verticesArray: number[] = [];
     protected uvArray: number[] = [];
 
-    constructor(shapes?: Shape2D[], options?) {
+    constructor(shapes?: Shape2D[], options?: ExtrudeGeometryArgs) {
         super();
         this.options = options;
         this.shapes = shapes;
