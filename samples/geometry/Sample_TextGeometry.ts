@@ -1,4 +1,4 @@
-import { Engine3D, View3D, Scene3D, CameraUtil, AtmosphericComponent, webGPUContext, HoverCameraController, Object3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer } from "@orillusion/core";
+import { Engine3D, View3D, Scene3D, CameraUtil, AtmosphericComponent, webGPUContext, HoverCameraController, Object3D, DirectLight, KelvinUtil, LitMaterial, MeshRenderer, Vector3 } from "@orillusion/core";
 import { TextGeometry, FontParser } from "@orillusion/geometry";
 import { Graphic3D } from "@orillusion/graphic";
 
@@ -32,9 +32,10 @@ class Sample_TextGeometry {
             mr.geometry = new TextGeometry("Hello, Orillusion!", {
                 font: font, // required
                 fontSize: 16, // required
-                depth: 2.5,
+                depth: 5,
                 steps: 1,
-                bevelEnabled: false
+                bevelEnabled: false,
+                anchorPoint: new Vector3(0.5, 0.5, 0.5),
             });
 
             let mats = [];
@@ -43,8 +44,6 @@ class Sample_TextGeometry {
                 mats.push(mat);
             }
             mr.materials = mats;
-
-            obj.x = mr.geometry.bounds.size.x * -0.5;
 
             scene.addChild(obj);
         }
