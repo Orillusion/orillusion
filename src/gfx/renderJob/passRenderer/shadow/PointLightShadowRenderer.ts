@@ -193,7 +193,7 @@ export class PointLightShadowRenderer extends RendererBase {
 
         for (const iterator of collectInfo.opaqueList) {
             let node = iterator;
-            if (node.preInit(this._rendererType)) {
+            if (!node.isDestroyed && node.preInit(this._rendererType)) {
                 node.nodeUpdate(view, this._rendererType, renderContext.rendererPassState, null);
                 break;
             }
@@ -268,7 +268,7 @@ export class PointLightShadowRenderer extends RendererBase {
                 let nodeMap = renderList[1];
                 for (const iterator of nodeMap) {
                     let node = iterator[1];
-                    if (node.preInit(this._rendererType)) {
+                    if (!node.isDestroyed && node.preInit(this._rendererType)) {
                         node.nodeUpdate(view, this._rendererType, renderContext.rendererPassState, clusterLightingBuffer);
                         break;
                     }
@@ -285,7 +285,8 @@ export class PointLightShadowRenderer extends RendererBase {
                     continue;
                 if (!renderNode.castShadow)
                     continue;
-
+                if (renderNode.isDestroyed)
+                    continue;
                 if (!renderNode.preInit(this._rendererType)) {
                     renderNode.nodeUpdate(view, this._rendererType, renderContext.rendererPassState, clusterLightingBuffer);
                 }

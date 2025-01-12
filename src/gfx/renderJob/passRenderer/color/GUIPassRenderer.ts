@@ -79,7 +79,7 @@ export class GUIPassRenderer extends RendererBase {
                 let nodeMap = renderList[1];
                 for (const iterator of nodeMap) {
                     let node = iterator[1];
-                    if (node.preInit(this._rendererType)) {
+                    if (!node.isDestroyed && node.preInit(this._rendererType)) {
                         node.nodeUpdate(view, this._rendererType, this.rendererPassState, clusterLightingBuffer);
                         break;
                     }
@@ -93,6 +93,8 @@ export class GUIPassRenderer extends RendererBase {
                 if (!renderNode.enable)
                     continue;
                 if (!renderNode.hasMask(RendererMask.UI) || renderNode.isRecievePostEffectUI)
+                    continue;
+                if (renderNode.isDestroyed)
                     continue;
                 if (!renderNode.preInit(this._rendererType)) {
                     renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState, clusterLightingBuffer);

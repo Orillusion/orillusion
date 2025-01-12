@@ -67,6 +67,9 @@ export class PostRenderer extends RendererBase {
         this.postList.forEach((v) => {
             if (v.enable) {
                 v.render(view, command);
+                if (v.rendererPassState) {
+                    GPUContext.lastRenderPassState = v.rendererPassState;
+                }
             }
         });
         GPUContext.endCommandEncoder(command);

@@ -32,7 +32,6 @@ export class GlobalFog extends PostBase {
     public fogOpTexture: VirtualTexture;
     private fogCompute: ComputeShader;
     private fogUniform: UniformGPUBuffer;
-    private rendererPassState: RendererPassState;
 
     constructor() {
         super();

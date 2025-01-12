@@ -1,3 +1,4 @@
+import { FloatArray } from '@orillusion/wasm-matrix/WasmMatrix';
 import { Color } from '../../../math/Color';
 import { Quaternion } from '../../../math/Quaternion';
 import { Vector2 } from '../../../math/Vector2';
@@ -170,6 +171,19 @@ export class MemoryInfo {
     }
 
     public setFloat32Array(index: number, data: Float32Array) {
+        let tmp = new Float32Array(this.dataBytes.buffer, this.dataBytes.byteOffset + index * Float32Array.BYTES_PER_ELEMENT, data.length);
+        tmp.set(data);
+    }
+
+    public setFloatArray(index: number, value: FloatArray) {
+        let data: Float32Array;
+        if (value instanceof Float32Array) {
+            data = value;
+        } else {
+            // GPU nonsupport f64
+            data = new Float32Array(value)
+        }
+
         let tmp = new Float32Array(this.dataBytes.buffer, this.dataBytes.byteOffset + index * Float32Array.BYTES_PER_ELEMENT, data.length);
         tmp.set(data);
     }

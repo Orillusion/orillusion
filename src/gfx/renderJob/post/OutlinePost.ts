@@ -47,10 +47,6 @@ export class OutlinePost extends PostBase {
     /**
      * @internal
      */
-    private rendererPassState: RendererPassState;
-    /**
-     * @internal
-     */
     private calcWeightCompute: ComputeShader;
     /**
      * @internal
@@ -197,7 +193,7 @@ export class OutlinePost extends PostBase {
         //blend
         this.blendCompute = new ComputeShader(OutLineBlendColor_cs);
         this.blendCompute.setStorageBuffer('outlineSetting', this.outlineSetting);
-        this.autoSetColorTexture('inTex', this.blendCompute);
+        this.blendCompute.setSamplerTexture('inTex', this.getLastRenderTexture());
         this.blendCompute.setSamplerTexture(`lowTex`, this.lowTex);
         this.blendCompute.setStorageTexture(`outlineTex`, this.outlineTex);
 

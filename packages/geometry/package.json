@@ -1,0 +1,27 @@
+{
+    "name": "@orillusion/geometry",
+    "version": "0.2.7",
+    "author": "Orillusion",
+    "description": "Orillusion Geometry Plugin",
+    "main": "./dist/geometry.umd.js",
+    "module": "./dist/geometry.es.js",
+    "module:dev": "./index.ts",
+    "types": "./dist/index.d.ts",
+    "files": ["dist"],
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build && npm run build:types && npm run build:clean",
+        "build:types": "tsc --emitDeclarationOnly -p tsconfig.json && mkdir dist/lib && cp lib/*.d.ts dist/lib/",
+        "build:clean": "mv dist/packages/geometry/* dist && rm -rf dist/src && rm -rf dist/packages",
+        "docs": "npm run docs:typedoc ../../docs/geometry index.ts",
+        "docs:typedoc": "npx typedoc --plugin typedoc-plugin-markdown --tsconfig tsconfig.json --gitRevision main --hideBreadcrumbs true --allReflectionsHaveOwnDocument true --readme none --excludeInternal --excludePrivate --excludeProtected --sort source-order --out"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Orillusion/orillusion.git"
+    },
+    "peerDependencies": {
+        "@orillusion/core": ">=0.8.0"
+    }
+}

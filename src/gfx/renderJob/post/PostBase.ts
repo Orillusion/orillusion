@@ -11,6 +11,7 @@ import { View3D } from '../../../core/View3D';
 import { Reference } from '../../../util/Reference';
 import { CResizeEvent } from '../../../event/CResizeEvent';
 import { webGPUContext } from '../../graphics/webGpu/Context3D';
+import { RendererPassState } from '../passRenderer/state/RendererPassState';
 /**
  * @internal
  * Base class for post-processing effects
@@ -19,6 +20,7 @@ import { webGPUContext } from '../../graphics/webGpu/Context3D';
 export class PostBase {
     public enable: boolean = true;
     public postRenderer: PostRenderer;
+    public rendererPassState: RendererPassState;
     protected rtViewQuad: Map<string, ViewQuad>;
     protected virtualTexture: Map<string, VirtualTexture>;
 
@@ -43,7 +45,7 @@ export class PostBase {
         return viewQuad;
     }
 
-    protected getOutTexture(): Texture {
+    protected getLastRenderTexture(): Texture {
         let colorTexture: Texture;
         let renderTargets = GPUContext.lastRenderPassState.renderTargets;
         if (renderTargets.length > 0) {
@@ -54,35 +56,15 @@ export class PostBase {
         return colorTexture;
     }
 
-    protected autoSetColorTexture(name: string, compute: ComputeShader): void {
-        let input = this.getOutTexture() as VirtualTexture;
-        compute.setSamplerTexture(name, input);
-    }
-    /**
-     * @internal
-     */
     public compute(view: View3D) { }
-    /**
-     * @internal
-     */
-    public onAttach(view: View3D) { }
-    /**
-     * @internal
-     */
-    public onDetach(view: View3D) { }
-    public onResize() {
 
-    }
-    /**
-     * @internal
-     */
-    public render(view: View3D, command: GPUCommandEncoder) {
-        this.compute(view);
-        this.rtViewQuad.forEach((viewQuad, k) => {
-            let lastTexture = GPUContext.lastRenderPassState.getLastRenderTexture();
-            viewQuad.renderToViewQuad(view, viewQuad, command, lastTexture);
-        });
-    }
+    public onAttach(view: View3D) { }
+
+    public onDetach(view: View3D) { }
+
+    public onResize() {}
+
+    public render(view: View3D, command: GPUCommandEncoder) {}
 
     public destroy(force?: boolean) {
         this.postRenderer = null;

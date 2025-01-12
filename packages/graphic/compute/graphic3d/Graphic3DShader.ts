@@ -39,7 +39,7 @@ export let Graphic3DShader: string = /*wgsl*/ `
             @location(auto) worldNormal: vec4<f32>,
             @location(auto) material: vec4<f32>,
         // #endif
-        @builtin(frag_depth) out_depth: f32
+        // @builtin(frag_depth) out_depth: f32
     };
 
     @fragment

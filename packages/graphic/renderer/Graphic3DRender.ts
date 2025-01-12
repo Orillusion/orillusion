@@ -4,8 +4,8 @@ import { Graphic3DFillRenderer } from "./Graphic3DFillRenderer";
 import { Graphic3DLineRenderer } from "./Graphic3DLineBatchRenderer";
 
 export class Graphic3D extends Object3D {
-    protected mLineRender: Graphic3DLineRenderer;
-    protected mFillRender: Graphic3DFillRenderer;
+    public mLineRender: Graphic3DLineRenderer;
+    public mFillRender: Graphic3DFillRenderer;
 
     constructor() {
         super();
@@ -437,8 +437,8 @@ export class Graphic3D extends Object3D {
      * Erase all drawn graphics
      */
     public ClearAll() {
-        this.mLineRender.shapes.clear();
-        this.mFillRender.shapes.clear();
+        this.mLineRender.clear();
+        this.mFillRender.clear();
     }
 
     /**

@@ -1,4 +1,4 @@
-﻿import { Color, Engine3D, ImageType, Object3D, PointerEvent3D, TextAnchor, UIImage, UIInteractive, UITextField, clamp } from "@orillusion/core";
+﻿import { Color, Engine3D, ImageType, Object3D, PickGUIEvent3D, TextAnchor, UIImage, UIInteractive, UITextField, clamp } from "@orillusion/core";
 import { sampleUIPanelClick, sampleUIPanelDispatcher } from "./GUIBinder";
 
 export class GUIPanelPOI {
@@ -61,7 +61,7 @@ export class GUIPanelPOI {
         this._backImage.uiTransform.y = -60;
 
         uiChild.addEventListener(
-            PointerEvent3D.PICK_CLICK_GUI,
+            PickGUIEvent3D.PICK_CLICK_GUI,
             () => {
                 this._remainTime = 500;
                 sampleUIPanelClick.data = this.objUI;
@@ -71,7 +71,7 @@ export class GUIPanelPOI {
         );
 
         uiChild.addEventListener(
-            PointerEvent3D.PICK_OVER_GUI,
+            PickGUIEvent3D.PICK_OVER_GUI,
             () => {
                 this._backImage.color = this._outColor;
             },
@@ -79,7 +79,7 @@ export class GUIPanelPOI {
         );
 
         uiChild.addEventListener(
-            PointerEvent3D.PICK_OUT_GUI,
+            PickGUIEvent3D.PICK_OUT_GUI,
             () => {
                 this._backImage.color = this._originColor;
             },

@@ -25,7 +25,7 @@ export class CEvent {
     /**
      * extra data.Used for the transmission process of events, carrying data
      */
-    public data: any;
+    public data?: any;
 
     /**
      *

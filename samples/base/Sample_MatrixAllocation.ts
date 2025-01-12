@@ -5,6 +5,8 @@ import { GUIUtil } from '@samples/utils/GUIUtil';
 
 class Sample_MatrixAllocation {
     async run() {
+        Engine3D.setting.doublePrecision = true;
+        
         Matrix4.allocCount = 10;
         Matrix4.allocOnceCount = 5;
 

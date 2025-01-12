@@ -32,9 +32,6 @@ export class Entity extends CEventDispatcher {
     public get instanceID(): string {
         return this._instanceID;
     }
-
-
-
     /**
      *
      * The Transform attached to this object.
@@ -67,9 +64,10 @@ export class Entity extends CEventDispatcher {
     protected _boundWorld: IBound;
     protected _isBoundChange: boolean = true;
     private _dispose: boolean = false;
-    // private _visible: boolean = true;
 
-
+    public get dispose(): boolean {
+        return this._dispose;
+    }
 
     /**
      *

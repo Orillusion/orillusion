@@ -51,10 +51,6 @@ export class SSRPost extends PostBase {
     /**
      * @internal
      */
-    rendererPassState: RendererPassState;
-    /**
-     * @internal
-     */
     ssrUniformBuffer: UniformGPUBuffer;
     /**
      * @internal
@@ -182,7 +178,7 @@ export class SSRPost extends PostBase {
         this.SSR_IS_Compute.setStorageBuffer(`rayTraceBuffer`, this.rayTraceData);
         this.SSR_IS_Compute.setStorageBuffer(`ssrColorData`, this.ssrColorData);
         this.SSR_IS_Compute.setStorageBuffer(`historyPosition`, this.historyPosition);
-        this.SSR_IS_Compute.setSamplerTexture(`colorMap`, this.getOutTexture());
+        this.SSR_IS_Compute.setSamplerTexture(`colorMap`, this.getLastRenderTexture());
 
         this.SSR_IS_Compute.setStorageTexture(`outTex`, this.isRetTexture);
 
@@ -202,7 +198,7 @@ export class SSRPost extends PostBase {
         let gBufferTexture = rtFrame.getCompressGBufferTexture();
 
         this.SSR_Blend_Compute.setSamplerTexture("gBufferTexture", gBufferTexture);
-        this.SSR_Blend_Compute.setSamplerTexture("colorMap", this.getOutTexture());
+        this.SSR_Blend_Compute.setSamplerTexture("colorMap", this.getLastRenderTexture());
         this.SSR_Blend_Compute.setSamplerTexture(`ssrMap`, input);
         this.SSR_Blend_Compute.setStorageTexture(`outTex`, this.finalTexture);
 

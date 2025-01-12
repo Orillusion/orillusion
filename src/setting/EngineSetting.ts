@@ -12,6 +12,11 @@ import { SkySetting } from "./SkySetting";
 export type EngineSetting = {
 
     /**
+     * use double precision matrix
+     */
+    doublePrecision: boolean;
+
+    /**
      * @internal
      */
     occlusionQuery: OcclusionQuerySetting;

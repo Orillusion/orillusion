@@ -142,6 +142,7 @@ export let ShadowMapping_frag: string = /*wgsl*/ `
           }
           visibility /= totalWeight;
       }
+      #endif
       return vec4<f32>(visibility, isOutSideArea, varying_shadowUV);
     }
 

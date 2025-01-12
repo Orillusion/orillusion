@@ -1,6 +1,6 @@
 ﻿import { GUIHelp } from "@orillusion/debug/GUIHelp";
 import { createExampleScene } from "@samples/utils/ExampleScene";
-import { Engine3D, Object3DUtil, Object3D, GUISpace, WorldPanel, ViewPanel, UIButton, UITextField, Color, TextAnchor, PointerEvent3D, UIImage, ImageType, ComponentBase, View3D, UITransform, UIPanel, UIInteractiveStyle, UIButtonTransition } from "@orillusion/core";
+import { Engine3D, Object3DUtil, Object3D, GUISpace, WorldPanel, ViewPanel, UIButton, UITextField, Color, TextAnchor, UIImage, ImageType, ComponentBase, View3D, UITransform, UIPanel, UIInteractiveStyle, UIButtonTransition, PickGUIEvent3D } from "@orillusion/core";
 
 export class Sample_UIButton {
     button: UIButton;
@@ -64,10 +64,10 @@ export class Sample_UIButton {
             buttonLabel.color = new Color(1, 0.8, 0.4);
             buttonLabel.alignment = TextAnchor.MiddleCenter;
 
-            quad.addEventListener(PointerEvent3D.PICK_CLICK_GUI, this.onUIClick, this);
-            quad.addEventListener(PointerEvent3D.PICK_OUT_GUI, this.onOut, this);
-            quad.addEventListener(PointerEvent3D.PICK_OVER_GUI, this.onOver, this);
-            quad.addEventListener(PointerEvent3D.PICK_DOWN_GUI, this.onDown, this);
+            quad.addEventListener(PickGUIEvent3D.PICK_CLICK_GUI, this.onUIClick, this);
+            quad.addEventListener(PickGUIEvent3D.PICK_OUT_GUI, this.onOut, this);
+            quad.addEventListener(PickGUIEvent3D.PICK_OVER_GUI, this.onOver, this);
+            quad.addEventListener(PickGUIEvent3D.PICK_DOWN_GUI, this.onDown, this);
         }
 
         {

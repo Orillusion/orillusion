@@ -35,10 +35,6 @@ export class GTAOPost extends PostBase {
     /**
      * @internal
      */
-    rendererPassState: RendererPassState;
-    /**
-     * @internal
-     */
     gtaoCompute: ComputeShader;
     /**
      * @internal
@@ -168,7 +164,7 @@ export class GTAOPost extends PostBase {
         this.gtaoCompute.setStorageBuffer('aoBuffer', this.aoBuffer);
         let rtFrame = GBufferFrame.getGBufferFrame(GBufferFrame.colorPass_GBuffer);
         this.gtaoCompute.setSamplerTexture(`gBufferTexture`, rtFrame.getCompressGBufferTexture());
-        this.autoSetColorTexture('inTex', this.gtaoCompute);
+        this.gtaoCompute.setSamplerTexture('inTex', this.getLastRenderTexture());
         this.gtaoCompute.setStorageTexture(`outTex`, this.gtaoTexture);
 
         this.gtaoSetting = gtaoSetting;

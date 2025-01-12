@@ -88,8 +88,7 @@ export class ShadowMapPassRenderer extends RendererBase {
                 let nodeMap = renderList[1];
                 for (const iterator of nodeMap) {
                     let node = iterator[1];
-
-                    if (node.preInit(this._rendererType)) {
+                    if (!node.isDestroyed && node.preInit(this._rendererType)) {
                         node.nodeUpdate(view, this._rendererType, this.rendererPassState, null);
                         break;
                     }
@@ -256,9 +255,10 @@ export class ShadowMapPassRenderer extends RendererBase {
                     continue;
                 if (!renderNode.enable)
                     continue;
-                if (!renderNode.castShadow) {
+                if (!renderNode.castShadow)
                     continue;
-                }
+                if (renderNode.isDestroyed)
+                    continue;
                 if (!renderNode.preInit(this._rendererType)) {
                     renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState, clusterLightingBuffer);
                 }

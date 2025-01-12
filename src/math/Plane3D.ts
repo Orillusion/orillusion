@@ -8,7 +8,6 @@ import { PlaneClassification } from "./PlaneClassification";
 * Plane3D 类 3D空间中的平面表示数据
 * 由a,b,c,d4个分量组成 在三维空间中定义了一个平面 Ax + By + Cz + D = 0
 * @includeExample geom/Plane3D.ts
-* @version
 * @platform Web,Native
 */
 export class Plane3D {

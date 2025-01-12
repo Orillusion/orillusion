@@ -97,7 +97,14 @@ export class Graphic3DBatchRenderer extends RenderNode {
         }
     }
 
+    public clear(){
+        this.shapes.clear();
+        this.mDirtyData = true;
+    }
+
     public nodeUpdate(view: View3D, passType: PassType, renderPassState: RendererPassState, clusterLightingBuffer?: ClusterLightingBuffer) {
+        if(this.isDestroyed)
+            return
         if (this.mDirtyData) {
             let offset = 0;
             let posAttrData = this.geometry.getAttribute(VertexAttributeName.position);
@@ -138,5 +145,9 @@ export class Graphic3DBatchRenderer extends RenderNode {
 
         this.mDirtyData = true;
         return shape;
+    }
+
+    public destroy(force?: boolean): void {
+        super.destroy(force);
     }
 }

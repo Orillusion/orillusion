@@ -27,7 +27,7 @@ export class GLTFParser extends ParserBase {
         //await this.load_gltf_textures();
         let subParser = new GLTFSubParser();
         let nodes = await subParser.parse(this.initUrl, this._gltf, this._gltf.scene);
-        subParser.destory();
+        subParser.destroy();
         subParser = null
         if (nodes) {
             this.data = nodes.rootNode;

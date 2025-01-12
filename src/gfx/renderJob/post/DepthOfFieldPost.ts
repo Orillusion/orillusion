@@ -47,10 +47,6 @@ export class DepthOfFieldPost extends PostBase {
     /**
      * @internal
      */
-    rendererPassState: RendererPassState;
-    /**
-     * @internal
-     */
     blurComputes: ComputeShader[];
     /**
      * @internal
@@ -68,13 +64,13 @@ export class DepthOfFieldPost extends PostBase {
     /**
      * @internal
      */
-    onAttach(view: View3D,) {
+    public onAttach(view: View3D,) {
         Engine3D.setting.render.postProcessing.depthOfView.enable = true;
     }
     /**
      * @internal
      */
-    onDetach(view: View3D,) {
+    public onDetach(view: View3D,) {
         Engine3D.setting.render.postProcessing.depthOfView.enable = false;
     }
 
@@ -137,6 +133,9 @@ export class DepthOfFieldPost extends PostBase {
 
             this.outTexture = output;
         }
+
+        // set first input texture
+        this.blurComputes[0].setSamplerTexture('inTex', this.getLastRenderTexture());
     }
 
     private createResource() {
@@ -168,7 +167,7 @@ export class DepthOfFieldPost extends PostBase {
     /**
      * @internal
      */
-    render(view: View3D, command: GPUCommandEncoder) {
+    public render(view: View3D, command: GPUCommandEncoder) {
         if (!this.blurComputes) {
             this.createResource();
             this.createBlurCompute();
@@ -179,7 +178,7 @@ export class DepthOfFieldPost extends PostBase {
             }
             this.rendererPassState = WebGPUDescriptorCreator.createRendererPassState(this.rtFrame, null);
         }
-        this.autoSetColorTexture('inTex', this.blurComputes[0]);
+        
 
         let cfg = Engine3D.setting.render.postProcessing.depthOfView;
         cfg.far = Math.max(cfg.near, cfg.far) + 0.0001;

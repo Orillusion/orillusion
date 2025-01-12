@@ -1,8 +1,9 @@
 import { Matrix4 } from "../../math/Matrix4";
 import { Ray } from "../../math/Ray";
 import { Vector3 } from "../../math/Vector3";
+import { ColliderComponent } from "../ColliderComponent";
 
-export type HitInfo = { intersectPoint?: Vector3; distance: number; collider?: any };
+export type HitInfo = { intersectPoint?: Vector3; normal?: Vector3; distance: number; collider?: ColliderComponent };
 
 export enum ColliderShapeType {
     None,

@@ -233,8 +233,8 @@ export class Shader {
         }
     }
 
-    public destroy() {
-        this.getDefaultColorShader().destroy();
+    public destroy(force?: boolean) {
+        this.getDefaultColorShader().destroy(force);
     }
 
     public clone() {

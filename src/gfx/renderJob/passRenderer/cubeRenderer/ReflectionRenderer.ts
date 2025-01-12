@@ -188,7 +188,7 @@ export class ReflectionRenderer extends RendererBase {
                     let node = iterator[1];
                     if (node.hasMask(RendererMask.ReflectionDebug))
                         continue;
-                    if (node.preInit(PassType.REFLECTION)) {
+                    if (!node.isDestroyed && node.preInit(PassType.REFLECTION)) {
                         node.nodeUpdate(view, PassType.REFLECTION, this.rendererPassState, clusterLightingBuffer);
                         break;
                     }
@@ -206,7 +206,8 @@ export class ReflectionRenderer extends RendererBase {
                     continue;
                 if (!renderNode.enable)
                     continue;
-
+                if (renderNode.isDestroyed)
+                    continue;
                 if (!renderNode.preInit(PassType.REFLECTION)) {
                     renderNode.nodeUpdate(view, PassType.REFLECTION, this.rendererPassState, clusterLightingBuffer);
                 }

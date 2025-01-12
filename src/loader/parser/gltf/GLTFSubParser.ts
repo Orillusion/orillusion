@@ -68,7 +68,7 @@ export class GLTFSubParser {
         return await this.convertToNode(result);
     }
 
-    public destory() {
+    public destroy() {
         KHR_draco_mesh_compression.unload(this.gltf)
         this.gltf = null
     }

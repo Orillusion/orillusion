@@ -31,11 +31,6 @@ export class InputSystem extends CEventDispatcher {
     public isMouseDown: boolean = false;
 
     /**
-     * whether the mouse right key is down now
-     */
-    public isRightMouseDown: boolean = false;
-
-    /**
      * reference of canvas
      */
     public canvas: HTMLCanvasElement;
@@ -101,25 +96,11 @@ export class InputSystem extends CEventDispatcher {
             _y = ev.clientY;
             _button = ev.button;
 
-            if (ev.button == 0) {
-                this.mouseStart(ev);
-            } else if (ev.button == 1) {
-                this.middleDown(ev);
-            } else if (ev.button == 2) {
-                this.isRightMouseDown = true
-                this.mouseStart(ev);
-            }
+            this.mouseStart(ev);
             canvas.setPointerCapture(ev.pointerId)
         }
         canvas.onpointerup = (ev: PointerEvent) => {
-            if (ev.button == 0) {
-                this.mouseEnd(ev);
-            } else if (ev.button == 1) {
-                this.middleUp(ev);
-            } else if (ev.button == 2) {
-                this.isRightMouseDown = false
-                this.mouseEnd(ev);
-            }
+            this.mouseEnd(ev);
             if(ev.button === _button && performance.now() - _t < 300 && Math.abs(_x - ev.clientX) < 20 && Math.abs(_y - ev.clientY) < 20){
                 ev.button === 0 ? this.mouseClick(ev) : this.rightClick(ev);
             }
@@ -133,10 +114,7 @@ export class InputSystem extends CEventDispatcher {
         }
         canvas.onpointercancel = (ev: PointerEvent) => {
             canvas.releasePointerCapture(ev.pointerId)
-            if (ev.button == 1) 
-                this.middleUp(ev);
-            else 
-                this.mouseEnd(ev);
+            this.mouseEnd(ev);
         }
         // canvas.onpointerleave = (ev: PointerEvent) => {
         //     this.mouseEnd(ev);
@@ -144,15 +122,6 @@ export class InputSystem extends CEventDispatcher {
         // canvas.onpointerout = (ev: PointerEvent) => {
         //     this.mouseEnd(ev);
         // }
-
-        // let input = document.createElement(`input`);
-        // input.setSelectionRange(-1000, 1000);
-        // input.style.zIndex = `9999`
-        // input.style.width = `9999px`
-        // input.style.height = `9999px`
-        // input.style.position = `absolute`
-        // input.focus();
-        // document.body.append(input);
 
         canvas.addEventListener(`wheel`, (e: WheelEvent) => this.mouseWheel(e), { passive: false });
 
@@ -253,40 +222,6 @@ export class InputSystem extends CEventDispatcher {
         this._pointerEvent3D.ctrlKey = e.ctrlKey;
         this._pointerEvent3D.altKey = e.altKey;
         this._pointerEvent3D.shiftKey = e.shiftKey;
-        this.dispatchEvent(this._pointerEvent3D);
-    }
-
-    private middleDown(e: PointerEvent | MouseEvent) {
-        this._pointerEvent3D.reset();
-        this._pointerEvent3D.mouseCode = e.button;
-        this._pointerEvent3D.mouseX = e.clientX - this.canvasX;
-        this._pointerEvent3D.mouseY = e.clientY - this.canvasY;
-        // this._pointerEvent3D.target = this;
-        this._pointerEvent3D.type = PointerEvent3D.POINTER_MID_DOWN;
-        this._pointerEvent3D.ctrlKey = e.ctrlKey;
-        this._pointerEvent3D.altKey = e.altKey;
-        this._pointerEvent3D.shiftKey = e.shiftKey;
-        this._pointerEvent3D.pointerId = e[`pointerId`] ? e[`pointerId`] : 0;
-        this._pointerEvent3D.pointerType = e[`pointerType`] ? e[`pointerType`] : 0;
-        this._pointerEvent3D.isPrimary = e[`isPrimary`] ? e[`isPrimary`] : 0;
-        this._pointerEvent3D.pressure = e[`pressure`] ? e[`pressure`] : 0;
-        this.dispatchEvent(this._pointerEvent3D);
-    }
-
-    private middleUp(e: PointerEvent) {
-        this._pointerEvent3D.reset();
-        this._pointerEvent3D.mouseCode = e.button;
-        this._pointerEvent3D.mouseX = e.clientX - this.canvasX;
-        this._pointerEvent3D.mouseY = e.clientY - this.canvasY;
-        this._pointerEvent3D.type = PointerEvent3D.POINTER_MID_UP;
-        this._pointerEvent3D.ctrlKey = e.ctrlKey;
-        this._pointerEvent3D.metaKey = e.metaKey;
-        this._pointerEvent3D.altKey = e.altKey;
-        this._pointerEvent3D.shiftKey = e.shiftKey;
-        this._pointerEvent3D.pointerId = e.pointerId;
-        this._pointerEvent3D.pointerType = e.pointerType;
-        this._pointerEvent3D.isPrimary = e.isPrimary;
-        this._pointerEvent3D.pressure = e.pressure;
         this.dispatchEvent(this._pointerEvent3D);
     }
 

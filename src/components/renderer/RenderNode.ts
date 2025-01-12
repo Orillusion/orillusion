@@ -372,8 +372,11 @@ export class RenderNode extends ComponentBase {
             return;
         let renderNode = this;
         let worldMatrix = renderNode.transform._worldMatrix;
-        for (let i = 0; i < renderNode.materials.length; i++) {
-            const material = renderNode.materials[i];
+
+        const nCount = Math.max(renderNode.materials.length, renderNode._geometry.subGeometries.length);
+        
+        for (let i = 0; i < nCount; i++) {
+            const material = i >= renderNode.materials.length ? renderNode.materials[0] : renderNode.materials[i];
             if (!material || !material.enable)
                 continue;
 
@@ -409,7 +412,7 @@ export class RenderNode extends ComponentBase {
                     if (noneShare) {
                         ProfilerUtil.viewCount_pipeline(view, PassType[passType]);
                     }
-                    let subGeometry = renderNode._geometry.subGeometries[i];
+                    let subGeometry = i >= renderNode._geometry.subGeometries.length ? renderNode._geometry.subGeometries[0] : renderNode._geometry.subGeometries[i];
                     let lodInfos = subGeometry.lodLevels;
                     let lodInfo = lodInfos[renderNode.lodLevel];
 
@@ -623,11 +626,10 @@ export class RenderNode extends ComponentBase {
     }
 
     public destroy(force?: boolean) {
-
         super.destroy(force);
-        this._geometry = null;
-        this._materials = null;
-        this._combineShaderRefection = null;
+        this._geometry = undefined;
+        this._materials.length = 0;
+        this._combineShaderRefection = undefined;
     }
 
 }

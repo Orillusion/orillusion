@@ -24,7 +24,7 @@ export let Lambert_shader: string = /*wgsl*/ `
 
         var uv = transformUV1.zw * ORI_VertexVarying.fragUV0 + transformUV1.xy; 
         let baseColor = textureSample(baseMap,baseMapSampler,uv) ;
-        if(baseColor.w < 0.5){
+        if(baseColor.w < materialUniform.alphaCutoff){
             discard ;
         }
 
@@ -54,8 +54,10 @@ export let Lambert_shader: string = /*wgsl*/ `
           }
         }
         
-        ORI_ShadingInput.BaseColor = lightColor * materialUniform.baseColor ;
-        ORI_ShadingInput.BaseColor.w = 1.0 ;
+        ORI_ShadingInput.BaseColor = lightColor * materialUniform.baseColor;
+        if(ORI_ShadingInput.BaseColor.w > 1.0){
+            ORI_ShadingInput.BaseColor.w = 1.0;
+        }
         UnLit();
 
         // let n = globalUniform.near ;

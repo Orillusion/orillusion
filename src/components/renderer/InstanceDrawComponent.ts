@@ -1,6 +1,5 @@
 import { GPUContext } from "../../gfx/renderJob/GPUContext";
 import { RTResourceMap } from "../../gfx/renderJob/frame/RTResourceMap";
-import { ClusterLightingRender } from "../../gfx/renderJob/passRenderer/cluster/ClusterLightingRender";
 import { RenderContext } from "../../gfx/renderJob/passRenderer/RenderContext";
 import { MeshRenderer } from "./MeshRenderer";
 import { RenderNode } from "./RenderNode";
@@ -9,6 +8,7 @@ import { View3D } from "../../core/View3D";
 import { RendererPassState } from "../../gfx/renderJob/passRenderer/state/RendererPassState";
 import { PassType } from "../../gfx/renderJob/passRenderer/state/PassType";
 import { ClusterLightingBuffer } from "../../gfx/renderJob/passRenderer/cluster/ClusterLightingBuffer";
+import { ComponentCollect } from "../../gfx/renderJob/collect/ComponentCollect";
 
 export class InstanceDrawComponent extends RenderNode {
 
@@ -64,10 +64,14 @@ export class InstanceDrawComponent extends RenderNode {
         })
     }
 
-    public stop(): void {
-
+    public reset(){
+        if(this._keyRenderGroup.size > 0){
+            this._keyRenderGroup.clear()
+            this._keyBufferGroup.clear()
+            this._keyIdsGroup.clear()
+            this.start()
+        }
     }
-
     public nodeUpdate(view: View3D, passType: PassType, renderPassState: RendererPassState, clusterLightingBuffer?: ClusterLightingBuffer): void {
         this._keyRenderGroup.forEach((v, k) => {
             let instanceMatrixBuffer = this._keyBufferGroup.get(k);
@@ -107,11 +111,7 @@ export class InstanceDrawComponent extends RenderNode {
                 continue;
 
             for (let j = 0; j < passes.length; j++) {
-                if (!passes || passes.length == 0)
-                    continue;
                 let matPass = passes[j];
-                // if (!matPass.enable)
-                //     continue;
 
                 GPUContext.bindGeometryBuffer(renderContext.encoder, renderNode.geometry);
                 const renderShader = matPass;
@@ -137,5 +137,14 @@ export class InstanceDrawComponent extends RenderNode {
                 }
             }
         }
+    }
+
+    public beforeDestroy(force?: boolean): void {
+        this._keyRenderGroup.clear();
+        this._keyBufferGroup.clear();
+        this._keyIdsGroup.clear();
+        //@ts-ignore
+        this._keyRenderGroup = this._keyBufferGroup = this._keyIdsGroup = undefined;
+        ComponentCollect.removeWaitStart(this.object3D, this);
     }
 }

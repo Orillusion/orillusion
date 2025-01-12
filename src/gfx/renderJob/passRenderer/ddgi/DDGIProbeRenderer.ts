@@ -197,7 +197,7 @@ export class DDGIProbeRenderer extends RendererBase {
             let nodeMap = renderList[1];
             for (const iterator of nodeMap) {
                 let node = iterator[1];
-                if (node.preInit(this.passType)) {
+                if (!node.isDestroyed && node.preInit(this.passType)) {
                     node.nodeUpdate(view, this.passType, this.rendererPassState, null);
                     break;
                 }
@@ -206,7 +206,7 @@ export class DDGIProbeRenderer extends RendererBase {
 
         for (let i = drawMin; i < drawMax; ++i) {
             let renderNode = collectInfo.opaqueList[i];
-            if (renderNode.enable && renderNode.transform.enable) {
+            if (renderNode.enable && renderNode.transform.enable && !renderNode.isDestroyed) {
                 if (!renderNode.preInit(this.passType)) {
                     renderNode.nodeUpdate(view, this.passType, this.rendererPassState, null);
                 }
@@ -226,7 +226,7 @@ export class DDGIProbeRenderer extends RendererBase {
 
         for (let i = drawMin; i < drawMax; ++i) {
             let renderNode = collectInfo.transparentList[i];
-            if (renderNode.enable && renderNode.transform.enable) {
+            if (renderNode.enable && renderNode.transform.enable && !renderNode.isDestroyed) {
                 if (!renderNode.preInit(this.passType)) {
                     renderNode.nodeUpdate(view, this.passType, this.rendererPassState, null);
                 }

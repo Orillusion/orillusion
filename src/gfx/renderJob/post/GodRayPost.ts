@@ -26,10 +26,6 @@ export class GodRayPost extends PostBase {
     /**
      * @internal
      */
-    rendererPassState: RendererPassState;
-    /**
-     * @internal
-     */
     godRayCompute: ComputeShader;
     /**
      * @internal
@@ -108,7 +104,7 @@ export class GodRayPost extends PostBase {
 
         let rtFrame = GBufferFrame.getGBufferFrame(GBufferFrame.colorPass_GBuffer);
         this.godRayCompute.setSamplerTexture(`gBufferTexture`, rtFrame.getCompressGBufferTexture());
-        this.autoSetColorTexture('inTex', this.godRayCompute);
+        this.godRayCompute.setSamplerTexture('inTex', this.getLastRenderTexture());
         this.godRayCompute.setStorageTexture(`outTex`, this.godRayTexture);
 
         let shadowRenderer = Engine3D.getRenderJob(view).shadowMapPassRenderer;

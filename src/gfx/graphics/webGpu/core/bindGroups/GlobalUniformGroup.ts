@@ -56,7 +56,7 @@ export class GlobalUniformGroup {
 
     createBindGroup() {
         this.uniformByteLength = this.uniformGPUBuffer.memory.shareDataBuffer.byteLength;
-        this.matrixesByteLength = Matrix4.blockBytes * Matrix4.maxCount;
+        this.matrixesByteLength = (Matrix4.block * 4) * Matrix4.maxCount;
 
         this.globalBindGroup = webGPUContext.device.createBindGroup({
             label: `global_bindGroupLayout`,

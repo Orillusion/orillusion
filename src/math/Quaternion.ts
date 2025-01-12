@@ -1,3 +1,4 @@
+import { FloatArray } from '@orillusion/wasm-matrix/WasmMatrix';
 import { DEGREES_TO_RADIANS, RADIANS_TO_DEGREES } from './MathUtil';
 import { Orientation3D } from './Orientation3D';
 import { Vector3 } from './Vector3';
@@ -339,7 +340,7 @@ export class Quaternion {
      * @param m 
      * @returns 
      */
-    public setFromRotationMatrix(m: { rawData: Float32Array }) {
+    public setFromRotationMatrix(m: { rawData: FloatArray }) {
         const te = m.rawData;
         const m11 = te[0];
         const m12 = te[4];

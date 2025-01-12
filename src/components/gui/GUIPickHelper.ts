@@ -4,8 +4,8 @@ import { Ray } from "../../math/Ray";
 import { Vector2 } from "../../math/Vector2";
 import { Vector3 } from "../../math/Vector3";
 import { UITransform } from "./uiComponents/UITransform";
-import { GUIConfig, GUISpace } from "./GUIConfig";
-import { HitInfo } from "../shape/ColliderShape";
+import { GUISpace } from "./GUIConfig";
+import { GUIHitInfo } from "./uiComponents/IUIInteractive";
 
 /**
  * @internal
@@ -34,7 +34,7 @@ export class GUIPickHelper {
         this._worldMatrix = new Matrix4();
     }
 
-    public static rayPick(ray: Ray, screenPos: Vector2, screenSize: Vector2, space: GUISpace, panelRatio: number, uiTransform: UITransform, worldMatrix: Matrix4): HitInfo {
+    public static rayPick(ray: Ray, screenPos: Vector2, screenSize: Vector2, space: GUISpace, panelRatio: number, uiTransform: UITransform, worldMatrix: Matrix4): GUIHitInfo {
         if (!this._isInit) {
             this.init();
             this._isInit = true;

@@ -39,10 +39,6 @@ export class GBufferPost extends PostBase {
      */
     outTexture: VirtualTexture;
 
-    /**
-     * @internal
-     */
-    rendererPassState: RendererPassState;
     rtFrame: RTFrame;
     view: View3D;
     gBufferTexture: RenderTexture;

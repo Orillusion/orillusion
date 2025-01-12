@@ -79,7 +79,7 @@ export class PreDepthPassRenderer extends RendererBase {
             let nodeMap = renderList[1];
             for (const iterator of nodeMap) {
                 let node = iterator[1];
-                if (node.preInit(this._rendererType)) {
+                if (!node.isDestroyed && node.preInit(this._rendererType)) {
                     node.nodeUpdate(view, this._rendererType, this.rendererPassState, null);
                     break;
                 }
@@ -109,6 +109,8 @@ export class PreDepthPassRenderer extends RendererBase {
             if (!renderNode.transform.enable)
                 continue;
             if (!renderNode.enable)
+                continue;
+            if (renderNode.isDestroyed)
                 continue;
             if (!renderNode.preInit(this._rendererType)) {
                 renderNode.nodeUpdate(view, this._rendererType, this.rendererPassState);

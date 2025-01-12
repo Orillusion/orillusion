@@ -9,7 +9,7 @@ import { ColliderComponent } from '../components/ColliderComponent';
 import { View3D } from '../core/View3D';
 import { PointerEvent3D } from '../event/eventConst/PointerEvent3D';
 import { HitInfo } from '../components/shape/ColliderShape';
-import { ComponentCollect } from '..';
+import { ComponentCollect, Matrix4 } from '..';
 
 /**
  * Management and triggering for picking 3D objects
@@ -140,12 +140,22 @@ export class PickFire extends CEventDispatcher {
     private _lastFocus: ColliderComponent;
 
     private getPickInfo() {
-        return {
-            worldPos: this._pickCompute.getPickWorldPosition(),
-            screenUv: this._pickCompute.getPickScreenUV(),
-            meshID: this._pickCompute.getPickMeshID(),
-            worldNormal: this._pickCompute.getPickWorldNormal(),
-        };
+        if(Engine3D.setting.pick.mode == `pixel`)
+            return {
+                worldPos: this._pickCompute.getPickWorldPosition(),
+                worldNormal: this._pickCompute.getPickWorldNormal(),
+                screenUv: this._pickCompute.getPickScreenUV(),
+                meshID: this._pickCompute.getPickMeshID(),
+            };
+        else{
+            let intersection = this._interestList[0]
+            return {
+                worldPos: intersection.intersectPoint,
+                worldNormal: intersection.normal,
+                meshID: intersection.collider.transform.worldMatrix.index,
+                distance: intersection.distance,
+            };
+        }
     }
 
     private onTouchMove(e: PointerEvent3D) {
@@ -197,7 +207,7 @@ export class PickFire extends CEventDispatcher {
         this.pick(this._view.camera);
         let target = this.findNearestObj(this._interestList, this._view.camera);
         if (target) {
-            let info = Engine3D.setting.pick.mode == `pixel` ? this.getPickInfo() : null;
+            let info = this.getPickInfo();
             Object.assign(this._pickEvent, e);
             this._pickEvent.type = PointerEvent3D.PICK_CLICK;
             this._pickEvent.target = target.object3D;

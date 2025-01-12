@@ -7,7 +7,7 @@ npm install @orillusion/physics --save
 ```
 ```ts
 import { Scene3D } from "@orillusion/core"
-import { Stats } from "@orillusion/physics"
+import { Physics } from "@orillusion/physics"
 ```
 
 Or access Global build from CDN

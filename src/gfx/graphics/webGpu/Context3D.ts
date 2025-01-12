@@ -32,7 +32,6 @@ export class Context3D extends CEventDispatcher {
      */
     async init(canvasConfig?: CanvasConfig): Promise<boolean> {
         this.canvasConfig = canvasConfig;
-
         if (canvasConfig && canvasConfig.canvas) {
             this.canvas = canvasConfig.canvas;
             if (this.canvas === null) {
@@ -104,9 +103,6 @@ export class Context3D extends CEventDispatcher {
             throw new Error('Your browser does not support WebGPU!');
         }
 
-        this._pixelRatio = this.canvasConfig?.devicePixelRatio || window.devicePixelRatio || 1;
-        this._pixelRatio = Math.min(this._pixelRatio, 2.0);
-
         // configure webgpu context
         this.device.label = 'device';
         this.presentationFormat = navigator.gpu.getPreferredCanvasFormat();
@@ -116,7 +112,7 @@ export class Context3D extends CEventDispatcher {
             format: this.presentationFormat,
             usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
             alphaMode: 'premultiplied',
-            colorSpace: `srgb`,
+            colorSpace: `srgb`
         });
 
         this._resizeEvent = new CResizeEvent(CResizeEvent.RESIZE, { width: this.windowWidth, height: this.windowHeight })
@@ -131,8 +127,10 @@ export class Context3D extends CEventDispatcher {
     }
 
     public updateSize() {
-        let w = Math.floor(this.canvas.clientWidth * this.pixelRatio);
-        let h = Math.floor(this.canvas.clientHeight * this.pixelRatio);
+        this._pixelRatio = this.canvasConfig?.devicePixelRatio || window.devicePixelRatio || 1;
+        this._pixelRatio = Math.min(this._pixelRatio, 2.0);
+        let w = Math.floor(this.canvas.clientWidth * this._pixelRatio);
+        let h = Math.floor(this.canvas.clientHeight * this._pixelRatio);
         if (w != this.windowWidth || h != this.windowHeight) {
             this.canvas.width = this.windowWidth = w;
             this.canvas.height = this.windowHeight = h;

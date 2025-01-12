@@ -82,17 +82,17 @@ export class Camera3D extends ComponentBase {
      */
     public frustum: Frustum;
 
-    public sh_bak: Float32Array = new Float32Array([
-        2.485296, 2.52417, 2.683965, 3.544894,
-        0.2323964, 0.1813751, 0.08516902, -4.860471E-05,
-        -0.2744142, -0.04131086, 0.2248164, -0.005996059,
-        0.1551732, 0.137717, 0.1002693, -0.0006728604,
-        0.2209381, 0.2109673, 0.1770538, -1.395991E-05,
-        0.3529238, 0.2824739, 0.1817433, -0.0005164869,
-        -0.1344275, -0.1289607, -0.1347626, 7.825881E-06,
-        0.2125785, 0.1779549, 0.124602, 0.000503074,
-        -0.1039777, -0.09676537, -0.07681116, -0.0004372867,
-    ]);
+    // public sh_bak: Float32Array = new Float32Array([
+    //     2.485296, 2.52417, 2.683965, 3.544894,
+    //     0.2323964, 0.1813751, 0.08516902, -4.860471E-05,
+    //     -0.2744142, -0.04131086, 0.2248164, -0.005996059,
+    //     0.1551732, 0.137717, 0.1002693, -0.0006728604,
+    //     0.2209381, 0.2109673, 0.1770538, -1.395991E-05,
+    //     0.3529238, 0.2824739, 0.1817433, -0.0005164869,
+    //     -0.1344275, -0.1289607, -0.1347626, 7.825881E-06,
+    //     0.2125785, 0.1779549, 0.124602, 0.000503074,
+    //     -0.1039777, -0.09676537, -0.07681116, -0.0004372867,
+    // ]);
 
     public sh: Float32Array = new Float32Array(36);
 
@@ -233,6 +233,12 @@ export class Camera3D extends ComponentBase {
         this.far = far;
         this._projectionMatrix.perspective(this.fov, this.aspect, this.near, this.far);
         this.type = CameraType.perspective;
+        
+        // update jitter offset
+        if(this._useJitterProjection){
+            this._jitterOffsetX = this._projectionMatrix.get(0, 2);
+            this._jitterOffsetY = this._projectionMatrix.get(1, 2);
+        }
     }
 
     /**
@@ -270,6 +276,12 @@ export class Camera3D extends ComponentBase {
         this.bottom = bottom;
         this.type = CameraType.ortho;
         this._projectionMatrix.orthoOffCenter(this.left, this.right, this.bottom, this.top, this.near, this.far);
+
+        // update jitter offset
+        if(this._useJitterProjection){
+            this._jitterOffsetX = this._projectionMatrix.get(0, 2);
+            this._jitterOffsetY = this._projectionMatrix.get(1, 2);
+        }
     }
 
     /**
@@ -497,6 +509,7 @@ export class Camera3D extends ComponentBase {
         this.enableCSM && this.csm?.update(this._projectionMatrix, this._pvMatrixInv, this.near, this.far, shadow);
     }
 
+    // for jitter projection
     private _haltonSeq: HaltonSeq;
     private _jitterOffsetList: Vector2[];
     private _useJitterProjection: boolean = false;
@@ -504,6 +517,8 @@ export class Camera3D extends ComponentBase {
     private _sampleIndex: number = 0;
     private _jitterX: number = 0;
     private _jitterY: number = 0;
+    private _jitterOffsetX: number;
+    private _jitterOffsetY: number;
 
     public get jitterFrameIndex() {
         return this._jitterFrameIndex;
@@ -539,21 +554,23 @@ export class Camera3D extends ComponentBase {
 
     private getJitteredProjectionMatrix() {
         let setting = Engine3D.setting.render.postProcessing.taa;
-        let mat = this._projectionMatrix;
         let temporalJitterScale: number = setting.temporalJitterScale;
         let offsetIndex = this._jitterFrameIndex % setting.jitterSeedCount;
         let num1 = this._jitterOffsetList[offsetIndex].x * temporalJitterScale;
         let num2 = this._jitterOffsetList[offsetIndex].y * temporalJitterScale;
 
-        let jitX = mat.get(0, 2);
-        let jitY = mat.get(1, 2);
-
         this._jitterX = num1 / this.viewPort.width;
         this._jitterY = num2 / this.viewPort.height;
-        jitX += this._jitterX;
-        jitY += this._jitterY;
-        mat.set(0, 2, jitX);
-        mat.set(1, 2, jitY);
+
+        // set offset xy if not set
+        if(!this._jitterOffsetX || !this._jitterOffsetY){
+            this._jitterOffsetX = this._projectionMatrix.get(0, 2);
+            this._jitterOffsetY = this._projectionMatrix.get(1, 2);
+        }
+        let offsetX = this._jitterOffsetX + this._jitterX;
+        let offsetY = this._jitterOffsetY + this._jitterY;
+        this._projectionMatrix.set(0, 2, offsetX);
+        this._projectionMatrix.set(1, 2, offsetY);
 
         this._jitterFrameIndex++;
     }

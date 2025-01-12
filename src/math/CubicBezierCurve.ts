@@ -51,7 +51,6 @@ export class CubicBezierCurve {
      * get tagent by calc from curve
      * @param t a position in range [0-1]
      * @returns tagent direction
-     * See: http://bimixual.org/AnimationLibrary/beziertangents.html
      */
     public getTangent(t: number): Vector3 {
         if (!(t >= 0.0 && t <= 1.0)) {

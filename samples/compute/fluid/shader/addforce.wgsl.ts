@@ -38,7 +38,7 @@ export class addforce {
     fn kernel (position: vec3<f32>, radius: f32, direction: vec3<f32>, origin: vec3<f32>) -> f32{
         var distanceToMouseRay: f32 = length(cross(direction, position - origin));
         var normalizedDistance = max(0.0, distanceToMouseRay / radius);
-        return smoothstep(1.0, 0.9, normalizedDistance);
+        return smoothstep(0.9, 1.0, normalizedDistance);
     }
     
     // fn _mod (x: f32, y: f32) -> f32{

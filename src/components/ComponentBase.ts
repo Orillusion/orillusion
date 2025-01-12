@@ -33,9 +33,8 @@ export class ComponentBase implements IComponent {
      * @internal
      */
     protected _enable: boolean = true;
-
     private __isStart: boolean = false;
-    public isDestroyed?: boolean;
+    public isDestroyed: boolean = false;
 
     public get isStart(): boolean {
         return this.__isStart;

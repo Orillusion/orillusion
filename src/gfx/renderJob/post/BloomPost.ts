@@ -31,10 +31,6 @@ export class BloomPost extends PostBase {
     /**
      * @internal
      */
-    rendererPassState: RendererPassState;
-    /**
-     * @internal
-     */
     thresholdCompute: ComputeShader;
     downSampleComputes: ComputeShader[];
     upSampleComputes: ComputeShader[];
@@ -131,7 +127,7 @@ export class BloomPost extends PostBase {
     private createThreshouldCompute() {
         this.thresholdCompute = new ComputeShader(threshold);
 
-        this.autoSetColorTexture('inTex', this.thresholdCompute);
+        this.thresholdCompute.setSamplerTexture('inTex', this.getLastRenderTexture());
         this.thresholdCompute.setStorageTexture(`outTex`, this.RT_threshold);
         this.thresholdCompute.setUniformBuffer('bloomCfg', this.bloomSetting);
         this.thresholdCompute.workerSizeX = Math.ceil(this.RT_threshold.width / 8);
@@ -199,7 +195,7 @@ export class BloomPost extends PostBase {
 
         this.postCompute = new ComputeShader(post);
 
-        this.autoSetColorTexture('_MainTex', this.postCompute);
+        this.postCompute.setSamplerTexture('_MainTex', this.getLastRenderTexture());
         this.postCompute.setSamplerTexture(`_BloomTex`, this.RT_BloomUp[N - 2]);
         this.postCompute.setStorageTexture(`outTex`, this.RT_threshold);
         this.postCompute.setUniformBuffer('bloomCfg', this.bloomSetting);

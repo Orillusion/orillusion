@@ -45,59 +45,33 @@ export class Graphics3DShape {
     public buildArcLine(center: Vector3, radius: number, startAngle: number, endAngle: number, segments: number = 16, up: Vector3 = Vector3.Y_AXIS, color: Color = Color.COLOR_WHITE) {
         const totalAngle = (endAngle - startAngle) * DEGREES_TO_RADIANS;
         startAngle *= DEGREES_TO_RADIANS
-        var points: Vector3[] = [];
+        let points: Vector3[] = [];
         for (let i = 0; i <= segments; ++i) {
             if (i > 1) {
                 points.push(points[points.length - 1]);
             }
-            var verAngle: number = totalAngle * (i / segments) + startAngle;
-            var x: number = radius * Math.cos(verAngle);
-            var y: number = radius * Math.sin(verAngle);
-            switch (up) {
-                case Vector3.X_AXIS:
-                    points.push(center.add(new Vector3(0, x, y)));
-                    break;
-                case Vector3.Y_AXIS:
-                    points.push(center.add(new Vector3(x, 0, y)));
-                    break;
-                case Vector3.Z_AXIS:
-                    points.push(center.add(new Vector3(x, y, 0)));
-                    break;
-                default:
-                    points.push(center.add(new Vector3(x, y, 0)));
-                    break;
-            }
+            let verAngle: number = totalAngle * (i / segments) + startAngle;
+            let x: number = radius * Math.cos(verAngle);
+            let y: number = radius * Math.sin(verAngle);
+            this.transformUp(points, up, center, x, y);
         }
         this.fillShapeData(points, color);
     }
 
     public buildCircle(center: Vector3, radius: number, segments: number = 32, up: Vector3 = Vector3.Y_AXIS, color: Color = Color.COLOR_WHITE) {
-        var points: Vector3[] = [];
+        let points: Vector3[] = [];
         for (let i = 0; i <= segments; ++i) {
-            var verAngle: number = (2 * Math.PI * i) / segments;
-            var x: number = radius * Math.cos(verAngle);
-            var y: number = radius * Math.sin(verAngle);
-            switch (up) {
-                case Vector3.X_AXIS:
-                    points.push(center.add(new Vector3(0, x, y)));
-                    break;
-                case Vector3.Y_AXIS:
-                    points.push(center.add(new Vector3(x, 0, y)));
-                    break;
-                case Vector3.Z_AXIS:
-                    points.push(center.add(new Vector3(x, y, 0)));
-                    break;
-                default:
-                    points.push(center.add(new Vector3(x, y, 0)));
-                    break;
-            }
+            let verAngle: number = (2 * Math.PI * i) / segments;
+            let x: number = radius * Math.cos(verAngle);
+            let y: number = radius * Math.sin(verAngle);
+            this.transformUp(points, up, center, x, y);
             if (i > 0) points.push(points[points.length - 1]);
         }
         points.push(points[0]);
         this.fillShapeData(points, color);
     }
 
-    public fillShapeData(points: Vector3[], colors: Color | Color[], forceUpdate: boolean = false) {
+    public fillShapeData(points: Vector3[], colors: Color | Color[], forceUpdate: boolean = true) {
         if (!this.pointData) {
             this.pointData = new Float32Array(4 * points.length);
             this.colorData = new Float32Array(4 * points.length);
@@ -144,5 +118,28 @@ export class Graphics3DShape {
 
     public reset() {
         this.count = 0;
+    }
+
+    private transformUp(points: Vector3[], up: Vector3, center: Vector3, x: number, y:number){
+        switch (up) {
+            case Vector3.X_AXIS:
+                points.push(center.add(new Vector3(0, x, y)));
+                break;
+            case Vector3.Y_AXIS:
+                points.push(center.add(new Vector3(x, 0, y)));
+                break;
+            case Vector3.Z_AXIS:
+                points.push(center.add(new Vector3(x, y, 0)));
+                break;
+            default:
+                // transform x/y based on UP/normal
+                let u = up.clone().normalize()
+                let v = u.crossProduct(Vector3.X_AXIS).normalize()
+                if(v.length === 0)
+                    v = u.crossProduct(Vector3.Y_AXIS).normalize()
+                let w = u.crossProduct(v)
+                points.push(center.add(u.scaleBy(0).add(v.scaleBy(x)).add(w.scaleBy(y))));
+                break;
+        }
     }
 }

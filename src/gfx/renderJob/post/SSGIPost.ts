@@ -45,10 +45,6 @@ export class SSGIPost extends PostBase {
     /**
      * @internal
      */
-    rendererPassState: RendererPassState;
-    /**
-     * @internal
-     */
     ssgiCompute: ComputeShader;
     delayCompute: ComputeShader;
     combineCompute: ComputeShader;
@@ -201,7 +197,7 @@ export class SSGIPost extends PostBase {
             this.ssgiCompute.setStorageTexture(`newTexture`, this.newTexture);
             this.ssgiCompute.setUniformBuffer('globalUniform', globalUniform.uniformGPUBuffer);
             this.ssgiCompute.setStorageBuffer('updateBuffer', this.updateBuffer);
-            this.autoSetColorTexture('inTex', this.ssgiCompute);
+            this.ssgiCompute.setSamplerTexture('inTex', this.getLastRenderTexture());
         }
 
         {

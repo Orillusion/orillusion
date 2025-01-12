@@ -1,12 +1,10 @@
 ﻿import { UIComponentBase } from './UIComponentBase';
-import { IUIInteractive, UIInteractiveStyle } from "./IUIInteractive";
+import { IUIInteractive, UIInteractiveStyle, GUIHitInfo } from "./IUIInteractive";
 import { Vector2 } from '../../../math/Vector2';
 import { Ray } from '../../../math/Ray';
 import { GUIPickHelper } from '../GUIPickHelper';
 import { Object3D } from '../../../core/entities/Object3D';
-import { Vector3 } from '../../../math/Vector3';
 import { UIPanel } from './UIPanel';
-import { HitInfo } from '../../shape/ColliderShape';
 
 /**
  * The basic class of interactive GUI component
@@ -42,7 +40,7 @@ export class UIInteractive extends UIComponentBase implements IUIInteractive {
         super.destroy();
     }
 
-    public rayPick(ray: Ray, panel: UIPanel, screenPos: Vector2, screenSize: Vector2): HitInfo {
+    public rayPick(ray: Ray, panel: UIPanel, screenPos: Vector2, screenSize: Vector2): GUIHitInfo {
         return GUIPickHelper.rayPick(ray, screenPos, screenSize, panel.space, panel.panelRatio, this._uiTransform, panel.transform.worldMatrix);
     }
 

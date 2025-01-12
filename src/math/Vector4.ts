@@ -102,7 +102,6 @@ export class Vector4 {
     /**
      * A three-dimensional position or projection that can be used as 
      * a perspective projection can also be a w in a quaternion
-     * @version Orillusion3D  0.5.1
      */
     public w: number = 1;
 

@@ -44,10 +44,6 @@ export class TAAPost extends PostBase {
     /**
      * @internal
      */
-    rendererPassState: RendererPassState;
-    /**
-     * @internal
-     */
     taaCompute: ComputeShader;
     copyTexCompute: ComputeShader;
     sharpCompute: ComputeShader;
@@ -161,7 +157,7 @@ export class TAAPost extends PostBase {
         let rtFrame = GBufferFrame.getGBufferFrame(GBufferFrame.colorPass_GBuffer);
         computeShader.setSamplerTexture(`preColorTex`, this.preColorTex);
         computeShader.setSamplerTexture(`gBufferTexture`, rtFrame.getCompressGBufferTexture());
-        this.autoSetColorTexture('inTex', computeShader);
+        computeShader.setSamplerTexture('inTex', this.getLastRenderTexture());
         computeShader.setStorageTexture(`outTex`, this.taaTexture);
 
         computeShader.workerSizeX = Math.ceil(this.taaTexture.width / 8);

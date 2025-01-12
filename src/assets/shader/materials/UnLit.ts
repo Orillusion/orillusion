@@ -32,7 +32,7 @@ export let UnLit: string = /*wgsl*/ `
 
         var uv = transformUV1.zw * ORI_VertexVarying.fragUV0 + transformUV1.xy; 
         let color = textureSample(baseMap,baseMapSampler,uv) ;
-        if(color.w < 0.5){
+        if(color.w < materialUniform.alphaCutoff){
             discard ;
         }
         

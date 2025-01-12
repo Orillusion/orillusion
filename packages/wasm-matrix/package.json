@@ -1,13 +1,13 @@
 {
     "name": "@orillusion/wasm-matrix",
-    "version": "0.7.0",
+    "version": "0.8.3",
     "author": "Orillusion",
-    "description": "Orillusion WebGPU Engine",
+    "description": "Update matrix by WASM",
     "main": "matrix.js",
-    "types": "_WasmMatrix4.d.ts",
+    "types": "matrix.d.ts",
     "files": [
         "matrix.js",
-        "_WasmMatrix4.d.ts"
+        "matrix.d.ts"
     ],
     "license": "MIT",
     "repository": {

@@ -1,15 +1,14 @@
 ﻿import { Engine3D } from '../../Engine3D';
-import { PointerEvent3D } from '../../event/eventConst/PointerEvent3D';
+import { PickGUIEvent3D, PointerEvent3D } from '../../event/eventConst/PointerEvent3D';
 import { MouseCode } from '../../event/MouseCode';
 import { webGPUContext } from '../../gfx/graphics/webGpu/Context3D';
 import { Ray } from '../../math/Ray';
 import { Vector2 } from '../../math/Vector2';
 import { Time } from '../../util/Time';
-import { IUIInteractive, UIInteractiveStyle } from './uiComponents/IUIInteractive';
+import { IUIInteractive, UIInteractiveStyle, GUIHitInfo } from './uiComponents/IUIInteractive';
 import { UITransform } from './uiComponents/UITransform';
 import { View3D } from '../../core/View3D';
 import { UIPanel } from './uiComponents/UIPanel';
-import { HitInfo } from '../shape/ColliderShape';
 
 /**
  * Pickup logic for GUI interactive components
@@ -20,14 +19,14 @@ export class GUIPick {
     private _ray: Ray;
 
     private _mouseCode: MouseCode;
-    private _clickEvent: PointerEvent3D;
-    private _outEvent: PointerEvent3D;
-    private _overEvent: PointerEvent3D;
-    private _upEvent: PointerEvent3D;
-    private _downEvent: PointerEvent3D;
+    private _clickEvent: PickGUIEvent3D;
+    private _outEvent: PickGUIEvent3D;
+    private _overEvent: PickGUIEvent3D;
+    private _upEvent: PickGUIEvent3D;
+    private _downEvent: PickGUIEvent3D;
     private _view: View3D;
 
-    // private mouseMove: PointerEvent3D;
+    // private mouseMove: PickGUIEvent3D;
 
     /**
      * Initialize the pickup and call it internally during engine initialization
@@ -36,12 +35,12 @@ export class GUIPick {
         this._view = view;
         this._ray = new Ray();
 
-        this._clickEvent = new PointerEvent3D(PointerEvent3D.PICK_CLICK_GUI);
-        this._outEvent = new PointerEvent3D(PointerEvent3D.PICK_OUT_GUI);
-        this._overEvent = new PointerEvent3D(PointerEvent3D.PICK_OVER_GUI);
-        // this.mouseMove = new PointerEvent3D(PointerEvent3D.PICK_MOVE);
-        this._upEvent = new PointerEvent3D(PointerEvent3D.PICK_UP_GUI);
-        this._downEvent = new PointerEvent3D(PointerEvent3D.PICK_DOWN_GUI);
+        this._clickEvent = new PickGUIEvent3D(PickGUIEvent3D.PICK_CLICK_GUI);
+        this._outEvent = new PickGUIEvent3D(PickGUIEvent3D.PICK_OUT_GUI);
+        this._overEvent = new PickGUIEvent3D(PickGUIEvent3D.PICK_OVER_GUI);
+        // this.mouseMove = new PointerEvent3D(PickGUIEvent3D.PICK_MOVE);
+        this._upEvent = new PickGUIEvent3D(PickGUIEvent3D.PICK_UP_GUI);
+        this._downEvent = new PickGUIEvent3D(PickGUIEvent3D.PICK_DOWN_GUI);
 
         Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_DOWN, this.onTouchDown, this, null, 1);
         Engine3D.inputSystem.addEventListener(PointerEvent3D.POINTER_UP, this.onTouchUp, this, null, 1);
@@ -68,7 +67,7 @@ export class GUIPick {
             if(_target != this._lastOverTarget){
                 _target.mouseStyle = UIInteractiveStyle.OVER;
                 Object.assign(this._overEvent, e);
-                this._overEvent.type = PointerEvent3D.PICK_OVER_GUI;
+                this._overEvent.type = PickGUIEvent3D.PICK_OVER_GUI;
                 this._overEvent.target = _target.object3D;
                 this._overEvent.data = ret;
                 _target.object3D.dispatchEvent(this._overEvent);
@@ -76,7 +75,7 @@ export class GUIPick {
                 if (this._lastOverTarget) {
                     this._lastOverTarget.mouseStyle = UIInteractiveStyle.NORMAL;
                     Object.assign(this._outEvent, e);
-                    this._outEvent.type = PointerEvent3D.PICK_OUT_GUI;
+                    this._outEvent.type = PickGUIEvent3D.PICK_OUT_GUI;
                     this._outEvent.target = _target.object3D;
                     this._outEvent.data = ret;
                     this._lastOverTarget.object3D.dispatchEvent(this._outEvent);
@@ -87,7 +86,7 @@ export class GUIPick {
             if (this._lastOverTarget) {
                 this._lastOverTarget.mouseStyle = UIInteractiveStyle.NORMAL;
                 Object.assign(this._outEvent, e);
-                this._outEvent.type = PointerEvent3D.PICK_OUT_GUI;
+                this._outEvent.type = PickGUIEvent3D.PICK_OUT_GUI;
                 this._outEvent.target = this._lastOverTarget.object3D;
                 this._outEvent.data = ret;
                 this._lastOverTarget.object3D.dispatchEvent(this._outEvent);
@@ -114,7 +113,7 @@ export class GUIPick {
         if (collider) {
             collider.mouseStyle = UIInteractiveStyle.DOWN;
             Object.assign(this._downEvent, e);
-            this._downEvent.type = PointerEvent3D.PICK_DOWN_GUI;
+            this._downEvent.type = PickGUIEvent3D.PICK_DOWN_GUI;
             this._downEvent.target = collider.object3D;
             this._downEvent.data = ret;
             collider.object3D.dispatchEvent(this._downEvent);
@@ -140,7 +139,7 @@ export class GUIPick {
                 this._calcDistanceVec2.set(e.mouseX, e.mouseY);
                 if (this._calcDistanceVec2.distance(this._lastDownPosition) <= this._clickDistanceSpan) {
                     Object.assign(this._clickEvent, e);
-                    this._clickEvent.type = PointerEvent3D.PICK_CLICK_GUI;
+                    this._clickEvent.type = PickGUIEvent3D.PICK_CLICK_GUI;
                     this._clickEvent.target = collider.object3D;
                     this._clickEvent.data = ret;
                     collider.object3D.dispatchEvent(this._clickEvent);
@@ -193,12 +192,12 @@ export class GUIPick {
         return this._colliderOut;
     }
 
-    private pick(colliders: IUIInteractive[]): HitInfo {
+    private pick(colliders: IUIInteractive[]): GUIHitInfo {
         this._ray = this._view.camera.screenPointToRay(Engine3D.inputSystem.mouseX, Engine3D.inputSystem.mouseY);
         let screenPos = new Vector2(Engine3D.inputSystem.mouseX, Engine3D.inputSystem.mouseY);
         let screenSize = new Vector2(webGPUContext.canvas.clientWidth, webGPUContext.canvas.clientHeight);
 
-        let hitInfo: HitInfo;
+        let hitInfo: GUIHitInfo;
         for (const iterator of colliders) {
             if (iterator.interactive && iterator.enable && iterator.interactiveVisible) {
                 let panel = this._iteractive2PanelDict.get(iterator);
