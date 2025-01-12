@@ -216,6 +216,10 @@ export class OrbitController extends ComponentBase {
         // zoom ortho frustumSize
         if(this._camera.type === CameraType.ortho){
             this._camera.frustumSize += e.deltaY * this.zoomFactor
+            if(this._camera.frustumSize < this._minDistance)
+                this._camera.frustumSize = this._minDistance
+            else if(this._camera.frustumSize > this._maxDistance)
+                this._camera.frustumSize = this._maxDistance
             this._camera.updateProjection()
         }
     }

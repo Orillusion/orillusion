@@ -23,6 +23,7 @@ camera.perspective(45, Engine3D.aspect, 0.1, 1000.0);
 camera.lookAt(new Vector3(0, 10, 10), Vector3.ZERO, Vector3.UP)
 // set camera controller
 let controller = cameraObj.addComponent(OrbitController);
+controller.maxDistance = 200;
 // add camera node
 scene3D.addChild(cameraObj);
 
@@ -65,14 +66,34 @@ Engine3D.startRenderView(view);
 // add debug GUI
 let gui = new dat.GUI();
 let f = gui.addFolder('Camera')
-let buttons = {
-    'ortho': () => camera.ortho(camera.frustumSize, camera.near, camera.far),
-    'perspective': () => camera.perspective(camera.fov, camera.aspect, camera.near, camera.far)
+let options = {
+    near: 0.1,
+    far: 1000,
+    fov: 45,
+    frustumSize: 100,
+    'ortho': () => {
+        options.near = -100
+        options.far = 100
+        camera.ortho(options.frustumSize, options.near, options.far)
+    },
+    'perspective': () => {
+        options.near = 0.1
+        options.far = 1000
+        camera.perspective(options.fov, camera.aspect, options.near, options.far)
+    }
 }
-f.add(camera, 'near', -100, 100).onChange(()=> camera.type === 1 ? buttons.perspective() : buttons.ortho())
-f.add(camera, 'far', 0, 1000).onChange(()=> camera.type === 1 ? buttons.perspective() : buttons.ortho())
-f.add(buttons, 'perspective')
-f.add(camera, 'fov', 1, 179).onChange(buttons.perspective)
-f.add(buttons, 'ortho')
-f.add(camera, 'frustumSize', 1, 1000).listen().onChange(buttons.ortho)
+f.add(options, 'near', -100, 100).listen().onChange(()=> {
+    camera.type === 1 ? 
+    camera.perspective(options.fov, camera.aspect, options.near, options.far) : 
+    camera.ortho(options.frustumSize, options.near, options.far)
+})
+f.add(options, 'far', 0, 1000).listen().onChange(()=> {
+    camera.type === 1 ? 
+    camera.perspective(options.fov, camera.aspect, options.near, options.far) : 
+    camera.ortho(options.frustumSize, options.near, options.far)
+})
+f.add(options, 'perspective')
+f.add(options, 'fov', 1, 179).onChange(()=> camera.perspective(options.fov, camera.aspect, options.near, options.far))
+f.add(options, 'ortho')
+f.add(options, 'frustumSize', 0.1, 200).onChange(() => camera.ortho(options.frustumSize, options.near, options.far))
 f.open()
