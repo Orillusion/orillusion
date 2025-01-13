@@ -249,8 +249,8 @@ export class Camera3D extends ComponentBase {
      */
     public ortho(frustumSize: number, near: number, far: number) {
         this.frustumSize = frustumSize;
-        let w = frustumSize * 0.5 * this.aspect;
-        let h = frustumSize * 0.5;
+        let w = frustumSize * this.aspect;
+        let h = frustumSize;
         let left = -w / 2;
         let right = w / 2;
         let top = h / 2;
