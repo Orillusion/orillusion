@@ -1,4 +1,4 @@
-import { Engine3D, Scene3D, AtmosphericComponent, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, View3D, Camera3D, GridObject, Frustum, OrbitController, Vector3 } from "@orillusion/core";
+import { Engine3D, Scene3D, AtmosphericComponent, HoverCameraController, Object3D, MeshRenderer, BoxGeometry, LitMaterial, DirectLight, View3D, Camera3D, GridObject, Frustum, OrbitController, Vector3, Color } from "@orillusion/core";
 import { Stats } from "@orillusion/stats";
 import * as dat from "dat.gui"
 
@@ -47,10 +47,23 @@ mr.geometry = new BoxGeometry(1, 1, 1);
 // set material
 mr.material = new LitMaterial();
 // set rotation
-box.rotationY = 0;
-box.y = 1
-// add object
+box.y = 0
 scene3D.addChild(box);
+
+// create a box
+const box2: Object3D = new Object3D();
+// add MeshRenderer
+let mr2: MeshRenderer = box2.addComponent(MeshRenderer);
+// set geometry
+mr2.geometry = new BoxGeometry(1, 1, 1);
+// set material
+mr2.material = new LitMaterial();
+mr2.material.baseColor = Color.COLOR_RED
+// set rotation
+box2.y = 1
+box2.x = 1
+scene3D.addChild(box2);
+
 
 // add a grid
 let grid = new GridObject(1000, 100);
@@ -70,7 +83,7 @@ let options = {
     near: 0.1,
     far: 1000,
     fov: 45,
-    frustumSize: 100,
+    frustumSize: 10,
     'ortho': () => {
         options.near = -100
         options.far = 100
