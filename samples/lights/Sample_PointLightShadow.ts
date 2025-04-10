@@ -10,6 +10,7 @@ export class Sample_PointLightShadow {
 
         Engine3D.setting.shadow.enable = true;
         Engine3D.setting.shadow.debug = true;
+        Engine3D.setting.shadow.pointShadowBias = 0.0005;
         Engine3D.setting.render.debug = true;
         Engine3D.setting.material.materialChannelDebug = true;
         Engine3D.setting.material.materialDebug = true;

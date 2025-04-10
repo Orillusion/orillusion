@@ -9,7 +9,7 @@ class Sample_SpotLight {
     async run() {
         Engine3D.setting.occlusionQuery.enable = false;
         Engine3D.setting.shadow.enable = true;
-        Engine3D.setting.shadow.pointShadowBias = 0.0001;
+        Engine3D.setting.shadow.pointShadowBias = 0.002;
         await Engine3D.init({});
 
         GUIHelp.init();
