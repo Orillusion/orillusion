@@ -37,7 +37,7 @@ export class DepthCubeTexture extends Texture implements ITexture {
         super(width, height, 6);
 
         // texture_depth_2d_array
-        this.format = GPUTextureFormat.depth24plus;
+        this.format = GPUTextureFormat.depth32float;
         this.mipmapCount = 1;
 
         this.init();

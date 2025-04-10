@@ -28,7 +28,7 @@ export class ProbeGBufferFrame extends RTFrame {
         let colorDec = new RTDescriptor();
         colorDec.loadOp = `load`;
 
-        let depthTexture = new RenderTexture(rtWidth, rtHeight, GPUTextureFormat.depth24plus, false, undefined, 1, 0, true, autoResize);
+        let depthTexture = new RenderTexture(rtWidth, rtHeight, GPUTextureFormat.depth32float, false, undefined, 1, 0, true, autoResize);
         depthTexture.name = `depthTexture`;
         let depthDec = new RTDescriptor();
         depthDec.loadOp = `load`;

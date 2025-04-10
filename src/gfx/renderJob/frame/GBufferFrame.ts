@@ -38,7 +38,7 @@ export class GBufferFrame extends RTFrame {
         if (depthTexture) {
             this.depthTexture = depthTexture;
         } else {
-            this.depthTexture = new RenderTexture(rtWidth, rtHeight, GPUTextureFormat.depth24plus, false, undefined, 1, 0, true, true);
+            this.depthTexture = new RenderTexture(rtWidth, rtHeight, GPUTextureFormat.depth32float, false, undefined, 1, 0, true, true);
             this.depthTexture.name = key + `_depthTexture`;
         }
 
