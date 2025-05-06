@@ -737,7 +737,7 @@ export class Matrix4 {
         epsilon ||= EPSILON;
         let data = this.rawData;
 
-        let zero: Vector3 = Matrix4._zero2;
+        let zero: Vector3 = Matrix4._zero2.set(0, 0, 0);
         toDirection.crossProduct(fromDirection, zero);
         let e: number = toDirection.dotProduct(fromDirection);
 
