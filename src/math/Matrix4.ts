@@ -44,7 +44,7 @@ export class Matrix4 {
     /**
      * @internal
      */
-    public static buffer: ArrayBuffer;
+    public static buffer: ArrayBuffer | ArrayBufferLike;
 
     /**
      * @internal
@@ -94,6 +94,7 @@ export class Matrix4 {
 
     private static _getEulerMatrix: Matrix4;
     private static _zero: Vector3 = new Vector3(0, 0, 0);
+    private static _zero2: Vector3 = new Vector3(0, 0, 0);
     private static _one: Vector3 = new Vector3(1, 1, 1);
     private static _prs: Vector3[] = [new Vector3(), new Vector3(), new Vector3()];
 
@@ -148,11 +149,12 @@ export class Matrix4 {
      * @param fromDirection first direction
      * @param toDirection  second direction
      * @param target ref matrix
+     * @param epsilon tiny number
      * @returns return new one matrix
      */
-    public static fromToRotation(fromDirection: Vector3, toDirection: Vector3, target?: Matrix4): Matrix4 {
+    public static fromToRotation(fromDirection: Vector3, toDirection: Vector3, target?: Matrix4, epsilon?: number): Matrix4 {
         target ||= new Matrix4();
-        target.transformDir(fromDirection, toDirection);
+        target.transformDir(fromDirection, toDirection, epsilon);
         return target;
     }
 
@@ -728,18 +730,20 @@ export class Matrix4 {
      * set matrix from two direction
      * @param fromDirection first direction
      * @param toDirection second direction
+     * @param epsilon tiny number
      */
-    public transformDir(fromDirection: Vector3, toDirection: Vector3): this {
+
+    public transformDir(fromDirection: Vector3, toDirection: Vector3, epsilon?: number): this {
+        epsilon ||= EPSILON;
         let data = this.rawData;
 
-        let EPSILON: number = 0.000001;
-        let v: Vector3 = Vector3.ZERO;
-        toDirection.crossProduct(fromDirection, v);
+        let zero: Vector3 = Matrix4._zero2;
+        toDirection.crossProduct(fromDirection, zero);
         let e: number = toDirection.dotProduct(fromDirection);
 
-        if (e > 1.0 - EPSILON) {
+        if (e > 1.0 - epsilon) {
             this.identity();
-        } else if (e < -1.0 + EPSILON) {
+        } else if (e < -1.0 + epsilon) {
             let up: Vector3 = Vector3.HELP_1;
             let left: Vector3 = Vector3.HELP_2; //
             let invLen: number = 0;
@@ -766,7 +770,7 @@ export class Matrix4 {
             left.x = 0.0;
             left.y = fromDirection.z;
             left.z = -fromDirection.y;
-            if (left.dotProduct(left) < EPSILON) {
+            if (left.dotProduct(left) < epsilon) {
                 left.x = -fromDirection.z;
                 left.y = 0.0;
                 left.z = fromDirection.x;
@@ -821,22 +825,22 @@ export class Matrix4 {
             let hvxz;
             let hvyz;
 
-            let v2 = v.dotProduct(v);
+            let v2 = zero.dotProduct(zero);
             let h = (1.0 - e) / v2;
-            hvx = h * v.x;
-            hvz = h * v.z;
-            hvxy = hvx * v.y;
-            hvxz = hvx * v.z;
-            hvyz = hvz * v.y;
-            data[0] = e + hvx * v.x;
-            data[1] = hvxy - v.z;
-            data[2] = hvxz + v.y;
-            data[4] = hvxy + v.z;
-            data[5] = e + h * v.y * v.y;
-            data[6] = hvyz - v.x;
-            data[8] = hvxz - v.y;
-            data[9] = hvyz + v.x;
-            data[10] = e + hvz * v.z;
+            hvx = h * zero.x;
+            hvz = h * zero.z;
+            hvxy = hvx * zero.y;
+            hvxz = hvx * zero.z;
+            hvyz = hvz * zero.y;
+            data[0] = e + hvx * zero.x;
+            data[1] = hvxy - zero.z;
+            data[2] = hvxz + zero.y;
+            data[4] = hvxy + zero.z;
+            data[5] = e + h * zero.y * zero.y;
+            data[6] = hvyz - zero.x;
+            data[8] = hvxz - zero.y;
+            data[9] = hvyz + zero.x;
+            data[10] = e + hvz * zero.z;
 
             data[3] = 0;
             data[7] = 0;
@@ -2470,9 +2474,11 @@ export function matrixRotateY(rad: number, target: Matrix4) {
  * @param {ReadonlyMat4} a the matrix to rotate
  * @param {Number} rad the angle to rotate the matrix by
  * @param {ReadonlyVec3} axis the axis to rotate around
+ * @param epsilon tiny number
  * @returns {mat4} out
  */
-export function matrixRotate(rad: number, axis: Vector3, target: Matrix4) {
+export function matrixRotate(rad: number, axis: Vector3, target: Matrix4, epsilon?: number) {
+    epsilon ||= EPSILON;
     let x = axis.x;
     let y = axis.y;
     let z = axis.z;
@@ -2491,7 +2497,7 @@ export function matrixRotate(rad: number, axis: Vector3, target: Matrix4) {
     let b21;
     let b22;
 
-    if (len < EPSILON) {
+    if (len < epsilon) {
         return null;
     }
 
