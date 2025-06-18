@@ -169,11 +169,16 @@ export class GLTFSubParser {
                     name = StringUtil.getURLName(name);
                     textureInfo.dtexture = this.gltf.resources[name];
                 } else if (image.bufferView) {
-                    let buffer = this.parseBufferView(image.bufferView);
-                    let bitmapTexture = new BitmapTexture2D();
-                    let img = new Blob([buffer], { type: image.mimeType });
-                    await bitmapTexture.loadFromBlob(img);
+                    const name = image?.name;
+                    let bitmapTexture: BitmapTexture2D = this.gltf.resources[name];
+                    if (!bitmapTexture) {
+                        let buffer = this.parseBufferView(image.bufferView);
+                        bitmapTexture = new BitmapTexture2D();
+                        let img = new Blob([buffer], { type: image.mimeType });
+                        await bitmapTexture.loadFromBlob(img);
+                    }
                     textureInfo.dtexture = bitmapTexture;
+
                 } else {
                     textureInfo.dtexture = this.gltf.resources[image.name];
                 }
