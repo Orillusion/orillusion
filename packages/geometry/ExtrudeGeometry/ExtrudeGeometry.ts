@@ -267,7 +267,7 @@ export class ExtrudeGeometry extends GeometryBase {
                 }
 
                 // Top faces
-                for (let i = 0; i < flen; i++) {
+                if (depth > 0)for (let i = 0; i < flen; i++) {
                     const face = faces[i];
                     f3(face[0] + vlen * steps, face[1] + vlen * steps, face[2] + vlen * steps);
                 }
@@ -380,7 +380,9 @@ export class ExtrudeGeometry extends GeometryBase {
 
         buildLidFaces();
 
-        buildSideFaces();
+        if (depth > 0) {
+            buildSideFaces();
+        }
     }
 
     protected scalePoint2(pt: Vector2, vec: Vector2, size: number) {
