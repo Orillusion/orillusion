@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "useDefineForClassFields": true,
+        "module": "ESNext",
+        "lib": ["ESNext", "DOM"],
+        "moduleResolution": "Node",
+        "resolveJsonModule": true,
+        "declaration": true,
+        "declarationDir": "dist",
+        "outDir": "dist",
+        "skipLibCheck": true,
+        "strict": false,
+        "experimentalDecorators": true,
+        "types": ["vite/client", "@webgpu/types"],
+        "paths": {
+            "@orillusion/core": ["../../src"],
+            "@orillusion/*": ["../*"]
+        }
+    },
+    "include": ["./**/*.ts", "../../src/**/*.ts"]
+}
