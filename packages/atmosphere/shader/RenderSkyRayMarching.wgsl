@@ -60,16 +60,51 @@ fn mainImage(uv: vec2<f32>, pixPos: vec2<f32>) -> vec4<f32> {
     const MieRayPhase = true;
     var result: SingleScatteringResult = IntegrateScatteredLuminance(pixPos, WorldPos, WorldDir, SunDir, Atmosphere, ground, SampleCountIni, DepthBufferValue, VariableSampleCount, MieRayPhase, defaultTMaxMax, texSize);
 
+    var L: vec3<f32> = result.L;
+
+    // The ray march only integrates in-scattering, so the sun disc itself has
+    // to be added on top. `result.Transmittance` is the extinction the view ray
+    // already accumulated out to the top of the atmosphere, which is exactly
+    // what reddens the disc at sunrise/sunset.
+    if uniformBuffer.displaySun > 0.5 {
+        L += GetSunDisc(WorldPos, WorldDir, SunDir, Atmosphere) * result.Transmittance;
+    }
+
     // for HDR lighting
     var sky: vec3<f32>;
     if (IS_HDR_SKY) {
-      sky = LinearToGammaSpace(result.L) * uniformBuffer.hdrExposure;
+      sky = LinearToGammaSpace(L) * uniformBuffer.hdrExposure;
     } else {
       // for LDR lighting
-      sky = result.L;
-      sky = ACESToneMapping(sky.rgb, uniformBuffer.hdrExposure);
+      sky = ACESToneMapping(L.rgb, uniformBuffer.hdrExposure);
       sky = pow(sky.rgb, vec3<f32>(1.0/1.2)); // gamma
     }
 
     return vec4<f32>(sky, 1.0);
+}
+
+/**
+ * Limb-darkened sun disc, parameterised exactly like the legacy V1 sky so the
+ * sunRadius / sunBrightness sliders behave the same on both paths: sunRadius
+ * is an inverse angular size (bigger value -> smaller disc).
+ */
+fn GetSunDisc(WorldPos: vec3<f32>, WorldDir: vec3<f32>, SunDir: vec3<f32>, Atmosphere: AtmosphereParameters) -> vec3<f32> {
+    // Planet occludes the disc when the view ray hits the ground first.
+    var tGround: f32 = raySphereIntersectNearest(WorldPos, WorldDir, vec3<f32>(0.0, 0.0, 0.0), Atmosphere.BottomRadius);
+    if tGround >= 0.0 {
+        return vec3<f32>(0.0);
+    }
+
+    var cosTheta: f32 = dot(WorldDir, SunDir);
+    var angle: f32 = saturate((1.0 - cosTheta) * uniformBuffer.sunRadius);
+    if angle >= 1.0 {
+        return vec3<f32>(0.0);
+    }
+
+    var cosAngle: f32 = cos(angle * PI * 0.5);
+    var edge: f32 = smoothstep(0.9, 1.0, angle);
+    var limbDarkening: vec3<f32> = pow(vec3<f32>(cosAngle), vec3<f32>(0.420, 0.503, 0.652));
+    limbDarkening *= mix(vec3<f32>(1.0), vec3<f32>(1.2, 0.9, 0.5), edge);
+
+    return limbDarkening * uniformBuffer.sunBrightness;
 }
