@@ -1,0 +1,26 @@
+{
+  "name": "@orillusion/atmosphere",
+  "version": "0.1.0",
+  "author": "Orillusion",
+  "description": "Orillusion Atmosphere Plugin",
+  "main": "./dist/atmosphere.umd.js",
+  "module": "./dist/atmosphere.es.js",
+  "module:dev": "./index.ts",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build && npm run build:types && npm run build:clean",
+    "build:types": "tsc --emitDeclarationOnly -p tsconfig.json",
+    "build:clean": "mv dist/packages/atmosphere/* dist && rm -rf dist/src && rm -rf dist/packages"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Orillusion/orillusion.git"
+  },
+  "dependencies": {
+    "@orillusion/core": "^0.8.0"
+  }
+}
