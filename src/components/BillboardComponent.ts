@@ -54,10 +54,24 @@ export class BillboardComponent extends ComponentBase {
         if (this.type == BillboardType.BillboardXYZ) {
         } else if (this.type == BillboardType.BillboardY) {
             this._cameraPosition.y = 0;
+
+            // A cylindrical billboard has no defined yaw when the camera is
+            // looking straight up or down. Normalizing that near-zero XZ
+            // projection amplifies floating-point noise and makes the sprite
+            // swing between opposite directions as the camera rotates.
+            // Keep the last valid orientation until a horizontal camera
+            // direction is available again.
+            const horizontalLengthSquared =
+                this._cameraPosition.x * this._cameraPosition.x +
+                this._cameraPosition.z * this._cameraPosition.z;
+            if (horizontalLengthSquared <= Vector3.EPSILON * Vector3.EPSILON) return;
         }
         this._cameraPosition.normalize();
         Vector3.add(this._cameraPosition, this.object3D.localPosition, this._cameraPosition);
-        this.transform.lookAt(this.object3D.localPosition, this._cameraPosition, camera.transform.up);
+        // BillboardY must stay locked to the world Y axis. Using the camera's
+        // up vector introduces roll and becomes unstable at a vertical view.
+        const up = this.type == BillboardType.BillboardY ? Vector3.Y_AXIS : camera.transform.up;
+        this.transform.lookAt(this.object3D.localPosition, this._cameraPosition, up);
     }
 
     /**
