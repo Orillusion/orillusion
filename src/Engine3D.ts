@@ -278,6 +278,14 @@ export class Engine3D {
 
     private static _rafId: number = 0;
     private static _time: number = 0;
+    /** True until the next `_tick` after the loop (re)starts. `Time.time` is
+     *  0 before the first frame and frozen while every instance is paused, so
+     *  `time - Time.time` on that tick would be the whole page-load / pause
+     *  duration (seconds). Physics, animation and controllers integrate that
+     *  as one giant step — e.g. a character controller tunnels through the
+     *  floor on frame 1. Substitute a nominal 60 Hz delta instead. */
+    private static _resetDelta: boolean = true;
+    private static readonly NOMINAL_DELTA_MS = 1000 / 60;
 
     // -------- instance fields --------
     public readonly context3D: Context3D;
@@ -533,6 +541,7 @@ export class Engine3D {
     /** Resume every engine instance and restart the shared render loop. */
     public static resume() {
         for (const inst of Engine3D._instances) inst._paused = false;
+        Engine3D._resetDelta = true;
         Engine3D._ensureLoop();
     }
 
@@ -545,6 +554,7 @@ export class Engine3D {
      *  if it stopped while every instance was paused. */
     public resume() {
         this._paused = false;
+        if (Engine3D._rafId === 0) Engine3D._resetDelta = true;
         Engine3D._ensureLoop();
     }
 
@@ -578,7 +588,8 @@ export class Engine3D {
         }
 
         // Advance global time once per composite frame.
-        Time.delta = time - Time.time;
+        Time.delta = this._resetDelta ? Engine3D.NOMINAL_DELTA_MS : time - Time.time;
+        this._resetDelta = false;
         Time.time = time;
         Time.frame += 1;
         Interpolator.tick(Time.delta);

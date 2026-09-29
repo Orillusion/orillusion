@@ -62,7 +62,9 @@ class Sample_Label {
 
         let camera = CameraUtil.createCamera3DObject(this.scene);
         camera.perspective(60, this.engine.aspect, 0.1, 5000.0);
-        camera.object3D.addComponent(HoverCameraController).setCamera(0, -15, 30);
+        // 10 m is the reference depth for distanceInvariantSize, so the label
+        // `size` values below are literal world units at this distance.
+        camera.object3D.addComponent(HoverCameraController).setCamera(0, -15, 10);
 
         this.view = new View3D();
         this.view.scene = this.scene;
