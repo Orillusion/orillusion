@@ -10,6 +10,9 @@ class _Physics {
     private _eventQueue: RAPIER.EventQueue;
     private _isInited: boolean = false;
     private _isStop: boolean = false;
+    /** Number of completed `world.step()` calls. Lets queries know whether the
+     *  broad-phase BVH has been (re)built since a body was added. */
+    private _stepCount: number = 0;
     private _gravity: Vector3 = new Vector3(0, -9.8, 0);
 
     /** Maximum number of internal physics sub-steps per update tick. */
@@ -58,10 +61,11 @@ class _Physics {
         });
 
         if (options.deterministic) {
-            // Pin numSolverIterations / numAdditionalFrictionIterations to make
-            // sim independent of stage 'auto' tuning that can drift between runs.
+            // Pin the solver iteration counts so the sim is independent of
+            // stage 'auto' tuning that can drift between runs.
+            // (`numAdditionalFrictionIterations` was removed in Rapier 0.15;
+            // friction is now solved inside the main solver loop.)
             this._world.integrationParameters.numSolverIterations = 4;
-            this._world.integrationParameters.numAdditionalFrictionIterations = 4;
             this._world.integrationParameters.numInternalPgsIterations = 1;
         }
 
@@ -88,6 +92,7 @@ class _Physics {
 
         this._world.timestep = dt;
         this._world.step(this._eventQueue);
+        this._stepCount++;
 
         // Drain begin/end collision events.
         this._eventQueue.drainCollisionEvents((h1, h2, started) => {
@@ -233,6 +238,9 @@ class _Physics {
     public get world(): RAPIER.World { return this._world; }
     public get eventQueue(): RAPIER.EventQueue { return this._eventQueue; }
     public get isInited(): boolean { return this._isInited; }
+
+    /** Completed simulation steps since `init()`. */
+    public get stepCount(): number { return this._stepCount; }
 
     public set isStop(value: boolean) { this._isStop = value; }
     public get isStop(): boolean { return this._isStop; }

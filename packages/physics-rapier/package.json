@@ -21,7 +21,7 @@
         "url": "git+https://github.com/Orillusion/orillusion.git"
     },
     "dependencies": {
-        "@dimforge/rapier3d-compat": "^0.14.0"
+        "@dimforge/rapier3d-compat": "^0.19.3"
     },
     "peerDependencies": {
         "@orillusion/core": ">=0.9.0"
