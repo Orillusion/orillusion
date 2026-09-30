@@ -4,6 +4,7 @@ import { Matrix4 } from '../../../math/Matrix4';
 import { Vector4 } from '../../../math/Vector4';
 import { VirtualTexture } from '../../../textures/VirtualTexture';
 import { MotionBlurUtil } from '../../../util/MotionBlurUtil';
+import { RTResourceMap } from '../frame/RTResourceMap';
 import { Time } from '../../../util/Time';
 import { GlobalBindGroup } from '../../graphics/webGpu/core/bindGroups/GlobalBindGroup';
 import { UniformGPUBuffer } from '../../graphics/webGpu/core/buffer/UniformGPUBuffer';
@@ -39,6 +40,10 @@ export class MotionBlurPost extends PostBase {
     private _data: UniformGPUBuffer;
     private _rtFrame: RTFrame;
     private _prevViewProj: Matrix4 = new Matrix4().identity();
+    private _usesVelocityTex: boolean = false;
+
+    /** True when the blur reads MotionVectorPass' per-object velocities. */
+    public get usesVelocityTexture(): boolean { return this._usesVelocityTex; }
     private _currViewProj: Matrix4 = new Matrix4().identity();
     private _hasPrev: boolean = false;
     private _params: Vector4 = new Vector4();
@@ -97,6 +102,14 @@ export class MotionBlurPost extends PostBase {
         this._rtFrame = new RTFrame([this.outTexture], [desc]);
 
         this._compute = new ComputeShader(MotionBlur_cs);
+        // Per-object velocities: sample MotionVectorPass' texture instead of
+        // reprojecting the depth buffer with the camera alone.
+        const velocity = ctx.engine?.setting.render.objectMotionVectors ? RTResourceMap.getTexture(ctx, '_MotionVector') : null;
+        if (velocity) {
+            this._compute.setDefine('USE_VELOCITY_TEX', true);
+            this._compute.setSamplerTexture('velocityTex', velocity);
+            this._usesVelocityTex = true;
+        }
         // mat4 (16 floats) + vec4 (4 floats)
         this._data = new UniformGPUBuffer(16 + 4);
         this._compute.setUniformBuffer('motionBlurData', this._data);

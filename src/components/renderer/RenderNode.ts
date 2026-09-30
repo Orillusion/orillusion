@@ -388,6 +388,15 @@ export class RenderNode extends ComponentBase {
             }
         }
 
+        // Per-object motion vectors: same gating as the depth prepass
+        // (opaque, depth-writing materials only).
+        const objectMotionVectors = this.transform.view3D?.engine3D?.setting.render.objectMotionVectors ?? false;
+        if (!ignoreDepthPass && objectMotionVectors) {
+            for (let i = 0; i < this.materials.length; i++) {
+                PassGenerate.createVelocityPass(this, this.materials[i].shader);
+            }
+        }
+
         // P2: WBOIT pass generation for materials marked
         // `oitMode === 'weighted'`. Only meaningful when the engine
         // has `setting.render.useOIT === true` — otherwise the

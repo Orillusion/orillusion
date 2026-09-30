@@ -11,6 +11,7 @@ import { TonemapPost } from '../../post/TonemapPost';
 import { RendererPassState } from '../../passRenderer/state/RendererPassState';
 import { RenderGraphBuilder, RenderGraphPass, RenderGraphPassContext } from '../RenderGraphPass';
 import { COLOR_BUFFER } from './ColorPass';
+import { MOTION_VECTOR } from './MotionVectorPass';
 
 /**
  * Published handle name for the final post-chain output. Resolves to
@@ -70,6 +71,8 @@ export class PostPass extends RenderGraphPass {
         }
 
         b.read(COLOR_BUFFER);
+        // Posts (MotionBlurPost) may sample this frame's motion vectors.
+        b.read(MOTION_VECTOR);
         // _FinalColor: a dynamic getter that resolves to whatever
         // texture the post chain ended with. Falls back to the color
         // buffer when no posts are enabled.

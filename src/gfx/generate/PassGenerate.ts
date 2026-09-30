@@ -8,6 +8,7 @@ import { GBufferPass } from '../../materials/multiPass/GBufferPass';
 import { CastShadowMaterialPass } from '../../materials/multiPass/CastShadowMaterialPass';
 import { CastPointShadowMaterialPass } from '../../materials/multiPass/CastPointShadowMaterialPass';
 import { DepthMaterialPass } from '../../materials/multiPass/DepthMaterialPass';
+import { VelocityMaterialPass } from '../../materials/multiPass/VelocityMaterialPass';
 import { OITAccumPass } from '../../materials/multiPass/OITAccumPass';
 import { DDPDepthPass } from '../../materials/multiPass/DDPDepthPass';
 import { DDPFrontPass } from '../../materials/multiPass/DDPFrontPass';
@@ -181,6 +182,38 @@ export class PassGenerate {
                 if (ctx) bindCtx(depthPass, ctx);
                 depthPass.preCompile(renderNode.geometry);
                 shader.addRenderPass(depthPass);
+            }
+        }
+    }
+
+    /**
+     * Per-object motion vector pass (see VelocityMaterialPass). One per
+     * COLOR sub-shader, mirroring createDepthPass; skinning / morph defines
+     * are copied so deformed meshes at least get their rigid motion.
+     */
+    public static createVelocityPass(renderNode: RenderNode, shader: Shader) {
+        const colorListPass = shader.getSubShaders(PassType.COLOR);
+        const useMorphTargets = renderNode.geometry.hasAttribute(GLTFType.MORPH_POSITION_PREFIX + '0');
+        const useMorphNormals = renderNode.geometry.hasAttribute(GLTFType.MORPH_NORMAL_PREFIX + '0');
+        const use_skeleton = RendererMaskUtil.hasMask(renderNode.rendererMask, RendererMask.SkinnedMesh);
+        for (let i = 0; i < colorListPass.length; i++) {
+            const colorPass = colorListPass[i];
+            const list = shader.getSubShaders(PassType.VELOCITY);
+            if (list.length <= i && colorPass.shaderState.useZ) {
+                const pass = new VelocityMaterialPass();
+                pass.setDefine(`USE_TANGENT`, false);
+                if (use_skeleton) pass.setDefine(`USE_SKELETON`, true);
+                if (useMorphTargets) pass.setDefine(`USE_MORPHTARGETS`, true);
+                if (useMorphNormals) pass.setDefine(`USE_MORPHNORMALS`, true);
+                pass.cullMode = colorPass.cullMode;
+                pass.frontFace = colorPass.frontFace;
+                const ctx = this._ctxOf(renderNode);
+                if (ctx) {
+                    bindCtx(pass, ctx);
+                    pass.bindSharedBuffers(ctx);
+                }
+                pass.preCompile(renderNode.geometry);
+                shader.addRenderPass(pass);
             }
         }
     }

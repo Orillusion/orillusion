@@ -3,8 +3,10 @@
  * G-buffer depth, reprojects it with the previous frame's view-projection to
  * get a screen-space velocity, and averages the scene color along it.
  *
- * Camera-driven motion only (the G-buffer carries no per-object velocity);
- * sky pixels are left untouched.
+ * Camera-driven motion by default (the G-buffer carries no per-object
+ * velocity); with USE_VELOCITY_TEX the velocity comes from `_MotionVector`
+ * (MotionVectorPass), which includes per-object motion. Sky pixels are left
+ * untouched.
  * @internal
  */
 export let MotionBlur_cs: string = /*wgsl*/`
@@ -23,6 +25,9 @@ export let MotionBlur_cs: string = /*wgsl*/`
     @group(0) @binding(2) var<uniform> motionBlurData: MotionBlurData;
     @group(0) @binding(3) var inTex: texture_2d<f32>;
     @group(0) @binding(4) var outTex: texture_storage_2d<rgba16float, write>;
+    #if USE_VELOCITY_TEX
+        @group(0) @binding(5) var velocityTex: texture_2d<f32>;
+    #endif
 
     @compute @workgroup_size(8, 8, 1)
     fn CsMain(@builtin(global_invocation_id) gid: vec3<u32>) {
@@ -47,17 +52,24 @@ export let MotionBlur_cs: string = /*wgsl*/`
             return;
         }
 
-        let worldPos = getWorldPositionFromGBuffer(gBuffer, fragUV);
-        let prevClip = motionBlurData.prevViewProj * vec4<f32>(worldPos, 1.0);
-        if (prevClip.w <= 0.0) {
-            textureStore(outTex, fragCoord, center);
-            return;
-        }
-        let prevNdc = prevClip.xyz / prevClip.w;
-        let prevUv = vec2<f32>(prevNdc.x * 0.5 + 0.5, -prevNdc.y * 0.5 + 0.5);
+        var uvDelta = vec2<f32>(0.0);
+        #if USE_VELOCITY_TEX
+            // MotionVectorPass: camera motion everywhere, object motion where a mesh wrote the pixel.
+            uvDelta = textureLoad(velocityTex, fragCoord, 0).xy;
+        #else
+            let worldPos = getWorldPositionFromGBuffer(gBuffer, fragUV);
+            let prevClip = motionBlurData.prevViewProj * vec4<f32>(worldPos, 1.0);
+            if (prevClip.w <= 0.0) {
+                textureStore(outTex, fragCoord, center);
+                return;
+            }
+            let prevNdc = prevClip.xyz / prevClip.w;
+            let prevUv = vec2<f32>(prevNdc.x * 0.5 + 0.5, -prevNdc.y * 0.5 + 0.5);
+            uvDelta = fragUV - prevUv;
+        #endif
 
         // Velocity in pixels, scaled by the shutter and clamped.
-        var velocity = (fragUV - prevUv) * vec2<f32>(texSize) * scale;
+        var velocity = uvDelta * vec2<f32>(texSize) * scale;
         let len = length(velocity);
         let maxLen = max(motionBlurData.params.z, 0.0);
         if (len < 0.5) {

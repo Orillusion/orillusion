@@ -57,6 +57,7 @@ import { SkyGBuffer_pass } from './core/pass/SkyGBuffer_pass';
 import { GBuffer_pass } from './core/pass/GBuffer_pass';
 import { castPointShadowMap_vert, directionShadowCastMap_frag, shadowCastMap_frag, shadowCastMap_vert } from './core/pass/CastShadow_pass';
 import { ZPassShader_vs } from './core/pass/ZPassShader_vs';
+import { VelocityPass_shader } from './core/pass/VelocityPass_shader';
 import { BitUtil } from './utils/BitUtil';
 import { GBufferStand } from './core/common/GBufferStand';
 import { ReflectionShader_shader } from './materials/ReflectionShader_shader';
@@ -172,6 +173,7 @@ export class ShaderLib {
         ShaderLib.register("directionShadowCastMap_frag", directionShadowCastMap_frag);
 
         ShaderLib.register("ZPass_shader_vs", ZPassShader_vs);
+        ShaderLib.register("VelocityPass_shader", VelocityPass_shader);
     }
 
     /**

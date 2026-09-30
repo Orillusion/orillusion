@@ -30,8 +30,10 @@ await test('PostPass registered eagerly at stage=Post, reads _ColorBuffer, write
 
     const feature = view.renderGraph!.getPass('PostPass') as PostPass | null
     if (!feature) throw new Error('PostPass not registered')
-    expect(feature.reads.length).toEqual(1)
+    // _ColorBuffer plus _MotionVector (MotionBlurPost may sample per-object velocities).
+    expect(feature.reads.length).toEqual(2)
     expect(feature.reads[0]).toEqual(COLOR_BUFFER)
+    expect(feature.reads[1]).toEqual('_MotionVector')
     expect(feature.writes.length).toEqual(1)
     expect(feature.writes[0]).toEqual(FINAL_COLOR)
 

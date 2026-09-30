@@ -120,6 +120,7 @@ export class Engine3D {
                 decals: false,
                 useStencil: false,
                 gpuCull: false,
+                objectMotionVectors: false,
                 tonemap: {
                     enable: true,
                     // ACES Filmic at exposure 1.0 — the standard
