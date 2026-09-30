@@ -17,6 +17,7 @@ import { GLTFSubParser } from "./GLTFSubParser";
 import { GLTFType } from "./GLTFType";
 import { KHR_materials_clearcoat } from "./extends/KHR_materials_clearcoat";
 import { KHR_materials_sheen } from "./extends/KHR_materials_sheen";
+import { KHR_materials_iridescence } from "./extends/KHR_materials_iridescence";
 import { KHR_materials_specular } from "./extends/KHR_materials_specular";
 import { KHR_materials_variants } from "./extends/KHR_materials_variants";
 import { KHR_materials_emissive_strength } from "./extends/KHR_materials_emissive_strength";
@@ -735,6 +736,7 @@ export class GLTFSubParserConverter {
         if (dmaterial.extensions) {
             KHR_materials_clearcoat.apply(this.gltf, dmaterial, mat);
             KHR_materials_sheen.apply(this.gltf, dmaterial, mat);
+            KHR_materials_iridescence.apply(this.gltf, dmaterial, mat);
             KHR_materials_specular.apply(this.gltf, dmaterial, mat);
             KHR_materials_unlit.apply(this.gltf, dmaterial, mat);
             KHR_materials_emissive_strength.apply(this.gltf, dmaterial, mat, this.subParser.ctx);

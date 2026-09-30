@@ -4,6 +4,7 @@ import { RTResourceMap } from "../gfx/renderJob/frame/RTResourceMap";
 import { StandShader } from "../loader/parser/prefab/mats/shader/StandShader";
 import { BlendMode } from "./BlendMode";
 import { Color } from "../math/Color";
+import { Vector4 } from "../math/Vector4";
 import { Engine3D } from "../Engine3D";
 import { Material } from "./Material";
 
@@ -64,6 +65,7 @@ export class LitMaterial extends Material {
         colorPass.setUniform(`clearcoatWeight`, sourceShader.getUniform(`clearcoatWeight`));
         colorPass.setUniform(`clearcoatIor`, sourceShader.getUniform(`clearcoatIor`));
         colorPass.setUniform(`sheenColor`, sourceShader.getUniform(`sheenColor`));
+        colorPass.setUniform(`iridescence`, sourceShader.getUniform(`iridescence`));
 
         colorPass.setTexture(`baseMap`, sourceShader.getTexture(`baseMap`));
         colorPass.setTexture(`normalMap`, sourceShader.getTexture(`normalMap`));
@@ -130,6 +132,51 @@ export class LitMaterial extends Material {
     /** Get the ambient occlusion texture. */
     public get aoMap() {
         return this.shader.getTexture(`aoMap`);
+    }
+
+    private _iridescenceParams(): Vector4 {
+        const v = this.shader.getUniformVector4(`iridescence`) as Vector4;
+        return v ? new Vector4(v.x, v.y, v.z, v.w) : new Vector4(0, 1.3, 400, 0);
+    }
+
+    /**
+     * Thin-film iridescence strength (KHR_materials_iridescence), 0…1.
+     * Any value above 0 enables the effect; 0 disables it.
+     */
+    public set iridescence(value: number) {
+        const v = this._iridescenceParams();
+        v.x = Math.min(Math.max(value, 0), 1);
+        this.shader.setUniformVector4(`iridescence`, v);
+        this.shader.setDefine(`USE_IRIDESCENCE`, v.x > 0);
+    }
+
+    /** Get the iridescence strength. */
+    public get iridescence(): number {
+        return this._iridescenceParams().x;
+    }
+
+    /** Index of refraction of the thin film (default 1.3). */
+    public set iridescenceIOR(value: number) {
+        const v = this._iridescenceParams();
+        v.y = Math.max(value, 1.0);
+        this.shader.setUniformVector4(`iridescence`, v);
+    }
+
+    /** Get the thin-film index of refraction. */
+    public get iridescenceIOR(): number {
+        return this._iridescenceParams().y;
+    }
+
+    /** Thin-film thickness in nanometres (typically 100…1000; default 400). */
+    public set iridescenceThickness(value: number) {
+        const v = this._iridescenceParams();
+        v.z = Math.max(value, 0);
+        this.shader.setUniformVector4(`iridescence`, v);
+    }
+
+    /** Get the thin-film thickness in nanometres. */
+    public get iridescenceThickness(): number {
+        return this._iridescenceParams().z;
     }
 
     /**

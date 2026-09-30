@@ -40,6 +40,7 @@ export let PhysicMaterialUniform_frag = /* wgsl */`
                   attenuationColor: vec4<f32>,
 
                   sheenColor: vec4<f32>,
+                  iridescence: vec4<f32>,
 
                   baseMapOffsetSize:vec4<f32>,
                   normalMapOffsetSize:vec4<f32>,
