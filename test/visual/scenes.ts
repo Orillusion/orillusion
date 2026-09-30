@@ -161,6 +161,24 @@ export const VISUAL_SCENES: VisualSceneDef[] = [
         },
     },
     {
+        // Anisotropic highlights: strength sweep on top, grain rotation below.
+        name: 'anisotropy',
+        async build(engine) {
+            const { scene, view } = baseScene(engine, new Vector3(0, 2.6, 11), new Vector3(0, 2.6, 0));
+            sun(scene, 30, 170, 3.5);
+            const geo = new SphereGeometry(1.1, 48, 48);
+            for (let i = 0; i < 4; i++) {
+                const a = lit(0.72, 0.72, 0.75, 0.35, 1);
+                a.anisotropy = i / 3;
+                mesh(scene, geo, a, (i - 1.5) * 2.7, 4, 0, false);
+                const b = lit(0.72, 0.72, 0.75, 0.35, 1);
+                b.anisotropyRotation = (i * 45 * Math.PI) / 180; b.anisotropy = 1;
+                mesh(scene, geo, b, (i - 1.5) * 2.7, 1.3, 0, false);
+            }
+            return view;
+        },
+    },
+    {
         // Bloom + lens vignette / aberration (grain off) through the AgX curve.
         name: 'post-stack',
         setting: { render: { tonemap: { enable: true, exposure: 1, mode: 'AgX' } } },

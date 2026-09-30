@@ -66,6 +66,7 @@ export class LitMaterial extends Material {
         colorPass.setUniform(`clearcoatIor`, sourceShader.getUniform(`clearcoatIor`));
         colorPass.setUniform(`sheenColor`, sourceShader.getUniform(`sheenColor`));
         colorPass.setUniform(`iridescence`, sourceShader.getUniform(`iridescence`));
+        colorPass.setUniform(`anisotropy`, sourceShader.getUniform(`anisotropy`));
 
         colorPass.setTexture(`baseMap`, sourceShader.getTexture(`baseMap`));
         colorPass.setTexture(`normalMap`, sourceShader.getTexture(`normalMap`));
@@ -132,6 +133,41 @@ export class LitMaterial extends Material {
     /** Get the ambient occlusion texture. */
     public get aoMap() {
         return this.shader.getTexture(`aoMap`);
+    }
+
+    private _anisotropyParams(): Vector4 {
+        const v = this.shader.getUniformVector4(`anisotropy`) as Vector4;
+        return v ? new Vector4(v.x, v.y, v.z, v.w) : new Vector4(0, 0, 0, 0);
+    }
+
+    /**
+     * Specular anisotropy strength (KHR_materials_anisotropy), 0…1: how far
+     * highlights stretch across the grain direction. Above 0 enables the
+     * effect; 0 disables it. The mesh needs UVs — the grain follows +U,
+     * turned by `anisotropyRotation`.
+     */
+    public set anisotropy(value: number) {
+        const v = this._anisotropyParams();
+        v.x = Math.min(Math.max(value, 0), 1);
+        this.shader.setUniformVector4(`anisotropy`, v);
+        this.shader.setDefine(`USE_ANISOTROPY`, v.x > 0);
+    }
+
+    /** Get the anisotropy strength. */
+    public get anisotropy(): number {
+        return this._anisotropyParams().x;
+    }
+
+    /** Rotation of the grain direction around the normal, in radians, counter-clockwise from +U. */
+    public set anisotropyRotation(value: number) {
+        const v = this._anisotropyParams();
+        v.y = value;
+        this.shader.setUniformVector4(`anisotropy`, v);
+    }
+
+    /** Get the grain rotation in radians. */
+    public get anisotropyRotation(): number {
+        return this._anisotropyParams().y;
     }
 
     private _iridescenceParams(): Vector4 {
