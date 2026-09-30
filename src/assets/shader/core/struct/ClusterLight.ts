@@ -7,6 +7,7 @@ export let ClusterLight: string = /*wgsl*/ `
     const PointLightType = 1;
     const DirectLightType = 2;
     const SpotLightType = 3;
+    const RectLightType = 5;
 
     struct ClusterBox {
         minPoint:vec4<f32>,

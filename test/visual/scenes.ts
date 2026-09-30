@@ -1,6 +1,6 @@
 import {
     AtmosphericComponent, BloomPost, BoxGeometry, CameraUtil, Color, ColorGradingPost, DirectLight, Engine3D, LensPost, LitMaterial, MaterialVariants,
-    MeshRenderer, Object3D, PointLight, PostProcessingComponent, Scene3D, SphereGeometry, SpotLight, TorusGeometry, UnLitMaterial, Vector3, View3D, BlendMode,
+    MeshRenderer, Object3D, PointLight, PostProcessingComponent, RectLight, Scene3D, SphereGeometry, SpotLight, TorusGeometry, UnLitMaterial, Vector3, View3D, BlendMode,
 } from '@orillusion/core';
 import { buildVariantsDemoGLB } from '@samples/utils/GLBBuilder';
 import { Tolerance } from './VisualHarness';
@@ -218,6 +218,30 @@ export const VISUAL_SCENES: VisualSceneDef[] = [
             const grade = post.addPost(ColorGradingPost);
             grade.contrast = 1.25; grade.saturation = 1.3; grade.temperature = 0.3;
             grade.setLUTFromFunction(16, (r, g, b) => [r, g * 0.92, b * 0.8 + 0.05]);
+            return view;
+        },
+    },
+    {
+        // Rect area lights only (no sky): soft diffuse on a matte wall, panel reflections on a glossy floor.
+        name: 'rect-light',
+        async build(engine) {
+            const { scene, view } = baseScene(engine, new Vector3(0, 6, 16), new Vector3(0, 2, 0), false);
+            const panel = (c: [number, number, number], pos: Vector3, target: Vector3, w: number, h: number, intensity: number) => {
+                const o = new Object3D();
+                const l = o.addComponent(RectLight);
+                l.lightColor = new Color(c[0], c[1], c[2], 1);
+                l.width = w; l.height = h; l.intensity = intensity; l.range = 40;
+                scene.addChild(o);
+                o.transform.lookAt(pos, target);
+            };
+            panel([1, 0.7, 0.45], new Vector3(-7, 5, 2), new Vector3(0, 1, 0), 5, 4, 5);
+            panel([0.45, 0.7, 1], new Vector3(7, 4, 3), new Vector3(0, 1, 0), 3, 6, 5);
+            panel([1, 0.25, 0.8], new Vector3(0, 7, -3), new Vector3(0, 0, -3), 10, 1, 8);
+            const flat = (m: LitMaterial) => { m.setUniformFloat('envIntensity', 0); return m; };
+            mesh(scene, new BoxGeometry(50, 0.4, 50), flat(lit(0.35, 0.35, 0.37, 0.35)), 0, -0.2, 0, false);
+            mesh(scene, new BoxGeometry(50, 20, 0.4), flat(lit(0.7, 0.7, 0.7, 1)), 0, 10, -9, false);
+            const geo = new SphereGeometry(1.2, 32, 32);
+            for (let i = 0; i < 5; i++) mesh(scene, geo, flat(lit(0.85, 0.85, 0.85, 0.1 + i * 0.2, i % 2)), (i - 2) * 3, 1.2, 0, false);
             return view;
         },
     },

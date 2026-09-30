@@ -220,6 +220,8 @@ fn spotLighting( WP:vec3<f32>, light:LightData , iblSpecularResult : vec3f) -> v
     return  color ;
 }
 
+#include "RectLight_frag"
+
 fn sphere_unit( radius:f32 , intensity:f32 ) -> f32 {
   return intensity / (4.0 * PI2 * radius * radius) ;
 }

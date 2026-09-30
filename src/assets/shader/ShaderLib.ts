@@ -37,6 +37,7 @@ import { Clearcoat_frag } from './materials/program/Clearcoat_frag';
 import { Sheen_frag } from './materials/program/Sheen_frag';
 import { Iridescence_frag } from './materials/program/Iridescence_frag';
 import { Anisotropy_frag } from './materials/program/Anisotropy_frag';
+import { RectLight_frag } from './lighting/RectLight_frag';
 import { Lit_shader } from './materials/Lit_shader';
 import { PBRLItShader } from './materials/PBRLItShader';
 import { BxdfDebug_frag } from './materials/program/BxdfDebug_frag';
@@ -134,6 +135,7 @@ export class ShaderLib {
         ShaderLib.register('Sheen_frag', Sheen_frag);
         ShaderLib.register('Iridescence_frag', Iridescence_frag);
         ShaderLib.register('Anisotropy_frag', Anisotropy_frag);
+        ShaderLib.register('RectLight_frag', RectLight_frag);
         ShaderLib.register('LitShader', Lit_shader);
         ShaderLib.register('PBRLItShader', PBRLItShader);
 
