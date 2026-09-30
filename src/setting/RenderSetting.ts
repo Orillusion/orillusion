@@ -5,6 +5,7 @@ import { OutlineSetting } from "./post/OutlineSetting";
 import { SkylineSetting } from "./post/SkylineSetting";
 import { LensSetting } from "./post/LensSetting";
 import { MotionBlurSetting } from "./post/MotionBlurSetting";
+import { ColorGradingSetting } from "./post/ColorGradingSetting";
 import { SSRSetting } from "./post/SSRSetting";
 import { TAASetting } from "./post/TAASetting";
 import { BloomSetting } from "./post/BloomSetting";
@@ -96,6 +97,7 @@ export type RenderSetting = {
 	skyline?: SkylineSetting;
         lens?: LensSetting;
         motionBlur?: MotionBlurSetting;
+        colorGrading?: ColorGradingSetting;
         godRay?: GodRaySetting;
         fxaa?: {
             enable: boolean;

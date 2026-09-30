@@ -1,5 +1,5 @@
 import {
-    AtmosphericComponent, BloomPost, BoxGeometry, CameraUtil, Color, DirectLight, Engine3D, LensPost, LitMaterial, MaterialVariants,
+    AtmosphericComponent, BloomPost, BoxGeometry, CameraUtil, Color, ColorGradingPost, DirectLight, Engine3D, LensPost, LitMaterial, MaterialVariants,
     MeshRenderer, Object3D, PointLight, PostProcessingComponent, Scene3D, SphereGeometry, SpotLight, TorusGeometry, UnLitMaterial, Vector3, View3D, BlendMode,
 } from '@orillusion/core';
 import { buildVariantsDemoGLB } from '@samples/utils/GLBBuilder';
@@ -201,6 +201,23 @@ export const VISUAL_SCENES: VisualSceneDef[] = [
             post.addPost(BloomPost);
             const lens = post.addPost(LensPost);
             lens.vignetteIntensity = 0.6; lens.chromaticAberration = 0.5; lens.grainIntensity = 0; lens.grainStatic = true;
+            return view;
+        },
+    },
+    {
+        // ColorGradingPost after the tonemap: parametric grade plus a generated LUT.
+        name: 'color-grading',
+        async build(engine) {
+            const { scene, view } = baseScene(engine, new Vector3(0, 3, 13), new Vector3(0, 2.5, 0));
+            sun(scene);
+            const geo = new SphereGeometry(1, 24, 24);
+            const hues: [number, number, number][] = [[0.9, 0.15, 0.1], [0.9, 0.7, 0.1], [0.15, 0.8, 0.25], [0.15, 0.4, 0.9], [0.85, 0.85, 0.85]];
+            hues.forEach((c, i) => mesh(scene, geo, lit(c[0], c[1], c[2], 0.5), (i - 2) * 2.4, 3, 0, false));
+            mesh(scene, new BoxGeometry(40, 0.2, 40), lit(0.5, 0.5, 0.5, 0.9), 0, -0.1, 0, false);
+            const post = scene.addComponent(PostProcessingComponent);
+            const grade = post.addPost(ColorGradingPost);
+            grade.contrast = 1.25; grade.saturation = 1.3; grade.temperature = 0.3;
+            grade.setLUTFromFunction(16, (r, g, b) => [r, g * 0.92, b * 0.8 + 0.05]);
             return view;
         },
     },

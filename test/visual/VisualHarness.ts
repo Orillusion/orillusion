@@ -78,8 +78,10 @@ function halfToFloat(h: number): number {
 }
 
 function finalTexture(engine: Engine3D, view: View3D): GPUTexture {
-    const post = (engine.getRenderJob(view) as any)?.graph?.getPass('PostPass')?.postList?.get('TonemapPost');
-    if (!post?.renderTexture) throw new Error('visual: TonemapPost target not available (tonemap disabled?)');
+    const posts = (engine.getRenderJob(view) as any)?.graph?.getPass('PostPass')?.postList;
+    // ColorGradingPost runs after the tonemap, so when it is attached its target is the final image.
+    const post = posts?.get('ColorGradingPost')?.renderTexture ? posts.get('ColorGradingPost') : posts?.get('TonemapPost');
+    if (!post?.renderTexture) throw new Error('visual: final post target not available (tonemap disabled?)');
     return post.renderTexture.getGPUTexture();
 }
 
