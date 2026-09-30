@@ -14,6 +14,7 @@ import { ShaderConverter } from "./converter/ShaderConverter";
 import { ShaderPassBase } from "./ShaderPassBase";
 import { ShaderStage } from "./ShaderStage";
 import { Preprocessor } from "./util/Preprocessor";
+import { ShaderStageUsage } from "./util/ShaderStageUsage";
 import { ShaderReflection, ShaderReflectionVarInfo } from "./value/ShaderReflectionInfo";
 import { ShaderState } from "./value/ShaderState";
 import { RendererPassState } from "../../../renderJob/passRenderer/state/RendererPassState";
@@ -759,7 +760,7 @@ export class RenderShaderPass extends ShaderPassBase {
                             let texture = this.textures[textureName] ? this.textures[textureName] : Engine3D.resFor(this._boundCtx).redTexture;
                             let entry: GPUBindGroupLayoutEntry = {
                                 binding: info.binding,
-                                visibility: texture.visibility,
+                                visibility: this._stageVisibility(info.varName, texture.visibility),
                                 sampler: texture.samplerBindingLayout,
                             }
                             entries.push(entry);
@@ -772,7 +773,7 @@ export class RenderShaderPass extends ShaderPassBase {
                             let texture = this.textures[textureName] ? this.textures[textureName] : Engine3D.resFor(this._boundCtx).redTexture;
                             let entry: GPUBindGroupLayoutEntry = {
                                 binding: info.binding,
-                                visibility: texture.visibility,
+                                visibility: this._stageVisibility(info.varName, texture.visibility),
                                 sampler: texture.sampler_comparisonBindingLayout
                             }
                             entries.push(entry);
@@ -790,7 +791,7 @@ export class RenderShaderPass extends ShaderPassBase {
                             let texture = this.textures[info.varName] ? this.textures[info.varName] : Engine3D.resFor(this._boundCtx).redTexture;
                             let entry: GPUBindGroupLayoutEntry = {
                                 binding: info.binding,
-                                visibility: texture.visibility,
+                                visibility: this._stageVisibility(info.varName, texture.visibility),
                                 texture: texture.textureBindingLayout,
                             }
                             entries.push(entry);
@@ -803,7 +804,7 @@ export class RenderShaderPass extends ShaderPassBase {
                             let texture = this.textures[info.varName] ? this.textures[info.varName] : Engine3D.resFor(this._boundCtx).redTexture;
                             let entry: GPUBindGroupLayoutEntry = {
                                 binding: info.binding,
-                                visibility: texture.visibility,
+                                visibility: this._stageVisibility(info.varName, texture.visibility),
                                 externalTexture: {}
                             }
                             entries.push(entry);
@@ -816,7 +817,7 @@ export class RenderShaderPass extends ShaderPassBase {
                             let texture = this.textures[info.varName] ? this.textures[info.varName] : Engine3D.resFor(this._boundCtx).redTexture;
                             let entry: GPUBindGroupLayoutEntry = {
                                 binding: info.binding,
-                                visibility: texture.visibility,
+                                visibility: this._stageVisibility(info.varName, texture.visibility),
                                 texture: texture.textureBindingLayout,
                             }
                             entries.push(entry);
@@ -1184,6 +1185,25 @@ export class RenderShaderPass extends ShaderPassBase {
         return k;
     }
 
+    /**
+     * Restrict a texture/sampler binding's visibility to the stages that
+     * actually declare it. Textures default to VERTEX | FRAGMENT | COMPUTE,
+     * so every fragment-only map also counted against the vertex stage's
+     * `maxSampledTexturesPerShaderStage` (16): a PBR material with the base
+     * maps plus the KHR extension maps reached 17 and the layout failed.
+     */
+    private _stageVisibility(varName: string, base: number): number {
+        const r = this.shaderReflection;
+        if (!r || !r.vsUsed || !r.fsUsed) return base;
+        let mask = 0;
+        if (r.vsUsed.has(varName)) mask |= GPUShaderStage.VERTEX;
+        if (r.fsUsed.has(varName)) mask |= GPUShaderStage.FRAGMENT;
+        // Not reachable from either entry point (dead declaration): keep the
+        // fragment bit so the layout still matches the module's declaration.
+        if (mask == 0) mask = GPUShaderStage.FRAGMENT;
+        return base & mask;
+    }
+
     private createGroupLayouts() {
         this._groupsShaderReflectionVarInfos = [];
         let shaderReflection = this.shaderReflection;
@@ -1210,18 +1230,19 @@ export class RenderShaderPass extends ShaderPassBase {
             bindGroupLayouts: this.bindGroupLayouts,
         });
 
-        // Binding Group 1 is Global
-        if (this._groupsShaderReflectionVarInfos[0]) {
-            // this.genGroups(0, this.groupsShaderReflectionVarInfos);
-        }
-        if (this._groupsShaderReflectionVarInfos[1]) {
-            this.genGroups(1, this._groupsShaderReflectionVarInfos);
-        }
-        if (this._groupsShaderReflectionVarInfos[2]) {
-            this.genGroups(2, this._groupsShaderReflectionVarInfos);
-        }
-        if (this._groupsShaderReflectionVarInfos[3]) {
-            this.genGroups(3, this._groupsShaderReflectionVarInfos);
+        // Binding Group 0 is Global.
+        // The layouts were just re-created. The texture group's layout
+        // changes whenever a define adds or removes a texture binding (e.g.
+        // clearing an optional map), so its bind group must be rebuilt too —
+        // otherwise every draw fails validation ("bind group layout ... does
+        // not match layout of bind group") and the material freezes at its
+        // last good frame. The uniform groups keep their buffers, so they are
+        // only created once (regenerating them would re-init the material
+        // uniform buffer and detach the uniform nodes from it).
+        for (let i = 1; i <= 3; i++) {
+            if (this._groupsShaderReflectionVarInfos[i]) {
+                this.genGroups(i, this._groupsShaderReflectionVarInfos, i == this._textureGroup);
+            }
         }
 
         return layouts;
@@ -1330,6 +1351,10 @@ export class RenderShaderPass extends ShaderPassBase {
             let fsPreShader = Preprocessor.parse(this._destFS, this.defineValue);
             fsPreShader = Preprocessor.parse(fsPreShader, this.defineValue);
             ShaderReflection.getShaderReflection2(fsPreShader, this);
+
+            // Per-stage usage, so bindings only get the visibility they need.
+            this.shaderReflection.vsUsed = ShaderStageUsage.reachableIdentifiers(vsPreShader, this.vsEntryPoint);
+            this.shaderReflection.fsUsed = ShaderStageUsage.reachableIdentifiers(fsPreShader, this.fsEntryPoint);
 
             ShaderReflection.final(this);
         } else {
