@@ -63,6 +63,7 @@ export class LitMaterial extends Material {
         colorPass.setUniform(`clearcoatColor`, sourceShader.getUniform(`clearcoatColor`));
         colorPass.setUniform(`clearcoatWeight`, sourceShader.getUniform(`clearcoatWeight`));
         colorPass.setUniform(`clearcoatIor`, sourceShader.getUniform(`clearcoatIor`));
+        colorPass.setUniform(`sheenColor`, sourceShader.getUniform(`sheenColor`));
 
         colorPass.setTexture(`baseMap`, sourceShader.getTexture(`baseMap`));
         colorPass.setTexture(`normalMap`, sourceShader.getTexture(`normalMap`));
@@ -129,6 +130,35 @@ export class LitMaterial extends Material {
     /** Get the ambient occlusion texture. */
     public get aoMap() {
         return this.shader.getTexture(`aoMap`);
+    }
+
+    /**
+     * Sheen tint (KHR_materials_sheen), linear RGB. Setting any non-black
+     * color enables the sheen lobe; black disables it again. The color's
+     * alpha channel is ignored — use `sheenRoughness`.
+     */
+    public set sheenColor(value: Color) {
+        const c = this.shader.getUniformColor(`sheenColor`);
+        const roughness = c ? c.a : 0;
+        this.shader.setUniformColor(`sheenColor`, new Color(value.r, value.g, value.b, roughness));
+        this.shader.setDefine(`USE_SHEEN`, value.r > 0 || value.g > 0 || value.b > 0);
+    }
+
+    /** Get the sheen tint (alpha carries the sheen roughness). */
+    public get sheenColor(): Color {
+        return this.shader.getUniformColor(`sheenColor`);
+    }
+
+    /** Sheen roughness, 0 (tight rim) … 1 (broad velvet glow). */
+    public set sheenRoughness(value: number) {
+        const c = this.shader.getUniformColor(`sheenColor`) ?? new Color(0, 0, 0, 0);
+        this.shader.setUniformColor(`sheenColor`, new Color(c.r, c.g, c.b, Math.min(Math.max(value, 0), 1)));
+    }
+
+    /** Get the sheen roughness. */
+    public get sheenRoughness(): number {
+        const c = this.shader.getUniformColor(`sheenColor`);
+        return c ? c.a : 0;
     }
 
     /** Set the clearcoat roughness texture and enable the clearcoat shader path. */

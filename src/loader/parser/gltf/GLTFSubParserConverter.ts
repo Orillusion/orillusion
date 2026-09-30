@@ -16,6 +16,7 @@ import { GLTF_Info, GLTF_Node } from "./GLTFInfo";
 import { GLTFSubParser } from "./GLTFSubParser";
 import { GLTFType } from "./GLTFType";
 import { KHR_materials_clearcoat } from "./extends/KHR_materials_clearcoat";
+import { KHR_materials_sheen } from "./extends/KHR_materials_sheen";
 import { KHR_materials_emissive_strength } from "./extends/KHR_materials_emissive_strength";
 import { KHR_materials_ior } from "./extends/KHR_materials_ior";
 import { KHR_materials_transmission } from "./extends/KHR_materials_transmission";
@@ -717,6 +718,7 @@ export class GLTFSubParserConverter {
     private applyMaterialExtensions(dmaterial: any, mat: Material): Material {
         if (dmaterial.extensions) {
             KHR_materials_clearcoat.apply(this.gltf, dmaterial, mat);
+            KHR_materials_sheen.apply(this.gltf, dmaterial, mat);
             KHR_materials_unlit.apply(this.gltf, dmaterial, mat);
             KHR_materials_emissive_strength.apply(this.gltf, dmaterial, mat, this.subParser.ctx);
             // IOR must come before transmission so the transmission
