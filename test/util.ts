@@ -162,4 +162,27 @@ async function readRowRGBA16F(device: GPUDevice, texture: GPUTexture, x: number,
     return out;
 }
 
-export { test, expect, end, delay, waitUntil, readRowRGBA16F }
+/**
+ * Read a w×h region of an rgba16float texture. Returns rows (top to bottom)
+ * of [r,g,b,a] tuples.
+ */
+async function readRegionRGBA16F(device: GPUDevice, texture: GPUTexture, x: number, y: number, w: number, h: number): Promise<number[][][]> {
+    const bytesPerRow = Math.ceil((w * 8) / 256) * 256;
+    const buf = device.createBuffer({ size: bytesPerRow * h, usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ });
+    const enc = device.createCommandEncoder();
+    enc.copyTextureToBuffer({ texture, origin: { x: Math.floor(x), y: Math.floor(y) } }, { buffer: buf, bytesPerRow, rowsPerImage: h }, { width: w, height: h });
+    device.queue.submit([enc.finish()]);
+    await buf.mapAsync(GPUMapMode.READ);
+    const u16 = new Uint16Array(buf.getMappedRange().slice(0));
+    buf.unmap(); buf.destroy();
+    const rows: number[][][] = [];
+    for (let j = 0; j < h; j++) {
+        const row: number[][] = [];
+        const base = j * (bytesPerRow / 2);
+        for (let i = 0; i < w; i++) row.push([halfToFloat(u16[base + i * 4]), halfToFloat(u16[base + i * 4 + 1]), halfToFloat(u16[base + i * 4 + 2]), halfToFloat(u16[base + i * 4 + 3])]);
+        rows.push(row);
+    }
+    return rows;
+}
+
+export { test, expect, end, delay, waitUntil, readRowRGBA16F, readRegionRGBA16F }
