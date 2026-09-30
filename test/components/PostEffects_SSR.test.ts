@@ -17,7 +17,9 @@ await test('Post SSR test', async () => {
 
     // finalTexture is created lazily inside SSRPost.render(); poll
     // instead of racing a fixed delay against the RAF tick.
-    await waitUntil(() => ssr.finalTexture)
+    await waitUntil(() => ssr.finalTexture, 15000)
+    // Same resize race as GTAO/TAA: wait until the post has followed the canvas.
+    await waitUntil(() => ssr.finalTexture.width === engine.context3D.presentationSize[0], 15000)
     let dest = engine.context3D.presentationSize[0];
     let src = ssr.finalTexture?.width;
     expect(src).tobe(dest)
