@@ -74,6 +74,10 @@ export class LitMaterial extends Material {
         colorPass.setTexture(`aoMap`, sourceShader.getTexture(`aoMap`));
         colorPass.setTexture(`maskMap`, sourceShader.getTexture(`maskMap`));
         colorPass.setTexture(`empty`, sourceShader.getTexture(`empty`));
+        for (const name of LitMaterial.EXTENSION_MAPS) {
+            const t = sourceShader.getTexture(name);
+            if (t) colorPass.setTexture(name, t);
+        }
 
         colorPass.setUniform(`baseMapOffsetSize`, sourceShader.getUniform(`baseMapOffsetSize`));
         colorPass.setUniform(`normalMapOffsetSize`, sourceShader.getUniform(`normalMapOffsetSize`));
@@ -172,7 +176,7 @@ export class LitMaterial extends Material {
 
     private _iridescenceParams(): Vector4 {
         const v = this.shader.getUniformVector4(`iridescence`) as Vector4;
-        return v ? new Vector4(v.x, v.y, v.z, v.w) : new Vector4(0, 1.3, 400, 0);
+        return v ? new Vector4(v.x, v.y, v.z, v.w) : new Vector4(0, 1.3, 400, 100);
     }
 
     /**
@@ -243,6 +247,66 @@ export class LitMaterial extends Material {
         const c = this.shader.getUniformColor(`sheenColor`);
         return c ? c.a : 0;
     }
+
+    /** Minimum thin-film thickness in nanometres, used with `iridescenceThicknessMap` (default 100). */
+    public set iridescenceThicknessMinimum(value: number) {
+        const v = this._iridescenceParams();
+        v.w = Math.max(value, 0);
+        this.shader.setUniformVector4(`iridescence`, v);
+    }
+
+    /** Get the minimum thin-film thickness in nanometres. */
+    public get iridescenceThicknessMinimum(): number {
+        return this._iridescenceParams().w;
+    }
+
+    /** Texture slots of the KHR material extensions, each paired with the define that turns sampling on. */
+    private static readonly EXTENSION_MAPS = ['sheenColorMap', 'sheenRoughnessMap', 'iridescenceMap', 'iridescenceThicknessMap', 'specularMap', 'specularColorMap', 'anisotropyMap'] as const;
+    private static readonly EXTENSION_MAP_DEFINES: Record<string, string> = {
+        sheenColorMap: 'USE_SHEENMAP', sheenRoughnessMap: 'USE_SHEENROUGHNESSMAP',
+        iridescenceMap: 'USE_IRIDESCENCEMAP', iridescenceThicknessMap: 'USE_IRIDESCENCE_THICKNESSMAP',
+        specularMap: 'USE_SPECULARMAP', specularColorMap: 'USE_SPECULARCOLORMAP', anisotropyMap: 'USE_ANISOTROPYMAP',
+    };
+
+    private _setExtensionMap(name: string, texture: Texture) {
+        // Shader.setTexture ignores null but would still flip its own
+        // USE_<NAME> define; only the sampling define below matters.
+        if (texture) this.shader.setTexture(name, texture);
+        this.shader.setDefine(LitMaterial.EXTENSION_MAP_DEFINES[name], !!texture);
+    }
+
+    private _getExtensionMap(name: string): Texture {
+        const on = (this.shader.getDefaultColorShader() as any).defineValue[LitMaterial.EXTENSION_MAP_DEFINES[name]];
+        return on ? this.shader.getTexture(name) : null;
+    }
+
+    /** KHR_materials_sheen `sheenColorTexture` (sRGB): rgb multiplies `sheenColor`. Only sampled while the sheen lobe is on. */
+    public set sheenColorMap(texture: Texture) { this._setExtensionMap('sheenColorMap', texture); }
+    public get sheenColorMap(): Texture { return this._getExtensionMap('sheenColorMap'); }
+
+    /** KHR_materials_sheen `sheenRoughnessTexture`: alpha multiplies `sheenRoughness`. */
+    public set sheenRoughnessMap(texture: Texture) { this._setExtensionMap('sheenRoughnessMap', texture); }
+    public get sheenRoughnessMap(): Texture { return this._getExtensionMap('sheenRoughnessMap'); }
+
+    /** KHR_materials_iridescence `iridescenceTexture`: red multiplies `iridescence`. Only sampled while iridescence is on. */
+    public set iridescenceMap(texture: Texture) { this._setExtensionMap('iridescenceMap', texture); }
+    public get iridescenceMap(): Texture { return this._getExtensionMap('iridescenceMap'); }
+
+    /** KHR_materials_iridescence `iridescenceThicknessTexture`: green lerps the film thickness from `iridescenceThicknessMinimum` to `iridescenceThickness`. */
+    public set iridescenceThicknessMap(texture: Texture) { this._setExtensionMap('iridescenceThicknessMap', texture); }
+    public get iridescenceThicknessMap(): Texture { return this._getExtensionMap('iridescenceThicknessMap'); }
+
+    /** KHR_materials_specular `specularTexture`: alpha multiplies the specular strength (`specularColor.a`). */
+    public set specularMap(texture: Texture) { this._setExtensionMap('specularMap', texture); }
+    public get specularMap(): Texture { return this._getExtensionMap('specularMap'); }
+
+    /** KHR_materials_specular `specularColorTexture` (sRGB): rgb multiplies the F0 tint (`specularColor.rgb`). */
+    public set specularColorMap(texture: Texture) { this._setExtensionMap('specularColorMap', texture); }
+    public get specularColorMap(): Texture { return this._getExtensionMap('specularColorMap'); }
+
+    /** KHR_materials_anisotropy `anisotropyTexture`: rg = tangent-space direction (0.5 = none), b multiplies `anisotropy`. Only sampled while anisotropy is on. */
+    public set anisotropyMap(texture: Texture) { this._setExtensionMap('anisotropyMap', texture); }
+    public get anisotropyMap(): Texture { return this._getExtensionMap('anisotropyMap'); }
 
     /** Set the clearcoat roughness texture and enable the clearcoat shader path. */
     public set clearCoatRoughnessMap(texture: Texture) {

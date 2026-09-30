@@ -147,7 +147,14 @@ export class Context3D extends CEventDispatcher {
             ],
             requiredLimits: {
                 minUniformBufferOffsetAlignment: 256,
-                maxStorageBufferBindingSize: this.adapter.limits.maxStorageBufferBindingSize
+                maxStorageBufferBindingSize: this.adapter.limits.maxStorageBufferBindingSize,
+                // A PBR material with its base maps plus the KHR extension
+                // maps (sheen / iridescence / specular / anisotropy) binds
+                // more than the 16 sampled textures the default limit allows
+                // per stage. Ask for what the adapter offers, capped at 32.
+                // Samplers are NOT raised: Metal caps them at 16, so the
+                // extension maps share baseMapSampler instead.
+                maxSampledTexturesPerShaderStage: Math.min(this.adapter.limits.maxSampledTexturesPerShaderStage, 32),
             }
         });
         if (!this.device) throw new Error('Your browser does not support WebGPU!');

@@ -4,12 +4,21 @@
  * used by the Khronos sample viewer and three.js: the film modifies the
  * surface Fresnel as a function of view angle, film IOR and thickness.
  *
- * `materialUniform.iridescence` = (factor, film IOR, film thickness in nm, unused).
+ * `materialUniform.iridescence` = (factor, film IOR, thickness maximum in nm, thickness minimum in nm).
  * `IridescenceUtil` mirrors this file on the CPU.
  * @internal
  */
 export let Iridescence_frag: string = /*wgsl*/ `
   #if USE_IRIDESCENCE
+    #if USE_IRIDESCENCEMAP
+        @group(1) @binding(auto)
+        var iridescenceMap: texture_2d<f32>;
+    #endif
+    #if USE_IRIDESCENCE_THICKNESSMAP
+        @group(1) @binding(auto)
+        var iridescenceThicknessMap: texture_2d<f32>;
+    #endif
+
     fn iriPow2(x: f32) -> f32 { return x * x; }
     fn iriPow2v(x: vec3<f32>) -> vec3<f32> { return x * x; }
 
@@ -104,8 +113,17 @@ export let Iridescence_frag: string = /*wgsl*/ `
     /// F0 with the film applied: the angle-dependent film Fresnel converted
     /// back to an equivalent Schlick F0, blended in by the iridescence factor.
     fn applyIridescenceF0(baseF0: vec3<f32>, NoV: f32) -> vec3<f32> {
-        let factor = clamp(materialUniform.iridescence.x, 0.0, 1.0);
-        let fresnel = evalIridescence(1.0, materialUniform.iridescence.y, NoV, materialUniform.iridescence.z, baseF0);
+        var factor = clamp(materialUniform.iridescence.x, 0.0, 1.0);
+        // z = thickness maximum, w = thickness minimum; the texture's G channel lerps between them.
+        var thickness = materialUniform.iridescence.z;
+        #if USE_IRIDESCENCEMAP
+            factor = factor * textureSample(iridescenceMap, baseMapSampler, ORI_VertexVarying.fragUV0.xy).r;
+        #endif
+        #if USE_IRIDESCENCE_THICKNESSMAP
+            let t = textureSample(iridescenceThicknessMap, baseMapSampler, ORI_VertexVarying.fragUV0.xy).g;
+            thickness = mix(materialUniform.iridescence.w, materialUniform.iridescence.z, t);
+        #endif
+        let fresnel = evalIridescence(1.0, materialUniform.iridescence.y, NoV, thickness, baseF0);
         let x = clamp(1.0 - NoV, 0.0, 1.0);
         let x5 = clamp(x * x * x * x * x, 0.0, 0.9999);
         let filmF0 = clamp((fresnel - vec3<f32>(x5)) / (1.0 - x5), vec3<f32>(0.0), vec3<f32>(1.0));

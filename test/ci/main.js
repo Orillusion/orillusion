@@ -16,6 +16,11 @@ const createWindow = async ()=>{
         // frame: false,
         webPreferences: {
             preload: join(__dirname, 'preload.js'),
+            // Chromium treats a fully occluded window as hidden and stops
+            // requestAnimationFrame; a terminal or IDE window covering this
+            // small test window then freezes the engine loop mid-test and
+            // frame-based waits time out. Keep timers and rAF running.
+            backgroundThrottling: false,
             nodeintegrationinsubframes: true,
             webviewTag: true
         }

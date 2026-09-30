@@ -7,7 +7,8 @@
  * (D and correlated-Smith visibility), which is exactly 1 when the strength
  * is 0, plus the bent reflection vector for the environment term.
  *
- * `materialUniform.anisotropy` = (strength 0..1, rotation in radians, unused, unused).
+ * `materialUniform.anisotropy` = (strength 0..1, rotation in radians, unused, unused);
+ * `anisotropyMap` (optional) = glTF anisotropyTexture: rg direction, b strength.
  * The tangent frame comes from screen-space derivatives of position and UV,
  * so the mesh needs UVs (it falls back to an arbitrary tangent without them).
  * `AnisotropyUtil` mirrors the math on the CPU.
@@ -15,8 +16,13 @@
  */
 export let Anisotropy_frag: string = /*wgsl*/ `
   #if USE_ANISOTROPY
+    #if USE_ANISOTROPYMAP
+        @group(1) @binding(auto)
+        var anisotropyMap: texture_2d<f32>;
+    #endif
     var<private> anisoT: vec3<f32>;
     var<private> anisoB: vec3<f32>;
+    var<private> anisoStrength: f32;
 
     /// Build the rotated, orthonormal tangent frame. Call once per fragment, outside branches.
     fn initAnisotropy() {
@@ -40,7 +46,17 @@ export let Anisotropy_frag: string = /*wgsl*/ `
         T = normalize(T);
         let B0 = normalize(cross(N, T));
         let rot = materialUniform.anisotropy.y;
-        anisoT = normalize(T * cos(rot) + B0 * sin(rot));
+        var dir = vec2<f32>(cos(rot), sin(rot));
+        anisoStrength = clamp(materialUniform.anisotropy.x, 0.0, 1.0);
+        #if USE_ANISOTROPYMAP
+            // glTF: rg = direction in tangent space (0.5 = zero), b = strength multiplier.
+            // The rotation factor is applied on top of the texture direction.
+            let tex = textureSample(anisotropyMap, baseMapSampler, ORI_VertexVarying.fragUV0.xy).rgb;
+            let d = tex.rg * 2.0 - 1.0;
+            dir = vec2<f32>(d.x * dir.x - d.y * dir.y, d.x * dir.y + d.y * dir.x);
+            anisoStrength = anisoStrength * tex.b;
+        #endif
+        anisoT = normalize(T * dir.x + B0 * dir.y);
         anisoB = normalize(cross(N, anisoT));
     }
 
@@ -52,7 +68,7 @@ export let Anisotropy_frag: string = /*wgsl*/ `
         let NoH = clamp(dot(N, H), 0.0, 1.0);
         let NoL = clamp(dot(N, L), 0.0001, 1.0);
         let NoV = clamp(dot(N, V), 0.0001, 1.0);
-        let strength = clamp(materialUniform.anisotropy.x, 0.0, 1.0);
+        let strength = anisoStrength;
         let a = max(roughness * roughness, 0.002);
         let at = mix(a, 1.0, strength * strength);
         let ab = a;
@@ -79,7 +95,7 @@ export let Anisotropy_frag: string = /*wgsl*/ `
     fn anisotropyReflection(roughness: f32) -> vec3<f32> {
         let N = fragData.N;
         let V = fragData.V;
-        let strength = clamp(materialUniform.anisotropy.x, 0.0, 1.0);
+        let strength = anisoStrength;
         let bentTangent = cross(anisoB, V);
         var bentNormal = cross(bentTangent, anisoB);
         let k = 1.0 - strength * (1.0 - roughness);

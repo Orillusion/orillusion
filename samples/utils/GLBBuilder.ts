@@ -176,3 +176,61 @@ export function buildVariantsDemoGLB(radius: number = 2, segments: number = 32):
     json.buffers[0].byteLength = bin.byteLength;
     return { blob: buildGLB(json, bin), sphereVertices: n, ribbonTriangles: tris, variantNames };
 }
+
+/** Encode a canvas-drawn image as PNG bytes (left half `left`, right half `right`, CSS colours). */
+export async function encodeHalfPNG(size: number, left: string, right: string): Promise<ArrayBuffer> {
+    const canvas = new OffscreenCanvas(size, size);
+    const ctx = canvas.getContext('2d')!;
+    ctx.fillStyle = left; ctx.fillRect(0, 0, size / 2, size);
+    ctx.fillStyle = right; ctx.fillRect(size / 2, 0, size / 2, size);
+    return (await canvas.convertToBlob({ type: 'image/png' })).arrayBuffer();
+}
+
+/**
+ * A single textured quad whose material carries every KHR material-extension
+ * texture (sheen colour / roughness, iridescence + thickness, specular +
+ * specular colour, anisotropy), all pointing at the one embedded PNG. Used to
+ * prove the glTF loader resolves and binds those textures.
+ */
+export function buildExtensionTexturesGLB(png: ArrayBuffer, size = 2): Blob {
+    const w = new BinWriter();
+    const h = size / 2;
+    const vPos = w.add(new Float32Array([-h, -h, 0, h, -h, 0, h, h, 0, -h, h, 0]));
+    const vNor = w.add(new Float32Array([0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1]));
+    const vUv = w.add(new Float32Array([0, 1, 1, 1, 1, 0, 0, 0]));
+    const vIdx = w.add(new Uint16Array([0, 1, 2, 0, 2, 3]));
+    const vImg = w.add(new Uint8Array(png));
+    const tex = { index: 0 };
+    const json = {
+        asset: { version: '2.0', generator: 'orillusion-samples GLBBuilder' },
+        extensionsUsed: ['KHR_materials_sheen', 'KHR_materials_iridescence', 'KHR_materials_specular', 'KHR_materials_anisotropy'],
+        scene: 0,
+        scenes: [{ nodes: [0] }],
+        nodes: [{ name: 'ExtensionQuad', mesh: 0 }],
+        meshes: [{ name: 'Quad', primitives: [{ attributes: { POSITION: 0, NORMAL: 1, TEXCOORD_0: 2 }, indices: 3, material: 0 }] }],
+        materials: [{
+            name: 'AllExtensionTextures',
+            pbrMetallicRoughness: { baseColorFactor: [0.6, 0.6, 0.6, 1], metallicFactor: 0, roughnessFactor: 0.5 },
+            extensions: {
+                KHR_materials_sheen: { sheenColorFactor: [1, 1, 1], sheenRoughnessFactor: 0.6, sheenColorTexture: tex, sheenRoughnessTexture: tex },
+                KHR_materials_iridescence: { iridescenceFactor: 1, iridescenceThicknessMinimum: 200, iridescenceThicknessMaximum: 600, iridescenceTexture: tex, iridescenceThicknessTexture: tex },
+                KHR_materials_specular: { specularFactor: 1, specularColorFactor: [1, 1, 1], specularTexture: tex, specularColorTexture: tex },
+                KHR_materials_anisotropy: { anisotropyStrength: 1, anisotropyRotation: 0, anisotropyTexture: tex },
+            },
+        }],
+        textures: [{ source: 0, sampler: 0 }],
+        samplers: [{ magFilter: 9729, minFilter: 9729, wrapS: 33071, wrapT: 33071 }],
+        images: [{ mimeType: 'image/png', bufferView: vImg }],
+        accessors: [
+            { bufferView: vPos, componentType: 5126, count: 4, type: 'VEC3', min: [-h, -h, 0], max: [h, h, 0] },
+            { bufferView: vNor, componentType: 5126, count: 4, type: 'VEC3' },
+            { bufferView: vUv, componentType: 5126, count: 4, type: 'VEC2' },
+            { bufferView: vIdx, componentType: 5123, count: 6, type: 'SCALAR' },
+        ],
+        bufferViews: w.views.map(v => ({ ...v })),
+        buffers: [{ byteLength: 0 }],
+    };
+    const bin = w.finish();
+    json.buffers[0].byteLength = bin.byteLength;
+    return buildGLB(json, bin);
+}

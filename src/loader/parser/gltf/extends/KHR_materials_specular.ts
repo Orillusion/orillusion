@@ -1,5 +1,6 @@
 // https://github.com/KhronosGroup/glTF/tree/main/extensions/2.0/Khronos/KHR_materials_specular
 
+import { LitMaterial } from '../../../../materials/LitMaterial';
 import { Material } from '../../../../materials/Material';
 import { Color } from '../../../../math/Color';
 
@@ -11,9 +12,8 @@ export class KHR_materials_specular {
     /**
      * `specularColorFactor` tints the dielectric F0 and `specularFactor`
      * scales the specular layer. Both land in the PBR `specularColor`
-     * uniform (rgb = F0 modulator, a = specular strength). The texture
-     * variants (`specularTexture`, `specularColorTexture`) are not sampled
-     * yet — the factors alone are used.
+     * uniform (rgb = F0 modulator, a = specular strength). `specularTexture`
+     * (alpha) and `specularColorTexture` (rgb) multiply those per texel.
      */
     public static apply(gltf: any, dmaterial: any, tMaterial: any) {
         const ext = dmaterial.extensions?.[`KHR_materials_specular`];
@@ -23,5 +23,9 @@ export class KHR_materials_specular {
         dmaterial.specularColorFactor = c;
         dmaterial.specularFactor = f;
         (tMaterial as Material).setUniformColor(`specularColor`, new Color(c[0], c[1], c[2], f));
+        if (tMaterial instanceof LitMaterial) {
+            if (dmaterial.specularTextureResolved) tMaterial.specularMap = dmaterial.specularTextureResolved;
+            if (dmaterial.specularColorTextureResolved) tMaterial.specularColorMap = dmaterial.specularColorTextureResolved;
+        }
     }
 }

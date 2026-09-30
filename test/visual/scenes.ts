@@ -1,6 +1,6 @@
 import {
     AtmosphericComponent, BloomPost, BoxGeometry, CameraUtil, Color, ColorGradingPost, DirectLight, Engine3D, LensPost, LitMaterial, MaterialVariants,
-    MeshRenderer, Object3D, PointLight, PostProcessingComponent, RectLight, Scene3D, SphereGeometry, SpotLight, TorusGeometry, UnLitMaterial, Vector3, View3D, BlendMode,
+    MeshRenderer, Object3D, PointLight, PostProcessingComponent, RectLight, Uint8ArrayTexture, Scene3D, SphereGeometry, SpotLight, TorusGeometry, UnLitMaterial, Vector3, View3D, BlendMode,
 } from '@orillusion/core';
 import { buildVariantsDemoGLB } from '@samples/utils/GLBBuilder';
 import { Tolerance } from './VisualHarness';
@@ -242,6 +242,35 @@ export const VISUAL_SCENES: VisualSceneDef[] = [
             mesh(scene, new BoxGeometry(50, 20, 0.4), flat(lit(0.7, 0.7, 0.7, 1)), 0, 10, -9, false);
             const geo = new SphereGeometry(1.2, 32, 32);
             for (let i = 0; i < 5; i++) mesh(scene, geo, flat(lit(0.85, 0.85, 0.85, 0.1 + i * 0.2, i % 2)), (i - 2) * 3, 1.2, 0, false);
+            return view;
+        },
+    },
+    {
+        // KHR extension textures: per-texel sheen / iridescence / specular / anisotropy from data textures.
+        name: 'extension-textures',
+        async build(engine) {
+            const { scene, view } = baseScene(engine, new Vector3(0, 2.4, 11), new Vector3(0, 2.2, 0));
+            sun(scene, 40, 150, 3.5);
+            const tex = (fill: (x: number, y: number) => number[]) => {
+                const w = 64, d = new Uint8Array(w * w * 4);
+                for (let y = 0; y < w; y++) for (let x = 0; x < w; x++) d.set(fill(x / w, y / w), (y * w + x) * 4);
+                return new Uint8ArrayTexture().create(w, w, d, false, engine.context3D);
+            };
+            const stripes = tex((u, v) => ((u * 8) | 0) % 2 ? [255, 220, 180, 255] : [0, 0, 0, 255]);
+            const swirl = tex((u, v) => [0, (0.5 + 0.5 * Math.sin((u - 0.5) * 20 + (v - 0.5) * 12)) * 255, 0, 255]);
+            const checker = tex((u, v) => [0, 0, 0, (((u * 4) | 0) + ((v * 4) | 0)) % 2 ? 255 : 30]);
+            const rings = tex((u, v) => { const x = u - 0.5, y = 0.5 - v, r = Math.hypot(x, y) || 1e-4; return [(-y / r * 0.5 + 0.5) * 255, (x / r * 0.5 + 0.5) * 255, 255, 255]; });
+            const geo = new SphereGeometry(1.2, 40, 40);
+            const velvet = lit(0.25, 0.03, 0.05, 0.9);
+            velvet.sheenColor = new Color(1, 0.85, 0.7); velvet.sheenRoughness = 0.7; velvet.sheenColorMap = stripes;
+            const film = lit(0.2, 0.2, 0.22, 0.2, 1);
+            film.iridescence = 1; film.iridescenceThicknessMinimum = 150; film.iridescenceThickness = 700; film.iridescenceThicknessMap = swirl;
+            const gloss = lit(0.06, 0.06, 0.07, 0.12);
+            gloss.setUniformFloat('ior', 2.4); gloss.specularMap = checker;
+            const brushed = lit(0.8, 0.78, 0.72, 0.35, 1);
+            brushed.anisotropy = 1; brushed.anisotropyMap = rings;
+            [velvet, film, gloss, brushed].forEach((m, i) => mesh(scene, geo, m, (i - 1.5) * 2.8, 2.2, 0, false));
+            mesh(scene, new BoxGeometry(40, 0.2, 40), lit(0.5, 0.5, 0.52, 0.9), 0, 0.2, 0, false);
             return view;
         },
     },

@@ -10,6 +10,30 @@
  */
 export let Sheen_frag: string = /*wgsl*/ `
   #if USE_SHEEN
+    #if USE_SHEENMAP
+        @group(1) @binding(auto)
+        var sheenColorMap: texture_2d<f32>;
+    #endif
+    #if USE_SHEENROUGHNESSMAP
+        @group(1) @binding(auto)
+        var sheenRoughnessMap: texture_2d<f32>;
+    #endif
+    // Per-fragment sheen inputs (factor × optional texture), filled by initSheen().
+    var<private> sheenTint: vec3<f32>;
+    var<private> sheenRough: f32;
+
+    /// Sample the sheen textures once, in uniform control flow (before the light loop).
+    fn initSheen() {
+        sheenTint = materialUniform.sheenColor.rgb;
+        sheenRough = materialUniform.sheenColor.a;
+        #if USE_SHEENMAP
+            sheenTint = sheenTint * textureSample(sheenColorMap, baseMapSampler, ORI_VertexVarying.fragUV0.xy).rgb;
+        #endif
+        #if USE_SHEENROUGHNESSMAP
+            sheenRough = sheenRough * textureSample(sheenRoughnessMap, baseMapSampler, ORI_VertexVarying.fragUV0.xy).a;
+        #endif
+    }
+
     // Estevez & Kulla "Production Friendly Microfacet Sheen BRDF".
     fn sheenD_Charlie(roughness: f32, NoH: f32) -> f32 {
         let alpha = max(roughness * roughness, 0.0049);
@@ -31,7 +55,7 @@ export let Sheen_frag: string = /*wgsl*/ `
         let NoL = clamp(dot(N, L), 0.0, 1.0);
         let NoV = clamp(dot(N, V), 0.0001, 1.0);
         let NoH = clamp(dot(N, H), 0.0, 1.0);
-        return sheenD_Charlie(materialUniform.sheenColor.a, NoH) * sheenV_Neubelt(NoV, NoL) * NoL;
+        return sheenD_Charlie(sheenRough, NoH) * sheenV_Neubelt(NoV, NoL) * NoL;
     }
 
     // Analytic fit of the directional albedo of the sheen lobe
@@ -73,7 +97,8 @@ export let Sheen_frag: string = /*wgsl*/ `
 
     /// Layer sheen over an already-lit base color.
     fn applySheen(base: vec3<f32>, start: f32, end: f32) -> vec3<f32> {
-        let sheenColor = materialUniform.sheenColor.rgb;
+        initSheen();
+        let sheenColor = sheenTint;
         let WP = ORI_VertexVarying.vWorldPos.xyz;
         var sheen = vec3<f32>(0.0);
         for (var i: i32 = i32(start); i < i32(end); i += 1) {
@@ -104,7 +129,7 @@ export let Sheen_frag: string = /*wgsl*/ `
             }
         }
         // Environment: diffuse irradiance × directional albedo of the lobe.
-        sheen += fragData.Irradiance * sheenIBL_DG(fragData.NoV, materialUniform.sheenColor.a) * fragData.Ao;
+        sheen += fragData.Irradiance * sheenIBL_DG(fragData.NoV, sheenRough) * fragData.Ao;
 
         let energyComp = 1.0 - 0.157 * max(sheenColor.r, max(sheenColor.g, sheenColor.b));
         return base * energyComp + sheenColor * sheen;
