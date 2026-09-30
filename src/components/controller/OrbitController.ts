@@ -6,6 +6,7 @@ import { Vector3Ex } from '../../util/Vector3Ex';
 import { clamp } from '../../math/MathUtil';
 import { PointerEvent3D } from '../../event/eventConst/PointerEvent3D';
 import { CameraType } from '../../core/CameraType';
+import { Spherical } from '../../math/Spherical';
 
 /**
  * Orbit Camera Controller
@@ -315,59 +316,5 @@ export class OrbitController extends ComponentBase {
         input.removeEventListener(PointerEvent3D.POINTER_DOWN, this.onPointerDown, this);
         input.removeEventListener(PointerEvent3D.POINTER_MOVE, this.onPointerMove, this);
         input.removeEventListener(PointerEvent3D.POINTER_UP, this.onPointerUp, this);
-    }
-}
-
-/**
- * @internal
- * Epsilon to test whether numbers are close enough to be considered equal.
- */
-const EPS = Math.PI / 180 / 100;
-/**
- * @internal
- */
-class Spherical {
-    public radius: number;
-    public phi: number;
-    public theta: number;
-    public coords: Vector3;
-    constructor(radius = 1, phi = 0, theta = 0) {
-        this.radius = radius;
-        this.phi = phi; // polar angle
-        this.theta = theta; // azimuthal angle
-        this.coords = new Vector3()
-        return this;
-    }
-    public set(radius: number, phi: number, theta: number) {
-        this.radius = radius;
-        this.phi = phi;
-        this.theta = theta;
-        return this;
-    }
-    // restrict phi to be between EPS and PI-EPS
-    public makeSafe(): this {
-        this.phi = Math.max(EPS, Math.min(Math.PI - EPS, this.phi));
-        return this;
-    }
-    public setFromVector3(v: Vector3): this {
-        return this.setCoords(v.x, v.y, v.z);
-    }
-    public setCoords(x: number, y: number, z: number): this {
-        this.radius = Math.sqrt(x * x + y * y + z * z);
-        if (this.radius === 0) {
-            this.theta = 0;
-            this.phi = 0;
-        } else {
-            this.theta = Math.atan2(x, z);
-            this.phi = Math.acos(clamp(y / this.radius, - 1, 1));
-        }
-        return this;
-    }
-    public getCoords(): Vector3 {
-        const sinPhiRadius = Math.sin(this.phi) * this.radius;
-        this.coords.x = sinPhiRadius * Math.sin(this.theta);
-        this.coords.y = Math.cos(this.phi) * this.radius;
-        this.coords.z = sinPhiRadius * Math.cos(this.theta);
-        return this.coords;
     }
 }
