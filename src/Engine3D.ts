@@ -492,6 +492,10 @@ export class Engine3D {
         const renderJob: RendererJob = new JobCtor(view);
         this.renderJobs.set(view, renderJob);
 
+        // Effects registered on the scene before the view started had no
+        // render job to go to; hand them over now.
+        view.scene.getComponent(PostProcessingComponent)?.attachToRenderJob();
+
         if (this.setting.pick.mode == `pixel`) {
             let postProcessing = view.scene.getOrAddComponent(PostProcessingComponent);
             postProcessing.addPost(FXAAPost);

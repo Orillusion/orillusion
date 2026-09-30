@@ -37,20 +37,42 @@ export class PostProcessingComponent extends ComponentBase {
         this.unActivePost();
     }
 
+    /**
+     * The render job of the view this component's scene is shown in, or null
+     * while there is none yet (component added before `startRenderView`, or
+     * the scene is not attached to a view).
+     */
+    private _renderJob() {
+        const view = this.transform?.view3D;
+        return view?.engine3D?.renderJobs?.get(view) ?? null;
+    }
+
     private activePost() {
-        let view = this.transform.view3D;
-        let job = view.engine3D.renderJobs.get(view);
+        const job = this._renderJob();
+        // No job yet: keep the effects registered; `attachToRenderJob()` is
+        // called by the engine when the view starts rendering.
+        if (!job) return;
         this._postList.forEach((v) => {
             job.addPost(v);
         });
     }
 
     private unActivePost() {
-        let view = this.transform.view3D;
-        let job = view.engine3D.renderJobs.get(view);
+        const job = this._renderJob();
+        if (!job) return;
         this._postList.forEach((v) => {
             job.removePost(v);
         });
+    }
+
+    /**
+     * @internal
+     * Forward every registered effect to the view's render job. Invoked by
+     * `Engine3D` right after the job is created, so effects added before
+     * `startRenderView()` take effect instead of throwing.
+     */
+    public attachToRenderJob(): void {
+        if (this._enable) this.activePost();
     }
 
     /**
@@ -76,9 +98,7 @@ export class PostProcessingComponent extends ComponentBase {
         let post = this._postList.get(c);
         this._postList.delete(c);
 
-        let view = this.transform.view3D;
-        let job = view.engine3D.renderJobs.get(view);
-        job.removePost(post);
+        this._renderJob()?.removePost(post);
     }
 
     /**

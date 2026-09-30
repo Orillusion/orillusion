@@ -11,7 +11,7 @@ import { PostPass } from '../graph/passes/PostPass';
 import { View3D } from '../../../core/View3D';
 import { Reference } from '../../../util/Reference';
 import { CResizeEvent } from '../../../event/CResizeEvent';
-import { bindCtx, Context3D } from '../../graphics/webGpu/Context3D';
+import { bindCtx, Context3D, resolveDefaultCtx } from '../../graphics/webGpu/Context3D';
 import { RendererPassState } from '../passRenderer/state/RendererPassState';
 import { EngineSetting } from '../../../setting/EngineSetting';
 /**
@@ -52,7 +52,15 @@ export class PostBase {
      *  from sample code after `addPost(...)` — `_boundCtx` is set before
      *  any `onAttach` / `render` / getter access by user code. */
     protected get setting(): EngineSetting {
-        return this._boundCtx!.engine!.setting;
+        // A post created through `PostProcessingComponent.addPost` before
+        // `startRenderView()` is not bound to a context yet. With a single
+        // engine its settings are unambiguous, so fall back to that one;
+        // with several engines the caller has to wait for the view to start.
+        const ctx = this._boundCtx ?? resolveDefaultCtx();
+        if (!ctx?.engine) {
+            throw new Error(`${this.constructor.name}: not attached to a view yet and there is no single default engine to read settings from — configure the effect after startRenderView().`);
+        }
+        return ctx.engine.setting;
     }
 
     private _resizeListenerCtx: Context3D | null = null;
