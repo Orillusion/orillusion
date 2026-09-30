@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain } from 'electron/main'
 import { join } from 'path'
 import { spawn } from 'child_process'
 import { fileURLToPath } from 'url';
+import { mkdirSync, writeFileSync } from 'fs'
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
 app.commandLine.appendSwitch('log-level', 'silent')
@@ -49,7 +50,20 @@ const createWindow = async ()=>{
         }
     })
 
-    await win.loadURL(HOST + '/test/?auto')
+    // UPDATE_BASELINES=1 rewrites test/visual/baselines/*.json instead of
+    // comparing; TEST_FILTER=<substring> runs only matching test files.
+    ipcMain.on('baseline', (_event, { name, data }) => {
+        if (!process.env.UPDATE_BASELINES) return
+        const dir = join(__dirname, '../visual/baselines')
+        mkdirSync(dir, { recursive: true })
+        const safe = String(name).replace(/[^a-zA-Z0-9_-]/g, '_')
+        writeFileSync(join(dir, safe + '.json'), JSON.stringify(data) + '\n')
+        console.log(`\x1b[36m[visual] baseline written: ${safe}.json\x1b[0m`)
+    })
+    const query = ['auto']
+    if (process.env.UPDATE_BASELINES) query.push('update')
+    if (process.env.TEST_FILTER) query.push('filter=' + encodeURIComponent(process.env.TEST_FILTER))
+    await win.loadURL(HOST + '/test/?' + query.join('&'))
 }
 
 let vite
@@ -71,12 +85,24 @@ app.on('window-all-closed', () => {
     app.quit()
 })
 app.on('before-quit',()=>{
-    if(vite)
-        process.kill(-vite.pid)
+    try {
+        if(vite?.pid) process.kill(-vite.pid)
+    } catch (e) { /* group already gone */ }
 })
 
+let closing = false
 function close(code = 1){
-    console.log('Close Electron & Vite', vite.pid)
-    process.kill(-vite.pid)
+    // A failing test file reports through both the 'test' and the 'end'
+    // channel, so this can be called twice; and the vite process group may
+    // already be gone. Killing a dead group throws (EPERM / ESRCH) and used
+    // to surface as an "Uncaught Exception" dialog from the main process.
+    if (closing) return
+    closing = true
+    console.log('Close Electron & Vite', vite?.pid)
+    try {
+        if (vite?.pid) process.kill(-vite.pid)
+    } catch (e) {
+        if (e.code !== 'ESRCH' && e.code !== 'EPERM') console.error(e)
+    }
     process.exit(code)
 }

@@ -62,7 +62,10 @@ menu.querySelector('button')?.addEventListener('click', async (e: any) => {
     try {
         let links = menu.querySelectorAll('a')
         let result: { [key: string]: any } = {}
+        // `?filter=visual` (TEST_FILTER env in CI) restricts the run to matching files.
+        const filter = new URLSearchParams(location.search).get('filter')
         for (let a of links as any) {
+            if (filter && !a.id.includes(filter)) continue
             a.click()
             await new Promise(res => {
                 window.addEventListener('message', e => {
