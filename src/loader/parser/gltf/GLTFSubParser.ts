@@ -1,3 +1,4 @@
+import { KHR_materials_variants } from './extends/KHR_materials_variants';
 import { Skeleton } from '../../../components/anim/skeletonAnim/Skeleton';
 import { Object3D } from '../../../core/entities/Object3D';
 import { StringUtil } from '../../../util/StringUtil';
@@ -346,6 +347,7 @@ export class GLTFSubParser {
         const skins = [];
         const cameras = [];
         await this.traverse(rootNode, nodes);
+        KHR_materials_variants.attach(this.gltf, rootNode);
 
         let animas;
         // apply skins

@@ -17,6 +17,8 @@ import { GLTFSubParser } from "./GLTFSubParser";
 import { GLTFType } from "./GLTFType";
 import { KHR_materials_clearcoat } from "./extends/KHR_materials_clearcoat";
 import { KHR_materials_sheen } from "./extends/KHR_materials_sheen";
+import { KHR_materials_specular } from "./extends/KHR_materials_specular";
+import { KHR_materials_variants } from "./extends/KHR_materials_variants";
 import { KHR_materials_emissive_strength } from "./extends/KHR_materials_emissive_strength";
 import { KHR_materials_ior } from "./extends/KHR_materials_ior";
 import { KHR_materials_transmission } from "./extends/KHR_materials_transmission";
@@ -200,127 +202,7 @@ export class GLTFSubParserConverter {
             //   }
             // }
 
-            let md = primitive.material;
-            if (md.name == undefined) {
-                md.name = UUID();
-            }
-            let mat: Material;
-
-            let materialKey = `matkey_${md.name}`;
-
-            if (md && this.gltf.resources[materialKey]) {
-                mat = this.gltf.resources[materialKey];
-            } else {
-                let newMat: Material = (mat = new LitMaterial());
-                // let newMat: MaterialBase = (mat = new UnLitMaterial());
-                this.gltf.resources[materialKey] = newMat;
-                // newMat.doubleSided
-                newMat.name = md.name;
-
-                let gltfMat = md as GLTFMaterial;
-                if (gltfMat) {
-                    const { baseColorTexture, baseColorFactor, metallicFactor, roughnessFactor, doubleSided, metallicRoughnessTexture, normalTexture, occlusionTexture, emissiveTexture, emissiveFactor, enableBlend, alphaCutoff } = gltfMat;
-
-                    let physicMaterial = (newMat = this.applyMaterialExtensions(gltfMat, newMat));
-                    if (`enableBlend` in gltfMat) {
-                        if (gltfMat[`enableBlend`]) {
-                            let defines = gltfMat.defines;
-                            if (defines?.includes('ALPHA_BLEND')) {
-                                physicMaterial.blendMode = BlendMode.ALPHA;
-                            } else {
-                                physicMaterial.blendMode = BlendMode.NORMAL;
-                            }
-                            physicMaterial.castShadow = false;
-                        } else {
-                            physicMaterial.blendMode = BlendMode.NONE;
-                        }
-                    }
-
-                    if (`alphaCutoff` in gltfMat && alphaCutoff > 0 && alphaCutoff < 1) {
-                        physicMaterial.setUniformFloat("alphaCutoff", alphaCutoff);
-                        physicMaterial.blendMode = BlendMode.NORMAL;
-                        physicMaterial.transparent = true;
-                        // physicMaterial.castShadow = false;
-                        // physicMaterial.depthWriteEnabled = false;
-                    }
-
-                    if (gltfMat.baseMapOffsetSize) {
-                        physicMaterial.setUniformVector4("baseMapOffsetSize", gltfMat.baseMapOffsetSize);
-                    }
-                    if (gltfMat.normalMapOffsetSize) {
-                        physicMaterial.setUniformVector4("normalMapOffsetSize", gltfMat.normalMapOffsetSize);
-                    }
-                    if (gltfMat.emissiveMapOffsetSize) {
-                        physicMaterial.setUniformVector4("emissiveMapOffsetSize", gltfMat.emissiveMapOffsetSize);
-                    }
-                    if (gltfMat.roughnessMapOffsetSize) {
-                        physicMaterial.setUniformVector4("roughnessMapOffsetSize", gltfMat.roughnessMapOffsetSize);
-                    }
-                    if (gltfMat.metallicMapOffsetSize) {
-                        physicMaterial.setUniformVector4("metallicMapOffsetSize", gltfMat.metallicMapOffsetSize);
-                    }
-                    if (gltfMat.aoMapOffsetSize) {
-                        physicMaterial.setUniformVector4("aoMapOffsetSize", gltfMat.aoMapOffsetSize);
-                    }
-
-
-                    physicMaterial.setUniformColor("baseColor", new Color(baseColorFactor[0], baseColorFactor[1], baseColorFactor[2], baseColorFactor[3]));
-                    physicMaterial.setUniformFloat("roughness", roughnessFactor);
-                    physicMaterial.setUniformFloat("metallic", metallicFactor);
-                    physicMaterial.setUniformFloat("ao", 1);
-                    physicMaterial.doubleSide = doubleSided;
-
-                    if (baseColorTexture) {
-                        physicMaterial.setTexture("baseMap", baseColorTexture);
-                        // Only flip USE_SRGB_ALBEDO when the underlying
-                        // GPU texture format is `rgba8unorm-srgb` (set
-                        // by the GLB embedded path in
-                        // GLTFSubParser.parseTexture). The external-
-                        // .gltf URL path still preloads via
-                        // FileLoader.loadAsyncBitmapTexture without a
-                        // colorSpace argument → format stays
-                        // `rgba8unorm`, and the shader needs its
-                        // software `gammaToLiner` decode. Mismatching
-                        // here would render the asset double-decoded
-                        // (too dark) or non-decoded (too bright).
-                        if ((baseColorTexture as any).format === 'rgba8unorm-srgb') {
-                            physicMaterial.shader.setDefine("USE_SRGB_ALBEDO", true);
-                        }
-                    }
-
-                    if (normalTexture) {
-                        physicMaterial.setTexture("normalMap", normalTexture);
-                    }
-
-                    if (metallicRoughnessTexture) {
-                        physicMaterial.setTexture("maskMap", metallicRoughnessTexture);
-                    }
-
-                    if (occlusionTexture && (metallicRoughnessTexture != occlusionTexture)) {
-                        // physicMaterial.setTexture("aoMap", occlusionTexture);
-                        // physicMaterial.shader.getDefaultColorShader().setDefine(`USE_AOTEX`, true);
-                    }
-
-                    if (emissiveTexture) {
-                        physicMaterial.setTexture("emissiveMap", emissiveTexture);
-                    }
-
-                    if (emissiveFactor && (emissiveFactor[0] > 0 || emissiveFactor[1] > 0 || emissiveFactor[2] > 0)) {
-                        if (!physicMaterial.shader.getTexture("emissiveMap")) {
-                            physicMaterial.shader.setTexture("emissiveMap", Engine3D.resFor(this.subParser.ctx).whiteTexture);
-                        }
-                        physicMaterial.shader.setDefine('USE_EMISSIVEMAP', true);
-                        physicMaterial.setUniformColor("emissiveColor", new Color(emissiveFactor[0], emissiveFactor[1], emissiveFactor[2], emissiveFactor[3]));
-                        if (physicMaterial.blendMode != BlendMode.NONE) {
-                            physicMaterial.blendMode = BlendMode.ADD;
-                        }
-                        let emissiveIntensity = mat.getUniformFloat('emissiveIntensity')
-                        if (!emissiveIntensity || emissiveIntensity <= 0) {
-                            mat.setUniformFloat('emissiveIntensity', 1.0);
-                        }
-                    }
-                }
-            }
+            let mat: Material = this.getOrCreateMaterial(primitive.material);
 
             const { attribArrays, modelName, drawMode } = primitive;
             let geometry: GeometryBase;
@@ -336,7 +218,9 @@ export class GLTFSubParserConverter {
                     indices.push(a + 1);
                 }
                 attribArrays[`indices`] = {
-                    data: new Uint8Array(indices),
+                    // Uint8 silently wrapped every index above 255, scrambling any
+                    // non-indexed mesh with more than 85 triangles.
+                    data: indices.length > 65535 ? new Uint32Array(indices) : new Uint16Array(indices),
                     normalize: false,
                     numComponents: 1,
                 };
@@ -427,6 +311,7 @@ export class GLTFSubParserConverter {
                     // pass instances whose USE_SKELETON is set once
                     // (geometry has joints0) and never mutated again.
                     smr.material = mat.clone();
+                    KHR_materials_variants.bind(this.gltf, primitive, smr, true, (m) => this.getOrCreateMaterial(m));
                     // smr.skinJointsName = this.parseSkinJoints(nodeInfo.skin);
                     // smr.skinInverseBindMatrices = nodeInfo.skin.inverseBindMatrices;
 
@@ -476,6 +361,7 @@ export class GLTFSubParserConverter {
                     mc.castGI = true;
                     mc.geometry = geometry;
                     mc.material = mat;
+                    KHR_materials_variants.bind(this.gltf, primitive, mc, false, (m) => this.getOrCreateMaterial(m));
 
                     // Reference glTF loaders mark every primitive of a
                     // skin-referencing node as skinned, even when the
@@ -715,10 +601,141 @@ export class GLTFSubParserConverter {
         return geometry;
     }
 
+    /**
+     * Engine material for a parsed glTF material (`dmaterial`), created on
+     * first use and cached by material name so every primitive — and every
+     * KHR_materials_variants mapping — that names the same glTF material
+     * shares one instance.
+     */
+    private getOrCreateMaterial(md: any): Material {
+        if (md.name == undefined) {
+            md.name = UUID();
+        }
+        let mat: Material;
+
+        let materialKey = `matkey_${md.name}`;
+
+        if (md && this.gltf.resources[materialKey]) {
+            mat = this.gltf.resources[materialKey];
+        } else {
+            let newMat: Material = (mat = new LitMaterial());
+            // let newMat: MaterialBase = (mat = new UnLitMaterial());
+            this.gltf.resources[materialKey] = newMat;
+            // newMat.doubleSided
+            newMat.name = md.name;
+
+            let gltfMat = md as GLTFMaterial;
+            if (gltfMat) {
+                const { baseColorTexture, baseColorFactor, metallicFactor, roughnessFactor, doubleSided, metallicRoughnessTexture, normalTexture, occlusionTexture, emissiveTexture, emissiveFactor, enableBlend, alphaCutoff } = gltfMat;
+
+                let physicMaterial = (newMat = this.applyMaterialExtensions(gltfMat, newMat));
+                if (`enableBlend` in gltfMat) {
+                    if (gltfMat[`enableBlend`]) {
+                        let defines = gltfMat.defines;
+                        if (defines?.includes('ALPHA_BLEND')) {
+                            physicMaterial.blendMode = BlendMode.ALPHA;
+                        } else {
+                            physicMaterial.blendMode = BlendMode.NORMAL;
+                        }
+                        physicMaterial.castShadow = false;
+                    } else {
+                        physicMaterial.blendMode = BlendMode.NONE;
+                    }
+                }
+
+                if (`alphaCutoff` in gltfMat && alphaCutoff > 0 && alphaCutoff < 1) {
+                    physicMaterial.setUniformFloat("alphaCutoff", alphaCutoff);
+                    physicMaterial.blendMode = BlendMode.NORMAL;
+                    physicMaterial.transparent = true;
+                    // physicMaterial.castShadow = false;
+                    // physicMaterial.depthWriteEnabled = false;
+                }
+
+                if (gltfMat.baseMapOffsetSize) {
+                    physicMaterial.setUniformVector4("baseMapOffsetSize", gltfMat.baseMapOffsetSize);
+                }
+                if (gltfMat.normalMapOffsetSize) {
+                    physicMaterial.setUniformVector4("normalMapOffsetSize", gltfMat.normalMapOffsetSize);
+                }
+                if (gltfMat.emissiveMapOffsetSize) {
+                    physicMaterial.setUniformVector4("emissiveMapOffsetSize", gltfMat.emissiveMapOffsetSize);
+                }
+                if (gltfMat.roughnessMapOffsetSize) {
+                    physicMaterial.setUniformVector4("roughnessMapOffsetSize", gltfMat.roughnessMapOffsetSize);
+                }
+                if (gltfMat.metallicMapOffsetSize) {
+                    physicMaterial.setUniformVector4("metallicMapOffsetSize", gltfMat.metallicMapOffsetSize);
+                }
+                if (gltfMat.aoMapOffsetSize) {
+                    physicMaterial.setUniformVector4("aoMapOffsetSize", gltfMat.aoMapOffsetSize);
+                }
+
+
+                physicMaterial.setUniformColor("baseColor", new Color(baseColorFactor[0], baseColorFactor[1], baseColorFactor[2], baseColorFactor[3]));
+                physicMaterial.setUniformFloat("roughness", roughnessFactor);
+                physicMaterial.setUniformFloat("metallic", metallicFactor);
+                physicMaterial.setUniformFloat("ao", 1);
+                physicMaterial.doubleSide = doubleSided;
+
+                if (baseColorTexture) {
+                    physicMaterial.setTexture("baseMap", baseColorTexture);
+                    // Only flip USE_SRGB_ALBEDO when the underlying
+                    // GPU texture format is `rgba8unorm-srgb` (set
+                    // by the GLB embedded path in
+                    // GLTFSubParser.parseTexture). The external-
+                    // .gltf URL path still preloads via
+                    // FileLoader.loadAsyncBitmapTexture without a
+                    // colorSpace argument → format stays
+                    // `rgba8unorm`, and the shader needs its
+                    // software `gammaToLiner` decode. Mismatching
+                    // here would render the asset double-decoded
+                    // (too dark) or non-decoded (too bright).
+                    if ((baseColorTexture as any).format === 'rgba8unorm-srgb') {
+                        physicMaterial.shader.setDefine("USE_SRGB_ALBEDO", true);
+                    }
+                }
+
+                if (normalTexture) {
+                    physicMaterial.setTexture("normalMap", normalTexture);
+                }
+
+                if (metallicRoughnessTexture) {
+                    physicMaterial.setTexture("maskMap", metallicRoughnessTexture);
+                }
+
+                if (occlusionTexture && (metallicRoughnessTexture != occlusionTexture)) {
+                    // physicMaterial.setTexture("aoMap", occlusionTexture);
+                    // physicMaterial.shader.getDefaultColorShader().setDefine(`USE_AOTEX`, true);
+                }
+
+                if (emissiveTexture) {
+                    physicMaterial.setTexture("emissiveMap", emissiveTexture);
+                }
+
+                if (emissiveFactor && (emissiveFactor[0] > 0 || emissiveFactor[1] > 0 || emissiveFactor[2] > 0)) {
+                    if (!physicMaterial.shader.getTexture("emissiveMap")) {
+                        physicMaterial.shader.setTexture("emissiveMap", Engine3D.resFor(this.subParser.ctx).whiteTexture);
+                    }
+                    physicMaterial.shader.setDefine('USE_EMISSIVEMAP', true);
+                    physicMaterial.setUniformColor("emissiveColor", new Color(emissiveFactor[0], emissiveFactor[1], emissiveFactor[2], emissiveFactor[3]));
+                    if (physicMaterial.blendMode != BlendMode.NONE) {
+                        physicMaterial.blendMode = BlendMode.ADD;
+                    }
+                    let emissiveIntensity = mat.getUniformFloat('emissiveIntensity')
+                    if (!emissiveIntensity || emissiveIntensity <= 0) {
+                        mat.setUniformFloat('emissiveIntensity', 1.0);
+                    }
+                }
+            }
+        }
+        return mat;
+    }
+
     private applyMaterialExtensions(dmaterial: any, mat: Material): Material {
         if (dmaterial.extensions) {
             KHR_materials_clearcoat.apply(this.gltf, dmaterial, mat);
             KHR_materials_sheen.apply(this.gltf, dmaterial, mat);
+            KHR_materials_specular.apply(this.gltf, dmaterial, mat);
             KHR_materials_unlit.apply(this.gltf, dmaterial, mat);
             KHR_materials_emissive_strength.apply(this.gltf, dmaterial, mat, this.subParser.ctx);
             // IOR must come before transmission so the transmission
