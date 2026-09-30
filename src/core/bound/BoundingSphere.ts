@@ -55,10 +55,20 @@ export class BoundingSphere implements IBound {
     }
 
     /**
-     * Recompute the bound from the source data. Not implemented for spheres.
+     * Recompute the derived AABB fields (`extents`, `size`, `min`, `max`)
+     * from `center` and `radius`, so a sphere can stand in wherever an
+     * `IBound` is expected (frustum tests, `Ray.intersectBox`, octrees).
      */
     updateBound() {
-        throw new Error('Method not implemented.');
+        const r = this.radius;
+        this.extents ||= new Vector3();
+        this.size ||= new Vector3();
+        this.min ||= new Vector3();
+        this.max ||= new Vector3();
+        this.extents.set(r, r, r);
+        this.size.set(r * 2, r * 2, r * 2);
+        this.min.set(this.center.x - r, this.center.y - r, this.center.z - r);
+        this.max.set(this.center.x + r, this.center.y + r, this.center.z + r);
     }
 
     /**
@@ -167,5 +177,6 @@ export class BoundingSphere implements IBound {
     public setFromCenterAndSize(center: Vector3, size: number) {
         this.center.copy(center);
         this.radius = size;
+        this.updateBound();
     }
 }
