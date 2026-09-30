@@ -11,6 +11,15 @@ import { GBufferFrame } from '../../frame/GBufferFrame';
 import { RenderGraphBuilder, RenderGraphPass, RenderGraphPassContext } from '../RenderGraphPass';
 import { TextureHandle } from '../transient/ResourceHandle';
 import { TextureIdentityWatcher } from '../transient/TextureIdentityWatcher';
+import { RTDescriptor } from '../../../graphics/webGpu/descriptor/RTDescriptor';
+import { WebGPUDescriptorCreator } from '../../../graphics/webGpu/descriptor/WebGPUDescriptorCreator';
+import { RTFrame } from '../../frame/RTFrame';
+import { RTResourceMap } from '../../frame/RTResourceMap';
+import { PassType } from '../../passRenderer/state/PassType';
+import { RendererPassState } from '../../passRenderer/state/RendererPassState';
+import { VelocityMaterialPass } from '../../../../materials/multiPass/VelocityMaterialPass';
+import { COLOR_BUFFER } from './ColorPass';
+import { preInitPassPipelines } from './_helpers';
 
 export const MOTION_VECTOR = '_MotionVector';
 
@@ -21,8 +30,11 @@ export const MOTION_VECTOR = '_MotionVector';
  *
  * Consumed by TAA, motion blur, temporal denoisers.
  *
- * MVP limitation: works only for camera-driven motion. Per-vertex
- * prev-clip output for skinned meshes is the upgrade path.
+ * Camera-driven motion for every pixel. With
+ * `engine.setting.render.objectMotionVectors` the pass then draws each
+ * opaque mesh through its VELOCITY sub-pass (VelocityPass_shader) on top,
+ * so moving objects carry their own velocity; the blue channel is 1 where
+ * an object wrote the pixel.
  *
  * Phase 1 migration target — first pass to consume the transient
  * resource subsystem: declares its output through
@@ -53,6 +65,9 @@ export class MotionVectorPass extends RenderGraphPass {
      *  identity). */
     protected _lastWorkerW: number = 0;
     protected _lastWorkerH: number = 0;
+    protected _objectMotion: boolean = false;
+    protected _velocityPassState: RendererPassState | null = null;
+    protected _velocityDepth: RenderTexture | null = null;
 
     public setup(b: RenderGraphBuilder): void {
         this._ctx = b.context3D;
@@ -68,13 +83,23 @@ export class MotionVectorPass extends RenderGraphPass {
         // for example, once it migrates). Default COPY_SRC/COPY_DST
         // bits are also added by the analyzer for dev-time debug
         // copies.
+        this._objectMotion = !!b.view.engine3D.setting.render.objectMotionVectors;
         this._mvHandle = b.declareTexture(MOTION_VECTOR, {
             format: GPUTextureFormat.rgba16float,
             width: 'screen',
             height: 'screen',
             label: MOTION_VECTOR,
+            // Object velocities are rasterised on top of the compute fill,
+            // and MotionBlurPost keeps a bind group on the texture: give it
+            // every usage up front and pin its identity.
+            usage: GPUTextureUsage.STORAGE_BINDING | GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.COPY_SRC | GPUTextureUsage.COPY_DST,
+            aliasable: false,
+            publishToLegacyMap: true,
         });
         b.write(this._mvHandle, 'storage');
+        b.write(this._mvHandle, 'attachment');
+        // The compute reads this frame's G-buffer depth: run after ColorPass.
+        b.read(COLOR_BUFFER);
     }
 
     protected _ensureCompute(ctx: RenderGraphPassContext, mv: RenderTexture): void {
@@ -133,8 +158,52 @@ export class MotionVectorPass extends RenderGraphPass {
         gpu.computeCommand(command, [this._compute!]);
         gpu.endCommandEncoder(command);
 
+        if (this._objectMotion) this._drawObjectVelocity(ctx, mv, dirty);
+
         // Roll: this frame's viewProj becomes next frame's prev.
         this._prevViewProj.copy(this._scratch);
         this._currViewProj.copy(this._scratch);
+    }
+
+    /** Rasterise every opaque node's VELOCITY sub-pass into `mv` (load) with its own depth. */
+    protected _drawObjectVelocity(ctx: RenderGraphPassContext, mv: RenderTexture, rebuild: boolean): void {
+        const view = ctx.view;
+        const camera = view.camera;
+        const [w, h] = this._ctx.presentationSize;
+        if (!this._velocityDepth || this._velocityDepth.width !== w || this._velocityDepth.height !== h) {
+            this._velocityDepth = RTResourceMap.createRTTexture(this._ctx, '_MotionVectorDepth', w, h, GPUTextureFormat.depth32float, false);
+            rebuild = true;
+        }
+        if (rebuild || !this._velocityPassState) {
+            const desc = new RTDescriptor();
+            desc.loadOp = 'load';
+            const frame = new RTFrame([mv], [desc], this._velocityDepth, undefined, true);
+            frame.label = 'ObjectVelocity';
+            this._velocityPassState = WebGPUDescriptorCreator.createRendererPassState(this._ctx, frame);
+            this._velocityPassState.label = 'ObjectVelocity';
+            this._velocityPassState.outColor = 0;
+        }
+        // Same previous view-projection the compute used, for the vertex path.
+        const uniform = VelocityMaterialPass.velocityUniform(this._ctx);
+        uniform.setMatrix('prevViewProj', this._prevViewProj);
+        uniform.apply();
+
+        const passState = this._velocityPassState;
+        passState.camera3D = camera;
+        const gpu = this._ctx.gpuContext;
+        const saved = gpu.lastRenderPassState;
+        const command = gpu.beginCommandEncoder();
+        const encoder = gpu.beginRenderPass(command, passState);
+        gpu.bindCamera(encoder, camera);
+        preInitPassPipelines(view, PassType.VELOCITY, passState);
+        const nodes = this.collectLayered(view).opaque;
+        for (const node of nodes) {
+            if (!node.enable || !node.transform.enable || node.isDestroyed) continue;
+            if (!node.preInit(PassType.VELOCITY)) node.nodeUpdate(view, PassType.VELOCITY, passState, null);
+            node.renderPass2(view, PassType.VELOCITY, passState, null, encoder);
+        }
+        gpu.endPass(encoder);
+        gpu.endCommandEncoder(command);
+        gpu.lastRenderPassState = saved;
     }
 }
