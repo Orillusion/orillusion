@@ -3,6 +3,7 @@ import { GlobalFogSetting } from "./post/GlobalFogSetting";
 import { GTAOSetting } from "./post/GTAOSetting";
 import { OutlineSetting } from "./post/OutlineSetting";
 import { SkylineSetting } from "./post/SkylineSetting";
+import { LensSetting } from "./post/LensSetting";
 import { SSRSetting } from "./post/SSRSetting";
 import { TAASetting } from "./post/TAASetting";
 import { BloomSetting } from "./post/BloomSetting";
@@ -92,6 +93,7 @@ export type RenderSetting = {
         outline?: OutlineSetting;
         globalFog?: GlobalFogSetting;
 	skyline?: SkylineSetting;
+        lens?: LensSetting;
         godRay?: GodRaySetting;
         fxaa?: {
             enable: boolean;

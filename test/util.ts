@@ -137,4 +137,29 @@ function isMatch(object: any, attrs: { [key: string]: any }) {
     return true;
 }
 
-export { test, expect, end, delay, waitUntil }
+function halfToFloat(h: number): number {
+    const s = (h & 0x8000) ? -1 : 1, e = (h >> 10) & 0x1f, f = h & 0x3ff;
+    if (e === 0) return s * Math.pow(2, -14) * (f / 1024);
+    if (e === 31) return f ? NaN : s * Infinity;
+    return s * Math.pow(2, e - 15) * (1 + f / 1024);
+}
+
+/**
+ * Read a `w`×1 row of an rgba16float texture back as [r,g,b,a] float
+ * tuples. For GPU-vs-CPU checks on post-effect targets.
+ */
+async function readRowRGBA16F(device: GPUDevice, texture: GPUTexture, x: number, y: number, w: number = 1): Promise<number[][]> {
+    const bytesPerRow = Math.ceil((w * 8) / 256) * 256;
+    const buf = device.createBuffer({ size: bytesPerRow, usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ });
+    const enc = device.createCommandEncoder();
+    enc.copyTextureToBuffer({ texture, origin: { x: Math.floor(x), y: Math.floor(y) } }, { buffer: buf, bytesPerRow }, { width: w, height: 1 });
+    device.queue.submit([enc.finish()]);
+    await buf.mapAsync(GPUMapMode.READ);
+    const u16 = new Uint16Array(buf.getMappedRange().slice(0, w * 8));
+    buf.unmap(); buf.destroy();
+    const out: number[][] = [];
+    for (let i = 0; i < w; i++) out.push([halfToFloat(u16[i * 4]), halfToFloat(u16[i * 4 + 1]), halfToFloat(u16[i * 4 + 2]), halfToFloat(u16[i * 4 + 3])]);
+    return out;
+}
+
+export { test, expect, end, delay, waitUntil, readRowRGBA16F }
