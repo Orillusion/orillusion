@@ -69,8 +69,13 @@ export class Plane {
      */
     public intersectsRay(ray: Ray, targetPoint?: Vector3) {
         targetPoint ||= this._tmpVecA;
+        var denom = this.normal.dotProduct(ray.direction);
+        if (denom === 0) {
+            // ray is parallel to the plane, there is no single hit point
+            return false;
+        }
         Vector3.sub(this.point, ray.origin, targetPoint);
-        var t = this.normal.dotProduct(targetPoint) / this.normal.dotProduct(ray.direction);
+        var t = this.normal.dotProduct(targetPoint) / denom;
         var intersects = t >= 0;
 
         if (intersects) {
