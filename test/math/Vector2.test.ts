@@ -120,6 +120,18 @@ await test('Vector2 lerp / lerpVectors', async () => {
     expect(v2.x).toEqual(5);
 })
 
+await test('Vector2 static lerp keeps endpoint order', async () => {
+    const from = new Vector2(2, 3);
+    const to = new Vector2(10, 15);
+    for (const [t, x, y] of [[0, 2, 3], [0.25, 4, 6], [1, 10, 15]]) {
+        const result = Vector2.lerp(from, to, t);
+        expect(result.x).toEqual(x);
+        expect(result.y).toEqual(y);
+    }
+    expect(from.x).toEqual(2);
+    expect(to.x).toEqual(10);
+})
+
 await test('Vector2 rotateAround', async () => {
     let v = new Vector2(1, 0);
     v.rotateAround(new Vector2(0, 0), Math.PI / 2);
