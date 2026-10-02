@@ -97,8 +97,8 @@ export class Vector2 {
     public static lerp(from: Vector2, to: Vector2, t: number) {
         Vector2.HELP_0.copy(from);
         Vector2.HELP_1.copy(to);
-        Vector2.HELP_0.multiplyScalar(t);
-        Vector2.HELP_1.multiplyScalar(1.0 - t);
+        Vector2.HELP_0.multiplyScalar(1.0 - t);
+        Vector2.HELP_1.multiplyScalar(t);
         return new Vector2(Vector2.HELP_0.x + Vector2.HELP_1.x, Vector2.HELP_0.y + Vector2.HELP_1.y);
     }
 
