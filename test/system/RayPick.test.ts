@@ -1,5 +1,5 @@
 import { test, expect, end, waitUntil } from '../util'
-import { BoxColliderShape, BoxGeometry, CameraUtil, ColliderComponent, ComponentCollect, Engine3D, LitMaterial, Matrix4, MeshColliderShape, MeshRenderer, Object3D, Quaternion, Ray, Scene3D, SphereColliderShape, SphereGeometry, Vector3, View3D } from '@orillusion/core';
+import { BoxColliderShape, BoxGeometry, CameraUtil, ColliderComponent, ComponentCollect, Engine3D, LitMaterial, Matrix4, MeshColliderShape, MeshRenderer, Object3D, Quaternion, Ray, RotationControlComponents, Scene3D, SphereColliderShape, SphereGeometry, Vector3, View3D } from '@orillusion/core';
 
 const engine = await Engine3D.init();
 
@@ -178,6 +178,33 @@ await test('PickFire (bound mode): nearest collider wins, full hit data, all hit
     expect(pick().object3D === box).tobe(true);
     pf.layerMask = 0xFFFFFFFF;
     expect(pick().object3D === ball).tobe(true);
+})
+
+await test('RotationControlComponents: each ring is picked by its own axis under a scaled gizmo', async () => {
+    const view = new View3D();
+    view.scene = new Scene3D();
+    view.camera = CameraUtil.createCamera3DObject(view.scene, 'camera');
+    const canvas = engine.context3D.canvas as HTMLCanvasElement;
+    view.camera.perspective(60, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+    view.camera.lookAt(new Vector3(9, 7, 11), new Vector3(0, 0, 0));
+    const holder = new Object3D();
+    view.scene.addChild(holder);
+    const gizmo: any = holder.addComponent(RotationControlComponents);
+    engine.startRenderView(view);
+    // Constant-screen-size scaling, as onUpdate does (the ring radius is 20 local units).
+    const s = 0.16;
+    gizmo.mContainer.scaleX = gizmo.mContainer.scaleY = gizmo.mContainer.scaleZ = s;
+    for (let axis = 0; axis < 3; axis++) {
+        const ringObj = gizmo.mAxis[axis] as Object3D;
+        const c = Math.SQRT1_2 * 20;
+        const world = Matrix4.transformPoint(ringObj.transform.worldMatrix, new Vector3(c, 0, c), new Vector3());
+        const sp = view.camera.worldToScreenPoint(world, new Vector3());
+        engine.inputSystem.mouseX = sp.x;
+        engine.inputSystem.mouseY = sp.y;
+        const res = gizmo.pickAxis();
+        expect(res != null).tobe(true);
+        expect(res.axis).tobe(axis);
+    }
 })
 
 Engine3D.pause();

@@ -2,7 +2,7 @@ import { GUIHelp } from '@orillusion/debug/GUIHelp';
 import { Stats } from '@orillusion/stats';
 import {
     BoxGeometry, ColliderComponent, Color, Engine3D, LitMaterial, MeshBVH, MeshColliderShape, MeshRenderer,
-    Object3D, PointerEvent3D, Scene3D, SphereGeometry, TorusGeometry, UnLitMaterial, Vector3, View3D,
+    Object3D, PointerEvent3D, Raycaster, Scene3D, SphereGeometry, TorusGeometry, UnLitMaterial, Vector3, View3D,
 } from '@orillusion/core';
 import { createExampleScene, createSceneParam } from '@samples/utils/ExampleScene';
 import { GUIUtil } from '@samples/utils/GUIUtil';
@@ -13,9 +13,14 @@ import { GUIUtil } from '@samples/utils/GUIUtil';
  * A 320k-triangle sphere, a 40k-triangle torus and a few boxes all carry a
  * `MeshColliderShape`. Moving the mouse raycasts against the exact triangles
  * every frame (bound-mode picking) and drops a marker at the hit point,
- * oriented along the interpolated normal. The GUI shows BVH stats and a
- * benchmark button that fires 2 000 random rays through both the BVH and
- * the brute-force scan, reporting ms per ray and whether the results agree.
+ * oriented along the interpolated normal; the GUI shows the face index, uv,
+ * sub-mesh and how many colliders the ray crosses.
+ *
+ * Clicking runs a `Raycaster` over the whole scene (no colliders needed)
+ * and lists every hit along the ray; its BVH mode, side and first-hit-only
+ * options are in the GUI. A benchmark button fires random rays through both
+ * the BVH and the brute-force scan, reporting µs per ray and whether the
+ * results agree.
  */
 class Sample_MeshBVHPick {
     private scene: Scene3D;
@@ -23,9 +28,11 @@ class Sample_MeshBVHPick {
     private marker: Object3D;
     private normalStick: Object3D;
     private bigSphere: MeshRenderer;
+    private readonly raycaster = new Raycaster();
     private readonly stats = {
         triangles: 0, bvhNodes: 0, bvhDepth: 0, buildMs: 0,
-        lastHit: '-', lastDistance: 0,
+        lastHit: '-', lastDistance: 0, faceIndex: -1, uv: '-', subMesh: -1, collidersOnRay: 0,
+        rayUseBVH: 'auto', raySide: 'material', rayFirstHitOnly: false, rayHits: '-', rayMs: 0,
         benchRays: 2000, bvhUsPerRay: 0, bruteUsPerRay: 0, speedup: 0, mismatches: -1,
     };
 
@@ -60,9 +67,8 @@ class Sample_MeshBVHPick {
         mr.geometry = geometry;
         mr.material = material;
         mr.castShadow = true;
-        const shape = new MeshColliderShape();
-        shape.mesh = geometry;
-        obj.addComponent(ColliderComponent).shape = shape;
+        // No `shape.mesh`: the collider picks the geometry of the MeshRenderer on the same object.
+        obj.addComponent(ColliderComponent).shape = new MeshColliderShape();
         this.scene.addChild(obj);
         return mr;
     }
@@ -74,7 +80,9 @@ class Sample_MeshBVHPick {
         const t0 = performance.now();
         const sphereGeo = new SphereGeometry(10, 400, 400);
         this.bigSphere = this.addPickable(sphereGeo, mat(0.3, 0.6, 0.9), new Vector3(0, 10, 0), 1, 'sphere-320k');
-        const bvh = MeshBVH.get(sphereGeo);
+        // Prebuild the tree so the first hover doesn't pay for it; the Raycaster's
+        // 'auto' mode also picks it up.
+        const bvh = MeshBVH.build(sphereGeo);
         this.stats.buildMs = +(performance.now() - t0).toFixed(1);
         this.stats.triangles = bvh.triCount;
         this.stats.bvhNodes = bvh.nodeCount;
@@ -126,11 +134,30 @@ class Sample_MeshBVHPick {
         this.normalStick.localPosition = new Vector3(d.worldPos.x + n.x * 1.5, d.worldPos.y + n.y * 1.5, d.worldPos.z + n.z * 1.5);
         this.stats.lastHit = e.target.name || '(unnamed)';
         this.stats.lastDistance = +(d.distance ?? 0).toFixed(2);
+        this.stats.faceIndex = d.faceIndex ?? -1;
+        this.stats.uv = d.uv ? `${d.uv.x.toFixed(3)}, ${d.uv.y.toFixed(3)}` : '-';
+        this.stats.subMesh = d.subGeometryIndex ?? -1;
+        this.stats.collidersOnRay = d.hits?.length ?? 0;
     }
 
     private onPickClick(e: PointerEvent3D) {
         const mr = e.target?.getComponent(MeshRenderer);
         if (mr && mr !== this.bigSphere) (mr.material as LitMaterial).baseColor = new Color(Math.random(), Math.random(), Math.random());
+
+        // Same click through a Raycaster: every triangle hit along the ray, scene-wide.
+        const rc = this.raycaster;
+        rc.useBVH = this.stats.rayUseBVH as any;
+        rc.side = this.stats.raySide as any;
+        rc.firstHitOnly = this.stats.rayFirstHitOnly;
+        rc.filter = r => r.object3D !== this.marker && r.object3D !== this.normalStick;
+        rc.setFromCamera(this.view.camera, e.mouseX, e.mouseY);
+        const t0 = performance.now();
+        const hits = rc.intersectObject(this.scene);
+        this.stats.rayMs = +(performance.now() - t0).toFixed(2);
+        this.stats.rayHits = hits.length
+            ? hits.map(h => `${h.object3D.name}#${h.faceIndex}@${h.distance.toFixed(1)}${h.frontFace ? '' : '(back)'}`).join('  ')
+            : '-';
+        console.log('[Raycaster]', hits);
     }
 
     private benchmark() {
@@ -171,7 +198,18 @@ class Sample_MeshBVHPick {
         f.add(this.stats, 'buildMs').listen();
         f.add(this.stats, 'lastHit').listen();
         f.add(this.stats, 'lastDistance').listen();
+        f.add(this.stats, 'faceIndex').listen();
+        f.add(this.stats, 'uv').listen();
+        f.add(this.stats, 'subMesh').listen();
+        f.add(this.stats, 'collidersOnRay').listen();
         f.open();
+        const r = GUIHelp.addFolder('Raycaster (click)');
+        r.add(this.stats, 'rayUseBVH', ['auto', 'always', 'never']);
+        r.add(this.stats, 'raySide', ['material', 'front', 'back', 'double']);
+        r.add(this.stats, 'rayFirstHitOnly');
+        r.add(this.stats, 'rayHits').listen();
+        r.add(this.stats, 'rayMs').listen();
+        r.open();
         const b = GUIHelp.addFolder('Benchmark (sphere)');
         b.add(this.stats, 'benchRays', 100, 20000, 100);
         b.add({ run: () => this.benchmark() }, 'run');
