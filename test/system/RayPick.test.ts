@@ -1,5 +1,5 @@
-import { test, expect, end } from '../util'
-import { BoxColliderShape, CameraUtil, Engine3D, Matrix4, MeshColliderShape, Quaternion, Ray, Scene3D, SphereColliderShape, SphereGeometry, Vector3, View3D } from '@orillusion/core';
+import { test, expect, end, waitUntil } from '../util'
+import { BoxColliderShape, BoxGeometry, CameraUtil, ColliderComponent, ComponentCollect, Engine3D, LitMaterial, Matrix4, MeshColliderShape, MeshRenderer, Object3D, Quaternion, Ray, Scene3D, SphereColliderShape, SphereGeometry, Vector3, View3D } from '@orillusion/core';
 
 const engine = await Engine3D.init();
 
@@ -115,6 +115,69 @@ await test('Camera3D.screenPointToRay round-trips worldToScreenPoint on an offse
         canvas.style.left = prev.left;
         canvas.style.top = prev.top;
     }
+})
+
+await test('PickFire (bound mode): nearest collider wins, full hit data, all hits, filters', async () => {
+    const view = new View3D();
+    view.scene = new Scene3D();
+    view.camera = CameraUtil.createCamera3DObject(view.scene, 'camera');
+    const canvas = engine.context3D.canvas as HTMLCanvasElement;
+    view.camera.perspective(60, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+    view.camera.lookAt(new Vector3(0, 0, 30), new Vector3(0, 0, 0));
+
+    const add = (name: string, pos: Vector3, scale: number, meshShape: boolean) => {
+        const obj = new Object3D();
+        obj.name = name;
+        obj.localPosition = pos;
+        obj.localScale = new Vector3(scale, scale, scale);
+        const mr = obj.addComponent(MeshRenderer);
+        mr.geometry = meshShape ? new SphereGeometry(1, 32, 32) : new BoxGeometry(1, 1, 1);
+        mr.material = new LitMaterial();
+        const col = obj.addComponent(ColliderComponent);
+        if (meshShape) col.shape = new MeshColliderShape();       // no .mesh: taken from the MeshRenderer
+        else (col.shape as BoxColliderShape).setFromCenterAndSize(new Vector3(), new Vector3(1, 1, 1));
+        view.scene.addChild(obj);
+        return obj;
+    };
+    // A big scaled box behind a small sphere: in local units the box looks closer.
+    const box = add('box', new Vector3(0, 0, -5), 10, false);
+    const ball = add('ball', new Vector3(0, 0, 3), 1, true);
+    engine.startRenderView(view);
+    // Colliders register for picking when the render loop starts them.
+    const ready = await waitUntil(() => ComponentCollect.componentsEnablePickerList.get(view)?.size === 2, 20000);
+    expect(!!ready).tobe(true);
+
+    const pf: any = view.pickFire;
+    const s = view.camera.worldToScreenPoint(new Vector3(0.2, 0.3, 3), new Vector3());
+    engine.inputSystem.mouseX = s.x;
+    engine.inputSystem.mouseY = s.y;
+    const pick = () => { pf.pick(view.camera); return pf.findNearestObj(pf._interestList, view.camera); };
+
+    const target = pick();
+    expect(target.object3D === ball).tobe(true);
+    const data = pf.getPickInfo();
+    expect(data.hits.length).tobe(2);
+    expect(data.hits[1].collider.object3D === box).tobe(true);
+    expect(data.distance < data.hits[1].distance).tobe(true);
+    expect(data.faceIndex >= 0).tobe(true);
+    expect(data.uv != null && data.barycentric != null && data.localPos != null).tobe(true);
+    expect(data.frontFace).tobe(true);
+    expect(data.worldNormal.z > 0.5).tobe(true);
+    // The next pick must not mutate the data handed out above.
+    const z = data.worldPos.z;
+    engine.inputSystem.mouseX = s.x + 40;
+    pick();
+    expect(data.worldPos.z).tobe(z);
+    engine.inputSystem.mouseX = s.x;
+
+    pf.filter = (c: ColliderComponent) => c.object3D !== ball;
+    expect(pick().object3D === box).tobe(true);
+    pf.filter = null;
+    ball.getComponent(ColliderComponent).visibleLayer = 1 << 2;
+    pf.layerMask = ~(1 << 2);
+    expect(pick().object3D === box).tobe(true);
+    pf.layerMask = 0xFFFFFFFF;
+    expect(pick().object3D === ball).tobe(true);
 })
 
 Engine3D.pause();

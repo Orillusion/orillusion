@@ -9,6 +9,7 @@ import { View3D } from '../core/View3D';
 import { PointerEvent3D } from '../event/eventConst/PointerEvent3D';
 import { HitInfo } from '../components/shape/ColliderShape';
 import { ComponentCollect, Matrix4 } from '..';
+import { VisibleLayer } from '../gfx/renderJob/config/VisibleLayer';
 
 /**
  * Management and triggering for picking 3D objects
@@ -41,6 +42,15 @@ export class PickFire extends CEventDispatcher {
      * a map records the association information between meshID(matrix id) and ColliderComponent
      */
     public mouseEnableMap: Map<number, ColliderComponent>;
+
+    /**
+     * `bound` mode: only colliders whose `visibleLayer` shares a bit with
+     * this mask are picked.
+     */
+    public layerMask: number = VisibleLayer.All;
+
+    /** `bound` mode: optional per-collider filter; return false to skip a collider. */
+    public filter: ((collider: ColliderComponent) => boolean) | null = null;
     private _view: View3D;
 
     constructor(view: View3D) {
@@ -162,11 +172,22 @@ export class PickFire extends CEventDispatcher {
         } else {
             let intersection = this._interestList[0];
             if (intersection) {
+                // Hit objects are created fresh by each pick, so handing them
+                // out does not let the next pick overwrite them.
                 return {
                     worldPos: intersection.intersectPoint,
                     worldNormal: intersection.normal,
                     meshID: intersection.collider.transform.worldMatrix.index,
                     distance: intersection.distance,
+                    localPos: intersection.localPoint,
+                    faceNormal: intersection.faceNormal,
+                    faceIndex: intersection.faceIndex,
+                    barycentric: intersection.barycentric,
+                    uv: intersection.uv,
+                    uv1: intersection.uv1,
+                    subGeometryIndex: intersection.subGeometryIndex,
+                    frontFace: intersection.frontFace,
+                    hits: this._interestList.slice(),
                 };
             }
             return {
@@ -281,7 +302,7 @@ export class PickFire extends CEventDispatcher {
             if (colliders) {
                 for (const item of colliders) {
                     let collider = item[0];
-                    if (collider.enable) {
+                    if (collider.enable && (collider.visibleLayer & this.layerMask) !== 0 && (!this.filter || this.filter(collider))) {
                         intersect = collider.rayPick(this.ray);
                         if (intersect) {
                             intersect.collider = collider;

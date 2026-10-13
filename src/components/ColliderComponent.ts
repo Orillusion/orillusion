@@ -3,7 +3,10 @@ import { Ray } from "../math/Ray";
 import { Vector3 } from "../math/Vector3";
 import { ComponentBase } from "./ComponentBase";
 import { BoxColliderShape } from "./shape/BoxColliderShape";
-import { ColliderShape, HitInfo } from "./shape/ColliderShape";
+import { ColliderShape, ColliderShapeType, HitInfo } from "./shape/ColliderShape";
+import type { MeshColliderShape } from "./shape/MeshColliderShape";
+import { MeshRenderer } from "./renderer/MeshRenderer";
+import { GeometryBase } from "../core/geometry/GeometryBase";
 
 /**
  * collider component
@@ -55,9 +58,22 @@ export class ColliderComponent extends ComponentBase {
      */
     public rayPick(ray: Ray): HitInfo {
         if (this._enable) {
-            return this._shape.rayPick(ray, this.transform.worldMatrix);
+            const shape = this._shape;
+            if (shape.shapeType === ColliderShapeType.Mesh && !(shape as MeshColliderShape).mesh) {
+                // A mesh collider without a mesh picks the geometry drawn by this object.
+                (shape as MeshColliderShape).mesh = this._rendererGeometry();
+            }
+            return shape.rayPick(ray, this.transform.worldMatrix);
         }
         return null;
+    }
+
+    private _rendererGeometry(): GeometryBase {
+        let geometry: GeometryBase = null;
+        this.object3D.components.forEach(c => {
+            if (!geometry && c instanceof MeshRenderer && c.geometry) geometry = c.geometry;
+        });
+        return geometry;
     }
 
     public beforeDestroy(force?: boolean) {
