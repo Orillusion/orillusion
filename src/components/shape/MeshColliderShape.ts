@@ -4,6 +4,8 @@ import { Ray } from "../../math/Ray";
 import { ColliderShape, ColliderShapeType, HitInfo } from "./ColliderShape";
 import { MeshRaycast, MeshRaycastOptions, RaycastBVHMode } from "../../io/raycast/MeshRaycast";
 import { RaycastHit } from "../../io/raycast/RaycastHit";
+import { RaycastDeformation } from "../../io/raycast/MeshDeformer";
+import type { MeshRenderer } from "../renderer/MeshRenderer";
 
 
 /**
@@ -31,6 +33,16 @@ export class MeshColliderShape extends ColliderShape {
     /** Ignore hits farther than this (world units). */
     public maxDistance: number = Infinity;
 
+    /**
+     * Renderer drawing `mesh`, set automatically by `ColliderComponent` from
+     * the same object. When it skins or morphs the mesh, picks follow the
+     * deformed surface (see `deformation`).
+     */
+    public renderer: MeshRenderer = null;
+
+    /** How a skinned / morphed `renderer` is picked. Default `'cpu'`: as drawn. */
+    public deformation: RaycastDeformation = 'cpu';
+
     private _opts: MeshRaycastOptions = {};
     private _hits: RaycastHit[] = [];
 
@@ -55,7 +67,12 @@ export class MeshColliderShape extends ColliderShape {
         opts.useBVH = this.useBVH;
         const hits = this._hits;
         hits.length = 0;
-        if (MeshRaycast.intersect(this.mesh, fromMatrix, ray, opts, hits) === 0) return null;
+        opts.deformation = this.deformation;
+        const r = this.renderer;
+        const count = r && r.geometry === this.mesh
+            ? MeshRaycast.intersectRenderer(r, ray, opts, hits)
+            : MeshRaycast.intersect(this.mesh, fromMatrix, ray, opts, hits);
+        if (count === 0) return null;
         const h = hits[0];
         hits.length = 0;
         const ret: HitInfo = {

@@ -6,7 +6,6 @@ import { BoxColliderShape } from "./shape/BoxColliderShape";
 import { ColliderShape, ColliderShapeType, HitInfo } from "./shape/ColliderShape";
 import type { MeshColliderShape } from "./shape/MeshColliderShape";
 import { MeshRenderer } from "./renderer/MeshRenderer";
-import { GeometryBase } from "../core/geometry/GeometryBase";
 
 /**
  * collider component
@@ -59,21 +58,28 @@ export class ColliderComponent extends ComponentBase {
     public rayPick(ray: Ray): HitInfo {
         if (this._enable) {
             const shape = this._shape;
-            if (shape.shapeType === ColliderShapeType.Mesh && !(shape as MeshColliderShape).mesh) {
-                // A mesh collider without a mesh picks the geometry drawn by this object.
-                (shape as MeshColliderShape).mesh = this._rendererGeometry();
+            if (shape.shapeType === ColliderShapeType.Mesh) {
+                const meshShape = shape as MeshColliderShape;
+                if (!meshShape.mesh || !meshShape.renderer) {
+                    // A mesh collider without a mesh picks the geometry drawn by
+                    // this object; knowing the renderer lets skinned / morphed
+                    // meshes be picked as drawn.
+                    const renderer = this._renderer();
+                    if (!meshShape.mesh) meshShape.mesh = renderer ? renderer.geometry : null;
+                    if (renderer && renderer.geometry === meshShape.mesh) meshShape.renderer = renderer;
+                }
             }
             return shape.rayPick(ray, this.transform.worldMatrix);
         }
         return null;
     }
 
-    private _rendererGeometry(): GeometryBase {
-        let geometry: GeometryBase = null;
+    private _renderer(): MeshRenderer {
+        let renderer: MeshRenderer = null;
         this.object3D.components.forEach(c => {
-            if (!geometry && c instanceof MeshRenderer && c.geometry) geometry = c.geometry;
+            if (!renderer && c instanceof MeshRenderer && c.geometry) renderer = c;
         });
-        return geometry;
+        return renderer;
     }
 
     public beforeDestroy(force?: boolean) {

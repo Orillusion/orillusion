@@ -6,6 +6,8 @@ import { Ray } from '../../math/Ray';
 import { Vector2 } from '../../math/Vector2';
 import { Vector3 } from '../../math/Vector3';
 import { RaycastHit } from './RaycastHit';
+import { MeshDeformer, RaycastDeformation } from './MeshDeformer';
+import { MeshRenderer } from '../../components/renderer/MeshRenderer';
 
 /**
  * When a ray query uses a geometry's `MeshBVH`:
@@ -35,6 +37,8 @@ export interface MeshRaycastOptions {
     useBVH?: RaycastBVHMode;
     /** Report every hit instead of only the closest. Default false. */
     all?: boolean;
+    /** How skinned / morphed renderers are handled by `intersectRenderer`. Default `'cpu'`. */
+    deformation?: RaycastDeformation;
     /**
      * Per-hit predicate, given the local hit and whether it is a front face
      * in world space. Rejected hits do not hide hits behind them.
@@ -105,6 +109,40 @@ export class MeshRaycast {
             out.push(MeshRaycast._toWorld(h, worldMatrix, inv, ray, I, normals, uvs, uvs1, mirrored));
         }
         return local.length;
+    }
+
+    /**
+     * Intersect a renderer's mesh as it is drawn. Skinned and morph-target
+     * meshes are deformed on the CPU first (see `MeshDeformer`) unless
+     * `options.deformation` says otherwise; a deformed mesh is always
+     * queried through a (refit) BVH unless `useBVH` is `'never'`. For
+     * skinned meshes `localPoint` is the hit expressed in the renderer's
+     * local space (the deformed surface, not the bind pose).
+     * @returns number of hits appended
+     */
+    public static intersectRenderer(renderer: MeshRenderer, ray: Ray, options: MeshRaycastOptions, out: RaycastHit[]): number {
+        const world = renderer.transform.worldMatrix;
+        const mode = options.deformation ?? 'cpu';
+        if (mode !== 'bindPose' && MeshDeformer.isDeformed(renderer)) {
+            if (mode === 'skip') return 0;
+            const deformed = MeshDeformer.deform(renderer);
+            if (deformed) {
+                const opts: MeshRaycastOptions = { ...options, useBVH: options.useBVH === 'never' ? 'never' : 'always' };
+                if (!deformed.worldSpace) return MeshRaycast.intersect(deformed.geometry, world, ray, opts, out);
+                const first = out.length;
+                const n = MeshRaycast.intersect(deformed.geometry, MeshRaycast._identity(), ray, opts, out);
+                const inv = (MeshRaycast._inv2 ||= new Matrix4()).copy(world).invert();
+                for (let i = first; i < out.length; i++) Matrix4.transformPoint(inv, out[i].point, out[i].localPoint);
+                return n;
+            }
+        }
+        return MeshRaycast.intersect(renderer.geometry, world, ray, options, out);
+    }
+
+    private static _inv2: Matrix4;
+    private static _ident: Matrix4;
+    private static _identity(): Matrix4 {
+        return (MeshRaycast._ident ||= new Matrix4()).identity();
     }
 
     private static _toWorld(h: MeshBVHHit, world: Matrix4, inv: Matrix4, ray: Ray, I: ArrayLike<number> | null,

@@ -9,6 +9,7 @@ import { Ray } from '../../math/Ray';
 import { Vector3 } from '../../math/Vector3';
 import { CameraUtil } from '../../util/CameraUtil';
 import { MeshRaycast, MeshRaycastOptions, RaycastBVHMode } from './MeshRaycast';
+import { RaycastDeformation } from './MeshDeformer';
 import { RaycastHit } from './RaycastHit';
 
 /**
@@ -38,7 +39,8 @@ export type RaycastSide = 'material' | 'front' | 'back' | 'double';
  * if (hits.length) console.log(hits[0].object3D.name, hits[0].point, hits[0].uv);
  * ```
  *
- * Skinned and morph-target meshes are tested in their bind pose. Renderers
+ * Skinned and morph-target meshes are deformed on the CPU as the vertex
+ * shader does (see `deformation` and `MeshDeformer`). Renderers
  * batched by an `InstanceDrawComponent` are tested even though the batch
  * disables them individually.
  * @group IO
@@ -58,6 +60,12 @@ export class Raycaster {
     public firstHitOnly: boolean = false;
     /** When to use a geometry's `MeshBVH`. Default `'auto'`. */
     public useBVH: RaycastBVHMode = 'auto';
+    /**
+     * Skinned / morph-target meshes: `'cpu'` (default) deforms them on the
+     * CPU like the vertex shader so hits match what is drawn; `'bindPose'`
+     * tests the undeformed geometry; `'skip'` ignores them.
+     */
+    public deformation: RaycastDeformation = 'cpu';
     /** Optional per-renderer filter; return false to skip a renderer. */
     public filter: ((renderer: MeshRenderer) => boolean) | null = null;
 
@@ -167,7 +175,7 @@ export class Raycaster {
     }
 
     private _intersectRenderer(renderer: MeshRenderer, far: number, all: boolean, out: RaycastHit[]): void {
-        const opts: MeshRaycastOptions = { near: this.near, far, useBVH: this.useBVH, all };
+        const opts: MeshRaycastOptions = { near: this.near, far, useBVH: this.useBVH, all, deformation: this.deformation };
         const subs = Math.max(1, renderer.geometry.subGeometries.length);
         const materials = renderer.materials || [];
         const materialOf = (sub: number): Material => materials[sub] || materials[0] || null;
@@ -194,7 +202,7 @@ export class Raycaster {
         }
 
         const first = out.length;
-        MeshRaycast.intersect(renderer.geometry, renderer.transform.worldMatrix, this.ray, opts, out);
+        MeshRaycast.intersectRenderer(renderer, this.ray, opts, out);
         for (let i = first; i < out.length; i++) {
             out[i].object3D = renderer.object3D;
             out[i].renderer = renderer;

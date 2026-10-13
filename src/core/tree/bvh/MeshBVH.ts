@@ -204,8 +204,7 @@ export class MeshBVH {
     public static getAttributeView(geometry: GeometryBase, name: string): MeshAttributeView | null {
         const attr = geometry.getAttribute(name);
         if (attr && attr.data && attr.data.length > 0) {
-            const dim = name === VertexAttributeName.position || name === VertexAttributeName.normal ? 3
-                : name === VertexAttributeName.TANGENT || name === VertexAttributeName.color ? 4 : 2;
+            const dim = MeshBVH._attributeDim(name);
             return { data: attr.data as ArrayLike<number>, stride: dim, offset: 0 };
         }
         const all = geometry.getAttribute(VertexAttributeName.all);
@@ -221,6 +220,24 @@ export class MeshBVH {
             if (name === VertexAttributeName.position) return { data: all.data as ArrayLike<number>, stride: geometry.vertexDim, offset: 0 };
         }
         return null;
+    }
+
+    private static _attributeDim(name: string): number {
+        switch (name) {
+            case VertexAttributeName.position:
+            case VertexAttributeName.normal:
+                return 3;
+            case VertexAttributeName.TANGENT:
+            case VertexAttributeName.color:
+            case VertexAttributeName.joints0:
+            case VertexAttributeName.joints1:
+            case VertexAttributeName.weights0:
+            case VertexAttributeName.weights1:
+                return 4;
+            case VertexAttributeName.vIndex:
+                return 1;
+        }
+        return name.startsWith('a_morph') ? 3 : 2;
     }
 
     /**
