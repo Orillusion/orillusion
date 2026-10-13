@@ -19,7 +19,6 @@ export class MeshColliderShape extends ColliderShape {
 
     /** Skip triangles whose front face points away from the ray. */
     public backfaceCulling: boolean = false;
-    private _pickRet: HitInfo;
 
     constructor() {
         super();
@@ -51,9 +50,8 @@ export class MeshColliderShape extends ColliderShape {
         const hit = bvh.raycast(helpRay.origin, helpRay.direction, this.backfaceCulling);
         if (!hit) return null;
 
-        this._pickRet ||= { intersectPoint: new Vector3(), distance: 0, normal: new Vector3() };
-        const ret = this._pickRet;
-        Matrix4.transformVector4(fromMatrix, hit.point, ret.intersectPoint);
+        const ret: HitInfo = { intersectPoint: new Vector3(), distance: 0, normal: new Vector3(), localPoint: hit.point.clone() };
+        Matrix4.transformPoint(fromMatrix, hit.point, ret.intersectPoint);
         ret.distance = Vector3.distance(ray.origin, ret.intersectPoint);
 
         const normalAttribute = this.mesh.getAttribute(VertexAttributeName.normal);
@@ -70,8 +68,7 @@ export class MeshColliderShape extends ColliderShape {
         } else {
             n.copy(hit.faceNormal);
         }
-        Matrix4.transformVector(fromMatrix, n, n);
-        n.normalize();
+        ColliderShape.transformNormal(helpMatrix, n, n);
         return ret;
     }
 

@@ -54,13 +54,14 @@ export class CameraUtil {
         let sc = 1;
         let ina: Vector3 = Vector3.HELP_0;
 
+        // sX/sY are canvas-relative (InputSystem.mouseX/Y already subtract
+        // the canvas rect), matching Projection(); don't subtract the canvas
+        // offset a second time.
         let ctx = ctxOf(camera);
-        let ox = ctx.canvas.offsetLeft;
-        let oy = ctx.canvas.offsetTop;
         let w = ctx.canvas.clientWidth;
         let h = ctx.canvas.clientHeight;
-        ina.x = (((mouse.x - ox) * sc) / w - 0.5) * 2;
-        ina.y = -(((mouse.y - oy) * sc) / h - 0.5) * 2;
+        ina.x = ((mouse.x * sc) / w - 0.5) * 2;
+        ina.y = -((mouse.y * sc) / h - 0.5) * 2;
         ina.z = sZ;
 
         let outP = new Vector3(0, 0, 0);

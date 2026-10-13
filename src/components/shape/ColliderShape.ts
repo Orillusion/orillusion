@@ -3,7 +3,23 @@ import { Ray } from "../../math/Ray";
 import { Vector3 } from "../../math/Vector3";
 import { ColliderComponent } from "../ColliderComponent";
 
-export type HitInfo = { intersectPoint?: Vector3; normal?: Vector3; distance: number; collider?: ColliderComponent };
+/**
+ * Result of `ColliderShape.rayPick`. `intersectPoint`, `normal` and
+ * `distance` are in world space (distance is measured from the world ray
+ * origin), so hits from different shapes and transforms can be compared.
+ */
+export type HitInfo = {
+    /** Hit point in world space. */
+    intersectPoint?: Vector3;
+    /** Surface normal in world space (unit length). */
+    normal?: Vector3;
+    /** World-space distance from the ray origin to `intersectPoint`. */
+    distance: number;
+    /** Collider that produced the hit (filled in by the caller). */
+    collider?: ColliderComponent;
+    /** Hit point in the collider's local space. */
+    localPoint?: Vector3;
+};
 
 export enum ColliderShapeType {
     None,
@@ -96,6 +112,46 @@ export class ColliderShape {
      */
     public rayPick(ray: Ray, fromMatrix: Matrix4): HitInfo {
         return null;
+    }
+
+    /**
+     * Build a world-space `HitInfo` from a local-space hit.
+     * @param ray the world-space ray that was cast
+     * @param fromMatrix local → world matrix
+     * @param invMatrix inverse of `fromMatrix`
+     * @param localPoint hit point in local space
+     * @param localNormal surface normal in local space, if known
+     */
+    protected static toWorldHit(ray: Ray, fromMatrix: Matrix4, invMatrix: Matrix4, localPoint: Vector3, localNormal?: Vector3): HitInfo {
+        const point = Matrix4.transformPoint(fromMatrix, localPoint, new Vector3());
+        const hit: HitInfo = {
+            intersectPoint: point,
+            localPoint: new Vector3(localPoint.x, localPoint.y, localPoint.z),
+            distance: Vector3.distance(ray.origin, point),
+        };
+        if (localNormal) {
+            hit.normal = ColliderShape.transformNormal(invMatrix, localNormal, new Vector3());
+        }
+        return hit;
+    }
+
+    /**
+     * Transform a local-space normal to world space with the inverse
+     * transpose of the local → world matrix, which keeps it perpendicular
+     * to the surface under non-uniform scale.
+     * @param invMatrix inverse of the local → world matrix
+     * @param n local-space normal
+     * @param out result (may alias `n`)
+     */
+    public static transformNormal(invMatrix: Matrix4, n: Vector3, out: Vector3): Vector3 {
+        const d = invMatrix.rawData;
+        const x = n.x, y = n.y, z = n.z;
+        out.set(
+            x * d[0] + y * d[1] + z * d[2],
+            x * d[4] + y * d[5] + z * d[6],
+            x * d[8] + y * d[9] + z * d[10],
+        );
+        return out.normalize();
     }
 
 }

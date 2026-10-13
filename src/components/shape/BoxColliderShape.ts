@@ -11,7 +11,6 @@ import { ColliderShape, ColliderShapeType, HitInfo } from "./ColliderShape";
  * @group Collider
  */
 export class BoxColliderShape extends ColliderShape {
-    private _pickRet: HitInfo;
     private readonly box: BoundingBox;
 
     /**
@@ -25,9 +24,11 @@ export class BoxColliderShape extends ColliderShape {
 
     /**
      * @internal
-     * @param ray 
-     * @param fromMatrix 
-     * @returns 
+     * Entry point of `ray` on the box (exit point when the ray starts
+     * inside). Point, normal and distance are world space; the local hit
+     * point is in `localPoint`.
+     * @param ray world-space ray
+     * @param fromMatrix local → world matrix
      */
     public rayPick(ray: Ray, fromMatrix: Matrix4): HitInfo {
         let box = this.box;
@@ -39,15 +40,27 @@ export class BoxColliderShape extends ColliderShape {
         let helpRay = ColliderShape.helpRay.copy(ray);
         helpRay.applyMatrix(helpMatrix);
 
-        let pick = helpRay.intersectBox(this.box, ColliderShape.v3_help_0);
-        if (pick) {
-            if (!this._pickRet) {
-                this._pickRet = { intersectPoint: new Vector3(), distance: 0 };
-            }
-            this._pickRet.intersectPoint = pick;
-            this._pickRet.distance = Vector3.distance(helpRay.origin, ColliderShape.v3_help_0);
-            return this._pickRet;
+        let local = helpRay.intersectBox(box, ColliderShape.v3_help_0);
+        if (!local) return null;
+
+        // Normal of the face the hit point lies on (the nearest face plane).
+        const n = BoxColliderShape._normal;
+        let best = Infinity;
+        const faces = [
+            local.x - box.min.x, box.max.x - local.x,
+            local.y - box.min.y, box.max.y - local.y,
+            local.z - box.min.z, box.max.z - local.z,
+        ];
+        let face = 0;
+        for (let i = 0; i < 6; i++) {
+            const d = Math.abs(faces[i]);
+            if (d < best) { best = d; face = i; }
         }
-        return null;
+        const sign = face % 2 === 0 ? -1 : 1;
+        const axis = face >> 1;
+        n.set(axis === 0 ? sign : 0, axis === 1 ? sign : 0, axis === 2 ? sign : 0);
+        return ColliderShape.toWorldHit(ray, fromMatrix, helpMatrix, local, n);
     }
+
+    private static _normal: Vector3 = new Vector3();
 }
