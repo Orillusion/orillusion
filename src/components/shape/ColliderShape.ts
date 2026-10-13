@@ -1,7 +1,9 @@
 import { Matrix4 } from "../../math/Matrix4";
 import { Ray } from "../../math/Ray";
+import { Vector2 } from "../../math/Vector2";
 import { Vector3 } from "../../math/Vector3";
 import { ColliderComponent } from "../ColliderComponent";
+import { MeshRaycast } from "../../io/raycast/MeshRaycast";
 
 /**
  * Result of `ColliderShape.rayPick`. `intersectPoint`, `normal` and
@@ -19,6 +21,20 @@ export type HitInfo = {
     collider?: ColliderComponent;
     /** Hit point in the collider's local space. */
     localPoint?: Vector3;
+    /** Mesh colliders: geometric normal of the hit triangle (world space). */
+    faceNormal?: Vector3;
+    /** Mesh colliders: triangle index into the index buffer. */
+    faceIndex?: number;
+    /** Mesh colliders: barycentric weights (w0, w1, w2) of the hit triangle. */
+    barycentric?: Vector3;
+    /** Mesh colliders: interpolated `uv` (TEXCOORD_0), if the geometry has one. */
+    uv?: Vector2;
+    /** Mesh colliders: interpolated `TEXCOORD_1`, if the geometry has one. */
+    uv1?: Vector2;
+    /** Mesh colliders: sub-geometry (material slot) of the hit triangle. */
+    subGeometryIndex?: number;
+    /** Mesh colliders: whether the front (counter-clockwise) side was hit. */
+    frontFace?: boolean;
 };
 
 export enum ColliderShapeType {
@@ -137,21 +153,10 @@ export class ColliderShape {
 
     /**
      * Transform a local-space normal to world space with the inverse
-     * transpose of the local → world matrix, which keeps it perpendicular
-     * to the surface under non-uniform scale.
-     * @param invMatrix inverse of the local → world matrix
-     * @param n local-space normal
-     * @param out result (may alias `n`)
+     * transpose of the local → world matrix. See `MeshRaycast.transformNormal`.
      */
     public static transformNormal(invMatrix: Matrix4, n: Vector3, out: Vector3): Vector3 {
-        const d = invMatrix.rawData;
-        const x = n.x, y = n.y, z = n.z;
-        out.set(
-            x * d[0] + y * d[1] + z * d[2],
-            x * d[4] + y * d[5] + z * d[6],
-            x * d[8] + y * d[9] + z * d[10],
-        );
-        return out.normalize();
+        return MeshRaycast.transformNormal(invMatrix, n, out);
     }
 
 }

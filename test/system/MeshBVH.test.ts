@@ -113,6 +113,13 @@ await test('raycastAll returns every crossing sorted; tree-less queries match th
     bvh.raycastAll(o, d, undefined, out);
     expect(out.length).tobe(3);
     expect(out[0] === all[1]).tobe(true);
+    // A ray along the shared diagonal of a quad crosses it once, not once per triangle.
+    const quad = new GeometryBase();
+    quad.setAttribute(VertexAttributeName.position, new Float32Array([-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, 1, 0]));
+    quad.setIndices(new Uint16Array([0, 1, 2, 0, 2, 3]));
+    const diag = new Vector3(0.25, 0.25, 4);
+    expect(MeshBVH.get(quad).raycastAll(diag, d).length).tobe(1);
+    expect(MeshBVH.raycastGeometryAll(quad, diag, d).length).tobe(1);
 })
 
 await test('non-indexed geometry builds and hits', async () => {

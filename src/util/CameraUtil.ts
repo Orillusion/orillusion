@@ -50,21 +50,31 @@ export class CameraUtil {
      * @returns
      */
     public static UnProjection(sX: number, sY: number, sZ: number = 1, camera?: Camera3D) {
-        let mouse = new Vector3(sX, sY, 0);
-        let sc = 1;
-        let ina: Vector3 = Vector3.HELP_0;
-
         // sX/sY are canvas-relative (InputSystem.mouseX/Y already subtract
         // the canvas rect), matching Projection(); don't subtract the canvas
         // offset a second time.
         let ctx = ctxOf(camera);
         let w = ctx.canvas.clientWidth;
         let h = ctx.canvas.clientHeight;
-        ina.x = ((mouse.x * sc) / w - 0.5) * 2;
-        ina.y = -((mouse.y * sc) / h - 0.5) * 2;
+        return CameraUtil.UnProjectionNDC((sX / w - 0.5) * 2, -(sY / h - 0.5) * 2, sZ, camera);
+    }
+
+    /**
+     * Unproject a normalized-device-coordinate point (x, y in [-1, 1], y up)
+     * at depth `sZ` to world space.
+     * @param ndcX NDC x
+     * @param ndcY NDC y
+     * @param sZ NDC depth
+     * @param camera camera to unproject through
+     * @param target optional output
+     */
+    public static UnProjectionNDC(ndcX: number, ndcY: number, sZ: number, camera: Camera3D, target?: Vector3) {
+        let ina: Vector3 = Vector3.HELP_0;
+        ina.x = ndcX;
+        ina.y = ndcY;
         ina.z = sZ;
 
-        let outP = new Vector3(0, 0, 0);
+        let outP = target || new Vector3(0, 0, 0);
         let projectWorld = Matrix4.helpMatrix2;
         projectWorld.copy(camera.projectionMatrix);
         projectWorld.invert();

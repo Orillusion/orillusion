@@ -262,7 +262,7 @@ export class MeshBVH {
                 if (t > EPS_T && t >= near && t <= far) out.push(MeshBVH._fill(newHit(), src, tri, t, _u, _v, _det, ox, oy, oz, dx, dy, dz));
             }
         }
-        MeshBVH._sortFrom(out, first);
+        MeshBVH._sortFrom(out, first, src);
         return out;
     }
 
@@ -565,7 +565,8 @@ export class MeshBVH {
 
     /**
      * Every hit along a ray (local space), sorted by distance. Each result is
-     * a new object appended to `out`.
+     * a new object appended to `out`. A crossing through an edge or vertex
+     * shared by several triangles is reported once.
      */
     public raycastAll(origin: Vector3, direction: Vector3, options?: MeshBVHRayOptions, out: MeshBVHHit[] = []): MeshBVHHit[] {
         if (this.nodeCount === 0) return out;
@@ -580,7 +581,7 @@ export class MeshBVH {
             if (t > EPS_T && t >= near && t <= far) out.push(MeshBVH._fill(newHit(), this._src, tri, t, _u, _v, _det, ox, oy, oz, dx, dy, dz));
             return false;
         });
-        MeshBVH._sortFrom(out, first);
+        MeshBVH._sortFrom(out, first, this._src);
         return out;
     }
 
@@ -695,10 +696,36 @@ export class MeshBVH {
         return hit;
     }
 
-    private static _sortFrom(out: MeshBVHHit[], first: number): void {
+    /**
+     * Sort `out[first..]` by distance and drop repeats of the same crossing:
+     * a ray through an edge or vertex shared by several triangles hits each
+     * of them at the same t (on the same side).
+     */
+    private static _sortFrom(out: MeshBVHHit[], first: number, src: TriSource): void {
         if (out.length - first < 2) return;
         const tail = out.splice(first).sort((x, y) => x.t - y.t);
-        for (const h of tail) out.push(h);
+        let prev: MeshBVHHit = null;
+        for (const h of tail) {
+            if (prev && h.frontFace === prev.frontFace && h.t - prev.t <= 1e-7 * Math.max(1, prev.t)
+                && MeshBVH._shareVertex(src, h.triIndex, prev.triIndex)) continue;
+            out.push(h);
+            prev = h;
+        }
+    }
+
+    /** Whether two triangles share a vertex (by index, or by position for unwelded meshes). */
+    private static _shareVertex(src: TriSource, ta: number, tb: number): boolean {
+        const I = src.indices, P = src.pos.data, ps = src.pos.stride, po = src.pos.offset;
+        for (let i = 0; i < 3; i++) {
+            const a = I ? I[ta * 3 + i] : ta * 3 + i;
+            for (let j = 0; j < 3; j++) {
+                const b = I ? I[tb * 3 + j] : tb * 3 + j;
+                if (a === b) return true;
+                const pa = a * ps + po, pb = b * ps + po;
+                if (P[pa] === P[pb] && P[pa + 1] === P[pb + 1] && P[pa + 2] === P[pb + 2]) return true;
+            }
+        }
+        return false;
     }
 
     private static _longestAxis(B: Float32Array, l: number, r: number): number {

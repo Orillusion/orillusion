@@ -1,10 +1,9 @@
 import { GeometryBase } from "../../core/geometry/GeometryBase";
-import { VertexAttributeName } from "../../core/geometry/VertexAttributeName";
 import { Matrix4 } from "../../math/Matrix4";
 import { Ray } from "../../math/Ray";
-import { Vector3 } from "../../math/Vector3";
 import { ColliderShape, ColliderShapeType, HitInfo } from "./ColliderShape";
-import { MeshBVH } from "../../core/tree/bvh/MeshBVH";
+import { MeshRaycast, MeshRaycastOptions, RaycastBVHMode } from "../../io/raycast/MeshRaycast";
+import { RaycastHit } from "../../io/raycast/RaycastHit";
 
 
 /**
@@ -13,12 +12,27 @@ import { MeshBVH } from "../../core/tree/bvh/MeshBVH";
  */
 export class MeshColliderShape extends ColliderShape {
     /**
-     * meshComponent
+     * Geometry to pick against. When left unset, `ColliderComponent` uses the
+     * geometry of the `MeshRenderer` on the same object.
      */
     public mesh: GeometryBase;
 
     /** Skip triangles whose front face points away from the ray. */
     public backfaceCulling: boolean = false;
+
+    /**
+     * When to use the geometry's `MeshBVH`. Default `'always'`: the tree is
+     * built on the first pick and cached per geometry. Use `'auto'` to only
+     * use a tree built elsewhere (`MeshBVH.build`), `'never'` to always test
+     * every triangle.
+     */
+    public useBVH: RaycastBVHMode = 'always';
+
+    /** Ignore hits farther than this (world units). */
+    public maxDistance: number = Infinity;
+
+    private _opts: MeshRaycastOptions = {};
+    private _hits: RaycastHit[] = [];
 
     constructor() {
         super();
@@ -26,51 +40,37 @@ export class MeshColliderShape extends ColliderShape {
     }
 
     /**
-     * Closest triangle hit along `ray` (world space). Uses a cached
-     * `MeshBVH` per geometry, so the cost is O(log n) triangles instead of a
-     * full scan, and the result is the *nearest* hit rather than the first
-     * triangle in index order. `distance` and `intersectPoint` are in world
-     * space; `normal` is the smooth vertex normal when the geometry has one,
-     * otherwise the face normal.
+     * Closest triangle hit along `ray` (world space), or null. With the
+     * default `useBVH` the cost is O(log n) triangles. `distance`,
+     * `intersectPoint`, `normal` (interpolated vertex normal, face normal
+     * when the geometry has none) and `faceNormal` are world space; the
+     * result also carries `localPoint`, `faceIndex`, `barycentric`, `uv`,
+     * `uv1`, `subGeometryIndex` and `frontFace`.
      */
     public rayPick(ray: Ray, fromMatrix: Matrix4): HitInfo {
         if (!this.mesh) return null;
-
-        const helpMatrix = ColliderShape.helpMatrix;
-        helpMatrix.copy(fromMatrix).invert();
-
-        const helpRay = ColliderShape.helpRay.copy(ray);
-        helpRay.applyMatrix(helpMatrix);
-        // A non-uniform scale in `fromMatrix` leaves the local direction
-        // un-normalized; normalize so BVH `t` is a local distance and we can
-        // convert the hit point back to world space for the true distance.
-        helpRay.direction.normalize();
-
-        const bvh = MeshBVH.get(this.mesh);
-        const hit = bvh.raycast(helpRay.origin, helpRay.direction, { cull: this.backfaceCulling });
-        if (!hit) return null;
-
-        const ret: HitInfo = { intersectPoint: new Vector3(), distance: 0, normal: new Vector3(), localPoint: hit.point.clone() };
-        Matrix4.transformPoint(fromMatrix, hit.point, ret.intersectPoint);
-        ret.distance = Vector3.distance(ray.origin, ret.intersectPoint);
-
-        const normalAttribute = this.mesh.getAttribute(VertexAttributeName.normal);
-        const n = ret.normal;
-        if (normalAttribute && normalAttribute.data && normalAttribute.data.length > 0) {
-            const N = normalAttribute.data;
-            const [i0, i1, i2] = bvh.getTriangle(hit.triIndex, MeshColliderShape._tri);
-            const w0 = 1 - hit.u - hit.v, w1 = hit.u, w2 = hit.v;
-            n.set(
-                N[i0 * 3] * w0 + N[i1 * 3] * w1 + N[i2 * 3] * w2,
-                N[i0 * 3 + 1] * w0 + N[i1 * 3 + 1] * w1 + N[i2 * 3 + 1] * w2,
-                N[i0 * 3 + 2] * w0 + N[i1 * 3 + 2] * w1 + N[i2 * 3 + 2] * w2,
-            );
-        } else {
-            n.copy(hit.faceNormal);
-        }
-        ColliderShape.transformNormal(helpMatrix, n, n);
+        const opts = this._opts;
+        opts.cull = this.backfaceCulling ? 'back' : 'none';
+        opts.far = this.maxDistance;
+        opts.useBVH = this.useBVH;
+        const hits = this._hits;
+        hits.length = 0;
+        if (MeshRaycast.intersect(this.mesh, fromMatrix, ray, opts, hits) === 0) return null;
+        const h = hits[0];
+        hits.length = 0;
+        const ret: HitInfo = {
+            intersectPoint: h.point,
+            normal: h.normal,
+            distance: h.distance,
+            localPoint: h.localPoint,
+            faceNormal: h.faceNormal,
+            faceIndex: h.faceIndex,
+            barycentric: h.barycentric,
+            subGeometryIndex: h.subGeometryIndex,
+            frontFace: h.frontFace,
+        };
+        if (h.uv) ret.uv = h.uv;
+        if (h.uv1) ret.uv1 = h.uv1;
         return ret;
     }
-
-    private static _tri: [number, number, number] = [0, 0, 0];
 }
