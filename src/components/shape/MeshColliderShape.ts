@@ -47,7 +47,7 @@ export class MeshColliderShape extends ColliderShape {
         helpRay.direction.normalize();
 
         const bvh = MeshBVH.get(this.mesh);
-        const hit = bvh.raycast(helpRay.origin, helpRay.direction, this.backfaceCulling);
+        const hit = bvh.raycast(helpRay.origin, helpRay.direction, { cull: this.backfaceCulling });
         if (!hit) return null;
 
         const ret: HitInfo = { intersectPoint: new Vector3(), distance: 0, normal: new Vector3(), localPoint: hit.point.clone() };

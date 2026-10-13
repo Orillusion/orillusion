@@ -66,6 +66,7 @@ export class GeometryBase {
     private _indicesBuffer: GeometryIndicesBuffer;
     private _vertexBuffer: GeometryVertexBuffer;
     private _onChange: boolean = true;
+    private _version: number = 0;
     private _wireframeLines: Vector3[];
 
     constructor() {
@@ -73,6 +74,17 @@ export class GeometryBase {
         this._attributeMap = new Map<string, VertexAttributeData>();
         this._attributes = [];
         this._vertexBuffer = new GeometryVertexBuffer();
+    }
+
+    /**
+     * Change counter for the CPU-side triangle data: bumped by
+     * `setIndices` / `setVertexs` / `setAttribute` and whenever positions are
+     * re-uploaded through `vertexBuffer.upload`. Code that caches derived
+     * data (e.g. `MeshBVH`) compares it to detect stale caches. Editing the
+     * position array in place without uploading is not detected.
+     */
+    public get version(): number {
+        return this._version + this._vertexBuffer.positionVersion;
     }
 
     /** Get the GPU index buffer of this geometry. */
@@ -212,6 +224,7 @@ export class GeometryBase {
      * @param data the index buffer data
      */
     public setIndices(data: ArrayBufferData) {
+        this._version++;
         if (!this._attributeMap.has(VertexAttributeName.indices)) {
             let vertexInfo: VertexAttributeData = {
                 attribute: VertexAttributeName.indices,
@@ -228,6 +241,7 @@ export class GeometryBase {
      * @param data the position buffer data
      */
     public setVertexs(data: ArrayBufferData) {
+        this._version++;
         let vertexInfo: VertexAttributeData = {
             attribute: VertexAttributeName.position,
             data: data,
@@ -247,6 +261,7 @@ export class GeometryBase {
         } else if (attribute == VertexAttributeName.position) {
             this.setVertexs(data);
         } else {
+            this._version++;
             let vertexInfo: VertexAttributeData = {
                 attribute: attribute,
                 data: data,
