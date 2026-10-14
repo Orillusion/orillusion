@@ -22,11 +22,10 @@ import { RaycastHit } from './RaycastHit';
 export type RaycastSide = 'material' | 'front' | 'back' | 'double';
 
 /**
- * CPU ray picking against mesh triangles, in the style of three.js
- * `Raycaster`: build a ray (from the camera or by hand), then intersect
- * objects and get sorted hits with point, distance, normals, face index,
- * barycentric coordinates and UVs. Unlike `PickFire`, no `ColliderComponent`
- * is needed: any `MeshRenderer` in the given hierarchy is tested.
+ * CPU ray picking against mesh triangles, build a ray (from the camera or by hand), 
+ * then intersect objects and get sorted hits with point, distance, 
+ * normals, face index, barycentric coordinates and UVs. Unlike `PickFire`, 
+ * no `ColliderComponent` is needed: any `MeshRenderer` in the given hierarchy is tested.
  *
  * Geometry with a `MeshBVH` (see `MeshBVH.build`) is tested through the
  * tree; other geometry is scanned triangle by triangle unless `useBVH` is
