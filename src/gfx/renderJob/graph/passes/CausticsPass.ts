@@ -283,8 +283,8 @@ fn rippleSize(i: u32) -> vec2i {
     }
 }
 
-fn rippleTexel(i: u32, c: vec2i) -> f32 {
-    let t = clamp(c, vec2i(0), rippleSize(i) - 1);
+fn rippleTexel(i: u32, c: vec2i, size: vec2i) -> f32 {
+    let t = clamp(c, vec2i(0), size - 1);
     switch (i) {
         case 0u: { return textureLoad(rippleMap0, t, 0).r; }
         case 1u: { return textureLoad(rippleMap1, t, 0).r; }
@@ -293,16 +293,17 @@ fn rippleTexel(i: u32, c: vec2i) -> f32 {
     }
 }
 
-// Bilinear ripple height at grid coordinates; none off the grid.
-fn rippleAt(i: u32, coord: vec2f) -> f32 {
-    let size = vec2f(rippleSize(i));
+// Bilinear ripple height at grid coordinates c + o (o in -1..1), from the 4x4 texels
+// around c (texels, row-major from floor(c) - 1); none off the grid.
+fn rippleAt(texels: ptr<function, array<f32, 16>>, c: vec2f, o: vec2i, size: vec2f) -> f32 {
+    let coord = c + vec2f(o);
     if (any(coord < vec2f(-0.5)) || any(coord > size - 0.5)) {
         return 0.0;
     }
-    let c = vec2i(floor(coord));
-    let f = coord - floor(coord);
-    let top = mix(rippleTexel(i, c), rippleTexel(i, c + vec2i(1, 0)), f.x);
-    let bottom = mix(rippleTexel(i, c + vec2i(0, 1)), rippleTexel(i, c + vec2i(1, 1)), f.x);
+    let f = c - floor(c);
+    let k = (o.y + 1) * 4 + o.x + 1;
+    let top = mix((*texels)[k], (*texels)[k + 1], f.x);
+    let bottom = mix((*texels)[k + 4], (*texels)[k + 5], f.x);
     return mix(top, bottom, f.y);
 }
 
@@ -314,15 +315,24 @@ fn addRipples(i: u32, slope: ptr<function, WaterSlope>, xz: vec2f) {
         return;
     }
     let local = (w.invWorld * vec4f(xz.x, w.params.x, xz.y, 1.0)).xz;
-    let cell = (w.rippleBounds.zw - w.rippleBounds.xy) / vec2f(rippleSize(i));
+    let isize = rippleSize(i);
+    let size = vec2f(isize);
+    let cell = (w.rippleBounds.zw - w.rippleBounds.xy) / size;
     let c = (local - w.rippleBounds.xy) / cell - 0.5;
-    let h = rippleAt(i, c);
-    let hx0 = rippleAt(i, c - vec2f(1.0, 0.0));
-    let hx1 = rippleAt(i, c + vec2f(1.0, 0.0));
-    let hz0 = rippleAt(i, c - vec2f(0.0, 1.0));
-    let hz1 = rippleAt(i, c + vec2f(0.0, 1.0));
-    let hxz = rippleAt(i, c + vec2f(1.0, 1.0)) - rippleAt(i, c + vec2f(1.0, -1.0))
-            - rippleAt(i, c + vec2f(-1.0, 1.0)) + rippleAt(i, c + vec2f(-1.0, -1.0));
+    // One texture read site for all nine samples: unrolled per sample, the switch over the
+    // four maps makes the shader too large for software rasterizers to compile.
+    var texels: array<f32, 16>;
+    let base = vec2i(floor(c)) - 1;
+    for (var k = 0; k < 16; k++) {
+        texels[k] = rippleTexel(i, base + vec2i(k % 4, k / 4), isize);
+    }
+    let h = rippleAt(&texels, c, vec2i(0, 0), size);
+    let hx0 = rippleAt(&texels, c, vec2i(-1, 0), size);
+    let hx1 = rippleAt(&texels, c, vec2i(1, 0), size);
+    let hz0 = rippleAt(&texels, c, vec2i(0, -1), size);
+    let hz1 = rippleAt(&texels, c, vec2i(0, 1), size);
+    let hxz = rippleAt(&texels, c, vec2i(1, 1), size) - rippleAt(&texels, c, vec2i(1, -1), size)
+            - rippleAt(&texels, c, vec2i(-1, 1), size) + rippleAt(&texels, c, vec2i(-1, -1), size);
     let g = vec2f(hx1 - hx0, hz1 - hz0) / (2.0 * cell);
     let lxx = (hx1 - 2.0 * h + hx0) / (cell.x * cell.x);
     let lzz = (hz1 - 2.0 * h + hz0) / (cell.y * cell.y);
