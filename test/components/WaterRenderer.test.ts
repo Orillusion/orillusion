@@ -1,5 +1,5 @@
-import { test, end, expect, delay } from '../util'
-import { Engine3D, Scene3D, View3D, Camera3D, Object3D, WaterRenderer, WaterMaterial, Vector2, Vector3, DirectLight, GeometryBase, VertexAttributeName, WaterSpectrum } from '@orillusion/core'
+import { test, end, expect, delay, waitUntil } from '../util'
+import { Engine3D, Scene3D, View3D, Camera3D, Object3D, WaterRenderer, WaterMaterial, Vector2, Vector3, DirectLight, GeometryBase, VertexAttributeName, WaterSpectrum, Time } from '@orillusion/core'
 
 /** Height (g) and Jacobian-related stats of an rgba16float texture's channel, read back from the GPU. */
 async function channelStats(engine: Engine3D, texture: any, channel: number) {
@@ -30,6 +30,12 @@ async function channelStats(engine: Engine3D, texture: any, channel: number) {
     }
     const mean = sum / n
     return { mean, rms: Math.sqrt(sq / n - mean * mean) }
+}
+
+/** Waits for `count` whole frames begun after the call; a frame is done once the next one starts. Frames with the FFT take seconds under software rendering. */
+async function frames(count: number) {
+    const until = Time.frame + count + 1
+    await waitUntil(() => Time.frame >= until, 30000)
 }
 
 /** Flat disc in the xz plane: a center vertex and rings of segments. */
@@ -296,8 +302,7 @@ await test('addRipple starts the ripple simulation; points off the water are ign
     await delay(100)
     expect(water.hasRipples).toEqual(false)
     water.addRipple(1, 1, 0.1, 0.3)
-    await delay(200)
-    expect(water.hasRipples).toEqual(true)
+    expect(await waitUntil(() => water.hasRipples)).toEqual(true)
     // A new footprint clears them; the next ripple starts a fresh simulation.
     water.width = 10
     expect(water.hasRipples).toEqual(false)
@@ -339,8 +344,10 @@ await test('WaterSpectrum: FFT cascades have the expected height statistics and 
     const spectrum = new WaterSpectrum()
     water.spectrum = spectrum
     scene.addChild(obj)
-    await delay(400)
-    expect(water.fft != null).toEqual(true)
+    expect(await waitUntil(() => water.fft, 30000) != null).toEqual(true)
+    await frames(1)
+    // Paused while reading back, so each read waits only for the frames already submitted.
+    engine.pause()
 
     // 10 m/s over 100 km: significant height about 1.6 m, most of it in the first cascade.
     const height = await channelStats(engine, water.fft!.displacement[0], 1)
@@ -354,16 +361,18 @@ await test('WaterSpectrum: FFT cascades have the expected height statistics and 
 
     // Half the wind rebuilds the spectrum with about half the height (fetch-limited seas grow with the wind).
     spectrum.windSpeed = 5
-    await delay(300)
+    engine.resume()
+    await frames(1)
+    engine.pause()
     const calm = await channelStats(engine, water.fft!.displacement[0], 1)
     expect(calm.rms < height.rms * 0.7).toEqual(true)
 
     // getHeight picks up the FFT waves once a query has been read back.
-    let h = 0
-    for (let i = 0; i < 20 && h === 0; i++) {
-        h = water.getHeight(3, 4)
-        await delay(50)
-    }
+    water.getHeight(3, 4)
+    engine.resume()
+    await frames(1)
+    engine.pause()
+    const h = await waitUntil(() => water.getHeight(3, 4), 30000)
     expect(h !== 0 && Math.abs(h) < 3).toEqual(true)
 
     water.spectrum = null
