@@ -51,6 +51,14 @@ export type RenderSetting = {
      *  projects its texture onto the opaque scene via stencil shadow
      *  volumes. Default false. */
     decals?: boolean;
+    /** Opt-in water support. When true, ForwardRendererJob adds
+     *  `SceneLinearDepthPass` after the scene color pyramid, so
+     *  `WaterRenderer` surfaces use the real distance to the bottom for
+     *  absorption and refraction, `CausticsPass` before the pyramid for
+     *  sunlight caustics under the surface, and `UnderwaterPass` before
+     *  post-processing for the view with the camera in the water.
+     *  Default false. */
+    water?: boolean;
     /** Opt-in 8-bit stencil buffer on the main color pass.
      *  When true, `GBufferFrame` allocates its depth attachment as
      *  `depth24plus-stencil8` instead of the default `depth32float`,
