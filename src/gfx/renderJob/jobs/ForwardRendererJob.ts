@@ -2,6 +2,7 @@ import { View3D } from '../../../core/View3D';
 import { ClusterLightingPass } from '../graph/passes/ClusterLightingPass';
 import { ColorPass } from '../graph/passes/ColorPass';
 import { DecalShadowVolumePass } from '../graph/passes/DecalShadowVolumePass';
+import { FluidPass } from '../graph/passes/FluidPass';
 import { GBufferResourcePass } from '../graph/passes/GBufferResourcePass';
 import { GIPass } from '../graph/passes/GIPass';
 import { GPUCullPass } from '../graph/passes/GPUCullPass';
@@ -30,12 +31,12 @@ import { RendererJob } from './RendererJob';
  *
  *   ClusterLighting → [PreDepth] → HiZ → MotionVector → [GPUCull]
  *     → Shadow → PointShadow → Reflection → [GI] → Color
- *     → SceneColorPyramid → TransmissionOpaque
+ *     → SceneColorPyramid → TransmissionOpaque → [Decal] → [Fluid]
  *     → SortedTransparent (+ optional WBOIT / DDP transparent path)
  *     → Post → GUI(present)
  *
  * Bracketed passes are gated on engine settings (`zPrePass`,
- * `gpuCull`, `gi.enable`, `useOIT`).
+ * `gpuCull`, `gi.enable`, `decals`, `fluid`, `useOIT`).
  *
  * @group GFX
  */
@@ -47,6 +48,7 @@ export class ForwardRendererJob extends RendererJob {
         const useOIT = !!(setting.render as any).useOIT;
         const useGPUCull = !!(setting.render as any).gpuCull;
         const useDecals = !!(setting.render as any).decals;
+        const useFluid = !!setting.render.fluid;
 
         // Cluster lighting — runs first so downstream passes can
         // sample _ClusterLightingBuffer.
@@ -129,6 +131,12 @@ export class ForwardRendererJob extends RendererJob {
         // anchored after `DecalShadowVolumePass`.
         if (useDecals) {
             this.graph.add(DecalShadowVolumePass);
+        }
+
+        // Screen-space fluid — opt-in via `setting.render.fluid`. Clipped
+        // by opaque depth; transparents draw over it.
+        if (useFluid) {
+            this.graph.add(FluidPass);
         }
 
         // Transparent half. With useOIT, sorted gets the 'sorted'
