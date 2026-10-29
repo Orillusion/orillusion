@@ -14,6 +14,7 @@ import { PreDepthPass } from '../graph/passes/PreDepthPass';
 import { ReflectionPass } from '../graph/passes/ReflectionPass';
 import { SceneCapturePass } from '../graph/passes/SceneCapturePass';
 import { SceneColorPyramidPass } from '../graph/passes/SceneColorPyramidPass';
+import { SceneLinearDepthPass } from '../graph/passes/SceneLinearDepthPass';
 import { ShadowPass } from '../graph/passes/ShadowPass';
 import { SkyPass } from '../graph/passes/SkyPass';
 import { SortedTransparentPass } from '../graph/passes/SortedTransparentPass';
@@ -22,6 +23,9 @@ import { TransparentDualDepthPeelingPass } from '../graph/passes/TransparentDual
 import { TransparentDualDepthPeelingResolvePass } from '../graph/passes/TransparentDualDepthPeelingResolvePass';
 import { TransparentOITPass } from '../graph/passes/TransparentOITPass';
 import { TransparentResolvePass } from '../graph/passes/TransparentResolvePass';
+import { UnderwaterPass } from '../graph/passes/UnderwaterPass';
+import { CausticsPass } from '../graph/passes/CausticsPass';
+import { WaterSimulationPass } from '../graph/passes/WaterSimulationPass';
 import { RendererJob } from './RendererJob';
 
 /**
@@ -35,7 +39,7 @@ import { RendererJob } from './RendererJob';
  *     → Post → GUI(present)
  *
  * Bracketed passes are gated on engine settings (`zPrePass`,
- * `gpuCull`, `gi.enable`, `useOIT`).
+ * `gpuCull`, `gi.enable`, `decals`, `water`, `useOIT`).
  *
  * @group GFX
  */
@@ -47,6 +51,7 @@ export class ForwardRendererJob extends RendererJob {
         const useOIT = !!(setting.render as any).useOIT;
         const useGPUCull = !!(setting.render as any).gpuCull;
         const useDecals = !!(setting.render as any).decals;
+        const useWater = !!setting.render.water;
 
         // Cluster lighting — runs first so downstream passes can
         // sample _ClusterLightingBuffer.
@@ -101,6 +106,12 @@ export class ForwardRendererJob extends RendererJob {
         // same g-buffer without any of them being the resource creator.
         this.graph.add(GBufferResourcePass);
 
+        // Simulated water (FFT waves, interactive ripples), stepped before the
+        // passes that draw or sample it (opt-in via `setting.render.water`).
+        if (useWater) {
+            this.graph.add(WaterSimulationPass);
+        }
+
         // Main color pass. Reads cluster + shadow + reflection inputs +
         // the shared GBuffer published by GBufferResourcePass. Pure
         // opaque draw — sky lives in its own pass below.
@@ -114,8 +125,20 @@ export class ForwardRendererJob extends RendererJob {
         // pipeline; the rest of the graph keeps working.
         this.graph.add(SkyPass);
 
+        // Sunlight caustics under water surfaces, on the opaque scene before
+        // the pyramid captures it (opt-in via `setting.render.water`).
+        if (useWater) {
+            this.graph.add(CausticsPass);
+        }
+
         // Scene color pyramid snapshot for transmission / refraction.
         this.graph.add(SceneColorPyramidPass);
+
+        // Linear depth of the opaque scene for water (sampled by its material
+        // in the transmission pass, while the depth texture is attached).
+        if (useWater) {
+            this.graph.add(SceneLinearDepthPass);
+        }
 
         // Transmission split: opaque-with-transmission deferred to
         // after the pyramid so refraction samples the world behind.
@@ -140,6 +163,12 @@ export class ForwardRendererJob extends RendererJob {
             this.graph.add(TransparentDualDepthPeelingPass);
             this.graph.add(TransparentResolvePass);
             this.graph.add(TransparentDualDepthPeelingResolvePass);
+        }
+
+        // Underwater view of water surfaces — after every color write,
+        // before post (opt-in via `setting.render.water`).
+        if (useWater) {
+            this.graph.add(UnderwaterPass);
         }
 
         // Post chain (FXAA + Tonemap default; user adds more via
