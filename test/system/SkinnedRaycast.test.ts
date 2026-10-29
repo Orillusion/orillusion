@@ -4,6 +4,9 @@ import {
     MeshRenderer, Object3D, Ray, Raycaster, Scene3D, SkinnedMeshRenderer2, Vector3, VertexAttributeName, View3D,
 } from '@orillusion/core';
 
+// CI checks out without the public/ assets submodule; the same files are on the CDN.
+const ASSETS = 'https://cdn.orillusion.com/';
+
 // Pixel picking reads the rendered G-buffer back: the GPU's own answer to
 // "what surface is under this pixel", which the CPU raycast must reproduce.
 const engine = await Engine3D.init({ setting: { pick: { enable: true, mode: 'pixel' } } });
@@ -90,7 +93,7 @@ async function compare(root: Object3D, renderers: MeshRenderer[], pixels: { x: n
 }
 
 await test('skinned glTF (Soldier, frozen mid-run): CPU-skinned hits land on the GPU-rendered surface', async () => {
-    const soldier = await engine.res.loadGltf('gltfs/glb/Soldier.glb');
+    const soldier = await engine.res.loadGltf(ASSETS + 'gltfs/glb/Soldier.glb');
     soldier.scaleX = soldier.scaleY = soldier.scaleZ = 20;
     soldier.rotationY = 180;
     view.scene.addChild(soldier);
@@ -122,7 +125,7 @@ await test('skinned glTF (Soldier, frozen mid-run): CPU-skinned hits land on the
 })
 
 await test('morph targets (glTF lion): CPU-morphed hits land on the GPU-rendered surface', async () => {
-    const lion = await engine.res.loadGltf('gltfs/glb/lion.glb');
+    const lion = await engine.res.loadGltf(ASSETS + 'gltfs/glb/lion.glb');
     view.scene.addChild(lion);
     const animator = lion.addComponent(AnimatorComponent);
     const targets = animator.cloneMorphRenderers();
