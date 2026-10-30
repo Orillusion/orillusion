@@ -18,6 +18,7 @@ export let BxDF_frag: string = /*wgsl*/ `
   #include "Irradiance_frag"
   #include "ColorUtil_frag"
   #include "BxdfDebug_frag"
+  #include "Sheen_frag"
   #include "ReflectionCG"
  
   //ORI_ShadingInput
@@ -163,6 +164,10 @@ export let BxDF_frag: string = /*wgsl*/ `
 
       var color = vec3f(iblDiffuseResult + indirectionSpec + specColor)  ;
       // var color = vec3f(indirectionDiffuse )  ;
+
+      #if USE_SHEEN
+        color = applySheen(color, start, end);
+      #endif
 
       var clearCoatColor = vec3<f32>(0.0);
       #if USE_CLEARCOAT
