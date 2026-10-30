@@ -1,10 +1,11 @@
 import { GeometryBase } from "../../core/geometry/GeometryBase";
-import { VertexAttributeName } from "../../core/geometry/VertexAttributeName";
 import { Matrix4 } from "../../math/Matrix4";
 import { Ray } from "../../math/Ray";
-import { Triangle } from "../../math/Triangle";
-import { Vector3 } from "../../math/Vector3";
 import { ColliderShape, ColliderShapeType, HitInfo } from "./ColliderShape";
+import { MeshRaycast, MeshRaycastOptions, RaycastBVHMode } from "../../io/raycast/MeshRaycast";
+import { RaycastHit } from "../../io/raycast/RaycastHit";
+import { RaycastDeformation } from "../../io/raycast/MeshDeformer";
+import type { MeshRenderer } from "../renderer/MeshRenderer";
 
 
 /**
@@ -13,78 +14,80 @@ import { ColliderShape, ColliderShapeType, HitInfo } from "./ColliderShape";
  */
 export class MeshColliderShape extends ColliderShape {
     /**
-     * meshComponent
+     * Geometry to pick against. When left unset, `ColliderComponent` uses the
+     * geometry of the `MeshRenderer` on the same object.
      */
     public mesh: GeometryBase;
 
-    private static triangle: Triangle;
-    private _pickRet: HitInfo;
+    /** Skip triangles whose front face points away from the ray. */
+    public backfaceCulling: boolean = false;
+
+    /**
+     * When to use the geometry's `MeshBVH`. Default `'always'`: the tree is
+     * built on the first pick and cached per geometry. Use `'auto'` to only
+     * use a tree built elsewhere (`MeshBVH.build`), `'never'` to always test
+     * every triangle.
+     */
+    public useBVH: RaycastBVHMode = 'always';
+
+    /** Ignore hits farther than this (world units). */
+    public maxDistance: number = Infinity;
+
+    /**
+     * Renderer drawing `mesh`, set automatically by `ColliderComponent` from
+     * the same object. When it skins or morphs the mesh, picks follow the
+     * deformed surface (see `deformation`).
+     */
+    public renderer: MeshRenderer = null;
+
+    /** How a skinned / morphed `renderer` is picked. Default `'cpu'`: as drawn. */
+    public deformation: RaycastDeformation = 'cpu';
+
+    private _opts: MeshRaycastOptions = {};
+    private _hits: RaycastHit[] = [];
 
     constructor() {
         super();
         this._shapeType = ColliderShapeType.Mesh;
     }
 
+    /**
+     * Closest triangle hit along `ray` (world space), or null. With the
+     * default `useBVH` the cost is O(log n) triangles. `distance`,
+     * `intersectPoint`, `normal` (interpolated vertex normal, face normal
+     * when the geometry has none) and `faceNormal` are world space; the
+     * result also carries `localPoint`, `faceIndex`, `barycentric`, `uv`,
+     * `uv1`, `subGeometryIndex` and `frontFace`.
+     */
     public rayPick(ray: Ray, fromMatrix: Matrix4): HitInfo {
-        if (this.mesh) {
-            MeshColliderShape.triangle ||= new Triangle(new Vector3(), new Vector3(), new Vector3());
-
-            let positionAttribute = this.mesh.getAttribute(VertexAttributeName.position);
-            let indexAttribute = this.mesh.getAttribute(VertexAttributeName.indices);
-
-            let helpMatrix = ColliderShape.helpMatrix;
-            helpMatrix.copy(fromMatrix).invert();
-
-            let helpRay = ColliderShape.helpRay.copy(ray);
-            helpRay.applyMatrix(helpMatrix);
-
-            helpRay.intersectBox(this.mesh.bounds);
-            let pick = helpRay.intersectBox(this.mesh.bounds, ColliderShape.v3_help_0);
-            if (!pick) {
-                return null;
-            }
-
-            if (indexAttribute && positionAttribute && indexAttribute.data.length > 0) {
-
-                let vertexData = positionAttribute.data;
-                for (let i = 0, c = indexAttribute.data.length / 3; i < c; i++) {
-
-                    let offsetIndex = i * 3;
-                    const i1 = indexAttribute.data[offsetIndex + 0] * 3;
-                    const i2 = indexAttribute.data[offsetIndex + 1] * 3;
-                    const i3 = indexAttribute.data[offsetIndex + 2] * 3;
-
-                    let triangle = MeshColliderShape.triangle;
-
-                    let p1 = triangle.v1.set(vertexData[i1 + 0], vertexData[i1 + 1], vertexData[i1 + 2]);
-                    let p2 = triangle.v2.set(vertexData[i2 + 0], vertexData[i2 + 1], vertexData[i2 + 2]);
-                    let p3 = triangle.v3.set(vertexData[i3 + 0], vertexData[i3 + 1], vertexData[i3 + 2]);
-
-                    triangle.set(p1, p2, p3);
-
-                    let pick = helpRay.intersectTriangle(helpRay.origin, helpRay.direction, triangle);
-
-                    if (pick) {
-                        this._pickRet ||= { intersectPoint: new Vector3(), distance: 0 };
-                        this._pickRet.intersectPoint = pick;
-                        this._pickRet.distance = Vector3.distance(helpRay.origin, pick);
-
-                        let normalAttribute = this.mesh.getAttribute(VertexAttributeName.normal);
-                        if(normalAttribute){
-                            let normalData = normalAttribute.data;
-                            let normal = new Vector3(normalData[i1], normalData[i1 + 1], normalData[i1 + 2]);
-                            Matrix4.transformVector(fromMatrix, normal, normal);
-                            normal.normalize();
-                            this._pickRet.normal = normal
-                        }
-                        return this._pickRet;
-                    }
-
-                }
-            }
-        }
-
-        return null;
+        if (!this.mesh) return null;
+        const opts = this._opts;
+        opts.cull = this.backfaceCulling ? 'back' : 'none';
+        opts.far = this.maxDistance;
+        opts.useBVH = this.useBVH;
+        const hits = this._hits;
+        hits.length = 0;
+        opts.deformation = this.deformation;
+        const r = this.renderer;
+        const count = r && r.geometry === this.mesh
+            ? MeshRaycast.intersectRenderer(r, ray, opts, hits)
+            : MeshRaycast.intersect(this.mesh, fromMatrix, ray, opts, hits);
+        if (count === 0) return null;
+        const h = hits[0];
+        hits.length = 0;
+        const ret: HitInfo = {
+            intersectPoint: h.point,
+            normal: h.normal,
+            distance: h.distance,
+            localPoint: h.localPoint,
+            faceNormal: h.faceNormal,
+            faceIndex: h.faceIndex,
+            barycentric: h.barycentric,
+            subGeometryIndex: h.subGeometryIndex,
+            frontFace: h.frontFace,
+        };
+        if (h.uv) ret.uv = h.uv;
+        if (h.uv1) ret.uv1 = h.uv1;
+        return ret;
     }
-
 }

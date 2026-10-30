@@ -226,7 +226,8 @@ export class RotationControlComponents extends TransformControllerBaseComponent 
             }
             intersect = collider.rayPick(ray);
             if (intersect) {
-                let distance = Vector3.distance(intersect.intersectPoint, collider.shape.center);
+                // Ring radius test is done in the handle's local space.
+                let distance = Vector3.distance(intersect.localPoint, collider.shape.center);
                 if (distance > 20 + 0.8 || distance < 20 - 0.8) {
                     continue;
                 }

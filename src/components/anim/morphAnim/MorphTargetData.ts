@@ -150,6 +150,27 @@ export class MorphTargetData {
         this._morphInfluenceArray[index] = value;
     }
 
+    /** Current influence weight of each morph target (read-only view; use `updateInfluence` to change). */
+    public get influences(): Float32Array {
+        return this._morphInfluenceArray;
+    }
+
+    /** Number of morph targets of the current geometry. */
+    public get morphTargetCount(): number {
+        return this._morphTargetCount;
+    }
+
+    /**
+     * Weight of the base position in the blend, as the shader applies it:
+     * 1 for relative targets, `1 - Σ influences` for absolute ones.
+     */
+    public get baseInfluence(): number {
+        if (this.morphTargetsRelative) return 1;
+        let sum = 0;
+        for (let i = 0; i < this._morphTargetCount; i++) sum += this._morphInfluenceArray[i];
+        return 1 - sum;
+    }
+
     /** Map of blend-shape name to its influence-setter function. */
     public get blendShape() {
         return this._blendTarget;

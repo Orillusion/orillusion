@@ -230,7 +230,7 @@ export class BoundingBox implements IBound {
      * @param point output hit point
      */
     public intersectsRay(ray: Ray, point: Vector3): boolean {
-        throw new Error('Method not implemented.');
+        return ray.intersectBox(this, point) != null;
     }
 
     /**

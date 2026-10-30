@@ -73,6 +73,11 @@ export class GeometryVertexBuffer {
         this._composeBinStride = stride;
     }
 
+    /** The interleave layout recorded by {@link setComposeBinLayout}, or null. */
+    public get composeBinLayout(): VertexAttribute[] {
+        return this._composeBinLayout;
+    }
+
     constructor() {
         this._vertexBufferLayouts = [];
         this._attributeLocation = {};
@@ -388,7 +393,15 @@ export class GeometryVertexBuffer {
         this.allocVertexBuffer(this.vertexCount * attributeOffset);
     }
 
+    /**
+     * Bumped whenever position data is re-uploaded (`position`, or the packed
+     * `all` buffer), so CPU-side consumers such as `MeshBVH` can tell that
+     * the vertices moved. See `GeometryBase.version`.
+     */
+    public positionVersion: number = 0;
+
     public upload(attribute: string, vertexDataInfo: VertexAttributeData) {
+        if (attribute === VertexAttributeName.position || attribute === VertexAttributeName.all) this.positionVersion++;
         if (!this.vertexGPUBuffer) return;
         switch (this.geometryType) {
             case GeometryVertexType.split:

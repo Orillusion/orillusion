@@ -1,9 +1,41 @@
 import { Matrix4 } from "../../math/Matrix4";
 import { Ray } from "../../math/Ray";
+import { Vector2 } from "../../math/Vector2";
 import { Vector3 } from "../../math/Vector3";
 import { ColliderComponent } from "../ColliderComponent";
+import { MeshRaycast } from "../../io/raycast/MeshRaycast";
 
-export type HitInfo = { intersectPoint?: Vector3; normal?: Vector3; distance: number; collider?: ColliderComponent };
+/**
+ * Result of `ColliderShape.rayPick`. `intersectPoint`, `normal` and
+ * `distance` are in world space (distance is measured from the world ray
+ * origin), so hits from different shapes and transforms can be compared.
+ */
+export type HitInfo = {
+    /** Hit point in world space. */
+    intersectPoint?: Vector3;
+    /** Surface normal in world space (unit length). */
+    normal?: Vector3;
+    /** World-space distance from the ray origin to `intersectPoint`. */
+    distance: number;
+    /** Collider that produced the hit (filled in by the caller). */
+    collider?: ColliderComponent;
+    /** Hit point in the collider's local space. */
+    localPoint?: Vector3;
+    /** Mesh colliders: geometric normal of the hit triangle (world space). */
+    faceNormal?: Vector3;
+    /** Mesh colliders: triangle index into the index buffer. */
+    faceIndex?: number;
+    /** Mesh colliders: barycentric weights (w0, w1, w2) of the hit triangle. */
+    barycentric?: Vector3;
+    /** Mesh colliders: interpolated `uv` (TEXCOORD_0), if the geometry has one. */
+    uv?: Vector2;
+    /** Mesh colliders: interpolated `TEXCOORD_1`, if the geometry has one. */
+    uv1?: Vector2;
+    /** Mesh colliders: sub-geometry (material slot) of the hit triangle. */
+    subGeometryIndex?: number;
+    /** Mesh colliders: whether the front (counter-clockwise) side was hit. */
+    frontFace?: boolean;
+};
 
 export enum ColliderShapeType {
     None,
@@ -96,6 +128,35 @@ export class ColliderShape {
      */
     public rayPick(ray: Ray, fromMatrix: Matrix4): HitInfo {
         return null;
+    }
+
+    /**
+     * Build a world-space `HitInfo` from a local-space hit.
+     * @param ray the world-space ray that was cast
+     * @param fromMatrix local → world matrix
+     * @param invMatrix inverse of `fromMatrix`
+     * @param localPoint hit point in local space
+     * @param localNormal surface normal in local space, if known
+     */
+    protected static toWorldHit(ray: Ray, fromMatrix: Matrix4, invMatrix: Matrix4, localPoint: Vector3, localNormal?: Vector3): HitInfo {
+        const point = Matrix4.transformPoint(fromMatrix, localPoint, new Vector3());
+        const hit: HitInfo = {
+            intersectPoint: point,
+            localPoint: new Vector3(localPoint.x, localPoint.y, localPoint.z),
+            distance: Vector3.distance(ray.origin, point),
+        };
+        if (localNormal) {
+            hit.normal = ColliderShape.transformNormal(invMatrix, localNormal, new Vector3());
+        }
+        return hit;
+    }
+
+    /**
+     * Transform a local-space normal to world space with the inverse
+     * transpose of the local → world matrix. See `MeshRaycast.transformNormal`.
+     */
+    public static transformNormal(invMatrix: Matrix4, n: Vector3, out: Vector3): Vector3 {
+        return MeshRaycast.transformNormal(invMatrix, n, out);
     }
 
 }
