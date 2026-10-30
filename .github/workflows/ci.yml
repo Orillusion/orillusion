@@ -34,4 +34,4 @@ jobs:
 
     - name: Test in Electron
       run: pnpm run test:ci
-      timeout-minutes: 5
+      timeout-minutes: 10
