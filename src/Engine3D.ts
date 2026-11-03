@@ -129,6 +129,7 @@ export class Engine3D {
                     // encode.
                     exposure: 1.0,
                     mode: 'ACES',
+                    whitePoint: 4.0,
                 },
                 postProcessing: {
                     bloom: {

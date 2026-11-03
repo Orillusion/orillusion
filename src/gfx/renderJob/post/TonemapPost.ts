@@ -5,10 +5,12 @@ import { ViewQuad } from '../../../core/ViewQuad';
 import { GPUTextureFormat } from '../../graphics/webGpu/WebGPUConst';
 import { RenderTexture } from '../../../textures/RenderTexture';
 import { PostBase } from './PostBase';
+import { TonemapUtil } from '../../../util/TonemapUtil';
 
 /**
- * Final HDR → LDR tonemap pass. Applies an ACES Filmic curve (or
- * passthrough) and writes to an `rgba16float` RT — keeping the chain
+ * Final HDR → LDR tonemap pass. Applies the curve selected by
+ * `setting.render.tonemap.mode` (ACES, Reinhard, Uncharted2, AgX, Khronos
+ * Neutral or passthrough) and writes to an `rgba16float` RT — keeping the chain
  * HDR-correct so the swapchain (in sRGB hardware-encode mode) does
  * the linear→sRGB step. Reads the chain cursor via
  * `lastRenderPassState.getLastRenderTexture`, identical to FXAAPost.
@@ -68,8 +70,12 @@ export class TonemapPost extends PostBase {
         if (!this.postQuad) return;
         const tm = this.setting.render.tonemap;
         const exposure = tm ? tm.exposure : 1.0;
-        const mode = tm && tm.mode === 'None' ? 0.0 : 1.0;
+        const mode = TonemapUtil.modeIndex(tm?.mode);
         this.postQuad.quadShader.setUniform('exposure', exposure);
         this.postQuad.quadShader.setUniform('mode', mode);
+        this.postQuad.quadShader.setUniform('whitePoint', tm?.whitePoint ?? 4.0);
+        // Every MaterialUniform field needs a value before the bind group is
+        // generated, including the alignment pad.
+        this.postQuad.quadShader.setUniform('tonemapPad', 0.0);
     }
 }
