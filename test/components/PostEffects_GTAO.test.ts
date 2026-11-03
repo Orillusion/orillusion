@@ -20,6 +20,10 @@ await test('Post GTAOPost test', async () => {
     // when queued after Light_*/Component tests. Bump to 15 s to
     // cover worst-case driver compile latency.
     await waitUntil(() => gtao.gtaoTexture, 15000)
+    // The canvas ResizeObserver can fire after the texture was created at
+    // the pre-layout size; the post follows on the next frame. Wait for
+    // that instead of sampling mid-resize.
+    await waitUntil(() => gtao.gtaoTexture.width === engine.context3D.presentationSize[0], 15000)
     let dest = engine.context3D.presentationSize[0];
     let src = gtao.gtaoTexture?.width;
     expect(src).tobe(dest)
