@@ -1,5 +1,5 @@
-import { test, expect, end, waitUntil, delay, readRowRGBA16F } from '../util'
-import { BoxGeometry, CameraUtil, Color, DirectLight, Engine3D, LitMaterial, Matrix4, MeshRenderer, MotionBlurPost, MotionBlurUtil, Object3D, PostProcessingComponent, Scene3D, Vector3, View3D } from '@orillusion/core';
+import { test, expect, end, waitUntil, readRowRGBA16F } from '../util'
+import { BoxGeometry, CameraUtil, Color, DirectLight, Engine3D, LitMaterial, Matrix4, MeshRenderer, MotionBlurPost, MotionBlurUtil, Object3D, PostProcessingComponent, Scene3D, Time, Vector3, View3D } from '@orillusion/core';
 
 // Matrix4 lives in the engine's WASM pool, so the engine must exist before any test builds one.
 const engine = await Engine3D.init({ canvasConfig: { devicePixelRatio: 1 } });
@@ -70,9 +70,14 @@ async function transitionWidth(): Promise<{ width: number; dark: number; bright:
     const lo = dark + (bright - dark) * 0.08, hi = bright - (bright - dark) * 0.08;
     return { width: v.filter(x => x > lo && x < hi).length, dark, bright };
 }
+/** Wait for `n` more rendered frames. Software WebGPU in CI runs at ~2 fps, so wall-clock delays are not enough for a setting change to reach the image. */
+async function frames(n: number): Promise<void> {
+    const target = Time.frame + n;
+    await waitUntil(() => Time.frame >= target, 30000, 10);
+}
 async function maxTransition(n = 5): Promise<number> {
     let m = 0;
-    for (let i = 0; i < n; i++) { m = Math.max(m, (await transitionWidth()).width); await delay(70); }
+    for (let i = 0; i < n; i++) { m = Math.max(m, (await transitionWidth()).width); await frames(1); }
     return m;
 }
 
@@ -80,7 +85,7 @@ await test('static camera: the image stays sharp with the post attached', async 
     await waitUntil(() => (engine.getRenderJob(view) as any)?.graph?.getPass('PostPass')?.postList?.get('TonemapPost')?.renderTexture && blur.outTexture, 15000);
     expect(engine.setting.render.postProcessing.motionBlur.enable).tobe(true);
     blur.intensity = 1;
-    await delay(500);
+    await frames(3);
     const s = await transitionWidth();
     console.log('[MotionBlur] static: transition', s.width, 'px, dark', s.dark.toFixed(3), 'bright', s.bright.toFixed(3));
     expect(s.bright > s.dark + 0.2).tobe(true);           // the edge is really there
@@ -94,7 +99,7 @@ await test('moving camera: the edge is smeared by about the per-frame displaceme
     // World → pixels at z = 0: width / (2 · 5 · tan30° · aspect)
     pxPerFrame = step * t.width / (2 * 5 * Math.tan(Math.PI / 6) * (t.width / t.height));
     blur.intensity = 1; blur.maxBlurPixels = 200;
-    await delay(600);
+    await frames(3);
     const w = await maxTransition();
     console.log('[MotionBlur] moving: transition', w, 'px, expected ≈', pxPerFrame.toFixed(1));
     expect(pxPerFrame > 5).tobe(true);
@@ -103,10 +108,10 @@ await test('moving camera: the edge is smeared by about the per-frame displaceme
 
 await test('intensity scales the smear; 0 turns it off while the camera keeps moving', async () => {
     blur.intensity = 2;
-    await delay(400);
+    await frames(3);
     const twice = await maxTransition();
     blur.intensity = 0;
-    await delay(400);
+    await frames(3);
     const off = await maxTransition();
     console.log('[MotionBlur] intensity 2 →', twice, 'px; intensity 0 →', off, 'px');
     expect(twice > pxPerFrame * 1.2).tobe(true);
@@ -115,7 +120,7 @@ await test('intensity scales the smear; 0 turns it off while the camera keeps mo
 
 await test('maxBlurPixels clamps the smear', async () => {
     blur.intensity = 2; blur.maxBlurPixels = 3;
-    await delay(400);
+    await frames(3);
     const clamped = await maxTransition();
     console.log('[MotionBlur] clamp 3 px →', clamped, 'px');
     expect(clamped <= 5).tobe(true);
@@ -125,10 +130,10 @@ await test('maxBlurPixels clamps the smear', async () => {
 await test('stopping the camera restores a sharp image; removePost clears the flag', async () => {
     step = 0;
     blur.intensity = 1;
-    await delay(500);
+    await frames(3);
     expect((await transitionWidth()).width <= 2).tobe(true);
     post.removePost(MotionBlurPost);
-    await delay(200);
+    await frames(1);
     expect(engine.setting.render.postProcessing.motionBlur.enable).tobe(false);
 })
 
