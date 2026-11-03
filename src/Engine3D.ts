@@ -119,6 +119,7 @@ export class Engine3D {
                 useOIT: false,
                 decals: false,
                 water: false,
+                fluid: false,
                 useStencil: false,
                 gpuCull: false,
                 tonemap: {
@@ -130,6 +131,7 @@ export class Engine3D {
                     // encode.
                     exposure: 1.0,
                     mode: 'ACES',
+                    whitePoint: 4.0,
                 },
                 postProcessing: {
                     bloom: {

@@ -59,6 +59,11 @@ export type RenderSetting = {
      *  post-processing for the view with the camera in the water.
      *  Default false. */
     water?: boolean;
+    /** Opt-in screen-space fluid rendering. When true, ForwardRendererJob
+     *  inserts `FluidPass` between the opaque/transmission half and the
+     *  sorted transparent half, drawing every active `FluidRenderer`.
+     *  Default false. */
+    fluid?: boolean;
     /** Opt-in 8-bit stencil buffer on the main color pass.
      *  When true, `GBufferFrame` allocates its depth attachment as
      *  `depth24plus-stencil8` instead of the default `depth32float`,

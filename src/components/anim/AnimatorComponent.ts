@@ -18,6 +18,12 @@ export class AnimatorComponent extends ComponentBase {
     public timeScale: number = 1.0;
     /** GPU buffer mapping joints to their world-matrix indices. */
     public jointMatrixIndexTableBuffer: StorageGPUBuffer;
+    /**
+     * CPU copy of `jointMatrixIndexTableBuffer`: for each bone ID, the
+     * global matrix index (`Matrix4.index`) of that bone's world matrix.
+     * Used by CPU skinning (`MeshDeformer`).
+     */
+    public jointMatrixIndexTable: number[];
     /** Whether the blend-shape (morph) animation loops. */
     public playBlendShapeLoop: boolean = false;
     protected inverseBindMatrices: FloatArray[];
@@ -224,6 +230,7 @@ export class AnimatorComponent extends ComponentBase {
         this._avatar = Engine3D.resFor(ctx).getObj(name) as PrefabAvatarData;
 
         let jointMapping = this.buildSkeletonPose();
+        this.jointMatrixIndexTable = jointMapping;
         const jointMatrixIndexTable = new Float32Array(jointMapping);
         this.jointMatrixIndexTableBuffer = new StorageGPUBuffer(this._avatar.count, 0, jointMatrixIndexTable);
     }
