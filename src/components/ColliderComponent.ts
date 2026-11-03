@@ -3,7 +3,9 @@ import { Ray } from "../math/Ray";
 import { Vector3 } from "../math/Vector3";
 import { ComponentBase } from "./ComponentBase";
 import { BoxColliderShape } from "./shape/BoxColliderShape";
-import { ColliderShape, HitInfo } from "./shape/ColliderShape";
+import { ColliderShape, ColliderShapeType, HitInfo } from "./shape/ColliderShape";
+import type { MeshColliderShape } from "./shape/MeshColliderShape";
+import { MeshRenderer } from "./renderer/MeshRenderer";
 
 /**
  * collider component
@@ -55,9 +57,29 @@ export class ColliderComponent extends ComponentBase {
      */
     public rayPick(ray: Ray): HitInfo {
         if (this._enable) {
-            return this._shape.rayPick(ray, this.transform.worldMatrix);
+            const shape = this._shape;
+            if (shape.shapeType === ColliderShapeType.Mesh) {
+                const meshShape = shape as MeshColliderShape;
+                if (!meshShape.mesh || !meshShape.renderer) {
+                    // A mesh collider without a mesh picks the geometry drawn by
+                    // this object; knowing the renderer lets skinned / morphed
+                    // meshes be picked as drawn.
+                    const renderer = this._renderer();
+                    if (!meshShape.mesh) meshShape.mesh = renderer ? renderer.geometry : null;
+                    if (renderer && renderer.geometry === meshShape.mesh) meshShape.renderer = renderer;
+                }
+            }
+            return shape.rayPick(ray, this.transform.worldMatrix);
         }
         return null;
+    }
+
+    private _renderer(): MeshRenderer {
+        let renderer: MeshRenderer = null;
+        this.object3D.components.forEach(c => {
+            if (!renderer && c instanceof MeshRenderer && c.geometry) renderer = c;
+        });
+        return renderer;
     }
 
     public beforeDestroy(force?: boolean) {
