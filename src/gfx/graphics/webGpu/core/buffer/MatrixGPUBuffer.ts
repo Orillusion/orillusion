@@ -20,58 +20,9 @@ export class MatrixGPUBuffer extends GPUBufferBase {
         this.createBuffer(GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST | usage, size, data, "MatrixGPUBuffer");
     }
 
+    /** Legacy name — same staging-buffer upload as `mapAsyncWrite`. */
     public writeBufferByHeap(floatArray: FloatArray, len: number) {
-        let mapAsyncArray: Float32Array;
-        if (floatArray instanceof Float64Array) {
-            mapAsyncArray = new Float32Array(floatArray);
-        } else {
-            mapAsyncArray = floatArray as Float32Array;
-        }
-        // Upload data using mapAsync and a queue of staging buffers.
-        let bytesLen = len;
-        // Touch .buffer to trigger lazy bind on first call
-        void this.buffer;
-        let device = this._boundCtx!.device;
-        if (mapAsyncArray.length > 0) {
-            let tBuffer: GPUBuffer = null;
-            while (this.mapAsyncReady.length) {
-                tBuffer = this.mapAsyncReady.shift();
-                if (tBuffer['usedSize'] == mapAsyncArray.byteLength)
-                    break;
-                tBuffer.destroy();
-                this.mapAsyncBuffersOutstanding--;
-                tBuffer = null;
-            }
-            if (!tBuffer) {
-                tBuffer = device.createBuffer({
-                    size: mapAsyncArray.byteLength,
-                    usage: GPUBufferUsage.COPY_SRC | GPUBufferUsage.MAP_WRITE,
-                    mappedAtCreation: true,
-                });
-                tBuffer['usedSize'] = mapAsyncArray.byteLength;
-                this.mapAsyncBuffersOutstanding++;
-                if (this.mapAsyncBuffersOutstanding > 10) {
-                    // ${(this.mapAsync.value * this.mapAsyncBuffersOutstanding).toFixed(2)}
-                    console.warn(` Warning: mapAsync requests from ${this.mapAsyncBuffersOutstanding} frames ago have not resolved yet.  MB of staging buffers allocated.`);
-                }
-            }
-            let a = new Float32Array(mapAsyncArray.buffer, mapAsyncArray.byteOffset, len);
-            let b = new Float32Array(tBuffer.getMappedRange(0, len * 4))
-            b.set(a);
-            tBuffer.unmap();
-            const commandEncoder = device.createCommandEncoder();
-            commandEncoder.copyBufferToBuffer(tBuffer, 0, this.buffer, 0, len * 4);
-            // TODO: combine this submit with the main one, but we'll have to delay calling mapAsync until after the submit.
-            device.queue.submit([commandEncoder.finish()]);
-            // TODO: use this data during rendering.
-            tBuffer.mapAsync(GPUMapMode.WRITE).then(
-                () => this.mapAsyncReady.push(tBuffer),
-                (err) => {
-                    // device.destroy() during dispose rejects pending mapAsync with AbortError.
-                    if (err?.name !== 'AbortError') throw err;
-                },
-            );
-        }
+        this.mapAsyncWrite(floatArray, len);
     }
 }
 
