@@ -118,6 +118,7 @@ export class Engine3D {
                 msaa: 0,
                 useOIT: false,
                 decals: false,
+                fluid: false,
                 useStencil: false,
                 gpuCull: false,
                 tonemap: {
