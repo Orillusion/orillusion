@@ -118,21 +118,15 @@ export class BitmapTexture2D extends Texture {
         }
         this.name = StringUtil.getURLName(url);
         if (url.indexOf(';base64') != -1) {
-            const img = document.createElement('img');
+            // Decode through a Blob + createImageBitmap, the same path every
+            // other texture takes. The previous `<img>.decode()` on a detached
+            // element is deferred by Chrome while the document is hidden, so
+            // loading a base64 texture in a background tab (or an iframe of
+            // one) never resolved and whatever awaited it hung forever.
             let start = url.indexOf('data:image');
             let uri = url.substring(start, url.length);
-            img.src = uri;
-            await img.decode();
-            img.width = Math.max(img.width, 32);
-            img.height = Math.max(img.height, 32);
-            const imageBitmap = await createImageBitmap(img, {
-                resizeWidth: img.width,
-                resizeHeight: img.height,
-                imageOrientation: this.flipY ? "flipY" : "from-image",
-                premultiplyAlpha: 'none'
-            });
-            this.format = this._ldrFormat;
-            this.generate(imageBitmap);
+            const blob = await (await fetch(uri)).blob();
+            await this.loadFromBlob(blob);
         } else {
             return new Promise((succ, fial) => {
                 fetch(url, {
