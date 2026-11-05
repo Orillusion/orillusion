@@ -1,5 +1,5 @@
-import { test, expect, end, waitUntil, readRegionRGBA16F } from '../util'
-import { AnisotropyUtil, BoxGeometry, CameraUtil, Color, DirectLight, Engine3D, KHR_materials_anisotropy, LitMaterial, MeshRenderer, Object3D, Scene3D, SphereGeometry, Time, Vector3, View3D } from '@orillusion/core';
+import { test, expect, end, waitUntil, frames, readRegionRGBA16F } from '../util'
+import { AnisotropyUtil, BoxGeometry, CameraUtil, Color, DirectLight, Engine3D, KHR_materials_anisotropy, LitMaterial, MeshRenderer, Object3D, Scene3D, SphereGeometry, Vector3, View3D } from '@orillusion/core';
 
 const engine = await Engine3D.init({ canvasConfig: { devicePixelRatio: 1 } });
 engine.setting.render.tonemap.mode = 'None';
@@ -77,9 +77,7 @@ const tonemapPost = (): any => (engine.getRenderJob(view) as any)?.graph?.getPas
 /** Width and height (px) of the region brighter than half the peak, measured through the brightest pixel. */
 async function highlight(strength: number, rotation: number): Promise<{ w: number; h: number; peak: number }> {
     mat.anisotropyRotation = rotation; mat.anisotropy = strength;
-    // Software WebGPU in CI can take longer than 500 ms per frame, so wait for rendered frames, not wall-clock time.
-    const target = Time.frame + 3;
-    await waitUntil(() => Time.frame >= target, 30000, 10);
+    await frames();
     const t: GPUTexture = tonemapPost().renderTexture.getGPUTexture();
     const img = await readRegionRGBA16F(engine.context3D.device, t, 0, 0, t.width, t.height);
     let peak = -1, px = 0, py = 0;

@@ -1,4 +1,4 @@
-import { test, expect, end, waitUntil, delay, readRowRGBA16F } from '../util'
+import { test, expect, end, waitUntil, frames, readRowRGBA16F } from '../util'
 import { BoxGeometry, CameraUtil, Color, DirectLight, Engine3D, IridescenceUtil, KHR_materials_iridescence, LitMaterial, MeshRenderer, Object3D, Scene3D, Vector3, View3D } from '@orillusion/core';
 
 const engine = await Engine3D.init({ canvasConfig: { devicePixelRatio: 1 } });
@@ -76,7 +76,7 @@ engine.startRenderView(view);
 const tonemapPost = (): any => (engine.getRenderJob(view) as any)?.graph?.getPass('PostPass')?.postList?.get('TonemapPost');
 async function measure(factor: number, thickness: number, ior = 1.3): Promise<number[]> {
     mat.iridescenceIOR = ior; mat.iridescenceThickness = thickness; mat.iridescence = factor;
-    await delay(450);
+    await frames();
     const t: GPUTexture = tonemapPost().renderTexture.getGPUTexture();
     return (await readRowRGBA16F(engine.context3D.device, t, t.width >> 1, t.height >> 1, 1))[0].slice(0, 3);
 }

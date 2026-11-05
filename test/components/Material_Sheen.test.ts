@@ -1,4 +1,4 @@
-import { test, expect, end, waitUntil, delay } from '../util'
+import { test, expect, end, waitUntil, frames } from '../util'
 import { BoxGeometry, CameraUtil, Color, DirectLight, Engine3D, KHR_materials_sheen, LitMaterial, MeshRenderer, Object3D, Scene3D, Vector3, View3D } from '@orillusion/core';
 
 const engine = await Engine3D.init({ canvasConfig: { devicePixelRatio: 1 } });
@@ -87,7 +87,7 @@ async function readCenter(): Promise<[number, number, number]> {
 async function measure(sheen: Color, roughness: number) {
     mat.sheenRoughness = roughness;
     mat.sheenColor = sheen;
-    await delay(500);                                         // define flip → pipeline rebuild → a few frames
+    await frames();
     return readCenter();
 }
 
