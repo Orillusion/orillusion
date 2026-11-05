@@ -19,6 +19,7 @@ export let BxDF_frag: string = /*wgsl*/ `
   #include "ColorUtil_frag"
   #include "BxdfDebug_frag"
   #include "Sheen_frag"
+  #include "Iridescence_frag"
   #include "ReflectionCG"
  
   //ORI_ShadingInput
@@ -58,6 +59,9 @@ export let BxDF_frag: string = /*wgsl*/ `
       let iorF0 = pow((materialUniform.ior - 1.0) / max(materialUniform.ior + 1.0, 1e-4), 2.0);
       let dielectricF0 = vec3<f32>(iorF0) * materialUniform.specularColor.rgb;
       fragData.F0 = mix(dielectricF0, fragData.Albedo.rgb, fragData.Metallic);
+      #if USE_IRIDESCENCE
+        fragData.F0 = applyIridescenceF0(fragData.F0, fragData.NoV);
+      #endif
       // fragData.F0 = gammaToLiner(fragData.F0);
       
       fragData.F = computeFresnelSchlick(fragData.NoV, fragData.F0);
