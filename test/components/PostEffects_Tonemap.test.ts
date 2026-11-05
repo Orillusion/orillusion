@@ -1,4 +1,4 @@
-import { test, expect, end, waitUntil, delay } from '../util'
+import { test, expect, end, waitUntil, frames } from '../util'
 import { BoxGeometry, CameraUtil, Color, Engine3D, MeshRenderer, Object3D, Scene3D, TonemapMode, TonemapUtil, UnLitMaterial, Vector3, View3D } from '@orillusion/core';
 
 const near = (a: number, b: number, eps: number) => Math.abs(a - b) <= eps;
@@ -96,7 +96,7 @@ let hdr: [number, number, number] = [0, 0, 0];
 await test("'None' passes the HDR scene color through (values above 1 survive)", async () => {
     const tm = engine.setting.render.tonemap;
     tm.mode = 'None'; tm.exposure = 1;
-    await delay(400);
+    await frames();
     hdr = await readCenter();
     console.log('[Tonemap] scene-linear input at center:', hdr.map(v => v.toFixed(4)).join(', '));
     expect(hdr[0] > 1.5).tobe(true);                                    // really HDR, not clamped upstream
@@ -108,7 +108,7 @@ for (const mode of ['ACES', 'Reinhard', 'Uncharted2', 'AgX', 'Neutral'] as Tonem
         const tm = engine.setting.render.tonemap;
         for (const exposure of [1, 0.5]) {
             tm.mode = mode; tm.exposure = exposure; tm.whitePoint = 4;
-            await delay(300);
+            await frames();
             const gpu = await readCenter();
             const cpu = TonemapUtil.apply(mode, hdr, exposure, 4);
             console.log(`[Tonemap] ${mode} e=${exposure} gpu=(${gpu.map(v => v.toFixed(4))}) cpu=(${cpu.map(v => v.toFixed(4))})`);
@@ -122,12 +122,12 @@ for (const mode of ['ACES', 'Reinhard', 'Uncharted2', 'AgX', 'Neutral'] as Tonem
 await test('whitePoint drives Reinhard (higher white point → darker highlights)', async () => {
     const tm = engine.setting.render.tonemap;
     tm.mode = 'Reinhard'; tm.exposure = 1; tm.whitePoint = 2;
-    await delay(300);
+    await frames();
     const a = await readCenter();
     const cpu = TonemapUtil.apply('Reinhard', hdr, 1, 2);
     expect(near(a[0], cpu[0], 0.01)).tobe(true);
     tm.whitePoint = 16;
-    await delay(300);
+    await frames();
     const b = await readCenter();
     expect(b[0] < a[0]).tobe(true);                                     // higher white point → darker highlights
     tm.mode = 'ACES'; tm.whitePoint = 4;

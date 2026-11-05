@@ -1,3 +1,5 @@
+import { Time } from '@orillusion/core'
+
 let target = sessionStorage.target.split('/').pop()
 let result: { [key: string]: any } = {}
 let totalS = 0, totalF = 0
@@ -162,4 +164,14 @@ async function readRowRGBA16F(device: GPUDevice, texture: GPUTexture, x: number,
     return out;
 }
 
-export { test, expect, end, delay, waitUntil, readRowRGBA16F }
+/**
+ * Wait until `count` whole frames that began after this call have rendered.
+ * CI runs WebGPU on SwiftShader at ~2 fps or slower, so a wall-clock delay after
+ * changing a setting may not cover a single frame and a readback sees the old image.
+ */
+async function frames(count: number = 2) {
+    const until = Time.frame + count + 1
+    await waitUntil(() => Time.frame >= until, 30000, 10)
+}
+
+export { test, expect, end, delay, waitUntil, frames, readRowRGBA16F }

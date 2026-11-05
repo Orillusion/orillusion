@@ -1,5 +1,5 @@
-import { test, end, expect, delay, waitUntil } from '../util'
-import { Engine3D, Scene3D, View3D, Camera3D, Object3D, WaterRenderer, WaterMaterial, Vector2, Vector3, DirectLight, GeometryBase, VertexAttributeName, WaterSpectrum, Time } from '@orillusion/core'
+import { test, end, expect, delay, waitUntil, frames } from '../util'
+import { Engine3D, Scene3D, View3D, Camera3D, Object3D, WaterRenderer, WaterMaterial, Vector2, Vector3, DirectLight, GeometryBase, VertexAttributeName, WaterSpectrum } from '@orillusion/core'
 
 /** Height (g) and Jacobian-related stats of an rgba16float texture's channel, read back from the GPU. */
 async function channelStats(engine: Engine3D, texture: any, channel: number) {
@@ -30,12 +30,6 @@ async function channelStats(engine: Engine3D, texture: any, channel: number) {
     }
     const mean = sum / n
     return { mean, rms: Math.sqrt(sq / n - mean * mean) }
-}
-
-/** Waits for `count` whole frames begun after the call; a frame is done once the next one starts. Frames with the FFT take seconds under software rendering. */
-async function frames(count: number) {
-    const until = Time.frame + count + 1
-    await waitUntil(() => Time.frame >= until, 30000)
 }
 
 /** Flat disc in the xz plane: a center vertex and rings of segments. */
@@ -101,11 +95,11 @@ await test('WaterRenderer renders and animates without errors', async () => {
     scene.addChild(obj)
     expect(water.waterMaterial instanceof WaterMaterial).toEqual(true)
     expect(water.waterMaterial.transmissionFactor).toEqual(1)
-    await delay(300)
+    await frames(1)
     expect(water.time > 0).toEqual(true)
     water.timeScale = 0
     const t = water.time
-    await delay(100)
+    await frames(1)
     expect(water.time).toEqual(t)
     engine.dispose()
 })
@@ -332,6 +326,7 @@ for (const extra of [{}, { useLogDepth: true }, { zPrePass: false, msaa: 4 }]) a
         cameraObj.y = i % 2 ? -1 : 3
         await delay(80)
     }
+    await frames(1)
     expect(water.hasRipples && pondWater.hasRipples).toEqual(true)
     engine.dispose()
 })
@@ -398,6 +393,7 @@ for (const extra of [{}, { useLogDepth: true }, { zPrePass: false, msaa: 4 }]) a
         cameraObj.y = y
         await delay(200)
     }
+    await frames(1)
     expect(water.hasSimulation).toEqual(true)
     engine.dispose()
 })
