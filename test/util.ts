@@ -192,7 +192,7 @@ async function readRegionRGBA16F(device: GPUDevice, texture: GPUTexture, x: numb
  * CI runs WebGPU on SwiftShader at ~2 fps or slower, so a wall-clock delay after
  * changing a setting may not cover a single frame and a readback sees the old image.
  */
-async function frames(count: number = 2) {
+async function frames(count: number = 1) {
     const until = Time.frame + count + 1
     await waitUntil(() => Time.frame >= until, 30000, 10)
 }
