@@ -20,6 +20,7 @@ export let BxDF_frag: string = /*wgsl*/ `
   #include "BxdfDebug_frag"
   #include "Sheen_frag"
   #include "Iridescence_frag"
+  #include "Anisotropy_frag"
   #include "ReflectionCG"
  
   //ORI_ShadingInput
@@ -83,6 +84,9 @@ export let BxDF_frag: string = /*wgsl*/ `
 
   fn BxDFShading(){
       initFragData();
+      #if USE_ANISOTROPY
+        initAnisotropy();
+      #endif
 
       let sunLight = lightBuffer[0] ;
 
@@ -155,7 +159,11 @@ export let BxDF_frag: string = /*wgsl*/ `
       var indirectionDiffuse = indirectionDiffuse_Function(fragData.NoV,fragData.N,fragData.Metallic,fragData.Albedo.rgb,fragData.Roughness,fragData.Ao,fragData.F0);
       iblDiffuseResult += indirectionDiffuse / 3.14;
 
-      var indirectionSpec    = indirectionSpec_Function(fragData.R,fragData.Roughness,fragData.NoV,fragData.Ao,gammaToLiner(fragData.F0));
+      var specReflectDir = fragData.R;
+      #if USE_ANISOTROPY
+        specReflectDir = anisotropyReflection(fragData.Roughness);
+      #endif
+      var indirectionSpec    = indirectionSpec_Function(specReflectDir,fragData.Roughness,fragData.NoV,fragData.Ao,gammaToLiner(fragData.F0));
       #if USE_CASTREFLECTION
         indirectionSpec *= globalUniform.hdrExposure ;
       #endif
