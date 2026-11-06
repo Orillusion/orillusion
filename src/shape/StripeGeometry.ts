@@ -36,7 +36,8 @@ export class StripeGeometry extends GeometryBase {
         let position_arr = new Float32Array(vertexCount * 3);
         let normal_arr = new Float32Array(vertexCount * 3);
         let uv_arr = new Float32Array(vertexCount * 2);
-        let indices_arr = new Uint16Array(numIndices);
+        // Uint16 indices wrap past 65535 vertices.
+        let indices_arr = vertexCount > 65535 ? new Uint32Array(numIndices) : new Uint16Array(numIndices);
         //210 123
 
         let index = 0;

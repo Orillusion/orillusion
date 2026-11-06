@@ -112,7 +112,8 @@ export class CylinderGeometry extends GeometryBase {
         let position_arr = new Float32Array(vertices);
         let normal_arr = new Float32Array(normals);
         let uv_arr = new Float32Array(uvs);
-        let indices_arr = new Uint16Array(indices);
+        // Uint16 indices wrap past 65535 vertices.
+        let indices_arr = vertices.length / 3 > 65535 ? new Uint32Array(indices) : new Uint16Array(indices);
 
         this.setAttribute(VertexAttributeName.position, position_arr);
         this.setAttribute(VertexAttributeName.normal, normal_arr);

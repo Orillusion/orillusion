@@ -16,6 +16,7 @@ import { GBufferFrame } from '../frame/GBufferFrame';
 import { RTFrame } from '../frame/RTFrame';
 import { RendererPassState } from '../passRenderer/state/RendererPassState';
 import { PostBase } from './PostBase';
+import type { MotionVectorPass } from '../graph/passes/MotionVectorPass';
 
 /**
  * Camera motion blur. Each pixel is averaged along the screen-space path it
@@ -47,16 +48,19 @@ export class MotionBlurPost extends PostBase {
     private _currViewProj: Matrix4 = new Matrix4().identity();
     private _hasPrev: boolean = false;
     private _params: Vector4 = new Vector4();
+    private _view: View3D | null = null;
 
     /** @internal */
     public onAttach(view: View3D) {
         this.setting.render.postProcessing.motionBlur.enable = true;
-        this._hasPrev = false;
+        this._view = view;
+        this.resetHistory();
     }
 
     /** @internal */
     public onDetach(view: View3D) {
         this.setting.render.postProcessing.motionBlur.enable = false;
+        this._view = null;
     }
 
     private get _s() {
@@ -81,10 +85,12 @@ export class MotionBlurPost extends PostBase {
 
     /**
      * Forget the previous camera pose, so the next frame is not blurred.
-     * Call after a camera cut / teleport.
+     * Call after a camera cut / teleport. With per-object velocities this
+     * also resets MotionVectorPass, whose texture the blur then reads.
      */
     public resetHistory(): void {
         this._hasPrev = false;
+        this._view?.renderGraph?.getPass<MotionVectorPass>('MotionVectorPass')?.resetHistory();
     }
 
     /** The view-projection used as "previous" on the last rendered frame. */

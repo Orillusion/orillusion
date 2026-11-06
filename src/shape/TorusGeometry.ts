@@ -61,7 +61,9 @@ export class TorusGeometry extends GeometryBase {
         let position_arr = new Float32Array(vertexCount * 3);
         let normal_arr = new Float32Array(vertexCount * 3);
         let uv_arr = new Float32Array(vertexCount * 2);
-        let indicesData = new Uint16Array(radialSegments * tubularSegments * 2 * 3);
+        let indexCount = radialSegments * tubularSegments * 2 * 3;
+        // Uint16 indices wrap past 65535 vertices.
+        let indicesData = vertexCount > 65535 ? new Uint32Array(indexCount) : new Uint16Array(indexCount);
 
         let pi = 0;
         let ni = 0;

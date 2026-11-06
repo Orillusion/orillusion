@@ -56,6 +56,8 @@ export class MotionVectorPass extends RenderGraphPass {
     protected readonly _prevViewProj: Matrix4 = new Matrix4().identity();
     protected readonly _currViewProj: Matrix4 = new Matrix4().identity();
     protected readonly _scratch: Matrix4 = new Matrix4().identity();
+    /** False on the first frame and after `resetHistory()`: that frame writes zero motion. */
+    protected _hasPrev: boolean = false;
     /** Detects pool-driven texture identity swaps (resize, re-alias)
      *  so we know when to invalidate the cached compute shader. */
     protected readonly _watcher: TextureIdentityWatcher = new TextureIdentityWatcher();
@@ -68,6 +70,14 @@ export class MotionVectorPass extends RenderGraphPass {
     protected _objectMotion: boolean = false;
     protected _velocityPassState: RendererPassState | null = null;
     protected _velocityDepth: RenderTexture | null = null;
+
+    /**
+     * Forget the previous camera pose and object transforms, so the next
+     * frame's motion vectors are zero. Call after a camera cut / teleport.
+     */
+    public resetHistory(): void {
+        this._hasPrev = false;
+    }
 
     public setup(b: RenderGraphBuilder): void {
         this._ctx = b.context3D;
@@ -143,11 +153,14 @@ export class MotionVectorPass extends RenderGraphPass {
         if (dirty) this._compute = null;
         this._ensureCompute(ctx, mv);
 
-        // Capture current viewProj BEFORE updating prev so the first
-        // frame uploads the (identity) prev → motion vectors land at 0
-        // and there's no first-frame ghosting.
         const camera = ctx.view.camera;
         this._scratch.multiplyMatrices(camera.projectionMatrix, camera.viewMatrix);
+        // First frame (or after resetHistory): previous == current → zero camera motion.
+        const hadPrev = this._hasPrev;
+        if (!hadPrev) {
+            this._prevViewProj.copy(this._scratch);
+            this._hasPrev = true;
+        }
 
         // Upload PREV (the prior frame's viewProj).
         this._mvData!.setMatrix('prevViewProj', this._prevViewProj);
@@ -158,7 +171,9 @@ export class MotionVectorPass extends RenderGraphPass {
         gpu.computeCommand(command, [this._compute!]);
         gpu.endCommandEncoder(command);
 
-        if (this._objectMotion) this._drawObjectVelocity(ctx, mv, dirty);
+        // Skipped without history so moved/teleported objects don't streak either;
+        // the compute above already filled the whole texture with zero motion.
+        if (this._objectMotion && hadPrev) this._drawObjectVelocity(ctx, mv, dirty);
 
         // Roll: this frame's viewProj becomes next frame's prev.
         this._prevViewProj.copy(this._scratch);
