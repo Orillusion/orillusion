@@ -48,4 +48,21 @@ await test('textureCube create SolidColorSky', async () => {
 })
 
 
+await test('loadTexture from a base64 data URI (decoded via Blob, no <img>.decode dependency)', async () => {
+    const make = (w: number, h: number) => {
+        const c = document.createElement('canvas'); c.width = w; c.height = h;
+        const g = c.getContext('2d'); g.fillStyle = '#ff8000'; g.fillRect(0, 0, w, h);
+        return c.toDataURL('image/png');
+    };
+    const withTimeout = <T>(p: Promise<T>) => Promise.race([p, new Promise<T>((_, rej) => setTimeout(() => rej(new Error('base64 texture load hung')), 8000))]);
+    const big = await withTimeout(engine.res.loadTexture(make(64, 48)));
+    expect(big.width).tobe(64); expect(big.height).tobe(48);
+    expect(!!big.getGPUTexture()).tobe(true);
+    const tiny = await withTimeout(engine.res.loadTexture(make(2, 2)));
+    expect(tiny.width).tobe(32); expect(tiny.height).tobe(32);      // tiny images are upsized to the 32 px minimum
+    const uri = make(40, 40);
+    const a = await withTimeout(engine.res.loadTexture(uri)), b = await withTimeout(engine.res.loadTexture(uri));
+    expect(a === b).tobe(true);                                      // pooled by URL
+})
+
 setTimeout(end, 500)

@@ -3,6 +3,9 @@ import { GlobalFogSetting } from "./post/GlobalFogSetting";
 import { GTAOSetting } from "./post/GTAOSetting";
 import { OutlineSetting } from "./post/OutlineSetting";
 import { SkylineSetting } from "./post/SkylineSetting";
+import { LensSetting } from "./post/LensSetting";
+import { MotionBlurSetting } from "./post/MotionBlurSetting";
+import { ColorGradingSetting } from "./post/ColorGradingSetting";
 import { SSRSetting } from "./post/SSRSetting";
 import { TAASetting } from "./post/TAASetting";
 import { BloomSetting } from "./post/BloomSetting";
@@ -35,6 +38,13 @@ export type RenderSetting = {
      *  coexists). Flip this on AND open the integration in `drawNodes`
      *  to get the 5-20× perf win. */
     gpuCull?: boolean;
+    /** Per-object motion vectors. When true, the engine keeps a copy of the
+     *  previous frame's model matrices and MotionVectorPass draws every
+     *  opaque mesh's own screen-space velocity (camera + object motion) into
+     *  `_MotionVector`; MotionBlurPost then blurs moving objects too, not
+     *  only the camera's motion. Skinned meshes use the previous model
+     *  matrix with the current pose (rigid motion only). Default false. */
+    objectMotionVectors?: boolean;
     /** Per-instance MSAA sample count for the main color pass.
      *  0 disables MSAA (default). Valid non-zero values: 2 | 4 | 8
      *  depending on device support. Enabling MSAA unlocks
@@ -51,6 +61,19 @@ export type RenderSetting = {
      *  projects its texture onto the opaque scene via stencil shadow
      *  volumes. Default false. */
     decals?: boolean;
+    /** Opt-in water support. When true, ForwardRendererJob adds
+     *  `SceneLinearDepthPass` after the scene color pyramid, so
+     *  `WaterRenderer` surfaces use the real distance to the bottom for
+     *  absorption and refraction, `CausticsPass` before the pyramid for
+     *  sunlight caustics under the surface, and `UnderwaterPass` before
+     *  post-processing for the view with the camera in the water.
+     *  Default false. */
+    water?: boolean;
+    /** Opt-in screen-space fluid rendering. When true, ForwardRendererJob
+     *  inserts `FluidPass` between the opaque/transmission half and the
+     *  sorted transparent half, drawing every active `FluidRenderer`.
+     *  Default false. */
+    fluid?: boolean;
     /** Opt-in 8-bit stencil buffer on the main color pass.
      *  When true, `GBufferFrame` allocates its depth attachment as
      *  `depth24plus-stencil8` instead of the default `depth32float`,
@@ -92,6 +115,9 @@ export type RenderSetting = {
         outline?: OutlineSetting;
         globalFog?: GlobalFogSetting;
 	skyline?: SkylineSetting;
+        lens?: LensSetting;
+        motionBlur?: MotionBlurSetting;
+        colorGrading?: ColorGradingSetting;
         godRay?: GodRaySetting;
         fxaa?: {
             enable: boolean;

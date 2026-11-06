@@ -38,6 +38,7 @@ export class GPUBufferBase {
     public visibility: number = GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT | GPUShaderStage.COMPUTE;
     protected mapAsyncBuffersOutstanding = 0;
     protected mapAsyncReady: GPUBuffer[];
+    private _warnedPendingStaging = false;
     private _dataView: Float32Array;
 
     /** The Context3D this buffer is bound to. Set on first GPU use via `bindCtx`. */
@@ -499,6 +500,14 @@ export class GPUBufferBase {
         }
     }
 
+    /** Max idle staging buffers kept in `mapAsyncReady`; extras are destroyed
+     *  when their mapAsync resolves so a burst of slow frames (asset parsing,
+     *  hidden tab, GPU stall) cannot pin dozens of full-size copies forever. */
+    protected static readonly MAX_IDLE_STAGING = 3;
+    /** In-flight `mapAsync` count above which we warn — a real "GPU has not
+     *  handed the staging buffer back" signal, not the total pool size. */
+    protected static readonly WARN_PENDING_STAGING = 60;
+
     public mapAsyncWrite(floatArray: FloatArray, len: number) {
         let mapAsyncArray: Float32Array;
         if (floatArray instanceof Float64Array) {
@@ -518,7 +527,6 @@ export class GPUBufferBase {
                 if (tBuffer['usedSize'] == mapAsyncArray.byteLength)
                     break;
                 tBuffer.destroy();
-                this.mapAsyncBuffersOutstanding--;
                 tBuffer = null;
             }
             if (!tBuffer) {
@@ -528,10 +536,19 @@ export class GPUBufferBase {
                     mappedAtCreation: true,
                 });
                 tBuffer['usedSize'] = mapAsyncArray.byteLength;
-                this.mapAsyncBuffersOutstanding++;
 
-                if (this.mapAsyncBuffersOutstanding > 20) {
-                    console.warn(` Warning: mapAsync requests from ${this.mapAsyncBuffersOutstanding} frames ago have not resolved yet.  MB of staging buffers allocated.`);
+                // `mapAsyncBuffersOutstanding` counts staging buffers whose
+                // mapAsync has not resolved yet. It used to count every buffer
+                // ever created (never decremented on reuse), so after one slow
+                // startup burst it stayed above the threshold and this warning
+                // fired on every frame for the rest of the session.
+                // Warn once per backlog episode (pipeline compilation on the
+                // first frames routinely stalls map callbacks for 20+ frames),
+                // then stay quiet until the backlog has drained.
+                if (this.mapAsyncBuffersOutstanding > GPUBufferBase.WARN_PENDING_STAGING && !this._warnedPendingStaging) {
+                    this._warnedPendingStaging = true;
+                    const mb = (this.mapAsyncBuffersOutstanding * mapAsyncArray.byteLength / (1024 * 1024)).toFixed(2);
+                    console.warn(`[GPUBufferBase] ${this.mapAsyncBuffersOutstanding} mapAsync staging uploads still pending (${mb} MB); the GPU is falling behind CPU-side matrix uploads.`);
                 }
             }
             let a = new Float32Array(mapAsyncArray.buffer, mapAsyncArray.byteOffset, len);
@@ -541,9 +558,22 @@ export class GPUBufferBase {
             const commandEncoder = device.createCommandEncoder();
             commandEncoder.copyBufferToBuffer(tBuffer, 0, destBuffer, 0, len * 4);
             device.queue.submit([commandEncoder.finish()]);
+            this.mapAsyncBuffersOutstanding++;
             tBuffer.mapAsync(GPUMapMode.WRITE).then(
-                () => this.mapAsyncReady.push(tBuffer),
+                () => {
+                    this.mapAsyncBuffersOutstanding--;
+                    if (this.mapAsyncBuffersOutstanding === 0) this._warnedPendingStaging = false;
+                    // Buffer was destroyed (or pool is already full) → release
+                    // instead of hoarding a full-size copy.
+                    if (!this.mapAsyncReady || this.mapAsyncReady.length >= GPUBufferBase.MAX_IDLE_STAGING) {
+                        tBuffer.unmap();
+                        tBuffer.destroy();
+                    } else {
+                        this.mapAsyncReady.push(tBuffer);
+                    }
+                },
                 (err) => {
+                    this.mapAsyncBuffersOutstanding--;
                     // device.destroy() during dispose rejects pending mapAsync with AbortError.
                     if (err?.name !== 'AbortError') throw err;
                 },
@@ -575,6 +605,14 @@ export class GPUBufferBase {
         if (this._readBuffer) {
             try { this._readBuffer.destroy(); } catch { /* ignore */ }
             this._readBuffer = null;
+        }
+        if (this.mapAsyncReady) {
+            for (const b of this.mapAsyncReady) {
+                try { b.unmap(); b.destroy(); } catch { /* ignore */ }
+            }
+            // Null (not []) so in-flight mapAsync resolutions release their
+            // buffer instead of re-populating a pool nobody will drain.
+            this.mapAsyncReady = null;
         }
         this._boundCtx = null;
     }

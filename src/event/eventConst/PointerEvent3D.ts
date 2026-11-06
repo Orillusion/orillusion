@@ -1,13 +1,32 @@
 import { Vector2 } from '../../math/Vector2';
 import { Vector3 } from '../../math/Vector3';
 import { CEvent } from '../CEvent';
+import type { HitInfo } from '../../components/shape/ColliderShape';
 
 type pickResult = {
-    meshID: number, 
-    worldPos: Vector3, 
-    worldNormal: Vector3, 
-    screenUv?: Vector2, 
-    distance?: number
+    meshID: number,
+    worldPos: Vector3,
+    worldNormal: Vector3,
+    screenUv?: Vector2,
+    distance?: number,
+    /** `bound` mode: hit point in the collider's local space. */
+    localPos?: Vector3,
+    /** `bound` mode, mesh colliders: geometric normal of the hit triangle (world space). */
+    faceNormal?: Vector3,
+    /** `bound` mode, mesh colliders: triangle index into the index buffer. */
+    faceIndex?: number,
+    /** `bound` mode, mesh colliders: barycentric weights of the hit triangle. */
+    barycentric?: Vector3,
+    /** `bound` mode, mesh colliders: interpolated `uv`, if the geometry has one. */
+    uv?: Vector2,
+    /** `bound` mode, mesh colliders: interpolated `TEXCOORD_1`, if the geometry has one. */
+    uv1?: Vector2,
+    /** `bound` mode, mesh colliders: sub-geometry (material slot) of the hit triangle. */
+    subGeometryIndex?: number,
+    /** `bound` mode, mesh colliders: whether the front side was hit. */
+    frontFace?: boolean,
+    /** `bound` mode: every collider hit by the ray, nearest first (`hits[0]` is the target). */
+    hits?: HitInfo[],
 }
 
 /**

@@ -18,9 +18,21 @@ export let BxDF_frag: string = /*wgsl*/ `
   #include "Irradiance_frag"
   #include "ColorUtil_frag"
   #include "BxdfDebug_frag"
+  #include "Sheen_frag"
+  #include "Iridescence_frag"
+  #include "Anisotropy_frag"
   #include "ReflectionCG"
  
   //ORI_ShadingInput
+  #if USE_SPECULARMAP
+    @group(1) @binding(auto)
+    var specularMap: texture_2d<f32>;
+  #endif
+  #if USE_SPECULARCOLORMAP
+    @group(1) @binding(auto)
+    var specularColorMap: texture_2d<f32>;
+  #endif
+
   fn initFragData() {
       // fragData.Albedo = vec4f(gammaToLiner(ORI_ShadingInput.BaseColor.rgb),ORI_ShadingInput.BaseColor.w) ;
       fragData.Albedo = vec4f((ORI_ShadingInput.BaseColor.rgb),ORI_ShadingInput.BaseColor.w) ;
@@ -55,8 +67,21 @@ export let BxDF_frag: string = /*wgsl*/ `
       // specularColor (KHR_materials_specular) modulates the result
       // for non-physical hue tints (default white = no tint).
       let iorF0 = pow((materialUniform.ior - 1.0) / max(materialUniform.ior + 1.0, 1e-4), 2.0);
-      let dielectricF0 = vec3<f32>(iorF0) * materialUniform.specularColor.rgb;
+      var specularTint = materialUniform.specularColor.rgb;
+      #if USE_SPECULARCOLORMAP
+        // KHR_materials_specular specularColorTexture: rgb multiplies the F0 tint.
+        specularTint = specularTint * textureSample(specularColorMap, baseMapSampler, ORI_VertexVarying.fragUV0.xy).rgb;
+      #endif
+      #if USE_SPECULARMAP
+        // specularTexture: alpha multiplies the specular strength (specularColor.a), which
+        // scales the IBL specular lobe in indirectionSpec_Function.
+        specularWeightTex = textureSample(specularMap, baseMapSampler, ORI_VertexVarying.fragUV0.xy).a;
+      #endif
+      let dielectricF0 = vec3<f32>(iorF0) * specularTint;
       fragData.F0 = mix(dielectricF0, fragData.Albedo.rgb, fragData.Metallic);
+      #if USE_IRIDESCENCE
+        fragData.F0 = applyIridescenceF0(fragData.F0, fragData.NoV);
+      #endif
       // fragData.F0 = gammaToLiner(fragData.F0);
       
       fragData.F = computeFresnelSchlick(fragData.NoV, fragData.F0);
@@ -78,6 +103,9 @@ export let BxDF_frag: string = /*wgsl*/ `
 
   fn BxDFShading(){
       initFragData();
+      #if USE_ANISOTROPY
+        initAnisotropy();
+      #endif
 
       let sunLight = lightBuffer[0] ;
 
@@ -134,6 +162,10 @@ export let BxDF_frag: string = /*wgsl*/ `
               specColor += spotLighting( ORI_VertexVarying.vWorldPos.xyz, light ,iblSpecularResult) ;
               break;
             }
+            case RectLightType: {
+              specColor += rectLighting( ORI_VertexVarying.vWorldPos.xyz, light ) ;
+              break;
+            }
             default: {
               break;
             }
@@ -150,7 +182,11 @@ export let BxDF_frag: string = /*wgsl*/ `
       var indirectionDiffuse = indirectionDiffuse_Function(fragData.NoV,fragData.N,fragData.Metallic,fragData.Albedo.rgb,fragData.Roughness,fragData.Ao,fragData.F0);
       iblDiffuseResult += indirectionDiffuse / 3.14;
 
-      var indirectionSpec    = indirectionSpec_Function(fragData.R,fragData.Roughness,fragData.NoV,fragData.Ao,gammaToLiner(fragData.F0));
+      var specReflectDir = fragData.R;
+      #if USE_ANISOTROPY
+        specReflectDir = anisotropyReflection(fragData.Roughness);
+      #endif
+      var indirectionSpec    = indirectionSpec_Function(specReflectDir,fragData.Roughness,fragData.NoV,fragData.Ao,gammaToLiner(fragData.F0));
       #if USE_CASTREFLECTION
         indirectionSpec *= globalUniform.hdrExposure ;
       #endif
@@ -163,6 +199,10 @@ export let BxDF_frag: string = /*wgsl*/ `
 
       var color = vec3f(iblDiffuseResult + indirectionSpec + specColor)  ;
       // var color = vec3f(indirectionDiffuse )  ;
+
+      #if USE_SHEEN
+        color = applySheen(color, start, end);
+      #endif
 
       var clearCoatColor = vec3<f32>(0.0);
       #if USE_CLEARCOAT

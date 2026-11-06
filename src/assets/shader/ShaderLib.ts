@@ -34,6 +34,10 @@ import { Irradiance_frag } from './lighting/Irradiance_frag';
 import { BRDF_frag } from './lighting/BRDF_frag';
 import { BxDF_frag } from './lighting/BxDF_frag';
 import { Clearcoat_frag } from './materials/program/Clearcoat_frag';
+import { Sheen_frag } from './materials/program/Sheen_frag';
+import { Iridescence_frag } from './materials/program/Iridescence_frag';
+import { Anisotropy_frag } from './materials/program/Anisotropy_frag';
+import { RectLight_frag } from './lighting/RectLight_frag';
 import { Lit_shader } from './materials/Lit_shader';
 import { PBRLItShader } from './materials/PBRLItShader';
 import { BxdfDebug_frag } from './materials/program/BxdfDebug_frag';
@@ -53,6 +57,7 @@ import { SkyGBuffer_pass } from './core/pass/SkyGBuffer_pass';
 import { GBuffer_pass } from './core/pass/GBuffer_pass';
 import { castPointShadowMap_vert, directionShadowCastMap_frag, shadowCastMap_frag, shadowCastMap_vert } from './core/pass/CastShadow_pass';
 import { ZPassShader_vs } from './core/pass/ZPassShader_vs';
+import { VelocityPass_shader } from './core/pass/VelocityPass_shader';
 import { BitUtil } from './utils/BitUtil';
 import { GBufferStand } from './core/common/GBufferStand';
 import { ReflectionShader_shader } from './materials/ReflectionShader_shader';
@@ -128,6 +133,10 @@ export class ShaderLib {
         ShaderLib.register('ReflectionCG', ReflectionCG);
         ShaderLib.register('ReflectionShader_shader', ReflectionShader_shader);
         ShaderLib.register('Clearcoat_frag', Clearcoat_frag);
+        ShaderLib.register('Sheen_frag', Sheen_frag);
+        ShaderLib.register('Iridescence_frag', Iridescence_frag);
+        ShaderLib.register('Anisotropy_frag', Anisotropy_frag);
+        ShaderLib.register('RectLight_frag', RectLight_frag);
         ShaderLib.register('LitShader', Lit_shader);
         ShaderLib.register('PBRLItShader', PBRLItShader);
 
@@ -164,6 +173,7 @@ export class ShaderLib {
         ShaderLib.register("directionShadowCastMap_frag", directionShadowCastMap_frag);
 
         ShaderLib.register("ZPass_shader_vs", ZPassShader_vs);
+        ShaderLib.register("VelocityPass_shader", VelocityPass_shader);
     }
 
     /**

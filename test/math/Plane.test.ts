@@ -27,4 +27,17 @@ await test('Plane intersectsRay', async () => {
     expect(intersection.z).toSubequal(0);
 })
 
+await test('Plane intersectsRay parallel', async () => {
+    let plane = new Plane(Vector3.ZERO, Vector3.UP);
+
+    // horizontal rays never reach the plane, whichever side they start on
+    let above = new Ray(new Vector3(0, 5, 0), new Vector3(1, 0, 0));
+    let below = new Ray(new Vector3(0, -5, 0), new Vector3(1, 0, 0));
+    let inside = new Ray(new Vector3(0, 0, 0), new Vector3(1, 0, 0));
+
+    expect(plane.intersectsRay(above, new Vector3())).toEqual(false);
+    expect(plane.intersectsRay(below, new Vector3())).toEqual(false);
+    expect(plane.intersectsRay(inside, new Vector3())).toEqual(false);
+})
+
 setTimeout(end, 500)

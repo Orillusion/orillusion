@@ -21,6 +21,8 @@ export class CharacterController extends ComponentBase {
     private _controller: RAPIER.KinematicCharacterController;
     private _bodyInited = false;
     private _grounded = false;
+    /** `Physics.stepCount` when our body was created; see `move()`. */
+    private _bornStep = 0;
 
     /** Collider descriptor (typically a capsule). Set BEFORE `start()`. */
     public shape: RAPIER.ColliderDesc;
@@ -60,6 +62,7 @@ export class CharacterController extends ComponentBase {
         }
 
         this._controller = cc;
+        this._bornStep = Physics.stepCount;
         this._bodyInited = true;
         this._initResolve();
     }
@@ -72,13 +75,22 @@ export class CharacterController extends ComponentBase {
      */
     public move(desiredTranslation: Vector3): void {
         if (!this._bodyInited) return;
+        // Engine3D runs component onUpdate BEFORE the renderLoop that calls
+        // Physics.update(), so on the frame this controller (and typically the
+        // whole level) was created, no world.step() has run yet and the
+        // broad-phase BVH used by computeColliderMovement is empty: the sweep
+        // finds nothing, returns the full desired translation and the
+        // character falls straight through the floor. Wait for one step.
+        if (Physics.stepCount <= this._bornStep) return;
 
-        // Refresh the broad-phase / query pipeline. world.step() already
-        // does this, but Engine3D runs the renderLoop (Physics.update) AFTER
-        // component onUpdate, so on the first frame computeColliderMovement
-        // would otherwise see an empty BVH and return the full desired
-        // translation — character tunnels through static colliders.
-        Physics.world.updateSceneQueries();
+        // Push any CPU-side body pose changes into the colliders before the
+        // query. world.step() already does this, but Engine3D runs the
+        // renderLoop (Physics.update) AFTER component onUpdate, so a pose set
+        // this frame would otherwise not be visible to computeColliderMovement.
+        // (Rapier ≥0.15 removed `World.updateSceneQueries()` — the query
+        // pipeline now lives in the broad-phase and is refreshed by `step()`;
+        // this is the remaining pre-step hook.)
+        Physics.world.propagateModifiedBodyPositionsToColliders();
 
         this._controller.computeColliderMovement(this._collider, TempPhyMath.toRVec(desiredTranslation));
         const m = this._controller.computedMovement();

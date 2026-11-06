@@ -4,6 +4,8 @@ import { GLTFParser } from "./GLTFParser";
 import { GLTFSubParser } from "./GLTFSubParser";
 import { GLTFType } from "./GLTFType";
 import { KHR_draco_mesh_compression } from "./extends/KHR_draco_mesh_compression";
+import { KHR_mesh_quantization } from './extends/KHR_mesh_quantization';
+import { KHR_materials_variants } from './extends/KHR_materials_variants';
 
 /**
  * @internal
@@ -119,6 +121,8 @@ export class GLTFSubParserMesh {
                             attribName = attribute;
                     }
 
+                    // KHR_mesh_quantization: expand integer positions / normals / UVs to float.
+                    if (KHR_mesh_quantization.isQuantizable(attribute)) KHR_mesh_quantization.dequantize(accessor);
                     dprimitive.attribArrays[attribName] = accessor;
                 }
             }
@@ -135,6 +139,7 @@ export class GLTFSubParserMesh {
             }
 
             const dmaterial = await this.parseMaterial(material);
+            await KHR_materials_variants.parsePrimitive(primitive, dprimitive, (id) => this.parseMaterial(id));
             if (dmaterial) {
                 dprimitive.material = dmaterial;
                 dprimitive.defines = dprimitive.defines.concat(dmaterial.defines);

@@ -55,6 +55,11 @@ export class ShaderReflection {
 
     public cs_variables: ShaderReflectionVarInfo[] = [];
 
+    /** Identifiers the vertex entry point can reach (null = unknown → full visibility). */
+    public vsUsed: Set<string> | null = null;
+    /** Identifiers the fragment entry point can reach (null = unknown → full visibility). */
+    public fsUsed: Set<string> | null = null;
+
     public groups: ShaderReflectionVarInfo[][] = [];
 
     public variables: { [name: string]: ShaderReflectionVarInfo } = {};

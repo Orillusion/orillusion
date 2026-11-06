@@ -36,6 +36,11 @@ fn sampleLighting(light:LightData,direction:vec3f,iblSpecularResult:vec3f , inte
   var att = max(0.0,intensity);
   
   var lighting:vec3f = lightContribution(NdotH,NdotL,NdotV,HdotL,fragData.Roughness,fragData.Albedo.rgb / 3.14, metallic ,shadow,fragData.F0,lightColor.rgb);
+  #if USE_ANISOTROPY
+    // Swap the isotropic specular lobe for the anisotropic one; diffuse is untouched.
+    let isoSpec = DGF_Function(NdotH,NdotL,NdotV,HdotL,fragData.Roughness,shadow,fragData.F0,lightColor.rgb);
+    lighting += isoSpec * (anisotropySpecularRatio(lightDir, fragData.Roughness) - 1.0);
+  #endif
   // ACES is now applied as a final post-pass (TonemapPost) so the
   // light contribution stays linear HDR here. Just modulate by
   // attenuation. Direct premultiply matches the standard PBR
@@ -214,6 +219,8 @@ fn spotLighting( WP:vec3<f32>, light:LightData , iblSpecularResult : vec3f) -> v
     }
     return  color ;
 }
+
+#include "RectLight_frag"
 
 fn sphere_unit( radius:f32 , intensity:f32 ) -> f32 {
   return intensity / (4.0 * PI2 * radius * radius) ;
