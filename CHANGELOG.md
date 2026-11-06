@@ -1,3 +1,52 @@
+## [0.9.5](https://github.com/Orillusion/orillusion/compare/v0.9.2...v0.9.5) (2026-11-06)
+
+
+### Features
+
+* **water:** `WaterRenderer` with Gerstner / FFT ocean waves, interactive ripples, sunlight caustics and an underwater view (opt-in via `setting.render.water`); pool, lake and ocean samples ([#511](https://github.com/Orillusion/orillusion/issues/511)) ([69ae653](https://github.com/Orillusion/orillusion/commit/69ae653a2043fdd02e9dd6b925f2cb979dc47956))
+* **fluid:** `FluidRenderer` and `FluidPass` screen-space fluid rendering (opt-in via `setting.render.fluid`) — depth smoothing, optional anisotropic particles, thickness, refraction and absorption; FLIP and CPU particle samples ([#512](https://github.com/Orillusion/orillusion/issues/512)) ([1cffd8a](https://github.com/Orillusion/orillusion/commit/1cffd8a879c6ae1a6cd397d3e7a7cc05043679c7))
+* **light:** `RectLight` — analytic rectangular area light (Lambert polygon form factor diffuse + representative-point GGX specular) ([#525](https://github.com/Orillusion/orillusion/issues/525)) ([d5b3e12](https://github.com/Orillusion/orillusion/commit/d5b3e128059365db782ddb7db71e07bbec5c90e1))
+* **light:** the first `DirectLight` in a scene enables CSM by default; an explicit `enableCSM` assignment still wins ([#526](https://github.com/Orillusion/orillusion/issues/526)) ([b2d5e6e](https://github.com/Orillusion/orillusion/commit/b2d5e6eadcbc5a6a09c3cc1744693a76c388f556))
+* **material:** `KHR_materials_sheen` — sheen lobe on `LitMaterial` + glTF extension ([#513](https://github.com/Orillusion/orillusion/issues/513)) ([671bbd1](https://github.com/Orillusion/orillusion/commit/671bbd17fddba2b874e2983918bae8ccbf5ed5f1))
+* **material:** `KHR_materials_iridescence` — thin-film interference on `LitMaterial` + glTF extension ([#520](https://github.com/Orillusion/orillusion/issues/520)) ([9659cdd](https://github.com/Orillusion/orillusion/commit/9659cdd6d3f67cbf79cb994270f38774176890a6))
+* **material:** `KHR_materials_anisotropy` — anisotropic specular on `LitMaterial` + glTF extension ([#521](https://github.com/Orillusion/orillusion/issues/521)) ([bdb6c0c](https://github.com/Orillusion/orillusion/commit/bdb6c0cec0ad2dc00909f9d72cec2758b7c8de3b))
+* **material:** KHR extension textures — sheen, iridescence (+ thickness), specular / specular color and anisotropy maps on `LitMaterial`, bound by the glTF loader ([#526](https://github.com/Orillusion/orillusion/issues/526)) ([b2d5e6e](https://github.com/Orillusion/orillusion/commit/b2d5e6eadcbc5a6a09c3cc1744693a76c388f556))
+* **gltf:** `KHR_mesh_quantization`, `KHR_materials_specular` and `KHR_materials_variants` (new `MaterialVariants` component with `selectVariant`) ([#516](https://github.com/Orillusion/orillusion/issues/516)) ([76dc157](https://github.com/Orillusion/orillusion/commit/76dc157a31395ce66ff4066c360d02b3d54f22f7))
+* **post:** tonemap modes — Reinhard, Uncharted2, AgX, Khronos PBR Neutral (`TonemapSetting.mode`, `whitePoint`) with a CPU mirror `TonemapUtil` ([#510](https://github.com/Orillusion/orillusion/issues/510)) ([01128b0](https://github.com/Orillusion/orillusion/commit/01128b02afcc3312a49a6127ee820896d1be1331))
+* **post:** `LensPost` — vignette, chromatic aberration, film grain ([#514](https://github.com/Orillusion/orillusion/issues/514)) ([c44cd00](https://github.com/Orillusion/orillusion/commit/c44cd00228f5ef82a2dcbb66c2cdd0a1a54512bc))
+* **post:** `MotionBlurPost` — camera motion blur with `resetHistory()` ([#517](https://github.com/Orillusion/orillusion/issues/517)) ([fa46b16](https://github.com/Orillusion/orillusion/commit/fa46b166e4e7b51c1d223b5c035ff51915086601))
+* **post:** `ColorGradingPost` — exposure, white balance, contrast, saturation, ASC-CDL and strip LUTs, with CPU mirror `ColorGradingUtil` ([#522](https://github.com/Orillusion/orillusion/issues/522)) ([bef7b47](https://github.com/Orillusion/orillusion/commit/bef7b47fcb1ca7d8f9fa903e6917e576d4d90ad8))
+* **render:** per-object motion vectors for motion blur (`objectMotionVectors` render setting, velocity sub-pass written into `_MotionVector`) ([#527](https://github.com/Orillusion/orillusion/issues/527)) ([2f44234](https://github.com/Orillusion/orillusion/commit/2f44234c711cd2f0f58e7991eebe3d5088b249f7))
+* **lod:** `LODGroup` component with screen-relative-height / distance metrics, bias, hysteresis and `forceLevel` ([#519](https://github.com/Orillusion/orillusion/issues/519)) ([f5bda99](https://github.com/Orillusion/orillusion/commit/f5bda99cad3c335dc5ab0342489036262a8c3bde))
+* **pick:** `MeshBVH` triangle BVH for CPU raycasts (closest / all / any-hit queries, sub-geometries, `compose_bin` geometry, auto refit) ([#509](https://github.com/Orillusion/orillusion/issues/509)) ([2e4be97](https://github.com/Orillusion/orillusion/commit/2e4be97ba8f464e53dd7446948223e6a4dd26ef1))
+  * new three.js-style `Raycaster` — CPU ray picking against mesh triangles without a collider ([#501](https://github.com/Orillusion/orillusion/issues/501))
+  * `PickFire` event data with face / uv / all hits and collider filters; auto mesh collider geometry
+  * picking of skinned and morph-target meshes as drawn (CPU deformation)
+  * `BoundingBox.intersectsRay` and `BoundingSphere.updateBound` implemented
+* **math:** `Spherical`, `Cylindrical`, `Box2`, `CatmullRomCurve3` ([#515](https://github.com/Orillusion/orillusion/issues/515)) ([f2d4944](https://github.com/Orillusion/orillusion/commit/f2d4944df4be4f1292c1fdca753a5745ec938095))
+* **atmosphere:** new `@orillusion/atmosphere` package ([#444](https://github.com/Orillusion/orillusion/issues/444)) ([18cd142](https://github.com/Orillusion/orillusion/commit/18cd142025085d69792f4c8b0dbc6c477c8715ab)), ported to the multi-instance engine API with a limb-darkened sun disc and `useAsEnvMap` toggle ([37e55d8](https://github.com/Orillusion/orillusion/commit/37e55d8ef053138ddb7f7b12ac841504705abecb))
+
+
+### Bug Fixes
+
+* **geometry:** `SphereGeometry` / `TorusGeometry` / `CylinderGeometry` / `StripeGeometry` switch to 32-bit indices past 65535 vertices; `PlaneGeometry` index type check fixed ([#528](https://github.com/Orillusion/orillusion/issues/528)) ([643632b](https://github.com/Orillusion/orillusion/commit/643632baf5a524567d3fddd7e7500d455b09d5ab))
+* **pick:** `Raycaster` skips sky spheres unless `includeSky` is set ([#528](https://github.com/Orillusion/orillusion/issues/528)) ([643632b](https://github.com/Orillusion/orillusion/commit/643632baf5a524567d3fddd7e7500d455b09d5ab))
+* **pick:** world-space hits for every collider shape, nearest hit for `MeshColliderShape`, inverse-transpose normals, and `screenPointToRay` canvas-offset fix ([#509](https://github.com/Orillusion/orillusion/issues/509)) ([2e4be97](https://github.com/Orillusion/orillusion/commit/2e4be97ba8f464e53dd7446948223e6a4dd26ef1))
+* **post:** `MotionBlurPost.resetHistory()` also resets object motion vectors; first frame writes zero motion ([#528](https://github.com/Orillusion/orillusion/issues/528)) ([643632b](https://github.com/Orillusion/orillusion/commit/643632baf5a524567d3fddd7e7500d455b09d5ab))
+* **gltf:** non-indexed primitives no longer overflow a `Uint8Array` fallback index buffer (meshes over 85 triangles were scrambled) ([#516](https://github.com/Orillusion/orillusion/issues/516)) ([76dc157](https://github.com/Orillusion/orillusion/commit/76dc157a31395ce66ff4066c360d02b3d54f22f7))
+* **texture:** base64 data-URI textures no longer hang forever in background tabs ([#518](https://github.com/Orillusion/orillusion/issues/518)) ([aaf06d7](https://github.com/Orillusion/orillusion/commit/aaf06d771cce1551c8d9389efc134cd06d3ce7c0))
+* **shader:** pooled reflection no longer overwritten when a pass changes variant ([#511](https://github.com/Orillusion/orillusion/issues/511)) ([69ae653](https://github.com/Orillusion/orillusion/commit/69ae653a2043fdd02e9dd6b925f2cb979dc47956))
+* **shader:** bind group entries get only the shader stages that reach them (`ShaderStageUsage`, nested calls included); texture bind group regenerated when layouts rebuild ([#526](https://github.com/Orillusion/orillusion/issues/526)) ([b2d5e6e](https://github.com/Orillusion/orillusion/commit/b2d5e6eadcbc5a6a09c3cc1744693a76c388f556))
+* **engine:** first frame and post-resume frame use a nominal 1/60 s `Time.delta`; `GPUBufferBase.mapAsyncWrite` staging-buffer pool leak ([#519](https://github.com/Orillusion/orillusion/issues/519)) ([f5bda99](https://github.com/Orillusion/orillusion/commit/f5bda99cad3c335dc5ab0342489036262a8c3bde))
+* **physics-rapier:** adapt to Rapier 0.19 API changes ([#519](https://github.com/Orillusion/orillusion/issues/519)) ([f5bda99](https://github.com/Orillusion/orillusion/commit/f5bda99cad3c335dc5ab0342489036262a8c3bde))
+* **atmosphere:** fix multi-scattering / sky-view LUT dispatch sizes, uniform padding and a compute shader leak ([37e55d8](https://github.com/Orillusion/orillusion/commit/37e55d8ef053138ddb7f7b12ac841504705abecb))
+* **sprite:** stabilize `BillboardY` at vertical view angles ([#503](https://github.com/Orillusion/orillusion/issues/503)) ([c477ae0](https://github.com/Orillusion/orillusion/commit/c477ae08e8cdddc2c54bb6ed5fe63013d90ebe13))
+* **math:** `Plane.intersectsRay` hit for parallel rays ([#507](https://github.com/Orillusion/orillusion/issues/507)) ([1172ba1](https://github.com/Orillusion/orillusion/commit/1172ba1febccafda828bfbf321a839a43f22d114))
+* **math:** correct `Vector2.lerp` endpoint order ([#508](https://github.com/Orillusion/orillusion/issues/508)) ([5cdec3c](https://github.com/Orillusion/orillusion/commit/5cdec3c448d02097d8de9534003d7f8f3bf4e826))
+* **test:** wait for rendered frames instead of wall-clock delays before GPU readbacks ([#524](https://github.com/Orillusion/orillusion/issues/524)) ([f90b4d5](https://github.com/Orillusion/orillusion/commit/f90b4d5e5da5a2cc19ff3c70a8de05e9a13b12aa)); fail the running test on GPU device loss or uncaptured GPU errors ([#526](https://github.com/Orillusion/orillusion/issues/526)) ([b2d5e6e](https://github.com/Orillusion/orillusion/commit/b2d5e6eadcbc5a6a09c3cc1744693a76c388f556))
+
+
+
 ## [0.9.2](https://github.com/Orillusion/orillusion/compare/v0.8.4...v0.9.2) (2026-07-31)
 
 
