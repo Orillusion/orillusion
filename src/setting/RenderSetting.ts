@@ -38,6 +38,13 @@ export type RenderSetting = {
      *  coexists). Flip this on AND open the integration in `drawNodes`
      *  to get the 5-20× perf win. */
     gpuCull?: boolean;
+    /** Per-object motion vectors. When true, the engine keeps a copy of the
+     *  previous frame's model matrices and MotionVectorPass draws every
+     *  opaque mesh's own screen-space velocity (camera + object motion) into
+     *  `_MotionVector`; MotionBlurPost then blurs moving objects too, not
+     *  only the camera's motion. Skinned meshes use the previous model
+     *  matrix with the current pose (rigid motion only). Default false. */
+    objectMotionVectors?: boolean;
     /** Per-instance MSAA sample count for the main color pass.
      *  0 disables MSAA (default). Valid non-zero values: 2 | 4 | 8
      *  depending on device support. Enabling MSAA unlocks

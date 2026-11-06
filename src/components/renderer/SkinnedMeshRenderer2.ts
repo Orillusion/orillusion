@@ -85,7 +85,7 @@ export class SkinnedMeshRenderer2 extends MeshRenderer {
     private _forceSkeletonDefine() {
         const list = this._materials;
         if (!list || list.length === 0) return;
-        const passTypes = [PassType.COLOR, PassType.SHADOW, PassType.DEPTH, PassType.POINT_SHADOW];
+        const passTypes = [PassType.COLOR, PassType.SHADOW, PassType.DEPTH, PassType.POINT_SHADOW, PassType.VELOCITY];
         for (const mat of list) {
             const ps = (mat as any)?.shader?.passShader;
             if (!ps) continue;
