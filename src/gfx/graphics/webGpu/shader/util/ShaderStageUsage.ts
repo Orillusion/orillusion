@@ -37,19 +37,22 @@ export class ShaderStageUsage {
     public static reachableIdentifiers(code: string, entry: string): Set<string> {
         const bodies = ShaderStageUsage.functionBodies(code);
         const seen = new Set<string>();
+        // Functions whose bodies were already scanned. Kept apart from `seen`:
+        // a callee is recorded in `seen` when first referenced, and must
+        // still be expanded when it is popped.
+        const expanded = new Set<string>();
         const queue = [entry];
         while (queue.length) {
             const fn = queue.pop()!;
             const body = bodies.get(fn);
-            if (!body || seen.has(fn)) continue;
+            if (!body || expanded.has(fn)) continue;
+            expanded.add(fn);
             seen.add(fn);
             const ids = body.match(ShaderStageUsage.IDENT);
             if (!ids) continue;
             for (const id of ids) {
-                if (!seen.has(id)) {
-                    seen.add(id);
-                    if (bodies.has(id)) queue.push(id);
-                }
+                seen.add(id);
+                if (bodies.has(id) && !expanded.has(id)) queue.push(id);
             }
         }
         return seen;

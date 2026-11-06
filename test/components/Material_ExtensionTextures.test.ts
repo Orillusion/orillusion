@@ -1,7 +1,7 @@
 import { test, expect, end, waitUntil, delay, readRegionRGBA16F } from '../util'
 import {
-    AtmosphericComponent, CameraUtil, Color, DirectLight, Engine3D, KHR_materials_anisotropy, KHR_materials_iridescence, KHR_materials_sheen,
-    KHR_materials_specular, LitMaterial, MeshRenderer, Object3D, PlaneGeometry, Scene3D, Time, Uint8ArrayTexture, Vector3, View3D,
+    CameraUtil, Color, DirectLight, Engine3D, Float16ArrayTexture, KHR_materials_anisotropy, KHR_materials_iridescence, KHR_materials_sheen,
+    KHR_materials_specular, LDRTextureCube, LitMaterial, MeshRenderer, Object3D, PlaneGeometry, Scene3D, SkyRenderer, Time, Uint8ArrayTexture, Vector3, View3D,
 } from '@orillusion/core';
 import { buildExtensionTexturesGLB, encodeHalfPNG } from '@samples/utils/GLBBuilder';
 
@@ -77,9 +77,28 @@ await test('glTF: extension textures embedded in a GLB are resolved and bound', 
 })
 
 // ---- GPU: a full-screen quad, texture halves vs. factor-only references ---------
+/**
+ * Analytic environment: an equirectangular gradient (dim zenith, bright horizon, dark ground)
+ * that also brightens toward one azimuth, so the quad reflects a different radiance at each
+ * point and for each lobe shape. The atmospheric sky would do, but its scattering shader runs
+ * so long on a software rasterizer (CI) that the GPU watchdog kills the GPU process.
+ */
+function gradientSky(): LDRTextureCube {
+    const w = 64, h = 32, px: number[] = [];
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+        const up = 1 - 2 * (y + 0.5) / h;                                   // +1 zenith .. -1 nadir
+        const lobe = 0.6 + 0.8 * (0.5 + 0.5 * Math.cos(2 * Math.PI * (x + 0.5) / w));
+        const c = up >= 0 ? [0.5 + 1.5 * (1 - up), 0.7 + 1.2 * (1 - up), 1.4 + 0.6 * (1 - up)] : [0.15, 0.12, 0.1];
+        px.push(c[0] * lobe, c[1] * lobe, c[2] * lobe, 1);
+    }
+    const erp = new Float16ArrayTexture().create(w, h, px, false, engine.context3D);
+    return new LDRTextureCube().createFromTexture(32, erp, engine.context3D);
+}
+
 const view = new View3D();
 view.scene = new Scene3D();
-view.scene.addComponent(AtmosphericComponent).sunY = 0.6;
+view.scene.addComponent(SkyRenderer);
+view.scene.envMap = gradientSky();
 view.camera = CameraUtil.createCamera3DObject(view.scene, 'camera');
 view.camera.perspective(40, engine.aspect, 0.1, 100);
 view.camera.lookAt(new Vector3(0, 0, 5), new Vector3(0, 0, 0));
