@@ -3,6 +3,8 @@ import { Object3D } from '../../core/entities/Object3D';
 import { MeshBVHCull, MeshBVHHit } from '../../core/tree/bvh/MeshBVH';
 import { InstanceDrawComponent } from '../../components/renderer/InstanceDrawComponent';
 import { MeshRenderer } from '../../components/renderer/MeshRenderer';
+import { SkyRenderer } from '../../components/renderer/SkyRenderer';
+import { EarthSkyRenderer } from '../../components/renderer/EarthSkyRenderer';
 import { VisibleLayer } from '../../gfx/renderJob/config/VisibleLayer';
 import { Material } from '../../materials/Material';
 import { Ray } from '../../math/Ray';
@@ -25,7 +27,9 @@ export type RaycastSide = 'material' | 'front' | 'back' | 'double';
  * CPU ray picking against mesh triangles, build a ray (from the camera or by hand), 
  * then intersect objects and get sorted hits with point, distance, 
  * normals, face index, barycentric coordinates and UVs. Unlike `PickFire`, 
- * no `ColliderComponent` is needed: any `MeshRenderer` in the given hierarchy is tested.
+ * no `ColliderComponent` is needed: any `MeshRenderer` in the given hierarchy is tested,
+ * except sky spheres (`SkyRenderer`, `AtmosphericComponent`, `EarthSkyRenderer`)
+ * unless `includeSky` is set.
  *
  * Geometry with a `MeshBVH` (see `MeshBVH.build`) is tested through the
  * tree; other geometry is scanned triangle by triangle unless `useBVH` is
@@ -65,6 +69,12 @@ export class Raycaster {
      * tests the undeformed geometry; `'skip'` ignores them.
      */
     public deformation: RaycastDeformation = 'cpu';
+    /**
+     * Also test sky spheres (`SkyRenderer`, `AtmosphericComponent`,
+     * `EarthSkyRenderer`). Off by default:
+     * the sky sphere is huge and would be hit from inside on every miss.
+     */
+    public includeSky: boolean = false;
     /** Optional per-renderer filter; return false to skip a renderer. */
     public filter: ((renderer: MeshRenderer) => boolean) | null = null;
 
@@ -157,6 +167,7 @@ export class Raycaster {
                 if (!(c instanceof MeshRenderer)) return;
                 if ((!c.enable && !inBatch) || !c.geometry) return;
                 if ((c.visibleLayer & this.layerMask) === 0) return;
+                if (!this.includeSky && Raycaster._isSky(c)) return;
                 if (this.filter && !this.filter(c)) return;
                 visit(c);
             });
@@ -166,6 +177,10 @@ export class Raycaster {
             }
         };
         walk(object, instanced);
+    }
+
+    private static _isSky(r: MeshRenderer): boolean {
+        return r instanceof SkyRenderer || r instanceof EarthSkyRenderer;
     }
 
     private static _batches(obj: Object3D): boolean {

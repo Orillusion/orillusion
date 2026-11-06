@@ -151,5 +151,35 @@ await test('moving camera, static scene: object path agrees with the camera-only
     camStep = 0;
 })
 
+await test('resetHistory() zeroes the velocity texture for one frame (camera cut with object motion)', async () => {
+    // Copy the texture right after MotionVectorPass ran on the chosen frame, independent of frame rate.
+    const pass = view.renderGraph!.getPass('MotionVectorPass') as any;
+    const execute = pass.execute;
+    let arm: (() => void) | null = null;
+    pass.execute = function (c: any) {
+        execute.call(this, c);
+        if (arm) { const a = arm; arm = null; a(); }
+    };
+    // mvRow() submits its copy synchronously, before the next pass or frame is encoded.
+    const capture = () => new Promise<number[][]>(r => { arm = () => mvRow().then(r); });
+    const stats = (row: number[][]) => ({ maxAbs: Math.max(...row.map(p => Math.abs(p[0]))), flag: Math.max(...row.map(p => p[2])) });
+    try {
+        boxStep = 0.12; camStep = 0.1;
+        await frames(2);
+        const moving = stats(await capture());
+        blur.resetHistory();
+        const reset = stats(await capture());
+        const after = stats(await capture());
+        console.log(`[ObjectMV] reset: moving ${moving.maxAbs.toExponential(2)} reset ${reset.maxAbs.toExponential(2)} (flag ${reset.flag}) after ${after.maxAbs.toExponential(2)}`);
+        expect(moving.maxAbs > 1e-3).tobe(true);
+        expect(reset.maxAbs < 1e-4).tobe(true);
+        expect(reset.flag).tobe(0);                                 // object pass skipped on the reset frame
+        expect(after.maxAbs > 1e-3).tobe(true);                     // history resumes on the next frame
+    } finally {
+        pass.execute = execute;
+        boxStep = 0; camStep = 0;
+    }
+})
+
 Engine3D.pause();
 setTimeout(end, 500)

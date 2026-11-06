@@ -1,7 +1,7 @@
 import { test, expect, end } from '../util'
 import {
-    CameraUtil, Engine3D, GeometryBase, InstanceDrawComponent, LitMaterial, MeshBVH, MeshRenderer, Object3D, PlaneGeometry,
-    Raycaster, Scene3D, SphereGeometry, Vector3, VertexAttributeName, View3D,
+    CameraUtil, EarthSkyRenderer, Engine3D, GeometryBase, InstanceDrawComponent, LitMaterial, MeshBVH, MeshRenderer, Object3D, PlaneGeometry,
+    Raycaster, Scene3D, SkyRenderer, SphereGeometry, TorusGeometry, Vector3, VertexAttributeName, View3D,
 } from '@orillusion/core';
 
 const engine = await Engine3D.init();
@@ -193,6 +193,51 @@ await test('instanced batches stay pickable; disabled renderers do not', async (
     root.addComponent(InstanceDrawComponent);
     expect(down().intersectObject(root).length).tobe(1);
     expect(down().intersectObject(child).length).tobe(1);     // ancestor batch is found from a child root too
+})
+
+await test('sky spheres are skipped unless includeSky is set', async () => {
+    const root = new Object3D();
+    const target = mesh(quads([0]), new Vector3(0, 0, 0), undefined, 'target');
+    root.addChild(target);
+    for (const Sky of [SkyRenderer, EarthSkyRenderer]) {
+        const o = new Object3D();
+        const sky = o.addComponent(Sky as typeof MeshRenderer);
+        sky.geometry = new SphereGeometry(500, 20, 20);
+        sky.material = new LitMaterial();
+        root.addChild(o);
+    }
+    const miss = down(5, 5);
+    miss.side = 'double';
+    expect(miss.intersectObject(root).length).tobe(0);
+    const hit = down();
+    hit.side = 'double';
+    const hits = hit.intersectObject(root);
+    expect(hits.length).tobe(1);
+    expect(hits[0].object3D.name).tobe('target');
+    miss.includeSky = true;
+    expect(miss.intersectObject(root).length > 0).tobe(true);
+})
+
+await test('built-in shapes past 65535 vertices use 32-bit indices and pick the far side correctly', async () => {
+    const small = new SphereGeometry(1, 32, 32);
+    expect(small.getAttribute(VertexAttributeName.indices).data instanceof Uint16Array).tobe(true);
+    const big = new SphereGeometry(10, 400, 400);                  // 160801 vertices
+    const idx = big.getAttribute(VertexAttributeName.indices).data as Uint32Array;
+    expect(idx instanceof Uint32Array).tobe(true);
+    expect(big.indicesBuffer.indicesFormat).tobe('uint32');
+    let max = 0;
+    for (let i = 0; i < idx.length; i++) if (idx[i] > max) max = idx[i];
+    expect(max).tobe(401 * 401 - 1);
+    expect(new TorusGeometry(10, 2, 300, 300).getAttribute(VertexAttributeName.indices).data instanceof Uint32Array).tobe(true);
+    expect(new PlaneGeometry(1, 1, 10, 10).getAttribute(VertexAttributeName.indices).data instanceof Uint16Array).tobe(true);
+    expect(new PlaneGeometry(1, 1, 300, 300).getAttribute(VertexAttributeName.indices).data instanceof Uint32Array).tobe(true);
+
+    // The south pole uses the highest vertex indices, which wrapped with Uint16 storage.
+    const obj = mesh(big);
+    const h = new Raycaster(new Vector3(0.3, -20, 0.2), new Vector3(0, 1, 0)).intersectFirst(obj);
+    expect(!!h).tobe(true);
+    expect(h.distance).toSubequal(20 - Math.sqrt(100 - 0.13), 1e-2);
+    expect(h.normal.y < -0.99).tobe(true);
 })
 
 await test('setFromCamera / setFromCameraNDC aim through the same pixel', async () => {
