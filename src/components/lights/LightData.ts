@@ -12,6 +12,7 @@ import { Struct } from '../../util/struct/Struct';
     *DirectionLight|
     *SpotLight|
     *SkyLight|
+    *RectLight|
  * @group Lights
  */
 export enum LightType {
@@ -20,6 +21,7 @@ export enum LightType {
     DirectionLight,
     SpotLight,
     SkyLight,
+    RectLight,
 }
 
 /**

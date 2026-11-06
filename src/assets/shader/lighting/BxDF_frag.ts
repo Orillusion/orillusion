@@ -143,6 +143,10 @@ export let BxDF_frag: string = /*wgsl*/ `
               specColor += spotLighting( ORI_VertexVarying.vWorldPos.xyz, light ,iblSpecularResult) ;
               break;
             }
+            case RectLightType: {
+              specColor += rectLighting( ORI_VertexVarying.vWorldPos.xyz, light ) ;
+              break;
+            }
             default: {
               break;
             }
