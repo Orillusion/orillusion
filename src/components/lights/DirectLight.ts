@@ -6,6 +6,7 @@ import { LightType } from './LightData';
 import { CameraUtil } from '../../util/CameraUtil';
 import { Vector3 } from '../../math/Vector3';
 import { FrustumCSM } from '../..';
+import { EntityCollect } from '../../gfx/renderJob/collect/EntityCollect';
 /**
  *
  *Directional light source.
@@ -31,6 +32,8 @@ export class DirectLight extends LightBase {
     /** Optional custom cascade split distribution function. */
     public csmSplitFunction: (near: number, far: number, index: number, max: number) => number;
     protected _enableCSM: boolean = false;
+    /** Set once `enableCSM` is assigned, so start() keeps an explicit choice. */
+    private _enableCSMExplicit: boolean = false;
 
     constructor() {
         super();
@@ -58,6 +61,19 @@ export class DirectLight extends LightBase {
         this.shadowCamera.top = bound * 0.5;
         this.shadowCamera.near = 0.01;
         this.shadowCamera.far = bound;
+
+        // The scene's first directional light (usually the sun) uses CSM by
+        // default; an explicit `enableCSM` assignment is kept as is.
+        if (!this._enableCSMExplicit && this.isFirstDirectLight()) {
+            this.applyEnableCSM(true);
+        }
+    }
+
+    /** True when this is the first enabled DirectLight registered in its scene. */
+    private isFirstDirectLight(): boolean {
+        const scene = this.transform.scene3D;
+        const lights = scene ? EntityCollect.instance.getLights(scene) : null;
+        return !!lights && lights.find((l) => l instanceof DirectLight) === this;
     }
 
     /**
@@ -161,13 +177,21 @@ export class DirectLight extends LightBase {
     private _shadowBias: 'auto' | number = 'auto';
     private _normalBias: 'auto' | number = 'auto';
 
-    /** Whether cascaded shadow maps (CSM) are enabled for this light. */
+    /**
+     * Whether cascaded shadow maps (CSM) are enabled for this light.
+     * Defaults to true for the scene's first directional light, false otherwise.
+     */
     public get enableCSM(): boolean{
         return this._enableCSM;
     }
 
     /** Enable or disable cascaded shadow maps (defaults to 4 cascades). */
     public set enableCSM(value: boolean) {
+        this._enableCSMExplicit = true;
+        this.applyEnableCSM(value);
+    }
+
+    private applyEnableCSM(value: boolean) {
         if (this._enableCSM != value) {
             if (value) {
                 if (this.cascadeNum == 0){

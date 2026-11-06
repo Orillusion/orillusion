@@ -154,6 +154,24 @@ export class GLTFSubParserMaterial {
             const tex = await this.parseTexture(texInfo.index);
             if (tex) (dmaterial as any).transmissionTextureResolved = tex;
         }
+        // Textures of the other KHR material extensions, same pattern: resolved here,
+        // bound by the synchronous appliers via the LitMaterial *Map setters.
+        const extTextures: [string, string, string, 'srgb' | 'linear'][] = [
+            ['KHR_materials_sheen', 'sheenColorTexture', 'sheenColorTextureResolved', 'srgb'],
+            ['KHR_materials_sheen', 'sheenRoughnessTexture', 'sheenRoughnessTextureResolved', 'linear'],
+            ['KHR_materials_iridescence', 'iridescenceTexture', 'iridescenceTextureResolved', 'linear'],
+            ['KHR_materials_iridescence', 'iridescenceThicknessTexture', 'iridescenceThicknessTextureResolved', 'linear'],
+            ['KHR_materials_specular', 'specularTexture', 'specularTextureResolved', 'linear'],
+            ['KHR_materials_specular', 'specularColorTexture', 'specularColorTextureResolved', 'srgb'],
+            ['KHR_materials_anisotropy', 'anisotropyTexture', 'anisotropyTextureResolved', 'linear'],
+        ];
+        for (const [extName, key, slot, colorSpace] of extTextures) {
+            const info = extensions?.[extName]?.[key];
+            if (info && typeof info.index === 'number') {
+                const tex = await this.parseTexture(info.index, colorSpace);
+                if (tex) (dmaterial as any)[slot] = tex;
+            }
+        }
         if (extensions && extensions.KHR_materials_volume && extensions.KHR_materials_volume.thicknessTexture) {
             const texInfo = extensions.KHR_materials_volume.thicknessTexture;
             const tex = await this.parseTexture(texInfo.index);

@@ -2,6 +2,9 @@
  * @internal
  */
 export let BRDF_frag: string = /*wgsl*/ `
+  // Per-fragment multiplier from an optional specularTexture (KHR_materials_specular); 1 without one.
+  var<private> specularWeightTex: f32 = 1.0;
+
 #include "Clearcoat_frag"
     #include "EnvMap_frag"
     #include "BrdfLut_frag"
@@ -516,7 +519,7 @@ export let BRDF_frag: string = /*wgsl*/ `
          var AB = LUT_Approx(roughness,NdotV);
         //  var AB = textureSampleLevel(brdflutMap, brdflutMapSampler, vec2f(NdotV, roughness), 0.0).rg;
          var indirectionSpecFactor = indirectionCube.rgb * (F_IndirectionLight * AB.r + AB.g) ;
-         let specStrength = clamp(materialUniform.specularColor.a, 0.0, 1.0);
+         let specStrength = clamp(materialUniform.specularColor.a * specularWeightTex, 0.0, 1.0);
          return indirectionSpecFactor * occlusion * specStrength;
      }
      #endif

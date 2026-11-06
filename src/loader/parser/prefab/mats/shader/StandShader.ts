@@ -82,8 +82,8 @@ export class StandShader extends Shader {
         this.setUniformColor(`attenuationColor`, new Color(1, 1, 1, 1));
         // KHR_materials_sheen: rgb = sheen color (0 = no sheen), a = sheen roughness.
         this.setUniformColor(`sheenColor`, new Color(0, 0, 0, 0));
-        // KHR_materials_iridescence: x = factor (0 = off), y = film IOR, z = film thickness (nm), w unused.
-        this.setUniformVector4(`iridescence`, new Vector4(0, 1.3, 400, 0));
+        // KHR_materials_iridescence: x = factor (0 = off), y = film IOR, z = thickness maximum (nm), w = thickness minimum (nm, texture only).
+        this.setUniformVector4(`iridescence`, new Vector4(0, 1.3, 400, 100));
         // KHR_materials_anisotropy: x = strength (0 = off), y = rotation (radians), z / w unused.
         this.setUniformVector4(`anisotropy`, new Vector4(0, 0, 0, 0));
 
