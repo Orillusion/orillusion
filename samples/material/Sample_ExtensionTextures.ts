@@ -44,6 +44,7 @@ class Sample_ExtensionTextures {
         light.lightColor = KelvinUtil.color_temperature_to_rgb(5600);
         light.intensity = 3.5;
         light.castShadow = true;
+        light.enableCSM = true;
         this.scene.addChild(lightObj);
 
         await this.build(engine);
