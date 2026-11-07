@@ -1,0 +1,26 @@
+{
+    "name": "@orillusion/ray-pick",
+    "version": "0.1.0",
+    "author": "Orillusion",
+    "description": "Injectable CPU ray picking for Orillusion scenes",
+    "main": "./dist/ray-pick.umd.js",
+    "module": "./dist/ray-pick.es.js",
+    "module:dev": "./index.ts",
+    "types": "./dist/index.d.ts",
+    "files": ["dist", "README.md"],
+    "scripts": {
+        "build": "vite build && npm run build:types && npm run build:clean",
+        "build:types": "tsc --emitDeclarationOnly --experimentalDecorators -p tsconfig.json",
+        "build:clean": "mv dist/packages/ray-pick/* dist && rm -rf dist/src dist/packages",
+        "docs": "npm run docs:typedoc ../../docs/ray-pick index.ts",
+        "docs:typedoc": "npx typedoc --plugin typedoc-plugin-markdown --tsconfig tsconfig.json --gitRevision dev --hideBreadcrumbs true --allReflectionsHaveOwnDocument true --readme none --excludeInternal --excludePrivate --excludeProtected --sort source-order --out"
+    },
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Orillusion/orillusion.git"
+    },
+    "peerDependencies": {
+        "@orillusion/core": ">=0.9.0"
+    }
+}
